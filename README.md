@@ -1,2 +1,3 @@
-# Hyperloop_v2
-SpaceX Competition
+# MagnePlane (Hyperloop_v2)
+
+"It's more of a plane without wings, than a train without wheels"
