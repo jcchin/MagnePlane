@@ -17,7 +17,8 @@ from openmdao.solvers.ln_direct import DirectSolver
 
 class Lift(Component):
     """Calculate Lift based on Magnet Parameters
-        inspired by: http://mitrocketscience.blogspot.com/search/label/maglev"""
+        inspired by: Jed Storey - http://mitrocketscience.blogspot.com/search/label/
+        and: Paul R. Friend - http://cegt201.bradley.edu/projects/proj2004/maglevt1/reason.html"""
 
     def __init__(self):
         super(Lift, self).__init__()
@@ -74,12 +75,12 @@ class Lift(Component):
         self.add_output('l1', val=5.7E-08, units ='Henrys', desc ='one turn inductance')
         self.add_output('r1', val=0.0007, units ='Ohm', desc ='one turn resistance')
         self.add_output('rl_pole', val=12250, units ='rad/s', desc ='R/L Pole')
-        self.add_output('omegaOsc', val=47, units ='rad/s', desc ='Oscillation frequency')
-        self.add_output('vOsc', val=47, units ='m/s', desc ='Oscillation velocity')
+        self.add_output('omegaOsc', val=47., units ='rad/s', desc ='Oscillation frequency')
+        self.add_output('vOsc', val=0.41, units ='m/s', desc ='Oscillation velocity')
         # breakpoint analysis
-
+        self.add_output('vb', val=23., units ='m/s', desc ='levitation breakpoint')
         # transition analysis
-
+        self.add_output('vt', val=47, units ='m/s', desc ='transition velocity')
         # summary outputs
 
 
@@ -100,20 +101,20 @@ class Lift(Component):
     def solve_nonlinear(self, params, unknowns, resids):
 
         edge = params['edge']
-        height = params['height']
+        height = p['height']
 
-        unknowns['n'] = params['N'] / 4.0
-        unknowns['omega'] = params['rpm'] * 2.0 * pi / 60.0
-        unknowns['area_ring'] = pi * ((((params['dia_out']+edge)/2.)**2) - (((params['dia_out']-edge)/2.)**2))
-        unknowns['area_mag'] = unknowns['area_ring'] * params['fill_frac']
-        unknowns['vol_mag'] = unknowns['area_ring'] * params['t_plate']
-        unknowns['f'] = unknowns['n'] * unknowns['omega'] / (2 * pi)
+        u['n'] = p['N'] / 4.0
+        u['omega'] = p['rpm'] * 2.0 * pi / 60.0
+        u['area_ring'] = pi * ((((p['dia_out']+edge)/2.)**2) - (((p['dia_out']-edge)/2.)**2))
+        u['area_mag'] = u['area_ring'] * p['fill_frac']
+        u['vol_mag'] = u['area_ring'] * p['t_plate']
+        u['f'] = u['n'] * u['omega'] / (2 * pi)
         #                                 *(ATAN((B6*B6)  /(2*   B20* SQRT(4*B20^2+B6^2+B6^2)))             -ATAN((B6*B6) /(2*(B6+B20)*     SQRT(4*(B6+B20)^2+B6^2+B6^2))))
-        unknowns['B'] = (params['Br']/pi)*(atan((edge**2)/(2*height*(4*height**2+edge**2+edge**2)**0.5))-atan((edge*edge)/(2*(edge+height)*(4*(edge+height)**2+edge**2+edge**2)**0.5)))*params['halbach']
-        unknowns['rho'] = params['rho0'] * (1+params['alpha']*(params['T']-20))
-        unknowns['delta'] = (unknowns['rho']/(pi * params['mu'] * unknowns['f']))**0.5
-        unknowns['P_norm'] = ((pi * unknowns['B'] * params['t_plate'] * unknowns['f'])**2) / (6. * params['k'] * unknowns['rho'] * params['Den'])
-        unknowns['P'] = unknowns['P_norm'] * unknowns['vol_mag'] * params['Den']
+        u['B'] = (p['Br']/pi)*(atan((edge**2)/(2*height*(4*height**2+edge**2+edge**2)**0.5))-atan((edge*edge)/(2*(edge+height)*(4*(edge+height)**2+edge**2+edge**2)**0.5)))*p['halbach']
+        u['rho'] = p['rho0'] * (1+p['alpha']*(p['T']-20))
+        u['delta'] = (u['rho']/(pi * p['mu'] * u['f']))**0.5
+        u['P_norm'] = ((pi * u['B'] * p['t_plate'] * u['f'])**2) / (6. * p['k'] * u['rho'] * p['Den'])
+        u['P'] = u['P_norm'] * u['vol_mag'] * p['Den']
 
 
 if __name__ == "__main__":
