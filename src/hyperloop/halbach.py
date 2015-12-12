@@ -79,9 +79,25 @@ class Lift(Component):
         self.add_output('vOsc', val=0.41, units ='m/s', desc ='Oscillation velocity')
         # breakpoint analysis
         self.add_output('vb', val=23., units ='m/s', desc ='levitation breakpoint')
+        self.add_output('sb', val=52., units ='mi/h', desc ='levitation breakpoint speed mph')
+        self.add_output('omegab', val=2650., units ='rad/s', desc ='frequency breakpoint')
+        self.add_output('Fxb', val=17., units ='N', desc ='drag force at breakpoint')
+        self.add_output('l2db', val=0.2, desc ='lift to drag at breakpoint')
         # transition analysis
         self.add_output('vt', val=47, units ='m/s', desc ='transition velocity')
-        # summary outputs
+        self.add_output('st', val=52., units ='mi/h', desc ='levitation transition speed mph')
+        self.add_output('omegat', val=2650., units ='rad/s', desc ='frequency transition')
+        self.add_output('Fxyt', val=17., units ='N', desc ='drag force at transition')
+        self.add_output('l2dt', val=0.2, desc ='lift to drag at transition')
+        # user specified output point
+        self.add_output('omegau', val=2650., units ='rad/s', desc ='frequency')
+        self.add_output('su', val=52., units ='mi/h', desc ='levitation speed mph')
+        self.add_output('Fyu', val=17., units ='N', desc ='levitation force')
+        self.add_output('Fxu', val=17., units ='N', desc ='drag force')
+        self.add_output('Lhu', val=17., units ='m', desc ='levitation height')
+        self.add_output('Fyuf', val=17., units ='N', desc ='fixed levitation force')
+        self.add_output('Fxuf', val=17., units ='N', desc ='fixed drag force')
+        self.add_output('l2du', val=0.2, desc ='lift to drag')
 
 
         self.add_output('rho', val=2.88599E-08, units ='Ohm-m', desc ='resistivity of aluminum at elevated temps')
@@ -98,9 +114,9 @@ class Lift(Component):
                                                 point at which current density has fallen to 0.37 of surface. \
                                                 make sure thickness of plate is at least 2*delta')
 
-    def solve_nonlinear(self, params, unknowns, resids):
+    def solve_nonlinear(self, p, u, r): # params, unknowns, residuals
 
-        edge = params['edge']
+        edge = p['edge']
         height = p['height']
 
         u['n'] = p['N'] / 4.0
