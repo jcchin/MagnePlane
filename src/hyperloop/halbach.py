@@ -1,5 +1,5 @@
 import numpy as np
-from math import pi, atan
+from math import pi, atan, sin, e
 
 from openmdao.core.group import Group, Component, IndepVarComp
 from openmdao.solvers.newton import Newton
@@ -28,6 +28,7 @@ class Lift(Component):
         self.add_param('Br', val=1.42, units='Tesla', desc='residual magnetic flux')
         self.add_param('d', val=0.012, units='m', desc='magnet thickness')
         self.add_param('N', val=16.0, desc='number magnets')
+        self.add_param('M', val=16.0, desc='number magnets per halbach')
         self.add_param('Is', val=3.0, desc='number vertically oriented magnets')
         self.add_param('lambda', val=0.012, units='m', desc='halbach wavelength')
         self.add_param('edge', val=0.25*0.0254, units='m', desc='edge length of cube magnets being used')
@@ -118,8 +119,49 @@ class Lift(Component):
 
         edge = p['edge']
         height = p['height']
+        lambdaa = p['lambda']
 
-        u['n'] = p['N'] / 4.0
+        u['B0'] = p['Br'] * (1. - e**(-2.*pi*edge/lambdaa))*((sin(pi/p['M']))/(pi/p['M']))
+        u['pforce'] = p['mass'] * 9.81
+
+        u['l1d'] = 4*pi*10**-7*p['Pc']/(4*pi*p['strip_c']/lambdaa)
+
+        trackArea = p['delta_c'] * p['Nt']
+        R = p['rc']*p['Pc']/(u['area_mag']*p['Ns'])*10**-10
+        levc = p['delta_c'] * p['Ns']/2.
+        p['y1'] = 0.01 + levc
+
+
+        Q = (e**(pi*p['al']/lambdaa)+e**(-pi*p['al']/lambdaa))/(e**(pi*p['al']/lambdaa)-e**(-pi*p['al']/lambdaa))
+        u['li'] = (p['wf']/p['Pc'])*(Q-1.)*u['l1d']
+        #     levs = (p['edge']/p['Pc'])*(p['l1d']/(Ll+p['l1d']));
+        #     levsl = (p['l1d']/(Ll+p['l1d']));
+        levsl = 1.
+
+        u['l1'] = u['l1d'] + u['li']
+
+        # Fringe Effects
+        if p['Is'] == 0:
+            levsf = 1
+        else:
+            levsf = 1-1/(2*p['Is'])
+        # Scale Factor
+        levs = levsf*levsl
+
+        u['rl_pole'] = u['r1']/u['l1']
+
+        # Oscillation Frequency and Velocity
+        u['omegaOsc'] = (4*pi*9.81/lambdaa)**0.5
+        u['vOsc'] = u['omegaOsc']*lambdaa/(2*pi)
+
+        # Break Point Calculations:
+        u['omegab'] = u['r1']/(u['l1']*(((((levs*u['B0']**2.*p['edge']/(4*pi*u['l1']*p['delta_c']/lambdaa))*u['area_mag']*e**(-4*pi*p['y1']/lambdaa))/u['pforce'])**0.5)-1))
+        u['vb'] = (u['omegab']*lambdaa)/(2*pi)
+        u['sb'] = u['vb']*(100/2.54)*1/(5280*12)*60*60;
+        u['Fxb'] = levs*(u['B0']**2.*p['edge']/(4*pi*u['l1']*p['delta_c']/lambdaa))*((u['r1']/(u['omegab']*u['l1']))/(1+(u['r1']/(u['omegab']*u['l1']))**2.))*e**(-4*pi*p['y1']/lambdaa)*u['area_mag']
+        u['l2db'] = u['omegab']*u['l1']/u['r1']
+
+        u['n'] = p['N'] / p['M']
         u['omega'] = p['rpm'] * 2.0 * pi / 60.0
         u['area_ring'] = pi * ((((p['dia_out']+edge)/2.)**2) - (((p['dia_out']-edge)/2.)**2))
         u['area_mag'] = u['area_ring'] * p['fill_frac']
