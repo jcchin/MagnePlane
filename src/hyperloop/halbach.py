@@ -1,5 +1,5 @@
 import numpy as np
-from math import pi, atan, sin, e
+from math import pi, atan, sin, e, log
 
 from openmdao.core.group import Group, Component, IndepVarComp
 from openmdao.solvers.newton import Newton
@@ -89,6 +89,7 @@ class Lift(Component):
         self.add_output('st', val=52., units ='mi/h', desc ='levitation transition speed mph')
         self.add_output('omegat', val=2650., units ='rad/s', desc ='frequency transition')
         self.add_output('Fxyt', val=17., units ='N', desc ='drag force at transition')
+        self.add_output('Lht', val=17., units ='m', desc ='levitation height')
         self.add_output('l2dt', val=0.2, desc ='lift to drag at transition')
         # user specified output point
         self.add_output('omegau', val=2650., units ='rad/s', desc ='frequency')
@@ -160,6 +161,34 @@ class Lift(Component):
         u['sb'] = u['vb']*(100/2.54)*1/(5280*12)*60*60;
         u['Fxb'] = levs*(u['B0']**2.*p['edge']/(4*pi*u['l1']*p['delta_c']/lambdaa))*((u['r1']/(u['omegab']*u['l1']))/(1+(u['r1']/(u['omegab']*u['l1']))**2.))*e**(-4*pi*p['y1']/lambdaa)*u['area_mag']
         u['l2db'] = u['omegab']*u['l1']/u['r1']
+
+        # Transition Calculations (Lift = Drag):
+        u['omegat'] = u['r1']/u['l1']
+        u['vt'] = u['omegat']*lambdaa/(2.*pi)
+        u['st'] = u['vt']*(100./2.54)*1./(5280.*12.)*60.*60.
+        u['Lht'] = log((u['pforce']/(levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*(1/(1+(u['r1']/(u['omegat']*u['l1']))**2.))*u['area_mag'])))*(lambdaa/(-4.*pi))-levc
+        #    Fxyt = levs*(Bo^2*w/(4*pi*L*dc/lambdaa))*((R/(u['omegat']*L))/(1+(R/(u['omegat']*L))^2))*exp(-4*pi*(Lht+levc)/lambdaa)*A;
+        u['Fxyt'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*((u['r1']/(u['omegat']*u['l1']))/(1.+(u['r1']/(u['omegat']*u['l1']))**2.))*e**(-4.*pi*(p['y1'])/lambdaa)*u['area_mag']
+        u['l2dt'] = u['omegat']*u['l1']/u['r1']
+
+        # User Input:
+        if p['veloc'] == 0:
+            u['omegau'] = 0
+            u['su'] = 0
+            Fyu = 0
+            Fxu = 0
+            Lhu = 0
+            L2Du = 0
+        else:
+            u['omegau'] = 2*pi*p['veloc']/lambdaa
+            u['su'] = p['veloc']*(100./2.54)*1./(5280.*12.)*60.*60.
+            u['Lhu'] = log((u['pforce']/(levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*(1/(1+(u['r1']/(u['omegau']*u['l1']))**2.))*u['area_mag'])))*(lambdaa/(-4.*pi))-levc
+            u['Fyu'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['delta_c']/lambdaa))*(1./(1.+(u['r1']/(u['omegau']*u['l1']))**2))*e**(-4.*pi*(u['Lhu']+levc)/lambdaa)*u['area_mag']
+            u['Fxu'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['delta_c']/lambdaa))*((u['r1']/(u['omegau']*u['l1']))/(1+(u['r1']/(u['omegau']*u['l1']))**2.))*e**(-4*pi*p['y1']/lambdaa)*u['area_mag']
+            u['Fyuf'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*(1./(1.+(u['r1']/(u['omegau']*u['l1']))**2))*e**(-4.*pi*(p['y1'])/lambdaa)*u['area_mag']
+            u['Fxuf'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*((u['r1']/(u['omegau']*u['l1']))/(1.+(u['r1']/(u['omegau']*u['l1']))**2.))*e**(-4.*pi*(p['y1'])/lambdaa)*u['area_mag']
+
+            u['l2du']= u['omegau']*u['l1']/u['r1']
 
         u['n'] = p['N'] / p['M']
         u['omega'] = p['rpm'] * 2.0 * pi / 60.0
