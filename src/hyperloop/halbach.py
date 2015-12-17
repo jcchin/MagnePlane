@@ -2,6 +2,7 @@ import numpy as np
 from math import pi, atan, sin, e, log
 
 from openmdao.core.group import Group, Component, IndepVarComp
+from openmdao.api import SqliteRecorder
 from openmdao.solvers.newton import Newton
 from openmdao.solvers.scipy_gmres import ScipyGMRES
 
@@ -25,30 +26,30 @@ class Lift(Component):
         self.ln_solver = LinearGaussSeidel()
 
         # Pod Inputs
-        self.add_param('Br', val=1.42, units='Tesla', desc='residual magnetic flux')
+        self.add_param('Br', val=1.21, units='Tesla', desc='residual magnetic flux')
         self.add_param('d', val=0.012, units='m', desc='magnet thickness')
         self.add_param('N', val=16.0, desc='number magnets')
-        self.add_param('M', val=16.0, desc='number magnets per halbach')
+        self.add_param('M', val=4.0, desc='number magnets per halbach')
         self.add_param('Is', val=3.0, desc='number vertically oriented magnets')
-        self.add_param('lambda', val=0.012, units='m', desc='halbach wavelength')
-        self.add_param('edge', val=0.25*0.0254, units='m', desc='edge length of cube magnets being used')
-        self.add_param('mass', val=0.4, units='kg', desc='pod mass')
+        self.add_param('lambda', val=0.055, units='m', desc='halbach wavelength')
+        self.add_param('edge', val=0.06, units='m', desc='edge length of cube magnets being used')
+        self.add_param('mass', val=0.375, units='kg', desc='pod mass')
 
         # Track Inputs (laminated track)
-        self.add_param('delta_c', val=0.05*0.0254, units='m', desc='single layer thickness')
-        self.add_param('strip_c', val=0.012, units='m', desc='center strip spacing')
-        self.add_param('Pc', val=0.12, units='m', desc='width of track')
-        self.add_param('rc', val=0.012, units='Ohm-m', desc='electric resistivity')
+        self.add_param('delta_c', val=0.0005334, units='m', desc='single layer thickness')
+        self.add_param('strip_c', val=0.0105, units='m', desc='center strip spacing')
+        self.add_param('Pc', val=0.11, units='m', desc='width of track')
+        self.add_param('rc', val=171.3, units='Ohm-m', desc='electric resistivity')
         self.add_param('Nt', val=0.005, units='m', desc='width of conductive strip')
-        self.add_param('Ns', val=4, desc='number of laminated sheets')
+        self.add_param('Ns', val=1, desc='number of laminated sheets')
 
         # Inductive Loading
-        self.add_param('al', val=0.0005, units='m', desc='conductor bundle height loaded')
-        self.add_param('wf', val=0.12, units='m', desc='total ferrite tile width')
+        self.add_param('al', val=0.0005334, units='m', desc='conductor bundle height loaded')
+        self.add_param('wf', val=0.0, units='m', desc='total ferrite tile width')
 
         # Pod/Track Relation
-        self.add_param('y1', val=0.12, units='m', desc='rolling clearance')
-        self.add_param('veloc', val=0.12, units='m/s', desc='pod velocity')
+        self.add_param('y1', val=0.01, units='m', desc='rolling clearance')
+        self.add_param('veloc', val=10.0, units='m/s', desc='pod velocity')
 
         self.add_param('dia_out', val=0.0406, units='m', desc='diameter of largest magnet ring. Cenetered on magnets')
         self.add_param('dia_in', val=0.0406, units='m', desc='diameter of smallest magnet ring')
@@ -122,9 +123,21 @@ class Lift(Component):
         height = p['height']
         lambdaa = p['lambda']
 
-        u['B0'] = p['Br'] * (1. - e**(-2.*pi*edge/lambdaa))*((sin(pi/p['M']))/(pi/p['M']))
-        u['pforce'] = p['mass'] * 9.81
+        # u['n'] = p['N'] / p['M']
+        # u['omega'] = p['rpm'] * 2.0 * pi / 60.0
+        # u['area_ring'] = pi * ((((p['dia_out']+edge)/2.)**2) - (((p['dia_out']-edge)/2.)**2))
+        # u['vol_mag'] = u['area_ring'] * p['t_plate']
+        # u['f'] = u['n'] * u['omega'] / (2 * pi)
+        # #                                 *(ATAN((B6*B6)  /(2*   B20* SQRT(4*B20^2+B6^2+B6^2)))             -ATAN((B6*B6) /(2*(B6+B20)*     SQRT(4*(B6+B20)^2+B6^2+B6^2))))
+        # u['B'] = (p['Br']/pi)*(atan((edge**2)/(2*height*(4*height**2+edge**2+edge**2)**0.5))-atan((edge*edge)/(2*(edge+height)*(4*(edge+height)**2+edge**2+edge**2)**0.5)))*p['halbach']
+        # u['rho'] = p['rho0'] * (1+p['alpha']*(p['T']-20))
+        # u['delta'] = (u['rho']/(pi * p['mu'] * u['f']))**0.5
+        # u['P_norm'] = ((pi * u['B'] * p['t_plate'] * u['f'])**2) / (6. * p['k'] * u['rho'] * p['Den'])
+        # u['P'] = u['P_norm'] * u['vol_mag'] * p['Den']
 
+        u['B0'] = p['Br'] * (1. - e**(-2.*pi*p['d']/lambdaa))*((sin(pi/p['M']))/(pi/p['M']))
+        u['pforce'] = p['mass'] * 9.81
+        u['area_mag'] = 0.0036#u['area_ring'] * p['fill_frac']
         u['l1d'] = 4*pi*10**-7*p['Pc']/(4*pi*p['strip_c']/lambdaa)
 
         trackArea = p['delta_c'] * p['Nt']
@@ -156,10 +169,10 @@ class Lift(Component):
         u['vOsc'] = u['omegaOsc']*lambdaa/(2*pi)
 
         # Break Point Calculations:
-        u['omegab'] = u['r1']/(u['l1']*(((((levs*u['B0']**2.*p['edge']/(4*pi*u['l1']*p['delta_c']/lambdaa))*u['area_mag']*e**(-4*pi*p['y1']/lambdaa))/u['pforce'])**0.5)-1))
-        u['vb'] = (u['omegab']*lambdaa)/(2*pi)
+        u['omegab'] = u['r1']/(u['l1']*((((levs*u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*u['area_mag']*e**(-4.*pi*p['y1']/lambdaa))/u['pforce'])-1)**0.5)
+        u['vb'] = (u['omegab']*lambdaa)/(2.*pi)
         u['sb'] = u['vb']*(100/2.54)*1/(5280*12)*60*60;
-        u['Fxb'] = levs*(u['B0']**2.*p['edge']/(4*pi*u['l1']*p['delta_c']/lambdaa))*((u['r1']/(u['omegab']*u['l1']))/(1+(u['r1']/(u['omegab']*u['l1']))**2.))*e**(-4*pi*p['y1']/lambdaa)*u['area_mag']
+        u['Fxb'] = levs*(u['B0']**2.*p['edge']/(4*pi*u['l1']*p['strip_c']/lambdaa))*((u['r1']/(u['omegab']*u['l1']))/(1+(u['r1']/(u['omegab']*u['l1']))**2.))*e**(-4*pi*p['y1']/lambdaa)*u['area_mag']
         u['l2db'] = u['omegab']*u['l1']/u['r1']
 
         # Transition Calculations (Lift = Drag):
@@ -183,25 +196,12 @@ class Lift(Component):
             u['omegau'] = 2*pi*p['veloc']/lambdaa
             u['su'] = p['veloc']*(100./2.54)*1./(5280.*12.)*60.*60.
             u['Lhu'] = log((u['pforce']/(levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*(1/(1+(u['r1']/(u['omegau']*u['l1']))**2.))*u['area_mag'])))*(lambdaa/(-4.*pi))-levc
-            u['Fyu'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['delta_c']/lambdaa))*(1./(1.+(u['r1']/(u['omegau']*u['l1']))**2))*e**(-4.*pi*(u['Lhu']+levc)/lambdaa)*u['area_mag']
-            u['Fxu'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['delta_c']/lambdaa))*((u['r1']/(u['omegau']*u['l1']))/(1+(u['r1']/(u['omegau']*u['l1']))**2.))*e**(-4*pi*p['y1']/lambdaa)*u['area_mag']
+            u['Fyu'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*(1./(1.+(u['r1']/(u['omegau']*u['l1']))**2))*e**(-4.*pi*(u['Lhu']+levc)/lambdaa)*u['area_mag']
+            u['Fxu'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*((u['r1']/(u['omegau']*u['l1']))/(1.+(u['r1']/(u['omegau']*u['l1']))**2.))*e**(-4*pi*(u['Lhu']+levc)/lambdaa)*u['area_mag']
             u['Fyuf'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*(1./(1.+(u['r1']/(u['omegau']*u['l1']))**2))*e**(-4.*pi*(p['y1'])/lambdaa)*u['area_mag']
             u['Fxuf'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*((u['r1']/(u['omegau']*u['l1']))/(1.+(u['r1']/(u['omegau']*u['l1']))**2.))*e**(-4.*pi*(p['y1'])/lambdaa)*u['area_mag']
 
             u['l2du']= u['omegau']*u['l1']/u['r1']
-
-        u['n'] = p['N'] / p['M']
-        u['omega'] = p['rpm'] * 2.0 * pi / 60.0
-        u['area_ring'] = pi * ((((p['dia_out']+edge)/2.)**2) - (((p['dia_out']-edge)/2.)**2))
-        u['area_mag'] = u['area_ring'] * p['fill_frac']
-        u['vol_mag'] = u['area_ring'] * p['t_plate']
-        u['f'] = u['n'] * u['omega'] / (2 * pi)
-        #                                 *(ATAN((B6*B6)  /(2*   B20* SQRT(4*B20^2+B6^2+B6^2)))             -ATAN((B6*B6) /(2*(B6+B20)*     SQRT(4*(B6+B20)^2+B6^2+B6^2))))
-        u['B'] = (p['Br']/pi)*(atan((edge**2)/(2*height*(4*height**2+edge**2+edge**2)**0.5))-atan((edge*edge)/(2*(edge+height)*(4*(edge+height)**2+edge**2+edge**2)**0.5)))*p['halbach']
-        u['rho'] = p['rho0'] * (1+p['alpha']*(p['T']-20))
-        u['delta'] = (u['rho']/(pi * p['mu'] * u['f']))**0.5
-        u['P_norm'] = ((pi * u['B'] * p['t_plate'] * u['f'])**2) / (6. * p['k'] * u['rho'] * p['Den'])
-        u['P'] = u['P_norm'] * u['vol_mag'] * p['Den']
 
 
 if __name__ == "__main__":
@@ -213,20 +213,37 @@ if __name__ == "__main__":
 
     p = Problem(root)
 
+    recorder = SqliteRecorder('maglev')
+    recorder.options['record_params'] = True
+    recorder.options['record_metadata'] = True
+    p.driver.add_recorder(recorder)
+
     p.setup()
     p.run()
+    p.root.dump()
 
-    print('n: ', p['lift.n'])
-    print('omega: ', p['lift.omega'])
-    print('area_ring: ', p['lift.area_ring'])
-    print('area_mag: ', p['lift.area_mag'])
-    print('vol_mag: ', p['lift.vol_mag'])
-    print('f: ', p['lift.f'])
-    print('B-: ', p['lift.B'])
-    print('rho: ', p['lift.rho'])
-    print('delta: ', p['lift.delta'])
-    print('P_norm: ', p['lift.P_norm'])
-    print('P: ', p['lift.P'])
+    import sqlitedict
+    from pprint import pprint
+
+    db = sqlitedict.SqliteDict( 'maglev', 'openmdao' )
+    data = db['Driver/1']
+    u = data['Unknowns']
+    pprint(u)
+
+    #print('n: ', p['lift.n'])
+
+
+    # print('n: ', p['lift.n'])
+    # print('omega: ', p['lift.omega'])
+    # print('area_ring: ', p['lift.area_ring'])
+    # print('area_mag: ', p['lift.area_mag'])
+    # print('vol_mag: ', p['lift.vol_mag'])
+    # print('f: ', p['lift.f'])
+    # print('B-: ', p['lift.B'])
+    # print('rho: ', p['lift.rho'])
+    # print('delta: ', p['lift.delta'])
+    # print('P_norm: ', p['lift.P_norm'])
+    # print('P: ', p['lift.P'])
 
     if 2*p['lift.delta'] > p['lift.t_plate']:
         print('plate is thick enough')
