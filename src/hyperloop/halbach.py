@@ -17,7 +17,7 @@ from openmdao.solvers.ln_direct import DirectSolver
 
 
 class Lift(Component):
-    """Calculate Lift based on Magnet Parameters
+    """Calculate Lift based on Magnet Parameters!
         inspired by: Jed Storey - http://mitrocketscience.blogspot.com/search/label/
         and: Paul R. Friend - http://cegt201.bradley.edu/projects/proj2004/maglevt1/reason.html"""
 
