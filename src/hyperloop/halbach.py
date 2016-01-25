@@ -1,5 +1,8 @@
 import numpy as np
-from math import pi, atan, sin, e, log
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+import matplotlib.pyplot as plt
+from math import pi, atan, sin, cos, e, log
 
 from openmdao.core.group import Group, Component, IndepVarComp
 from openmdao.api import SqliteRecorder
@@ -202,6 +205,166 @@ class Lift(Component):
             u['Fxuf'] = levs*(u['B0']**2.*p['edge']/(4.*pi*u['l1']*p['strip_c']/lambdaa))*((u['r1']/(u['omegau']*u['l1']))/(1.+(u['r1']/(u['omegau']*u['l1']))**2.))*e**(-4.*pi*(p['y1'])/lambdaa)*u['area_mag']
 
             u['l2du']= u['omegau']*u['l1']/u['r1']
+
+        vp = []
+        Fyp1 = []
+        Fxp1 = []
+        Fxp2 = []
+        Fyp2 = []
+        Fyp3 = []
+        Fxp3 = []
+        Fyp4 = []
+        Fxp4 = []
+        mFxp2 = []
+        mFyp2 = []
+        mFxp4 = []
+        mFyp4 = []
+        mag = []
+        mag4 = []
+        phase = []
+        phase4 = []
+        Lhp = []
+        w = lm = p['edge']
+        tm = p['mass']
+        dc = p['strip_c']
+
+
+        vtp = round(u['vt']/2.)*30.
+        vstep = vtp/100.
+        vp = np.arange(vstep,vtp+vstep,vstep)
+
+        A = lm*w;
+        tf = tm*9.81;
+
+
+        R = u['r1']
+        L = u['l1']
+        y1 = p['y1']
+        Bo = u['B0']
+        for n in xrange(100):
+            omegap = 2*pi*vp[n-1]/lambdaa
+            Lh_p = log((tf/(levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(1./(1.+(R/(omegap*L))**2.))*A)))*(lambdaa/(-4.*pi))-levc
+            Lhp.extend([Lh_p])
+            if ((y1-levc) >= Lh_p):
+                Fyp1.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(1./(1.+(R/(omegap*L))**2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+                Fyp3.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(atan(omegap*L/R)/(pi/2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+                Fxp1.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*((R/(omegap*L))/(1.+(R/(omegap*L))**2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+                Fxp3.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(1.-atan(omegap*L/R)/(pi/2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+            else:
+                Fyp1.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(1./(1.+(R/(omegap*L))**2.))*e**(-4.*pi*(Lh_p+levc)/lambdaa)*A])
+                Fyp3.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(atan(omegap*L/R)/(pi/2.))*e**(-4.*pi*(Lh_p+levc)/lambdaa)*A])
+                Fxp1.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*((R/(omegap*L))/(1.+(R/(omegap*L))**2.))*e**(-4.*pi*(Lh_p+levc)/lambdaa)*A])
+                Fxp3.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(1.-atan(omegap*L/R)/(pi/2.))*e**(-4.*pi*(Lh_p+levc)/lambdaa)*A])
+
+            Fyp2.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(1./(1.+(R/(omegap*L))**2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+            Fxp2.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*((R/(omegap*L))/(1+(R/(omegap*L))**2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+            mFyp2.extend([20.*log(Fyp2[n-1])])
+            mFxp2.extend([20.*log(Fxp2[n-1])])
+            mag.extend([20.*log(Fxp2[n-1]+Fyp2[n-1])])
+            phase.extend([-90.*Fyp2[n-1]/(Fyp2[n-1]+Fxp2[n-1])])
+
+            Fyp4.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(atan(omegap*L/R)/(pi/2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+            Fxp4.extend([levs*(Bo**2.*w/(4.*pi*L*dc/lambdaa))*(1.-atan(omegap*L/R)/(pi/2.))*e**(-4.*pi*(y1)/lambdaa)*A])
+            mFyp4.extend([20.*log(Fyp4[n-1])])
+            mFxp4.extend([20.*log(Fxp4[n-1])])
+            mag4.extend([20.*log(Fxp4[n-1]+Fyp4[n-1])])
+            phase4.extend([-90.*Fyp4[n-1]/(Fyp4[n-1]+Fxp4[n-1])])
+
+        M1 = []
+        d1 = np.zeros(50)
+        percentLambda = np.zeros(50)
+        volume = np.zeros(50)
+        mass = np.zeros(50)
+        B01 = np.zeros((100,50))
+        B0mass = np.zeros((100,50))
+        Lh = np.zeros((100,50))
+        Fy = np.zeros((100,50))
+        FyMass = np.zeros((100,50))
+        Br = p['Br']
+
+        for q in xrange(1,101,1):
+            M1.extend([q])
+            for n in xrange(1,51,1):
+                d1[n-1] = (lambdaa*n*0.01)
+                percentLambda[n-1] = (0.01*n)
+                volume[n-1] = (d1[n-1]**3.)
+                mass[n-1] = (7453.7002*volume[n-1])
+                B01[q-1,n-1] = Br*(1. - e**(-2.*pi*d1[n-1]/lambdaa))*((sin(pi/M1[q-1]))/(pi/M1[q-1]))
+                B0mass[q-1,n-1] = B01[q-1,n-1]/mass[n-1]
+                Lh[q-1,n-1] = log(((tf+mass[n-1]*M1[q-1]*9.81)/(levs*(B01[q-1,n-1]**2.*w/(4.*pi*L*dc/lambdaa))*A)))*(lambdaa/(-4.*pi))-levc
+                Fy[q-1,n-1] = levs*(B01[q-1,n-1]**2.*w/(4.*pi*L*dc/lambdaa))*e**(-4.*pi*(Lh[q-1,n-1])/lambdaa)*A
+                FyMass[q-1,n-1] = Fy[q-1,n-1]/mass[n-1]
+
+        lamda2 = []
+        d2 = []
+        volume2 = []
+        mass2 = []
+        B02 = []
+        Lh2 = []
+        for z in xrange(1,500):
+            lamda2.extend([z*0.005])
+            d2.extend([lamda2[z-1]/5.])
+            volume2.extend([d2[z-1]**3])
+            mass2.extend([7453.7002*volume2[z-1]])
+            B02.extend([Br*(1. - e**(-2.*pi*d2[z-1]/lambdaa))*((sin(pi/5.))/(pi/5.))])
+            Lh2.extend([log(((tf+mass2[z-1]*5.*9.81)/(levs*(B02[z-1]**2.*w/(4.*pi*L*dc/lamda2[z-1]))*A)))*(lamda2[z-1]/(-4.*pi))])
+
+        Bx = np.zeros((120,20))
+        By = np.zeros((120,20))
+        B0 = u['B0']
+        x = 0
+        y = 0
+        for n in xrange(1,120):
+            for o in xrange(1,20):
+                Bx[n,o] = B0*sin((2.*pi/lambdaa)*x)*e**(-(2.*pi/lambdaa)*y)
+                By[n,o] = B0*cos((2.*pi/lambdaa)*x)*e**(-(2.*pi/lambdaa)*y)
+                y = y+0.001
+            y = 0
+            x = x+0.001
+
+        x = np.arange(0,.12,0.001)
+        y = np.arange(0,.02,0.001)
+        X, Y = np.meshgrid(x, y)
+
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111, projection='3d')
+        # ax.plot_surface(Y.T, X.T, Bx, cmap=cm.coolwarm, shade=True)
+        # plt.title('Bx')
+        # ay = fig.add_subplot(212, projection='3d')
+        # ay.plot_surface(Y.T, X.T, By, cmap=cm.coolwarm, shade=True)
+        # plt.title('By')
+        #plt.show()
+
+        # fig2 = plt.figure()
+        # ax2 = fig2.add_subplot(111)
+        # ax2.plot(vp,Fxp1,vp,Fyp1,vp,Fxp2,vp,Fyp2)
+        # plt.ylabel('Newtons')
+        # plt.xlabel('Velocity (meters/sec)')
+        # plt.title('Drag (b) Docked (r) & Levitation (g) Docked (t) Forces')
+        # ay2 = fig2.add_subplot(212)
+        # ay2.plot(vp,Lhp)
+        # plt.ylabel('Height (meters)')
+        # plt.show()
+
+        print np.asarray(percentLambda).shape
+        print np.asarray(Lh).shape
+
+        M1m, Lhm = np.meshgrid(M1, np.arange(1,51))
+
+        print np.asarray(M1m).T.shape
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_surface(percentLambda, M1m.T, Lh, cmap=cm.coolwarm, shade=True)
+        plt.title('Optimum Magnet Thickness')
+        plt.ylabel('Number of Magnets M')
+        plt.xlabel('Magnet Thickness d as %/ lamda')
+        ay = fig.add_subplot(212)
+        ay.plot(lamda2,Lh2)
+        plt.title('Maximum Levitation Height for Wavelength')
+        plt.xlabel('Wavelength lamda')
+        plt.ylabel('Levitation Height y')
+        plt.show()
 
 
 if __name__ == "__main__":
