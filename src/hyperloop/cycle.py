@@ -14,7 +14,7 @@ from openmdao.solvers.ln_direct import DirectSolver
 
 
 class CompressionCycle(Group):
-    """A group that models an inlet->compressor->nozzle->shaft"""
+    """A group that models an inlet->compressor->duct->nozzle->shaft"""
 
     def __init__(self):
         super(CompressionCycle, self).__init__()
