@@ -3,6 +3,8 @@ import numpy as np
 from openmdao.core.group import Group, Component, IndepVarComp
 from openmdao.solvers.newton import Newton
 from openmdao.solvers.scipy_gmres import ScipyGMRES
+from openmdao.units.units import convert_units as cu
+from openmdao.api import Problem
 
 from pycycle.components import Compressor, Shaft, FlowStart, Inlet, Nozzle, Duct, FlightConditions
 from pycycle.species_data import janaf
@@ -12,7 +14,6 @@ from pycycle.constants import AIR_FUEL_MIX, AIR_MIX
 from openmdao.solvers.ln_gauss_seidel import LinearGaussSeidel
 from openmdao.solvers.ln_direct import DirectSolver
 
-
 class CompressionCycle(Group):
     """A group that models an inlet->compressor->duct->nozzle->shaft"""
 
@@ -21,101 +22,111 @@ class CompressionCycle(Group):
 
         # initiate components
         self.add('fc', FlightConditions())
-        #self.add('fl_start', FlowStart(thermo_data=janaf, elements=AIR_MIX))
         self.add('inlet', Inlet(thermo_data=janaf, elements=AIR_MIX))
         self.add('comp', Compressor(thermo_data=janaf, elements=AIR_MIX))
         self.add('duct', Duct(thermo_data=janaf, elements=AIR_MIX))
         self.add('nozzle', Nozzle(thermo_data=janaf, elements=AIR_MIX))
         self.add('shaft', Shaft(1))
 
-        # connect components
+        #self.add('fl_start', FlowStart(thermo_data=janaf, elements=AIR_MIX))
 
+        # connect components
         connect_flow(self,'fc.Fl_O', 'inlet.Fl_I')
         connect_flow(self,'inlet.Fl_O', 'comp.Fl_I')
         connect_flow(self,'comp.Fl_O', 'duct.Fl_I')
         connect_flow(self,'duct.Fl_O', 'nozzle.Fl_I')
 
-        self.connect("comp.trq","shaft.trq_0")
+        self.connect('comp.trq', 'shaft.trq_0')
         self.connect('shaft.Nmech', 'comp.Nmech')
 
-        #from openmdao.solvers.nl_gauss_seidel import NLGaussSeidel
-
-        #self.ln_solver = DirectSolver()
-        #self.ln_solver = LinearGaussSeidel()
-
-        # self.ln_solver = ScipyGMRES()
-        # self.ln_solver.options['atol'] = 1e-8
-        # self.ln_solver.options['maxiter'] = 100
-        # self.ln_solver.options['restart'] = 100
-        #self.nl_solver.options['alpha'] = 1.1
-        #self.nl_solver.options['solve_subsystems'] = False
         self.nl_solver = Newton()
         self.nl_solver.options['rtol'] = 1.4e-8
-        #self.nl_solver.options['rtol'] = 1.4e-8  # This is scipy's newton Tolerance for apples-to-apples
         self.nl_solver.options['maxiter'] = 75
         self.nl_solver.options['iprint'] = 1
 
-
 if __name__ == "__main__":
-    from openmdao.api import Problem
+
     prob = Problem()
     prob.root = CompressionCycle()
 
     params = (
-        ('P', 17.0, {'units':'psi'}),#('P', 101325.0, {'units':'N/m**2'}), # Pascals
-        ('T', 530.0, {'units':'degR'}), # 70 F
-        ('W', 1.0, {'units':'lbm/s'}),
-        ('PR_design', 2.87),
-        ('Ps_exhaust', 10.0, {'units':'lbf/inch**2'}),
-        ('alt', 1000.0, {'units':'ft'}),
-        ('MN', 0.8)
+        ('MN', 0.6),        
+        ('alt', 30001.0, {'units':'ft'}),
+        ('inlet_MN', 0.6),        
+        ('PR_design', 1.0),
+        ('W', 1.0, {'units':'lbm/s'})
     )
+
     prob.root.add('des_vars', IndepVarComp(params))
 
-    #prob.root.connect("des_vars.P", "fl_start.P")
-    #prob.root.connect("des_vars.T", "fl_start.T")
-    prob.root.connect("des_vars.W", "fc.fs.W")
-    #prob.root.connect("des_vars.PR_design", "turb.PR_design")
+    prob.root.connect('des_vars.alt', 'fc.alt')
+    prob.root.connect('des_vars.W', 'fc.fs.W')
     prob.root.connect('des_vars.MN', 'fc.MN_target')
-    prob.root.connect("des_vars.Ps_exhaust", "nozzle.Ps_exhaust")
+    prob.root.connect('des_vars.inlet_MN', 'inlet.MN_target')    
+    prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
 
-    prob.setup(check=True)
+    #prob.root.connect("des_vars.Ps_exhaust", "nozzle.Ps_exhaust")
 
-    #Flow Start
-    prob['des_vars.T'] = 600.
-    prob['des_vars.P'] = 30.
-    prob['des_vars.W'] = 75.
+    prob.setup(check=False)
 
-    # Inlet
-    prob['inlet.ram_recovery'] = 1.0
+    # Flight Conditions
+    prob['des_vars.W'] = 550.
 
-    # #Compressor
+    # Inlet Conditions
+    prob['inlet.ram_recovery'] = 0.99
+    prob['des_vars.inlet_MN'] = 0.55
+
+    # Compressor Conditions
     prob['comp.map.PRdes'] = 5.0
     prob['comp.map.effDes'] = 0.92
 
-    #Nozzle
+    # Nozzle Conditions
     prob['nozzle.Cfg'] = 0.99
-    #prob['nozz.Ps_exhaust'] = 14.7
     prob['nozzle.dPqP'] = 1.0
 
-    # #Shaft
+    #prob['nozz.Ps_exhaust'] = 14.7
+
+    # Shaft
     prob['shaft.Nmech'] = 15000.
 
-    # #Flow End 374.29
     import time
     t = time.time()
     prob.run()
     print time.time() - t
-    #prob.check_partial_derivatives()
+    prob.root.nozzle.list_connections()
 
-    # scipy fd check:
-    #print approx_fprime(np.array([turb_pr_des]), f, 0.001)
-    #
-    # our fd check:
-    #print prob.calc_gradient(['des_vars.PR_design'], ['shaft.trq_net'], mode='fwd',
-    #                              return_format='dict')
-    #quit()
+    print ""
+    print "--- Output ----------------------"
+    print "--- Freestream Static Conditions ---"
+    print "Mach No.:    %.6f " % (prob['fc.Fl_O:stat:MN'])    
+    print "Ambient Ps:  %.6f Pa" % (cu(prob['fc.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Ambient Ts:  %.6f K" % (cu(prob['fc.Fl_O:stat:T'], 'degR', 'degK'))
+    print "Ambient Rho: %.6f kg/m^3" % (cu(prob['fc.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3'))
+    print "Ambient V:   %.6f m/s" % (cu(prob['fc.Fl_O:stat:V'], 'ft/s', 'm/s'))
 
+    print ""
+    print "--- Fan Conditions ---"
+    print "Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])     
+    print "Fan Radius: %.6f m" % (np.sqrt((cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))    
+    print "Fan Area:   %.6f m^2" % (cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))
+    print "Fan Mdot:   %.6f kg/s" % (cu(prob['inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
+    print "Fan Ps:     %.6f Pa" % (cu(prob['inlet.Fl_O:stat:P'], 'psi', 'Pa')) 
+    print "Fan SPR:    %.6f Pa" % (prob['inlet.Fl_O:stat:P']/prob['fc.ambient.Ps']) 
+    print ""
+    print "--- Nozzle Plenum Conditions ---"
+    print "Nozzle Plenum Area:  %.6f m^2" % (cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
+    print "Nozzle Plenum Ps:    %.6f Pa" % (cu(prob['duct.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
+    print "Nozzle Plenum TPR    %.6f Pa" % (prob['duct.Fl_O:tot:P']/prob['fc.Fl_O:stat:P'])
+    print ""    
+    print "--- Nozzle Exit Conditions ---"
+    print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])    
+    print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
+    print "Exhaust Ps:       %.6f Pa" % (cu(prob['nozzle.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Exhaust Pt:       %.6f Pa" % (cu(prob['nozzle.Fl_O:tot:P'], 'psi', 'Pa'))
+
+    print ""
+    print "--- Force/Power Balances ---"
     print "comp pwr out: ", prob['comp.power']
     print "comp trq out: ", prob['comp.trq']
     print "net trq: ", prob['shaft.trq_net']
@@ -124,5 +135,3 @@ if __name__ == "__main__":
     print "comp.Fl_O:tot:P", prob['comp.Fl_O:tot:P']
     print "comp.Fl_O:tot:T", prob['comp.Fl_O:tot:T']
     print "comp.Fl_O:tot:h", prob['comp.Fl_O:tot:h']
-
-    exit()
