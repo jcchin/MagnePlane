@@ -50,11 +50,12 @@ if __name__ == "__main__":
     prob.root = CompressionCycle()
 
     params = (
-        ('MN', 0.6),        
+        ('MN', 0.6),
         ('alt', 30001.0, {'units':'ft'}),
-        ('inlet_MN', 0.6),        
+        ('inlet_MN', 0.6),
         ('PR_design', 1.0),
         ('W', 1.0, {'units':'lbm/s'})
+        #('PsE', 4.0, {'units':'lbm/s'})
     )
 
     prob.root.add('des_vars', IndepVarComp(params))
@@ -62,12 +63,12 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.alt', 'fc.alt')
     prob.root.connect('des_vars.W', 'fc.fs.W')
     prob.root.connect('des_vars.MN', 'fc.MN_target')
-    prob.root.connect('des_vars.inlet_MN', 'inlet.MN_target')    
+    prob.root.connect('des_vars.inlet_MN', 'inlet.MN_target')
     prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
 
     #prob.root.connect("des_vars.Ps_exhaust", "nozzle.Ps_exhaust")
 
-    prob.setup(check=False)
+    prob.setup(check=True)
 
     # Flight Conditions
     prob['des_vars.W'] = 550.
@@ -82,23 +83,25 @@ if __name__ == "__main__":
 
     # Nozzle Conditions
     prob['nozzle.Cfg'] = 0.99
-    prob['nozzle.dPqP'] = 1.0
+    prob['nozzle.dPqP'] = 0.0
 
-    #prob['nozz.Ps_exhaust'] = 14.7
+    #prob['nozzle.Ps_exhaust'] = 14.7
 
     # Shaft
     prob['shaft.Nmech'] = 15000.
+
+    prob.root.nozzle.list_connections()
 
     import time
     t = time.time()
     prob.run()
     print time.time() - t
-    prob.root.nozzle.list_connections()
+
 
     print ""
     print "--- Output ----------------------"
     print "--- Freestream Static Conditions ---"
-    print "Mach No.:    %.6f " % (prob['fc.Fl_O:stat:MN'])    
+    print "Mach No.:    %.6f " % (prob['fc.Fl_O:stat:MN'])
     print "Ambient Ps:  %.6f Pa" % (cu(prob['fc.Fl_O:stat:P'], 'psi', 'Pa'))
     print "Ambient Ts:  %.6f K" % (cu(prob['fc.Fl_O:stat:T'], 'degR', 'degK'))
     print "Ambient Rho: %.6f kg/m^3" % (cu(prob['fc.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3'))
@@ -106,23 +109,39 @@ if __name__ == "__main__":
 
     print ""
     print "--- Fan Conditions ---"
-    print "Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])     
-    print "Fan Radius: %.6f m" % (np.sqrt((cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))    
+    print "Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])
+    print "Fan Radius: %.6f m" % (np.sqrt((cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
     print "Fan Area:   %.6f m^2" % (cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Fan Mdot:   %.6f kg/s" % (cu(prob['inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
-    print "Fan Ps:     %.6f Pa" % (cu(prob['inlet.Fl_O:stat:P'], 'psi', 'Pa')) 
-    print "Fan SPR:    %.6f Pa" % (prob['inlet.Fl_O:stat:P']/prob['fc.ambient.Ps']) 
+    print "Fan Ps:     %.6f Pa" % (cu(prob['inlet.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Fan SPR:    %.6f Pa" % (prob['inlet.Fl_O:stat:P']/prob['fc.ambient.Ps'])
     print ""
     print "--- Nozzle Plenum Conditions ---"
     print "Nozzle Plenum Area:  %.6f m^2" % (cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Nozzle Plenum Ps:    %.6f Pa" % (cu(prob['duct.Fl_O:stat:P'], 'psi', 'Pa'))
     print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
     print "Nozzle Plenum TPR    %.6f Pa" % (prob['duct.Fl_O:tot:P']/prob['fc.Fl_O:stat:P'])
-    print ""    
+    print ""
     print "--- Nozzle Exit Conditions ---"
-    print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])    
+    print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
     print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Exhaust Ps:       %.6f Pa" % (cu(prob['nozzle.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Exhaust Ps:       %.6f Pa" % prob['nozzle.Fl_O:stat:P']
+    print prob['nozzle.Fl_I:tot:P']
+    print prob['nozzle.Fl_I:tot:T']
+    print prob['nozzle.Fl_I:stat:W']
+    print prob['nozzle.Fl_I:stat:V']
+    print prob['nozzle.Fl_I:stat:area']
+    print prob['nozzle.Fl_I:stat:P']
+    print prob['nozzle.Fl_I:stat:T']
+    print prob['nozzle.Fl_I:tot:n']
+    #print prob['nozzle.Fl_I:']
+    print "out"
+    print prob['nozzle.perf_calcs.sub:P']
+    print prob['nozzle.perf_calcs.sup:P']
+    print prob['fc.ambient.Ps']
+    print prob['nozzle.Fl_O:tot:P']
+    print prob['nozzle.Fl_O:tot:T']
+
     print "Exhaust Pt:       %.6f Pa" % (cu(prob['nozzle.Fl_O:tot:P'], 'psi', 'Pa'))
 
     print ""
