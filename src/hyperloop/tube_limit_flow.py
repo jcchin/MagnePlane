@@ -9,6 +9,8 @@ from openmdao.core.group import Group
 from openmdao.units.units import convert_units as cu
 from openmdao.components.param_comp import ParamComp
 from openmdao.components.constraint import ConstraintComp
+from openmdao.components.indep_var_comp import IndepVarComp
+from openmdao.solvers.scipy_gmres import ScipyGMRES
 
 from pycycle.set_total import SetTotal
 from pycycle.thermo_static import SetStaticMN, SetStaticPs
@@ -20,11 +22,11 @@ from geometry.inlet import InletGeom
 class AreaRatio(Component):
     def __init__(self):
         super(AreaRatio, self).__init__()
-        self.add_param('tube_r', 0.0, desc='inner radius of tube', units='m')
+        self.add_param('tube_r', 0.9, desc='inner radius of tube', units='m')
         self.add_param('inlet_area', 0.0, desc='area of inlet at largest point', units='m**2')
         self.add_param('gamma', 1.41, desc='ratio of specific heats')
         self.add_param('Mach', 1.0, desc='travel Mach')
-        self.add_param('Mach_bypass', 0.95, desc='Mach of air passing around pod') # used in TubeLimitFlow
+        self.add_param('Mach_bypass', 0.5, desc='Mach of air passing around pod') # used in TubeLimitFlow
 
         self.add_output('bypass_area', 0.0, desc='area between tube wall and pod', units='m**2')
         self.add_output('AR', 0.0, desc='ratio between tube area and bypass area')
@@ -65,7 +67,7 @@ class TubeAero(Component):
         self.add_param('velocity_tube', 0.0, desc='travel speed where choking occurs', units='m/s')
         self.add_param('velocity_bypass', 0.0, desc='bypass speed where choking occurs', units='m/s')
         self.add_param('bypass_area', 0.0, desc='bypass area', units='m**2')
-        self.add_param('tube_r', 0.0, desc='inner radius of tube', units='m')
+        self.add_param('tube_r', 0.9, desc='inner radius of tube', units='m')
         self.add_param('rho_tube', 0.0, desc='density in tube', units='g/cm**3')
         self.add_param('rho_bypass', 0.0, desc='density in bypass', units='g/cm**3')
 
@@ -99,7 +101,7 @@ class TubeLimitFlow(Group):
         self.connect('Mach', 'AR_comp.Mach')
         self.connect('Mach', 'Mach_con.Mach')
         self.connect('tube_struct.tube_r', 'AR_comp.tube_r')
-        self.connect('inlet.area_in', 'AR_comp.inlet_area')
+        self.connect('inlet.area_out', 'AR_comp.inlet_area')
         self.connect('Mach', 'tube_thermo.Mach')
         self.connect('tube_thermo.Pt', 'tube_total.P')
         self.connect('tube_thermo.Tt', 'tube_total.T')
@@ -120,7 +122,9 @@ class TubeLimitFlow(Group):
         self.connect('tube_total.rho', 'tube_aero.rho_tube')
         self.connect('bypass_total.rho', 'tube_aero.rho_bypass')
         self.connect('bypass_area', 'tube_aero.bypass_area')
-        self.connect('tube_struct.r_inner', 'tube_aero.tube_r')
+        self.connect('tube_struct.tube_r', 'tube_aero.tube_r')
+
+
 
 def plot_data(p, c='b'):
     '''utility function to make the Kantrowitz Limit Plot'''
@@ -133,9 +137,9 @@ def plot_data(p, c='b'):
         Machs.append(Mach)
         W_kant.append(p['comp.W_kant'])
         W_tube.append(p['comp.W_tube'])
-    print 'Area in:', p['comp.inlet.area_in']
-    fig = pylab.plot(Machs, W_tube, '-', label="%3.1f Req." % (p['comp.tube_area'] / p['comp.inlet.area_in']), lw=3, c=c)
-    pylab.plot(Machs, W_kant, '--', label="%3.1f Limit" % (p['comp.tube_area'] / p['comp.inlet.area_in']), lw=3, c=c)
+    print 'Area in:', p['comp.inlet.area_out']
+    fig = pylab.plot(Machs, W_tube, '-', label="%3.1f Req." % (p['comp.tube_area'] / p['comp.inlet.area_out']), lw=3, c=c)
+    pylab.plot(Machs, W_kant, '--', label="%3.1f Limit" % (p['comp.tube_area'] / p['comp.inlet.area_out']), lw=3, c=c)
     pylab.tick_params(axis='both', which='major', labelsize=15)
     pylab.xlabel('Pod Mach Number', fontsize=18)
     pylab.ylabel('Flow Rate (kg/sec)', fontsize=18)
@@ -147,15 +151,32 @@ if __name__ == '__main__':
     from openmdao.core.group import Group
     p = Problem(root=Group())
     comp = p.root.add('comp', TubeLimitFlow())
-    p.setup()
 
-    p['comp.tube_struct.r_inner'] = 100.0
+    params = (
+        ('P', 17., {'units':'psi'}),
+        ('T', 500.0, {'units':'degR'}),
+        ('W', 100.0, {'units':'lbm/s'}),
+        ('MN', 0.5,)
+    )
+
+    p.root.add('des_vars', IndepVarComp(params))
+    p.root.connect('des_vars.MN','comp.Mach_bypass')
+
+    p.root.ln_solver = ScipyGMRES()
+    p.root.ln_solver.options['atol'] = 1e-6
+    p.root.ln_solver.options['maxiter'] = 100
+    p.root.ln_solver.options['restart'] = 100
+
+    p.setup(check=True)
+    p.root.list_connections()
+
+    p['comp.tube_struct.tube_r'] = 100.0
     plot_data(p, c='b')
 
-    p['comp.tube_struct.r_inner'] = 150.0
+    p['comp.tube_struct.tube_r'] = 150.0
     plot_data(p, c='g')
 
-    p['comp.tube_struct.r_inner'] = 200.0
+    p['comp.tube_struct.tube_r'] = 200.0
     plot_data(p, c='r')
 
     pylab.legend(loc='best')
