@@ -10,10 +10,13 @@
 """
 from math import log, pi, sqrt, e
 
-from openmdao.core import Problem, Group, Component
-from openmdao.solvers import Newton
-from openmdao.units import convert_units as cu
-from openmdao.components import ParamComp
+from openmdao.core.group import Group, Component, IndepVarComp
+from openmdao.solvers.newton import Newton
+from openmdao.units.units import convert_units as cu
+from openmdao.solvers.scipy_gmres import ScipyGMRES
+from openmdao.api import NLGaussSeidel
+from openmdao.solvers.ln_gauss_seidel import LinearGaussSeidel
+from openmdao.solvers.ln_direct import DirectSolver
 
 from pycycle import species_data
 from pycycle.species_data import janaf
@@ -29,7 +32,9 @@ class TempBalance(Component):
         self.add_state('temp_boundary', val=322.0)
 
     def solve_nonlinear(self, params, unknowns, resids):
+        pass
 
+    def apply_nonlinear(self, params, unknowns, resids):
         resids['temp_boundary'] = params['ss_temp_residual'] #drive ss_temp_residual to 0
 
     def apply_linear(self, params, unknowns, dparams, dunknowns, dresids, mode):
@@ -50,11 +55,10 @@ class TubeWallTemp(Component):
         super(TubeWallTemp, self).__init__()
         self.fd_options['force_fd'] = True
 
-
         #--Inputs--
         #Hyperloop Parameters/Design Variables
         self.add_param('radius_outer_tube', 1.115, units='m', desc='tube outer radius') #7.3ft
-        self.add_param('length_tube', 482803, units='m', desc='Length of entire Hyperloop') #300 miles, 1584000ft
+        self.add_param('length_tube', 482803., units='m', desc='Length of entire Hyperloop') #300 miles, 1584000ft
         self.add_param('num_pods', 34, desc='Number of Pods in the Tube at a given time') #
         self.add_param('temp_boundary', 322.0, units='K', desc='Average Temperature of the tube wall') #
         self.add_param('temp_outside_ambient', 305.6, units='K', desc='Average Temperature of the outside air') #
@@ -66,7 +70,6 @@ class TubeWallTemp(Component):
         self.add_param('bearing_air_W', 34., desc='air exiting the air bearings')
         self.add_param('bearing_air_Cp', 34., desc='air exiting the air bearings')
         self.add_param('bearing_air_Tt', 34., desc='air exiting the air bearings')
-
 
         #constants
         self.add_param('solar_insolation', 1000., units='W/m**2', desc='solar irradiation at sea level on a clear day') #
@@ -110,106 +113,100 @@ class TubeWallTemp(Component):
         #Residual (for solver)
         self.add_output('ss_temp_residual', shape=1, units='K', desc='Residual of T_released - T_absorbed')
 
-    def solve_nonlinear(self, params, unknowns, resids):
+    def solve_nonlinear(self, p, u, r):
         """Calculate Various Paramters"""
 
-        unknowns['diameter_outer_tube'] = 2*params['radius_outer_tube']
+        u['diameter_outer_tube'] = 2*p['radius_outer_tube']
 
-        unknowns['bearing_q'] = cu(params['bearing_air_W'],'lbm/s','kg/s') * cu(params['bearing_air_Cp'],'Btu/(lbm*degR)','J/(kg*K)') * (cu(params['bearing_air_Tt'],'degR','degK') - params['temp_boundary'])
-        unknowns['nozzle_q'] = cu(params['nozzle_air_W'],'lbm/s','kg/s') * cu(params['nozzle_air_Cp'],'Btu/(lbm*degR)','J/(kg*K)') * (cu(params['nozzle_air_Tt'],'degR','degK') - params['temp_boundary'])
+        u['bearing_q'] = cu(p['bearing_air_W'],'lbm/s','kg/s') * cu(p['bearing_air_Cp'],'Btu/(lbm*degR)','J/(kg*K)') * (cu(p['bearing_air_Tt'],'degR','degK') - p['temp_boundary'])
+        u['nozzle_q'] = cu(p['nozzle_air_W'],'lbm/s','kg/s') * cu(p['nozzle_air_Cp'],'Btu/(lbm*degR)','J/(kg*K)') * (cu(p['nozzle_air_Tt'],'degR','degK') - p['temp_boundary'])
         #Q = mdot * cp * deltaT
-        unknowns['heat_rate_pod'] = unknowns['nozzle_q'] + unknowns['bearing_q']
+        u['heat_rate_pod'] = u['nozzle_q'] + u['bearing_q']
         #Total Q = Q * (number of pods)
-        unknowns['total_heat_rate_pods'] = unknowns['heat_rate_pod']*params['num_pods']
+        u['total_heat_rate_pods'] = u['heat_rate_pod']*p['num_pods']
 
         #Determine thermal resistance of outside via Natural Convection or forced convection
-        if(params['temp_outside_ambient'] < 400):
-            unknowns['GrDelTL3'] = 41780000000000000000*((params['temp_outside_ambient'])**(-4.639)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
+        if(p['temp_outside_ambient'] < 400):
+            u['GrDelTL3'] = 41780000000000000000*((p['temp_outside_ambient'])**(-4.639)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
         else:
-            unknowns['GrDelTL3'] = 4985000000000000000*((params['temp_outside_ambient'])**(-4.284)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
+            u['GrDelTL3'] = 4985000000000000000*((p['temp_outside_ambient'])**(-4.284)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
 
         #Prandtl Number
         #Pr = viscous diffusion rate/ thermal diffusion rate = Cp * dyanamic viscosity / thermal conductivity
         #Pr << 1 means thermal diffusivity dominates
         #Pr >> 1 means momentum diffusivity dominates
-        if (params['temp_outside_ambient'] < 400):
-            unknowns['Pr'] = 1.23*(params['temp_outside_ambient']**(-0.09685)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
+        if (p['temp_outside_ambient'] < 400):
+            u['Pr'] = 1.23*(p['temp_outside_ambient']**(-0.09685)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
         else:
-            unknowns['Pr'] = 0.59*(params['temp_outside_ambient']**(0.0239))
+            u['Pr'] = 0.59*(p['temp_outside_ambient']**(0.0239))
         #Grashof Number
         #Relationship between buoyancy and viscosity
         #Laminar = Gr < 10^8
         #Turbulent = Gr > 10^9
-        unknowns['Gr'] = unknowns['GrDelTL3']*abs(params['temp_boundary']-params['temp_outside_ambient'])*(unknowns['diameter_outer_tube']**3) #JSG: Added abs incase subtraction goes negative
+        u['Gr'] = u['GrDelTL3']*abs(p['temp_boundary']-p['temp_outside_ambient'])*(u['diameter_outer_tube']**3) #JSG: Added abs incase subtraction goes negative
         #Rayleigh Number
         #Buoyancy driven flow (natural convection)
-        unknowns['Ra'] = unknowns['Pr'] * unknowns['Gr']
+        u['Ra'] = u['Pr'] * u['Gr']
         #Nusselt Number
         #Nu = convecive heat transfer / conductive heat transfer
-        if (unknowns['Ra']<=10**12): #valid in specific flow regime
-            unknowns['Nu'] = params['Nu_multiplier']*((0.6 + 0.387*unknowns['Ra']**(1./6.)/(1 + (0.559/unknowns['Pr'])**(9./16.))**(8./27.))**2) #3rd Ed. of Introduction to Heat Transfer by Incropera and DeWitt, equations (9.33) and (9.34) on page 465
-        if(params['temp_outside_ambient'] < 400):
-            unknowns['k'] = 0.0001423*(params['temp_outside_ambient']**(0.9138)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
+        if (u['Ra']<=10**12): #valid in specific flow regime
+            u['Nu'] = p['Nu_multiplier']*((0.6 + 0.387*u['Ra']**(1./6.)/(1 + (0.559/u['Pr'])**(9./16.))**(8./27.))**2) #3rd Ed. of Introduction to Heat Transfer by Incropera and DeWitt, equations (9.33) and (9.34) on page 465
+        if(p['temp_outside_ambient'] < 400):
+            u['k'] = 0.0001423*(p['temp_outside_ambient']**(0.9138)) #SI units (https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51)
         else:
-            unknowns['k'] = 0.0002494*(params['temp_outside_ambient']**(0.8152))
+            u['k'] = 0.0002494*(p['temp_outside_ambient']**(0.8152))
         #h = k*Nu/Characteristic Length
-        unknowns['h'] = (unknowns['k'] * unknowns['Nu'])/ unknowns['diameter_outer_tube']
+        u['h'] = (u['k'] * u['Nu'])/ u['diameter_outer_tube']
         #Convection Area = Surface Area
-        unknowns['area_convection'] = pi * params['length_tube'] * unknowns['diameter_outer_tube']
+        u['area_convection'] = pi * p['length_tube'] * u['diameter_outer_tube']
         #Determine heat radiated per square meter (Q)
-        unknowns['q_per_area_nat_conv'] = unknowns['h']*(params['temp_boundary']-params['temp_outside_ambient'])
+        u['q_per_area_nat_conv'] = u['h']*(p['temp_boundary']-p['temp_outside_ambient'])
         #Determine total heat radiated over entire tube (Qtotal)
-        unknowns['total_q_nat_conv'] = unknowns['q_per_area_nat_conv'] * unknowns['area_convection']
+        u['total_q_nat_conv'] = u['q_per_area_nat_conv'] * u['area_convection']
         #Determine heat incoming via Sun radiation (Incidence Flux)
         #Sun hits an effective rectangular cross section
-        unknowns['area_viewing'] = params['length_tube'] * unknowns['diameter_outer_tube']
-        unknowns['q_per_area_solar'] = (1-params['surface_reflectance'])* params['nn_incidence_factor'] * params['solar_insolation']
-        unknowns['q_total_solar'] = unknowns['q_per_area_solar'] * unknowns['area_viewing']
+        u['area_viewing'] = p['length_tube'] * u['diameter_outer_tube']
+        u['q_per_area_solar'] = (1-p['surface_reflectance'])* p['nn_incidence_factor'] * p['solar_insolation']
+        u['q_total_solar'] = u['q_per_area_solar'] * u['area_viewing']
         #Determine heat released via radiation
         #Radiative area = surface area
-        unknowns['area_rad'] = unknowns['area_convection']
+        u['area_rad'] = u['area_convection']
         #P/A = SB*emmisitivity*(T^4 - To^4)
-        unknowns['q_rad_per_area'] = params['sb_constant']*params['emissivity_tube']*((params['temp_boundary']**4) - (params['temp_outside_ambient']**4))
+        u['q_rad_per_area'] = p['sb_constant']*p['emissivity_tube']*((p['temp_boundary']**4) - (p['temp_outside_ambient']**4))
         #P = A * (P/A)
-        unknowns['q_rad_tot'] = unknowns['area_rad'] * unknowns['q_rad_per_area']
+        u['q_rad_tot'] = u['area_rad'] * u['q_rad_per_area']
         #------------
         #Sum Up
-        unknowns['q_total_out'] = unknowns['q_rad_tot'] + unknowns['total_q_nat_conv']
-        unknowns['q_total_in'] = unknowns['q_total_solar'] + unknowns['total_heat_rate_pods']
+        u['q_total_out'] = u['q_rad_tot'] + u['total_q_nat_conv']
+        u['q_total_in'] = u['q_total_solar'] + u['total_heat_rate_pods']
 
-        unknowns['ss_temp_residual'] = (unknowns['q_total_out'] - unknowns['q_total_in'])/1e6
-
-class FlowStuff(Group):
-    """An Assembly that models a compressor"""
-
-    def __init__(self, thermo_data=species_data.janaf, elements=AIR_MIX):
-        super(FlowStuff, self).__init__()
-
-        self.add('tm', TubeWallTemp(), promotes=['radius_outer_tube'])
-        self.add('tmp_balance', TempBalance())
-
-        self.add('nozzle_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
-        self.add('bearing_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
-
-        self.connect("nozzle_air.Fl_O:tot:T","tm.nozzle_air_Tt")
-        self.connect("nozzle_air.Fl_O:tot:Cp","tm.nozzle_air_Cp")
-        self.connect("nozzle_air.Fl_O:stat:W","tm.nozzle_air_W")
-
-        self.connect("bearing_air.Fl_O:tot:T","tm.bearing_air_Tt")
-        self.connect("bearing_air.Fl_O:tot:Cp","tm.bearing_air_Cp")
-        self.connect("bearing_air.Fl_O:stat:W","tm.bearing_air_W")
-
-        self.connect('tm.ss_temp_residual','tmp_balance.ss_temp_residual')
-        self.connect('tmp_balance.temp_boundary','tm.temp_boundary')
-
+        u['ss_temp_residual'] = (u['q_total_out'] - u['q_total_in'])/1e6
+        print "u['ss_temp_residual'] ", u['ss_temp_residual']
+        print "temp boundary", p['temp_boundary']
 
 #run stand-alone component
 if __name__ == "__main__":
+    from openmdao.api import Problem
 
-    root = Group()
-    root.add('fs', FlowStuff())
+    prob = Problem()
+    prob.root = Group()
 
-    prob = Problem(root)
+    prob.root.add('tm', TubeWallTemp(), promotes=['radius_outer_tube'])
+    prob.root.add('tmp_balance', TempBalance())
+
+    prob.root.add('nozzle_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
+    prob.root.add('bearing_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
+
+    prob.root.connect("nozzle_air.Fl_O:tot:T","tm.nozzle_air_Tt")
+    prob.root.connect("nozzle_air.Fl_O:tot:Cp","tm.nozzle_air_Cp")
+    prob.root.connect("nozzle_air.Fl_O:stat:W","tm.nozzle_air_W")
+
+    prob.root.connect("bearing_air.Fl_O:tot:T","tm.bearing_air_Tt")
+    prob.root.connect("bearing_air.Fl_O:tot:Cp","tm.bearing_air_Cp")
+    prob.root.connect("bearing_air.Fl_O:stat:W","tm.bearing_air_W")
+
+    prob.root.connect('tm.ss_temp_residual','tmp_balance.ss_temp_residual')
+    prob.root.connect('tmp_balance.temp_boundary','tm.temp_boundary')
 
     prob.root.nl_solver = Newton()
     prob.root.nl_solver.options['atol'] = 1e-5
@@ -217,27 +214,46 @@ if __name__ == "__main__":
     prob.root.nl_solver.options['rtol'] = 1e-5
     prob.root.nl_solver.options['maxiter'] = 50
 
+    prob.root.ln_solver = ScipyGMRES()
+    prob.root.ln_solver.options['atol'] = 1e-6
+    prob.root.ln_solver.options['maxiter'] = 100
+    prob.root.ln_solver.options['restart'] = 100
+
     params = (
         ('P', 0.3, {'units':'psi'}),
         ('T', 1500.0, {'units':'degR'}),
         ('W', 1.0, {'units':'lbm/s'})
-        )
-    #nozzle
-    prob.root.add('des_vars', ParamComp(params))
-    #bearings
-    prob.root.add('des_vars2', ParamComp(params))
-
+    )
     dvars = (
         ('radius', 1.1125), #desc='Tube out diameter' #7.3ft
         ('length_tube', 482803.),  #desc='Length of entire Hyperloop') #300 miles, 1584000ft
         ('num_pods',34), #desc='Number of Pods in the Tube at a given time') #
         ('temp_boundary',340), #desc='Average Temperature of the tube') #
         ('temp_outside_ambient',305.6) #desc='Average Temperature of the outside air
-        )
+    )
+    #nozzle
+    prob.root.add('des_vars', IndepVarComp(params))
+    #bearings
+    prob.root.add('des_vars2', IndepVarComp(params))
+    #tube inputs
+    prob.root.add('vars', IndepVarComp(dvars))
 
-    prob.root.add('vars', ParamComp(dvars))
+    prob.root.connect('des_vars.P', 'nozzle_air.P')
+    prob.root.connect('des_vars.T', 'nozzle_air.T')
+    prob.root.connect('des_vars.W', 'nozzle_air.W')
+
+    prob.root.connect('des_vars2.P', 'bearing_air.P')
+    prob.root.connect('des_vars2.T', 'bearing_air.T')
+    prob.root.connect('des_vars2.W', 'bearing_air.W')
+
+    prob.root.connect('vars.radius','radius_outer_tube')
+    prob.root.connect('vars.length_tube','tm.length_tube')
+    prob.root.connect('vars.num_pods','tm.num_pods')
+    #prob.root.connect('vars.temp_boundary','tmp_balance.temp_boundary')
+    prob.root.connect('vars.temp_outside_ambient','tm.temp_outside_ambient')
 
     prob.setup()
+    prob.root.list_connections()
 
     prob['des_vars.T'] = 1710.0
     prob['des_vars.P'] = 0.304434211
@@ -247,23 +263,10 @@ if __name__ == "__main__":
     prob['des_vars2.P'] = 0.304434211
     prob['des_vars2.W'] = 0
 
-    prob.root.connect('des_vars.P', 'fs.nozzle_air.P')
-    prob.root.connect('des_vars.T', 'fs.nozzle_air.T')
-    prob.root.connect('des_vars.W', 'fs.nozzle_air.W')
-
-    prob.root.connect('des_vars2.P', 'fs.bearing_air.P')
-    prob.root.connect('des_vars2.T', 'fs.bearing_air.T')
-    prob.root.connect('des_vars2.W', 'fs.bearing_air.W')
-
-    prob.root.connect('vars.radius','fs.radius_outer_tube')
-    prob.root.connect('vars.length_tube','fs.length_tube')
-    prob.root.connect('vars.num_pods','fs.num_pods')
-    prob.root.connect('vars.temp_boundary','fs.temp_boundary')
-    prob.root.connect('vars.temp_outside_ambient','fs.temp_outside_ambient')
-
     prob.run()
 
-    print "temp_boundary: ", prob['root.tm.tmp_balance']
+    print "temp_boundary: ", prob['tm.temp_boundary']
+    print "temp_resid: ", prob['tm.ss_temp_residual']
 
     # print "-----Completed Tube Heat Flux Model Calculations---"
     # print ""
