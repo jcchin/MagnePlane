@@ -1,0 +1,116 @@
+// 
+// magneplane model for PyCycle Verification
+//
+
+setThermoPackage( "Janaf" );
+
+real vehicleMach = 0.71;
+real cmpMach = 0.65;
+real PsTube = 0.014359;  // 99 Pa
+real TsTube = 524.0;
+
+
+// start -> inlet --> compressor --> duct  ---> nozzle ---> end
+
+Element FlowStart start {   //tube start
+   W = 3.;
+   Pt = 0.02;
+   Tt = 550.;
+   void preexecute() { 
+      Fl_O.MN = vehicleMach;
+   }
+}
+
+Element Inlet intake { // make shift inlet
+
+   void preexecute() {
+      Fl_O.MN = cmpMach;    //acceptable compressor Mach #
+      if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
+   } 
+}
+
+Element Compressor cmp25 {
+   PRdes = 1.5;//12.47;
+   effDes = 0.90;
+
+   // in reality this must be slower but the internal duct can accel the flow
+   void preexecute() {
+      Fl_O.MN = cmpMach;
+      if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
+   } 
+
+   // N = 10000.;
+}
+
+Element Shaft shaft {
+   ShaftInputPort Sh_cmp, Sh_trb;
+   Nmech = 10000.;
+   HPX = 500; // extract motor work
+}
+
+
+Element Turbine motor {
+}
+
+Element Duct intDuct {
+
+   void preexecute() {
+      Fl_O.MN = cmpMach;
+      if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
+   } 
+
+}
+
+Element Nozzle nozz {
+   switchType = "CONIC";
+   PsExhName = "start.Fl_O.Ps"; 
+}
+
+
+Element FlowEnd endC {
+}
+
+
+
+//------------------------------------------------------------------------
+//                           Component Linkages
+//------------------------------------------------------------------------
+// tube flowpath
+linkPorts( "start.Fl_O"      , "intake.Fl_I"      , "FStube"  ) ;
+linkPorts( "intake.Fl_O"     , "cmp25.Fl_I"       , "FSdiffused" ) ;
+linkPorts( "cmp25.Fl_O"      , "intDuct.Fl_I"     , "FScompressed" ) ;
+linkPorts( "intDuct.Fl_O"    , "motor.Fl_I"        , "FSintduct" ) ;
+linkPorts( "motor.Fl_O"    , "nozz.Fl_I"        , "FSmotor" ) ;
+linkPorts( "nozz.Fl_O"    , "endC.Fl_I"        , "FSnozzle" ) ;
+//shaft
+linkPorts( "cmp25.Sh_O"      , "shaft.Sh_cmp"     , "CMPwork" ) ;
+linkPorts( "motor.Sh_O" , "shaft.Sh_trb", "MotorWrk");
+
+
+
+//------------------------------------------------------------------
+//     Run cases
+//------------------------------------------------------------------
+setOption( "switchDes", "DESIGN" );
+solver.maxJacobians = 100;
+solver.maxIterations = 100;
+
+autoSolverSetup();
+solver.removeDependent( "shaft.integrate_Nmech" );
+run();
+//page.display();
+
+
+void printStuff() {
+   cout.precision=5; cout.showpoint = TRUE;
+   cout << "pod Mach=" << endl;
+}
+
+
+void runCases() { 
+   for ( vehicleMach = 0.60; vehicleMach <= 0.91; vehicleMach +=0.02 ) {
+      run();
+      //page.display();
+      //printStuff();
+   } 
+} 
