@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     # Nozzle Conditions
     prob['nozzle.Cfg'] = 0.99
-    prob['nozzle.dPqP'] = 0.0
+    prob['nozzle.dPqP'] = 0.
 
     #prob['nozzle.Ps_exhaust'] = 14.7
 
@@ -126,21 +126,24 @@ if __name__ == "__main__":
     print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
     print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Exhaust Ps:       %.6f Pa" % prob['nozzle.Fl_O:stat:P']
-    print prob['nozzle.Fl_I:tot:P']
-    print prob['nozzle.Fl_I:tot:T']
-    print prob['nozzle.Fl_I:stat:W']
-    print prob['nozzle.Fl_I:stat:V']
-    print prob['nozzle.Fl_I:stat:area']
-    print prob['nozzle.Fl_I:stat:P']
-    print prob['nozzle.Fl_I:stat:T']
-    print prob['nozzle.Fl_I:tot:n']
+
+    print "--- Debug ---"
+    print 'nozzle.Fl_I:tot:P ', prob['nozzle.Fl_I:tot:P']
+    print 'nozzle.Fl_I:tot:T ', prob['nozzle.Fl_I:tot:T']
+    print 'nozzle.Fl_I:tot:n ', prob['nozzle.Fl_I:tot:n']
+
+    print 'nozzle.Fl_I:stat:W ', prob['nozzle.Fl_I:stat:W']
+    print 'nozzle.Fl_I:stat:V ', prob['nozzle.Fl_I:stat:V']
+    print 'nozzle.Fl_I:stat:area ', prob['nozzle.Fl_I:stat:area']
+    print 'nozzle.Fl_I:stat:P ', prob['nozzle.Fl_I:stat:P']
+    print 'nozzle.Fl_I:stat:T ', prob['nozzle.Fl_I:stat:T']
     #print prob['nozzle.Fl_I:']
     print "out"
-    print prob['nozzle.perf_calcs.sub:P']
-    print prob['nozzle.perf_calcs.sup:P']
-    print prob['fc.ambient.Ps']
-    print prob['nozzle.Fl_O:tot:P']
-    print prob['nozzle.Fl_O:tot:T']
+    print 'nozzle.perf_calcs.sub:P ', prob['nozzle.perf_calcs.sub:P']
+    print 'nozzle.perf_calcs.sup:P ', prob['nozzle.perf_calcs.sup:P']
+    print 'fc.ambient.Ps ', prob['fc.ambient.Ps']
+    print 'nozzle.Fl_O:tot:P ', prob['nozzle.Fl_O:tot:P']
+    print 'nozzle.Fl_O:tot:T ', prob['nozzle.Fl_O:tot:T']
 
     print "Exhaust Pt:       %.6f Pa" % (cu(prob['nozzle.Fl_O:tot:P'], 'psi', 'Pa'))
 
