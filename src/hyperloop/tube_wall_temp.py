@@ -184,6 +184,40 @@ class TubeWallTemp(Component):
         print "u['ss_temp_residual'] ", u['ss_temp_residual']
         print "temp boundary", p['temp_boundary']
 
+class TubeTemp(Group):
+    """An Assembly that computes SS temp"""
+
+    def __init__(self):
+        super(TubeTemp, self).__init__()
+
+        self.add('tm', TubeWallTemp(), promotes=['radius_outer_tube'])
+        self.add('tmp_balance', TempBalance())
+
+        self.add('nozzle_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
+        self.add('bearing_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
+
+        self.connect("nozzle_air.Fl_O:tot:T","tm.nozzle_air_Tt")
+        self.connect("nozzle_air.Fl_O:tot:Cp","tm.nozzle_air_Cp")
+        self.connect("nozzle_air.Fl_O:stat:W","tm.nozzle_air_W")
+
+        self.connect("bearing_air.Fl_O:tot:T","tm.bearing_air_Tt")
+        self.connect("bearing_air.Fl_O:tot:Cp","tm.bearing_air_Cp")
+        self.connect("bearing_air.Fl_O:stat:W","tm.bearing_air_W")
+
+        self.connect('tm.ss_temp_residual','tmp_balance.ss_temp_residual')
+        self.connect('tmp_balance.temp_boundary','tm.temp_boundary')
+
+        self.nl_solver = Newton()
+        self.nl_solver.options['atol'] = 1e-5
+        self.nl_solver.options['iprint'] = 1
+        self.nl_solver.options['rtol'] = 1e-5
+        self.nl_solver.options['maxiter'] = 50
+
+        self.ln_solver = ScipyGMRES()
+        self.ln_solver.options['atol'] = 1e-6
+        self.ln_solver.options['maxiter'] = 100
+        self.ln_solver.options['restart'] = 100
+
 #run stand-alone component
 if __name__ == "__main__":
     from openmdao.api import Problem
@@ -191,33 +225,7 @@ if __name__ == "__main__":
     prob = Problem()
     prob.root = Group()
 
-    prob.root.add('tm', TubeWallTemp(), promotes=['radius_outer_tube'])
-    prob.root.add('tmp_balance', TempBalance())
-
-    prob.root.add('nozzle_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
-    prob.root.add('bearing_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
-
-    prob.root.connect("nozzle_air.Fl_O:tot:T","tm.nozzle_air_Tt")
-    prob.root.connect("nozzle_air.Fl_O:tot:Cp","tm.nozzle_air_Cp")
-    prob.root.connect("nozzle_air.Fl_O:stat:W","tm.nozzle_air_W")
-
-    prob.root.connect("bearing_air.Fl_O:tot:T","tm.bearing_air_Tt")
-    prob.root.connect("bearing_air.Fl_O:tot:Cp","tm.bearing_air_Cp")
-    prob.root.connect("bearing_air.Fl_O:stat:W","tm.bearing_air_W")
-
-    prob.root.connect('tm.ss_temp_residual','tmp_balance.ss_temp_residual')
-    prob.root.connect('tmp_balance.temp_boundary','tm.temp_boundary')
-
-    prob.root.nl_solver = Newton()
-    prob.root.nl_solver.options['atol'] = 1e-5
-    prob.root.nl_solver.options['iprint'] = 1
-    prob.root.nl_solver.options['rtol'] = 1e-5
-    prob.root.nl_solver.options['maxiter'] = 50
-
-    prob.root.ln_solver = ScipyGMRES()
-    prob.root.ln_solver.options['atol'] = 1e-6
-    prob.root.ln_solver.options['maxiter'] = 100
-    prob.root.ln_solver.options['restart'] = 100
+    prob.root.add('tt',TubeTemp())
 
     params = (
         ('P', 0.3, {'units':'psi'}),
@@ -238,19 +246,19 @@ if __name__ == "__main__":
     #tube inputs
     prob.root.add('vars', IndepVarComp(dvars))
 
-    prob.root.connect('des_vars.P', 'nozzle_air.P')
-    prob.root.connect('des_vars.T', 'nozzle_air.T')
-    prob.root.connect('des_vars.W', 'nozzle_air.W')
+    prob.root.connect('des_vars.P', 'tt.nozzle_air.P')
+    prob.root.connect('des_vars.T', 'tt.nozzle_air.T')
+    prob.root.connect('des_vars.W', 'tt.nozzle_air.W')
 
-    prob.root.connect('des_vars2.P', 'bearing_air.P')
-    prob.root.connect('des_vars2.T', 'bearing_air.T')
-    prob.root.connect('des_vars2.W', 'bearing_air.W')
+    prob.root.connect('des_vars2.P', 'tt.bearing_air.P')
+    prob.root.connect('des_vars2.T', 'tt.bearing_air.T')
+    prob.root.connect('des_vars2.W', 'tt.bearing_air.W')
 
-    prob.root.connect('vars.radius','radius_outer_tube')
-    prob.root.connect('vars.length_tube','tm.length_tube')
-    prob.root.connect('vars.num_pods','tm.num_pods')
+    prob.root.connect('vars.radius','tt.radius_outer_tube')
+    prob.root.connect('vars.length_tube','tt.tm.length_tube')
+    prob.root.connect('vars.num_pods','tt.tm.num_pods')
     #prob.root.connect('vars.temp_boundary','tmp_balance.temp_boundary')
-    prob.root.connect('vars.temp_outside_ambient','tm.temp_outside_ambient')
+    prob.root.connect('vars.temp_outside_ambient','tt.tm.temp_outside_ambient')
 
     prob.setup()
     prob.root.list_connections()
@@ -265,8 +273,8 @@ if __name__ == "__main__":
 
     prob.run()
 
-    print "temp_boundary: ", prob['tm.temp_boundary']
-    print "temp_resid: ", prob['tm.ss_temp_residual']
+    print "temp_boundary: ", prob['tt.tm.temp_boundary']
+    print "temp_resid: ", prob['tt.tm.ss_temp_residual']
 
     # print "-----Completed Tube Heat Flux Model Calculations---"
     # print ""
