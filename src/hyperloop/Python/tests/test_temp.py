@@ -9,7 +9,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
-from tube_wall_temp import TubeTemp
+from Python.tube_wall_temp import TubeTemp
 #from hyperloop.tube_wall_temp import TubeWallTemp
 
 

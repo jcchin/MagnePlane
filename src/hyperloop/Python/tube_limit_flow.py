@@ -12,6 +12,11 @@ from openmdao.components.constraint import ConstraintComp
 from openmdao.components.indep_var_comp import IndepVarComp
 from openmdao.solvers.scipy_gmres import ScipyGMRES
 
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
+
 from pycycle.set_total import SetTotal
 from pycycle.thermo_static import SetStaticMN, SetStaticPs
 from pycycle.constants import AIR_MIX
