@@ -2,6 +2,12 @@
 
 "It's more of a plane without wings, than a train without wheels"
 
+Expanding upon previous work
+
+https://github.com/jcchin/hyperloop/tree/scitech
+
+https://github.com/narwhaltribe/Hyperloop
+
 Apache V2 License
 
 ========
