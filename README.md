@@ -11,3 +11,16 @@ Dev forks can be found here:
 [Chris Heath](https://github.com/cmheath/MagnePlane)
 
 [Jeff Chin](https://github.com/jcchin/MagnePlane)
+
+
+========
+### File Structure
+
+AFLR3 - 
+ESP -
+Fun3D - 
+Pointwise - 
+geometry -
+Python - 
+tests - 
+NPSS -
