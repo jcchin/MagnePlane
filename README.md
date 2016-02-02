@@ -16,11 +16,11 @@ Dev forks can be found here:
 ========
 ### File Structure
 
-AFLR3 - 
-ESP -
-Fun3D - 
-Pointwise - 
-geometry -
-Python - 
-tests - 
-NPSS -
+- AFLR3 - 
+- ESP -
+- Fun3D - 
+- Pointwise - 
+- Geometry -
+- Python - 
+- Tests - 
+- NPSS -
