@@ -106,8 +106,8 @@ if __name__ == "__main__":
     print "Ambient Ts:  %.6f K" % (cu(prob['fc.Fl_O:stat:T'], 'degR', 'degK'))
     print "Ambient Rho: %.6f kg/m^3" % (cu(prob['fc.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3'))
     print "Ambient V:   %.6f m/s" % (cu(prob['fc.Fl_O:stat:V'], 'ft/s', 'm/s'))
-
     print ""
+
     print "--- Fan Conditions ---"
     print "Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])
     print "Fan Radius: %.6f m" % (np.sqrt((cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
@@ -116,12 +116,14 @@ if __name__ == "__main__":
     print "Fan Ps:     %.6f Pa" % (cu(prob['inlet.Fl_O:stat:P'], 'psi', 'Pa'))
     print "Fan SPR:    %.6f Pa" % (prob['inlet.Fl_O:stat:P']/prob['fc.ambient.Ps'])
     print ""
+
     print "--- Nozzle Plenum Conditions ---"
     print "Nozzle Plenum Area:  %.6f m^2" % (cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Nozzle Plenum Ps:    %.6f Pa" % (cu(prob['duct.Fl_O:stat:P'], 'psi', 'Pa'))
     print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
     print "Nozzle Plenum TPR    %.6f Pa" % (prob['duct.Fl_O:tot:P']/prob['fc.Fl_O:stat:P'])
     print ""
+    
     print "--- Nozzle Exit Conditions ---"
     print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
     print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))

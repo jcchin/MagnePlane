@@ -1,0 +1,117 @@
+# --- Fuselage w/Super-Ellipse X-Sections ---
+
+interface x_fuse     in  0
+interface z_fuse     in  0
+interface w_fuse     in  0
+interface hn_fuse    in  0
+interface hs_fuse    in  0
+interface nn_fuse    in  0
+interface ns_fuse    in  0
+interface fwdl_fuse  in  0
+interface fwdc_fuse  in  0
+interface aftl_fuse  in  0
+interface aftc_fuse  in  0
+
+set fuse_len (x_fuse[x_fuse.size]-x_fuse[1])
+set fwd_fuse fuse_len*fwdl_fuse
+
+mark
+  set i 1
+  set x x_fuse[i]
+  set z z_fuse[i]
+
+  set xx 0.5*(x/fuse_len)/fwdl_fuse
+
+  patbeg foo (ifpos(fwd_fuse-x,1,0))
+    set z (z-(fuse_len*(fwdc_fuse-fwdc_fuse*4.0*xx*(1-xx))))
+  patend
+
+  skbeg x 0 z
+  skend
+
+  set x x_fuse[(i+1)]
+  set z z_fuse[(i+1)]
+
+  set xx 0.5*(x/fuse_len)/fwdl_fuse
+
+  patbeg foo (ifpos(fwd_fuse-x,1,0))
+    set z (z-(fuse_len*(fwdc_fuse-fwdc_fuse*4.0*xx*(1-xx))))
+  patend
+
+  udparg supell  rx  w_fuse[(i+1)]   ry_s hs_fuse[(i+1)]  ry_n hn_fuse[(i+1)]
+  udprim supell n_n nn_fuse[(i+1)]    n_s ns_fuse[(i+1)]
+  rotatey 90 0 0
+  rotatex 90 0 0      
+  translate  x 0 z
+
+#blend
+rule
+
+
+
+mark
+  set i 2
+  set x x_fuse[i]
+  set z z_fuse[i]
+
+  patbeg i x_fuse.size-2
+    set x x_fuse[(i+1)]
+    set z z_fuse[(i+1)]
+
+    set xx 0.5*(x/fuse_len)/fwdl_fuse
+
+    patbeg foo (ifpos(fwd_fuse-x,1,0))
+      set z (z-(fuse_len*(fwdc_fuse-fwdc_fuse*4.0*xx*(1-xx))))
+    patend
+
+    udparg supell  rx  w_fuse[(i+1)]   ry_s hs_fuse[(i+1)]  ry_n hn_fuse[(i+1)]
+    udprim supell n_n nn_fuse[(i+1)]    n_s ns_fuse[(i+1)]
+    rotatey 90 0 0
+    rotatex 90 0 0      
+    translate  x 0 z
+  patend
+blend
+join
+
+udprim box dx 0 dy 10 dz 10
+translate x_fuse[8] 0 z_fuse[2]
+subtract
+
+
+
+mark
+  set i x_fuse.size-1
+  set x x_fuse[i]
+  set z z_fuse[i]
+    
+  set xx 0.5*(x/fuse_len)/fwdl_fuse
+
+  patbeg foo (ifpos(fwd_fuse-x,1,0))
+    set z (z-(fuse_len*(fwdc_fuse-fwdc_fuse*4.0*xx*(1-xx))))
+  patend
+
+  udparg supell  rx  w_fuse[i]   ry_s hs_fuse[i]  ry_n hn_fuse[i]
+  udprim supell n_n nn_fuse[i]    n_s ns_fuse[i]
+  rotatey 90 0 0
+  rotatex 90 0 0
+  translate  x 0 z
+
+  set i x_fuse.size
+  set x x_fuse[i]
+  set z z_fuse[i]
+
+  set xx 0.5*(x/fuse_len)/fwdl_fuse
+
+  patbeg foo (ifpos(fwd_fuse-x,1,0))
+    set z (z-(fuse_len*(fwdc_fuse-fwdc_fuse*4.0*xx*(1-xx))))
+  patend
+
+  skbeg x 0 z
+  skend
+
+rule
+join
+attribute fuselageOML 0
+attribute .qParams $$off
+dump fuselage.egads
+end

@@ -1,0 +1,67 @@
+#  PBS script file
+#
+#  Submit this script using the command:
+#
+#       qsub qscript
+#
+#  (RTJones or Pleiades
+#   each Haswell node has 24 processors
+#   and you should use select=2:ncpus=24
+#   for example if you are using 48 processors)
+#
+#  Also, it is better to use  mpiexec
+#  versus mpirun -np $NPROC  since mpiexec
+#  also runs some other stuff besides mpirun
+#------------------------------------------------
+
+#PBS -j oe
+#PBS -m bea
+#PBS -S /bin/csh
+#PBS -N Hyperloop_Flow
+#PBS -r n
+#PBS -W group_list=a1476
+#PBS -q devel
+#PBS -l walltime=2:00:00
+#PBS -l select=25:ncpus=24:mpiprocs=24:model=has
+#PBS -m n
+
+module purge
+module load comp-intel/2015.0.090
+module load mpi-sgi/mpt
+
+source /usr/share/modules/init/csh
+
+setenv MPI_MEMMAP_OFF 1
+setenv MPI_USE_XPMEM 0
+setenv MPI_XPMEM_ENABLED 0
+setenv MPI_IB_RAILS 2
+setenv MPI_BUFS_PER_PROC 128
+
+setenv F_UFMTENDIAN "big"
+limit stacksize unlimited
+
+# run case
+
+echo " "
+echo " =========================="
+echo " run fun3d parallel "
+echo " "
+
+set i = 0
+
+while ( $i < 1 )
+    cp $i.nml fun3d.nml
+    (several_tries mpiexec nodet_mpi --animation_freq -1 --freeze_limiter 2000 >>screen.output) >>& error.output
+    mv Hyperloop_tec_boundary.plt Hyperloop_tec_boundary.$i.plt
+    mv Hyperloop_AIP.plt Hyperloop_AIP.$i.plt
+    @ i++
+end
+
+
+echo " "
+echo "finished run"
+echo " "
+echo " =========================="
+echo " "
+echo " END OF BATCH FILE commands"
+echo " "

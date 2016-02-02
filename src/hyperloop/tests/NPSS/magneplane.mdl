@@ -4,25 +4,30 @@
 
 setThermoPackage( "Janaf" );
 
-real vehicleMach = 0.71;
-real cmpMach = 0.65;
-real PsTube = 0.014359;  // 99 Pa
-real TsTube = 524.0;
-
+real vehicleMach = 0.6;
+real cmpMach = 0.6;
+real PsTube = 4.364;  // 30,000 ft, std alt pressure
+real TsTube = 524.0;  // 291 K
+real podRadius = 3.5; // ft
 
 // start -> inlet --> compressor --> duct  ---> nozzle ---> end
 
 Element FlowStart start {   //tube start
-   W = 3.;
-   Pt = PsTube * ( 1 + 0.2*vehicleMach**2 )**3.5; // Modified by Berton
-   Tt = TsTube * ( 1 + 0.2*vehicleMach**2 );      // Modified by Berton
+   W = 1.0;
+   Pt = PsTube * ( 1 + 0.2*vehicleMach**2 )**3.5; // Pa
+   Tt = TsTube * ( 1 + 0.2*vehicleMach**2 );      // Pa
+   
    void preexecute() {
       Fl_O.MN = vehicleMach;
+   }
+   void postexecute() {
+      Fl_O.W = Fl_O.V*Fl_O.rhos*PI*podRadius**2;
    }
 }
 
 Element Inlet intake { // make shift inlet
-   PqP_in = 1; // Recovery added by Berton (you may want to reduce this to 0.99 or so)
+   PqP_in = 0.99; // Recovery added by Berton (you may want to reduce this to 0.99 or so)
+   
    void preexecute() {
       Fl_O.MN = cmpMach;    //acceptable compressor Mach #
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
@@ -30,7 +35,7 @@ Element Inlet intake { // make shift inlet
 }
 
 Element Compressor cmp25 {
-   PRdes = 1.5;//12.47;
+   PRdes = 1.5;
    effDes = 0.90;
 
    // in reality this must be slower but the internal duct can accel the flow
@@ -66,8 +71,6 @@ Element Nozzle nozz {
 Element FlowEnd endC {
 }
 
-
-
 //------------------------------------------------------------------------
 //                           Component Linkages
 //------------------------------------------------------------------------
@@ -76,14 +79,13 @@ linkPorts( "start.Fl_O"      , "intake.Fl_I"      , "FStube"  ) ;
 linkPorts( "intake.Fl_O"     , "cmp25.Fl_I"       , "FSdiffused" ) ;
 linkPorts( "cmp25.Fl_O"      , "intDuct.Fl_I"     , "FScompressed" ) ;
 linkPorts( "intDuct.Fl_O"    , "nozz.Fl_I"        , "FSintduct" ) ;
-linkPorts( "nozz.Fl_O"    , "endC.Fl_I"        , "FSnozzle" ) ;
+linkPorts( "nozz.Fl_O"       , "endC.Fl_I"        , "FSnozzle" ) ;
+
 //shaft
 linkPorts( "cmp25.Sh_O"      , "shaft.Sh_cmp"     , "CMPwork" ) ;
 
-
-
 //------------------------------------------------------------------
-//     Run cases
+//     Run Cases
 //------------------------------------------------------------------
 setOption( "switchDes", "DESIGN" );
 solver.maxJacobians = 100;
@@ -95,19 +97,28 @@ run();
 //page.display();
 
 void printStuff() {
-   cout.precision=5; cout.showpoint = TRUE;
-   cout << "Pod Mach=                  " << vehicleMach << endl;
-   cout << "Tube static pressure=      " << PsTube << " psia" << endl;
-   cout << "Tube static temperature=   " << TsTube << " R" << endl;
-   cout << "Compressor power required= " << -cmp25.pwr << " hp" << endl;
-   cout << "Nozzle gross thrust=       " << nozz.Fg << " lb" << endl;
-   cout << "Inlet ram drag=            " << intake.Fram << " lb" << endl;
-   cout << "Pod net thrust=            " << nozz.Fg - intake.Fram << " lb" << endl << endl;
+   cout.precision=5;
+   cout.showpoint = TRUE;
+   cout << "Tube Ps=                  " << PsTube*6894.76 << " Pa" << endl;
+   cout << "Tube Ts=                  " << TsTube*0.555556 << " K" << endl;
+   cout << "Tube Ds=                  " << start.Fl_O.rhos*16.0185 << " kg/m^3" << endl; 
+   cout << "Tube Viscocity=           " << start.Fl_O.mus*1.48816394 << " kg/(m-s)" << endl;    
+   cout << "Reynolds No.=             " << (start.Fl_O.rhos*start.Fl_O.V)/(start.Fl_O.mus)/0.3048 << " -/grid unit" << endl;                 
+   cout << "Pod Mach No.=             " << vehicleMach << endl;
+   cout << "Pod Velocity=             " << start.Fl_O.V*0.3048 << " m/s" << endl;   
+   cout << "Compressor Mach No.=      " << start.Fl_O.MN << " kg/s" << endl;   
+   cout << "Compressor MFR=           " << start.Fl_O.W*0.453592 << " kg/s" << endl;
+   cout << "Compressor SPR=           " << start.Fl_O.Ps/PsTube << " kg/s" << endl;    
+   cout << "Compressor Power Reqd=    " << -cmp25.pwr << " hp" << endl;
+   cout << "Nozzle Plenum TPR=        " << intDuct.Fl_O.Pt/PsTube << " kg/s" << endl; 
+   cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << " kg/s" << endl;      
+   cout << "Nozzle Gross Thrust=      " << nozz.Fg << " lb" << endl;
+   cout << "Inlet Ram Drag=           " << intake.Fram << " lb" << endl;
+   cout << "Pod Net Thrust=           " << nozz.Fg - intake.Fram << " lb" << endl << endl;
 }
 
-
 void runCases() {
-   for ( vehicleMach = 0.60; vehicleMach <= 0.91; vehicleMach +=0.02 ) {
+   for ( vehicleMach = 0.60; vehicleMach <= 0.68; vehicleMach +=0.02 ) {
       run();
       //page.display();
       printStuff();

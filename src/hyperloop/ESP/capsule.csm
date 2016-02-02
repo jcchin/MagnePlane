@@ -1,0 +1,537 @@
+# --------------------------------------
+#    NASA Low-Boom Flight Demonstrator 
+#    Written By: Christopher Heath
+#    NASA Glenn Research Center
+#    Version Date: 1/17/16
+# --------------------------------------
+# ----------------------
+# --- Build Switches ---
+# ----------------------
+despmtr  remakeFuselage    0
+despmtr  remakeInlet       0
+despmtr  remakeEngine      0
+despmtr  remakeVtail       0
+despmtr  remakeHtail       0
+despmtr  remakeSpinner     0
+despmtr  remakeWing        0
+despmtr  remakePod         0
+despmtr  remakeNearfield   1
+despmtr  subtractNearfield 1
+despmtr  unionAll          1
+
+# --- Conversion from ft to m ---
+set scale_factor 0.3048 
+
+dimension GridParams 1 3 0
+set       GridParams "1.0; 0.25; 15.0;"
+
+set zEF   0.685  # Initial vertical position of engine face
+set Lspin 3.5   # Spinner length
+
+# -------------------------------
+# --- Component Design Params ---
+# -------------------------------
+# --- Fuselage ---
+dimension x_fuse      27   1    1
+dimension z_fuse      27   1    1
+dimension w_fuse      27   1    1
+dimension hn_fuse     27   1    1
+dimension hs_fuse     27   1    1
+dimension nn_fuse     27   1    1
+dimension ns_fuse     27   1    1
+
+despmtr fwdl_fuse   0.5500
+despmtr fwdc_fuse   0.0250
+despmtr aftl_fuse   0.0000
+despmtr aftc_fuse   0.0000
+
+despmtr   x_fuse      "  0.00;  0.25;  5.00; 10.00; 15.00; 20.00; 25.00; 30.00; 35.00; 38.00;  40.00;  45.00;  50.00; 55.0;\
+                        63.00; 68.40; 72.66; 77.22; 81.48; 84.43; 87.91; 91.63; 95.12; 97.68; 101.34; 103.63; 105.91"
+
+despmtr   z_fuse      " 2.65; 2.65; 2.6500; 2.6500; 2.6500; 2.6500; 2.6500; 2.6500; 2.6500; 2.6500; 2.6500; 2.6500; 2.70; 2.75;\ 
+                        3.10; 3.10; 3.4646; 3.4428; 3.5793; 3.6333; 3.7577; 3.8770; 3.9209; 3.9728; 4.1064; 4.1229; 4.27"
+
+despmtr   w_fuse      " 0.0000; 0.0875; 0.2654; 0.4310; 0.5580; 0.6999; 0.8491; 1.0147; 1.1812; 1.3207; 1.4315; 1.3457; 1.4309; 1.617;\ 
+                        1.8750; 1.9114; 1.4914; 1.3018; 1.1648; 1.1994; 1.1996; 1.2771; 1.4331; 1.5243; 1.1955; 0.8650; 0.0000"
+
+despmtr   hn_fuse     " 0.0000; 0.0875; 0.2654; 0.4500; 0.6750; 0.9000; 1.1523; 1.3758; 1.6046; 1.7000; 1.7178; 1.9535; 2.0765;  2.0950;\ 
+                        2.5223; 2.5000; 1.6580; 1.5000; 1.4061; 1.3284; 1.1151; 1.0591; 0.8741; 0.7277; 0.4563; 0.2284; 0.0000"
+
+despmtr   hs_fuse     " 0.0000; 0.0875; 0.2654; 0.4500; 0.6750; 0.9000; 1.1523; 1.3758; 1.6046; 1.7000; 1.7178; 1.9535; 2.0765; 2.0950;\  
+                        2.5223; 2.5000; 2.7324; 2.6200; 2.7916; 2.8247; 2.4655; 2.2162; 2.0331; 1.6147; 0.8098; 0.1150; 0.0000"
+
+despmtr   nn_fuse     " 0.0; 2.0; 2.0; 2.0;  2.0; 2.0; 2.0; 2.0; 2.0; 2.0; 2.0; 2.0; 2.0; 2.0;\
+                        2.0; 2.0; 2.0; 2.2; 2.35; 2.7; 2.7; 2.8; 2.9; 2.9; 2.9; 2.9; 0.0"
+
+despmtr   ns_fuse     " 0.0; 2.0; 2.0; 2.0; 2.0; 2.0;  2.0; 2.0; 2.0; 2.0; 2.0; 2.0; 2.0; 2.0;\
+                        2.0; 2.0; 2.0; 1.9; 1.8; 1.7; 1.75; 1.7; 1.7; 1.7; 1.7; 1.7; 0.0"
+
+# --- Engine Cowl ---
+dimension xloc_eng    4   1   1
+dimension yloc_eng    4   1   1
+dimension zloc_eng    4   1   1
+dimension zn_eng      4   1   1
+dimension zs_eng      4   1   1
+dimension ns_eng      4   1   1
+
+despmtr   xloc_eng   " -2.0;    2.0;   5.0;   6.25"
+despmtr   yloc_eng   "  0.0;    0.0;   0.0;    0.0"
+despmtr   zloc_eng   "  0.0;    0.0;   0.0;    0.0" 
+despmtr   zn_eng     " 1.05; 1.3475;  1.40;  1.385" 
+despmtr   zs_eng     " 1.35;  1.325; 1.415;    1.4"
+despmtr   ns_eng     "  2.0;    2.5;   2.5;    2.5"
+despmtr   x_eng     -2.225
+despmtr   y_eng      0.00
+despmtr   z_eng     -0.262161
+
+despmtr   x_cutoff   3.75
+despmtr   t_cutoff   -2.0
+
+# --- Nozzle Cowl ---
+dimension xloc_nozl    4   1   1
+dimension yloc_nozl    4   1   1 
+dimension zloc_nozl    4   1   1
+dimension a_nozl       4   1   1
+dimension zn_nozl      4   1   1
+dimension zs_nozl      4   1   1
+dimension ns_nozl      4   1   1
+#dimension z_nozl       4   1   1
+
+despmtr   xloc_nozl   "   6.5;    8.0;    9.5;      11.5"
+despmtr   yloc_nozl   "   0.0;    0.0;    0.0;       0.0"
+despmtr   zloc_nozl   "   0.0;    0.0;    0.0;       0.0"
+#despmtr   a_nozl      " 4.198;  4.198;  1.623;     3.917"
+
+despmtr   a_nozl      " 4.197763889;  4.197763889;  1.756131944;     4.442340278"
+
+despmtr   zn_nozl     " 1.385;  1.350;    1.3;  1.173987"
+despmtr   zs_nozl     "   1.4;  1.350;    1.3;  1.173987"
+despmtr   ns_nozl     "   2.5;   2.25;    2.0;       2.0"
+#despmtr   z_nozl      " 1.375;  1.350;    1.3;  1.173987"
+
+# --- Nozzle Plug ---
+dimension x_plug      6   1    1
+dimension r_plug      6   1    1
+
+despmtr   x_plug      " 6.0;    8.0;  9.5;   11.5;   12.5; 14.0"
+despmtr   r_plug      "0.225; 0.225; 0.75; 0.3625; 0.2375;  0.0"
+
+# --- Pod ---
+dimension x_pod       7   1    1
+dimension r_pod       7   1    1
+
+despmtr   x_pod      "0.0; 1.0000; 2.5000; 4.0000; 5.5000; 7.0000; 8.0"
+despmtr   r_pod      "0.0; 0.2554; 0.1750; 0.2329; 0.3763; 0.3493; 0.0"
+despmtr   xloc_pod   103.5
+despmtr   yloc_pod     0.0
+despmtr   zloc_pod    16.8
+
+# --- Right Wing ---
+dimension toc_wing    5  1  1
+dimension chord_wing  5  1  1
+dimension twist_wing  5  1  1
+dimension cmax_wing   5  1  1
+dimension xmaxc_wing  5  1  1
+dimension xloc_wing   5  1  1
+dimension yloc_wing   5  1  1
+dimension zloc_wing   5  1  1
+
+dimension C1    1  2  1
+dimension TE1   1  2  1
+dimension UA1   1  5  1
+dimension LA1   1  5  1
+
+dimension C2    1  2  1
+dimension TE2   1  2  1
+dimension UA2   1  5  1
+dimension LA2   1  5  1
+
+despmtr   toc_wing    "  0.0000;  0.0000;  0.0246;  0.0300;  0.0354"
+despmtr   chord_wing  " 59.0000; 51.2536; 27.4989; 13.2223;  5.0910"
+despmtr   twist_wing  "  0.0000;  0.1583;  0.6611; -1.9817; -3.1233"
+despmtr   cmax_wing   "  0.0000;  0.0000; -0.0010; -0.0084;  0.0443"
+despmtr   xmaxc_wing  "  0.0000;  0.0000;  0.6094;  0.2500;  0.6858"
+despmtr   xloc_wing   "  2.1794;  8.7704;  32.034; 47.9512; 62.8389"
+despmtr   yloc_wing   "  0.8332;  2.0593;  4.1888;  7.9970; 15.2629"
+despmtr   zloc_wing   "  0.0344;  0.1780;  0.7740;  0.9850;  1.2640"
+
+despmtr   angle_wing     0.0669
+despmtr   x_wing        33.7928
+despmtr   y_wing         0.0000
+#despmtr   z_wing         2.6520
+despmtr   z_wing         2.4798
+
+despmtr   C1    "0.5; 1.0;"
+despmtr   TE1   "0.0; 0.0;"
+despmtr   UA1   "0.19469E-1; -0.7623E-3; -0.4971E-2; -0.2500E-2; -0.2500E-2"
+despmtr   LA1   "-0.5065E-1; -0.2047E-1; -0.8993E-1; -0.1888E00;  0.4893E-2"
+
+despmtr   C2    "0.5; 1.0;"
+despmtr   TE2   "0.0; 0.0;"
+despmtr   UA2   "0.4191E-2;  0.3919E-1;  0.2378E-1;  0.1500E-1;  0.5000E-2"
+despmtr   LA2   "-0.1138E-1; -0.7618E-1; 0.2802E-1; -0.6292E-1; -0.4624E-1"
+
+# --- Right Htail ---
+dimension toc_htail    3  1  1
+dimension chord_htail  3  1  1
+dimension twist_htail  3  1  1
+dimension cmax_htail   3  1  1
+dimension xmaxc_htail  3  1  1
+dimension xloc_htail   3  1  1
+dimension yloc_htail   3  1  1
+dimension zloc_htail   3  1  1
+
+despmtr   toc_htail    "     0.0400;     0.0450;    0.0500"
+despmtr   chord_htail  "    11.0000;    7.30000;    3.6000"
+despmtr   twist_htail  "     0.0000;  0.4243E-1;    0.6610"
+despmtr   cmax_htail   " -0.2417E-1;  0.1660E-1; 0.9000E-2"
+despmtr   xmaxc_htail  "     0.4065;     0.4797;    0.6529"
+despmtr   xloc_htail   "     0.0000;     5.9300;   11.8600"
+despmtr   yloc_htail   "     0.0000;     4.0000;    8.0000"
+despmtr   zloc_htail   "     0.0000;     0.0600;    0.1196"
+despmtr   angle_htail        0.5941
+despmtr   x_htail           96.9750           
+despmtr   y_htail            0.0000
+despmtr   z_htail           10.4747
+
+# --- Vtail ---
+dimension toc_vtail   4  1  1
+dimension chord_vtail 4  1  1
+dimension xloc_vtail  4  1  1
+dimension yloc_vtail  4  1  1
+dimension zloc_vtail  4  1  1
+
+despmtr   toc_vtail   "  0.0400;   0.0400;    0.04;    0.035"
+despmtr   chord_vtail " 15.5000;  14.5000;    11.5;     5.0"
+despmtr   xloc_vtail  " -0.5000;   1.0000;    4.50;   13.42"
+despmtr   yloc_vtail  "  0.0000;   0.0000;     0.0;     0.0"
+despmtr   zloc_vtail  "  -2.865;   0.0000;  1.7636;     9.7"
+despmtr   x_vtail       90.5460
+despmtr   y_vtail        0.0000
+despmtr   z_vtail        7.08
+
+# ------------------------
+# --- Build Components ---
+# ------------------------
+# --- Tail Pod ---
+patbeg foo remakePod
+  mark
+    skbeg x_pod[1] 0.0  0.0
+    skend
+
+    patbeg i x_pod.size-2
+      udparg supell  rx  r_pod[(i+1)]  ry  r_pod[(i+1)]
+      udprim supell
+      rotatey 90 0 0
+      translate  x_pod[(i+1)]  0.0  0.0
+    patend
+
+    skbeg x_pod[x_pod.size] 0.0  0.0
+    skend
+  blend
+  translate xloc_pod  yloc_pod  zloc_pod
+  attribute pod 0
+  dump pod.egads
+  store pod
+patend
+
+# --- Create VTtail ---
+patbeg foo remakeVtail
+  mark
+    patbeg i toc_vtail.size
+      # NACA 65A
+      udparg naca456 thkcode $65A
+      udparg naca456 toc     toc_vtail[i]
+      udparg naca456 camcode $6M
+      udparg naca456 cl      0.0
+      udparg naca456 a       0.0
+      udprim naca456
+      box -1 -1 -1 1.95 2 2
+      intersect
+      scale  chord_vtail[i] 
+      translate xloc_vtail[i] yloc_vtail[i] zloc_vtail[i]
+    patend
+  rule 1
+  dump vtail.egads
+  store vtail
+patend
+
+# --- Create Fuselage ---
+patbeg foo remakeFuselage
+  udparg $/fuselage  x_fuse     x_fuse
+  udparg $/fuselage  z_fuse     z_fuse
+  udparg $/fuselage  w_fuse     w_fuse
+  udparg $/fuselage  hn_fuse    hn_fuse
+  udparg $/fuselage  hs_fuse    hs_fuse
+  udparg $/fuselage  nn_fuse    nn_fuse
+  udparg $/fuselage  ns_fuse    ns_fuse
+  udparg $/fuselage  fwdl_fuse  fwdl_fuse
+  udparg $/fuselage  fwdc_fuse  fwdc_fuse
+  udparg $/fuselage  aftl_fuse  aftl_fuse
+  udparg $/fuselage  aftc_fuse  aftc_fuse
+  udprim $/fuselage
+  store fuselage
+patend
+
+# --- Create Right Wing ---
+patbeg foo remakeWing
+  udparg $/wing   toc_wing    toc_wing
+  udparg $/wing   chord_wing  chord_wing 
+  udparg $/wing   twist_wing  twist_wing  
+  udparg $/wing   cmax_wing   cmax_wing
+  udparg $/wing   xmaxc_wing  xmaxc_wing
+  udparg $/wing   xloc_wing   xloc_wing 
+  udparg $/wing   yloc_wing   yloc_wing 
+  udparg $/wing   zloc_wing   zloc_wing 
+  udparg $/wing   angle_wing  angle_wing
+  udparg $/wing   x_wing      x_wing  
+  udparg $/wing   y_wing      y_wing  
+  udparg $/wing   z_wing      z_wing 
+
+  udparg $/wing   C1          C1   
+  udparg $/wing   TE1         TE1    
+  udparg $/wing   UA1         UA1 
+  udparg $/wing   LA1         LA1 
+
+  udparg $/wing   C2          C2
+  udparg $/wing   TE2         TE2 
+  udparg $/wing   UA2         UA2  
+  udparg $/wing   LA2         LA2   
+  udprim $/wing
+  store wing
+patend
+
+# --- Create Engine Spinner ---
+patbeg foo remakeSpinner
+
+    import SUPIN.egads 2
+    rotatex -90 0 0
+    translate -@xmax 0 zEF
+    rotatex -90 0 0    
+    store spinner
+  mark
+    restore spinner
+    extract   -6
+    restore spinner
+    extract   -3
+  combine
+
+  extrude Lspin 0 0
+  restore spinner
+  union
+  dump spinner.egads
+  store spinner
+patend
+
+# --- Create Right Horizontal Tail ---
+patbeg foo remakeHtail
+  mark
+    patbeg i toc_htail.size
+      udparg naca456 thkcode $65A
+      udparg naca456 toc     toc_htail[i]
+      udparg naca456 camcode $6M
+      udparg naca456 cmax  cmax_htail[i]
+      udparg naca456 xmaxc xmaxc_htail[i]
+      udprim naca456
+      rotatex   90 0 0    
+      rotatey   twist_htail[i]   0         0
+      scale     chord_htail[i]
+      translate xloc_htail[i] yloc_htail[i] zloc_htail[i]
+    patend
+  blend
+
+  rotatey    angle_htail      0          0
+  translate      x_htail      y_htail    z_htail
+  store htail
+  restore htail
+  restore htail
+  mirror 0 1 0 0
+  join
+  attribute hTail 0
+  dump htail.egads
+  store htail
+patend
+
+# --- Create Acoustic Tail Pod ---
+patbeg foo remakePod
+  mark
+    skbeg x_pod[1] 0.0  0.0
+    skend
+
+    patbeg i x_pod.size-2
+      udparg supell  rx  r_pod[(i+1)]  ry  r_pod[(i+1)]
+      udprim supell
+      rotatey 90 0 0
+      translate  x_pod[(i+1)]  0.0  0.0
+    patend
+
+    skbeg x_pod[x_pod.size] 0.0  0.0
+    skend
+  blend
+  translate xloc_pod  yloc_pod  zloc_pod
+  attribute pod 0
+  dump pod.egads  
+  store pod
+patend
+
+# --- Create Inlet/Engine/Nozzle ---
+patbeg foo remakeEngine
+  udparg  $/engine   xloc_eng      xloc_eng  
+  udparg  $/engine   yloc_eng      yloc_eng  
+  udparg  $/engine   zloc_eng      zloc_eng   
+  udparg  $/engine   zn_eng        zn_eng   
+  udparg  $/engine   zs_eng        zs_eng  
+  udparg  $/engine   ns_eng        ns_eng  
+  udparg  $/engine   x_eng         x_eng  
+  udparg  $/engine   y_eng         y_eng  
+  udparg  $/engine   z_eng         z_eng  
+  udparg  $/engine   x_cutoff      x_cutoff  
+  udparg  $/engine   t_cutoff      t_cutoff 
+  udparg  $/engine   zEF           zEF
+  udparg  $/engine   xloc_nozl     xloc_nozl
+  udparg  $/engine   yloc_nozl     yloc_nozl 
+  udparg  $/engine   zloc_nozl     zloc_nozl 
+  udparg  $/engine   a_nozl        a_nozl 
+  udparg  $/engine   zn_nozl       zn_nozl 
+  udparg  $/engine   zs_nozl       zs_nozl 
+  udparg  $/engine   ns_nozl       ns_nozl    
+  udparg  $/engine   x_plug        x_plug
+  udparg  $/engine   r_plug        r_plug 
+  udparg  $/engine   remakeInlet   remakeInlet
+  udparg  $/engine   remakeVtail   remakeVtail
+  udparg  $/engine   remakeSpinner remakeSpinner
+  udprim  $/engine
+  store engine
+patend 
+
+# --- Create Near-field ---
+set Rnearfield 20
+set x1 x_fuse[1]-20
+set x2 x_fuse[x_fuse.size]+50
+set z_offset 8
+
+cylinder x1 0 0 x2 0 0 Rnearfield
+translate 0 0 z_offset
+box x1 0 -Rnearfield (abs(x1)+abs(x2)) -Rnearfield 2*Rnearfield
+translate 0 0 z_offset
+subtract
+dump nearfield.egads
+
+store nearfield
+
+# ------------------------------------------
+# --- Import Already Existing Components ---
+# ------------------------------------------
+patbeg foo 1-remakePod
+  import pod.egads
+  store pod
+patend
+
+patbeg foo 1-remakeEngine
+  import engine.egads
+  store engine
+  import plume.egads
+  store plume  
+patend
+
+patbeg foo 1-remakeFuselage
+  import fuselage.egads
+  store fuselage
+patend
+
+patbeg foo 1-remakeWing
+  import wing.egads
+  store wing
+patend
+
+patbeg foo 1-remakeHtail
+  import htail.egads
+  store htail
+patend
+
+patbeg foo 1-remakePod
+  import pod.egads
+  store pod
+patend
+
+# ---------------------------------------------------
+# --- Assemble Low-Boom Flight Demonstrator Model ---
+# ---------------------------------------------------
+
+patbeg foo subtractNearfield
+  restore nearfield
+patend
+
+restore engine
+translate  x_vtail   y_vtail    z_vtail
+
+restore pod
+
+patbeg foo unionAll
+  union
+patend
+
+restore htail  
+
+patbeg foo unionAll
+   union
+patend
+
+patbeg foo unionAll
+  # --- Engine Inlet Face
+  #select     face     28
+  #attribute  CartBC    2
+
+  # --- Engine Exit Face
+  #select     face     38
+  #attribute  CartBC    3
+patend
+
+restore fuselage
+
+patbeg foo unionAll
+   union
+patend
+
+restore wing
+
+patbeg foo unionAll
+   union
+patend
+
+# --- Rotate vehicle into flight position, and rescale to SI
+patbeg foo unionAll
+   #rotatex  -90   0   0
+   #rotatez  -3.375   0   0
+   #rotatez  41.6822  0  0
+patend
+
+patbeg foo subtractNearfield
+  subtract none 1 1E-3
+  attribute .tParams GridParams
+patend
+
+patbeg foo unionAll
+  scale scale_factor 
+patend
+
+# Write out final aircraft
+dump ../Geometry/LBFD_STEX.egads
+dump ../Geometry/LBFD_STEX.step
+dump ../Geometry/LBFD_STEX.iges
+
+restore nearfield
+restore plume
+translate  x_vtail   y_vtail    z_vtail
+intersect
+
+patbeg foo unionAll
+  scale scale_factor 
+patend
+
+# Write out jet plume
+dump ../Geometry/Plume.egads
+dump ../Geometry/Plume.step
+dump ../Geometry/Plume.iges
+
+end

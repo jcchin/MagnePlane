@@ -1,0 +1,8 @@
+#!/bin/sh
+cd ../AFLR3
+rm -rf *.bak
+aflr3 -convert -igrid LBFD_PW.b8.ugrid -ogrid LBFD.surf.gz
+sleep 5
+aflr3 -igrid LBFD.surf.gz -tags angblisimx=179.0 -blpr -blc3 mblend=0 -blrm 2.0 -bli 3 -blr 1 -bldr 1.05 -blds 5.0e-6 -ogrid LBFD.b8.ugrid $*
+sleep 5
+mv LBFD.b8.ugrid ../FUN3D/Flow/
