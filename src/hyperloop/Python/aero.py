@@ -9,7 +9,7 @@ from openmdao.core.problem import Problem
 from openmdao.core.group import Group
 
 class Aero(Component):
-    
+
     '''Placeholder for real aerodynamic calculations of the capsule'''
 
     def __init__(self):

@@ -1,18 +1,8 @@
-17
-1              4000           Fuselage
-2              5050           Freestream
-3              5000           Farfield
-4              6662           Y-Symmetry
-5              5026           Outflow
+7
+1              5050           Freestream
+2              5026           Outflow
+3              3000           Tube
+4              4000           Vehicle
+5              6662           Y-Symmetry
 6              7012           Inlet
 7              7011           Nozzle
-8              4000           Inlet-IML
-9              4000           Nozzle-IML
-10             4000           Spinner
-11             4000           Plug
-12             4000           Wing
-13             4000           HT
-14             4000           VT
-15             4000           Fairing
-16             4000           Pylon
-17             4000           Engine

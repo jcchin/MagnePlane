@@ -21,21 +21,21 @@ Element FlowStart start {   //tube start
       Fl_O.MN = vehicleMach;
    }
    void postexecute() {
-      Fl_O.W = Fl_O.V*Fl_O.rhos*PI*podRadius**2;
+      Fl_O.W = Fl_O.V*Fl_O.rhos*PI*podRadius**2; // Assume all frontal flow is captured
    }
 }
 
-Element Inlet intake { // make shift inlet
-   PqP_in = 0.99; // Recovery added by Berton (you may want to reduce this to 0.99 or so)
+Element Inlet intake { 
+   PqP_in = 0.99; // recovery
    
    void preexecute() {
-      Fl_O.MN = cmpMach;    //acceptable compressor Mach #
+      Fl_O.MN = cmpMach;    // acceptable compressor Mach #
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
    }
 }
 
 Element Compressor cmp25 {
-   PRdes = 1.5;
+   PRdes = 12.47;
    effDes = 0.90;
 
    // in reality this must be slower but the internal duct can accel the flow
@@ -43,8 +43,6 @@ Element Compressor cmp25 {
       Fl_O.MN = cmpMach;
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
    }
-
-   // N = 10000.;
 }
 
 Element Shaft shaft {
@@ -59,7 +57,6 @@ Element Duct intDuct {
       Fl_O.MN = cmpMach;
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
    }
-
 }
 
 Element Nozzle nozz {
@@ -105,13 +102,19 @@ void printStuff() {
    cout << "Tube Viscocity=           " << start.Fl_O.mus*1.48816394 << " kg/(m-s)" << endl;    
    cout << "Reynolds No.=             " << (start.Fl_O.rhos*start.Fl_O.V)/(start.Fl_O.mus)/0.3048 << " -/grid unit" << endl;                 
    cout << "Pod Mach No.=             " << vehicleMach << endl;
-   cout << "Pod Velocity=             " << start.Fl_O.V*0.3048 << " m/s" << endl;   
+   cout << "Pod Velocity=             " << start.Fl_O.V*0.3048 << " m/s" << endl; 
+   cout << "Compressor Fan Area=      " << start.Fl_O.Aphy*0.00064516 << " m^2" << endl;
+   cout << "Compressor Fan Radius=    " << sqrt(start.Fl_O.Aphy*0.00064516/PI) << " m" << endl;     
    cout << "Compressor Mach No.=      " << start.Fl_O.MN << " kg/s" << endl;   
    cout << "Compressor MFR=           " << start.Fl_O.W*0.453592 << " kg/s" << endl;
    cout << "Compressor SPR=           " << start.Fl_O.Ps/PsTube << " kg/s" << endl;    
-   cout << "Compressor Power Reqd=    " << -cmp25.pwr << " hp" << endl;
+   cout << "Compressor Power Reqd=    " << -cmp25.pwr << " hp" << endl; 
+   cout << "Nozzle Plenum Area=       " << intDuct.Fl_O.Aphy*0.00064516 << " m^2" << endl;
+   cout << "Nozzle Plenum Radius=     " << sqrt(intDuct.Fl_O.Aphy*0.00064516/PI) << " m" << endl; 
    cout << "Nozzle Plenum TPR=        " << intDuct.Fl_O.Pt/PsTube << " kg/s" << endl; 
-   cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << " kg/s" << endl;      
+   cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << " kg/s" << endl;    
+   cout << "Nozzle Exit Area=         " << nozz.Fl_O.Aphy*0.00064516 << " m^2" << endl;
+   cout << "Nozzle Exit Radius=       " << sqrt(nozz.Fl_O.Aphy*0.00064516/PI) << " m" << endl;     
    cout << "Nozzle Gross Thrust=      " << nozz.Fg << " lb" << endl;
    cout << "Inlet Ram Drag=           " << intake.Fram << " lb" << endl;
    cout << "Pod Net Thrust=           " << nozz.Fg - intake.Fram << " lb" << endl << endl;
