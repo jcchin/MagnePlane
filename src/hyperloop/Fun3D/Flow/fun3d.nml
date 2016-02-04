@@ -19,8 +19,8 @@
     temperature = 216.65
     angle_of_attack = 0.0
     angle_of_yaw = 0.0
-    reynolds_number = 5740509.51138
-    mach_number = 1.6
+    reynolds_number = 4.0935E6
+    mach_number = 0.575
 /
 &inviscid_flux_method
     flux_limiter = "hvanleer"
@@ -46,77 +46,19 @@
     restart_read = 'off'
 /
 &boundary_conditions
-    static_pressure_ratio(6) = 3.345095459714
-    total_pressure_ratio(7) = 13.8240948123
-    total_temperature_ratio(7) = 7.31081929379
-/
-&flow_initialization
-    number_of_volumes = 2
-    type_of_volume(1) = 'cylinder'
-    point1(1:3,1) = 27.8 0.0 2.0857
-    point2(1:3,1) = 30.0 0.0 2.0857
-    radius(1) = 0.34
-    type_of_volume(2) = 'cylinder'
-    point1(1:3,2) = 31.0 0.0 2.0857
-    point2(1:3,2) = 33.5 0.0 2.0857
-    radius(2) = 0.35895
-    c(1)     = 1.19942691642    
-    u(1)     = 0.37856398115    
-    rho(1)   = 2.27997035529    
-    c(2)     = 2.58289280808    
-    u(2)     = 0.40220153394    
-    rho(2)   = 1.81209920631
+    static_pressure_ratio(6) = 0.93586
+    total_pressure_ratio(7) = 15.746
+    total_temperature_ratio(7) = 2.2931
 /
 &boundary_output_variables
     number_of_boundaries = -1 ! compute from list
-    boundary_list = '1-12'
+    boundary_list = '1-7'
     cp = .true.
     mach = .true.
     ttot = .true.
     ptot = .true.
     yplus = .true.
     turb1 = .true.
-/
-&sampling_parameters
-    number_of_geometries = 2
-    label(1) = 'EF'
-    type_of_geometry(1) = 'circle'
-    type_of_data(1) = 'integrated'
-    patch_symmetry(1) = 2.
-    circle_center(:,1) = 29.2741, 0.0, 2.0857
-    circle_normal(:,1) = 1.0, 0.0, 0.0
-    circle_radius(  1) = 0.345
-    sampling_frequency(1) = -1
-
-    label(2) = 'AIP'
-    type_of_geometry(2) = 'circle'
-    patch_symmetry(2) = 2.
-    circle_center(:,2) = 29.2741, 0.0, 2.0857
-    circle_normal(:,2) = 1.0, 0.0, 0.0
-    circle_radius(  2) = 0.345
-    sampling_frequency(2) = -1
-/
-&component_parameters
-    number_of_components = 2
-
-    component_count(1) = 3
-    component_input(1) = '6,8,10'
-    component_name(1) = 'Inlet'
-    component_symmetry(1) = 2.0
-    inlet_analysis(1) = .true.
-
-    component_count(2) = 3
-    component_input(2) = '7,9,11'
-    component_name(2) = 'Nozzle'
-    component_symmetry(2) = 2.0
-    calculate_cd(2) = .true.
-    throat_area(2) = 0.16025774
-    npr(2) = 13.6636671935
-    calculate_thrust_ratio(2) = .true.
-    massflow_component(2) = 7
-
-    allow_flow_through_forces = .true.
-    list_forces = .true.
 /
 &sampling_output_variables
     cp = .true.
