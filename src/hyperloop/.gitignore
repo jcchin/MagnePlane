@@ -1,3 +1,5 @@
 /maglev
 *.pyc
 /test2png.png
+**/*.b8.ugrid
+**/*-Grid.pw
