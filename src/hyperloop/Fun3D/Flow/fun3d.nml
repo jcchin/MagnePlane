@@ -19,8 +19,8 @@
     temperature = 216.65
     angle_of_attack = 0.0
     angle_of_yaw = 0.0
-    reynolds_number = 4.0935E6
-    mach_number = 0.575
+    reynolds_number = 1.3789E7
+    mach_number = 0.56
 /
 &inviscid_flux_method
     flux_limiter = "hvanleer"
@@ -46,7 +46,7 @@
     restart_read = 'off'
 /
 &boundary_conditions
-    static_pressure_ratio(6) = 0.93586
+    static_pressure_ratio(6) = 0.9997
     total_pressure_ratio(7) = 15.746
     total_temperature_ratio(7) = 2.2931
 /
