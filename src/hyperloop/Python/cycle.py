@@ -55,7 +55,7 @@ if __name__ == "__main__":
         ('alt', 30001.0, {'units':'ft'}),
         ('inlet_MN', 0.6),
         ('PR_design', 1.0),
-        ('W', 1.0, {'units':'lbm/s'})
+        ('W', 1.0, {'units':'kg/s'})
         #('PsE', 4.0, {'units':'lbm/s'})
     )
 
@@ -72,15 +72,15 @@ if __name__ == "__main__":
     prob.setup(check=False)
 
     # Flight Conditions
-    prob['des_vars.W'] = 550.
+    prob['des_vars.W'] = 298.17 #550 lbm/s
 
     # Inlet Conditions
     prob['inlet.ram_recovery'] = 0.99
-    prob['des_vars.inlet_MN'] = 0.55
+    prob['des_vars.inlet_MN'] = 0.6
 
     # Compressor Conditions
-    prob['comp.map.PRdes'] = 5.0
-    prob['comp.map.effDes'] = 0.92
+    prob['comp.map.PRdes'] = 12.47
+    prob['comp.map.effDes'] = 0.9
 
     # Nozzle Conditions
     prob['nozzle.Cfg'] = 0.99
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     #prob['nozzle.Ps_exhaust'] = 14.7
 
     # Shaft
-    prob['shaft.Nmech'] = 15000.
+    prob['shaft.Nmech'] = 10000.
 
     #prob.root.nozzle.list_connections()
 
@@ -98,10 +98,10 @@ if __name__ == "__main__":
     prob.run()
     print time.time() - t
 
-    astar = np.sqrt(prob['fc.Fl_O:stat:gamma']*R_UNIVERSAL_SI*prob['fc.Fl_O:stat:T'])
+    astar = np.sqrt(prob['fc.Fl_O:stat:gamma']*R_UNIVERSAL_SI*(cu(prob['fc.Fl_O:stat:T'], 'degR', 'degK')))
     ustar = astar*prob['fc.Fl_O:stat:MN']
-    dstar = prob['fc.Fl_O:stat:gamma']*prob['fc.Fl_O:stat:P']/astar**2
-    mustar = 0.00001716*(prob['fc.Fl_O:stat:T']/273.15)**1.5*(273.15+110.4)/(prob['fc.Fl_O:stat:T']+110.4) # --- Sutherlands Law
+    dstar = prob['fc.Fl_O:stat:gamma']*cu(prob['fc.Fl_O:stat:P'],'psi','Pa')/astar**2
+    mustar = 0.00001716*(cu(prob['fc.Fl_O:stat:T'], 'degR', 'degK')/273.15)**1.5*(273.15+110.4)/(cu(prob['fc.Fl_O:stat:T'], 'degR', 'degK')+110.4) # --- Sutherlands Law
     #Re = dstar*ustar/mustar*Lstar_Lref
     print mustar
 
@@ -113,13 +113,13 @@ if __name__ == "__main__":
     print "Ambient Ps:  %.6f Pa" % (cu(prob['fc.Fl_O:stat:P'], 'psi', 'Pa'))
     print "Ambient Ts:  %.6f K" % (cu(prob['fc.Fl_O:stat:T'], 'degR', 'degK'))
     print "Ambient Rho: %.6f kg/m^3" % (cu(prob['fc.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3'))
-    print "Ambient V:   %.6f m/s" % (cu(prob['fc.Fl_O:stat:V'], 'ft/s', 'm/s'))
-    print "Ambient Viscosity %.6f kg/(m-s)" % (mustar) #*1.48816394
-    print "Reynolds No.=  %.6f  -/grid unit" % ((prob['fc.Fl_O:stat:rho']*prob['fc.Fl_O:stat:V'])/(mustar)/0.3048)
+    print "Pod Velocity:   %.6f m/s" % (cu(prob['fc.Fl_O:stat:V'], 'ft/s', 'm/s'))
+    print "Ambient Viscosity %.8f kg/(m-s)" % (mustar) #*1.48816394
+    print "Reynolds No.=  %.6f  -/grid unit" % ((cu(prob['fc.Fl_O:stat:rho'],'lbm/ft**3','kg/m**3')*cu(prob['fc.Fl_O:stat:V'],'ft/s','m/s'))/(mustar))
     print ""
 
     print "--- Fan Conditions ---"
-    print "Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])
+    print "Fan Face Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])
     print "Fan Radius: %.6f m" % (np.sqrt((cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
     print "Fan Area:   %.6f m^2" % (cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Fan Mdot:   %.6f kg/s" % (cu(prob['inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
@@ -137,8 +137,8 @@ if __name__ == "__main__":
     print "--- Nozzle Exit Conditions ---"
     print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
     print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Exhaust Ps:       %.6f Pa" % prob['nozzle.Fl_O:stat:P']
-    print "Thrust:       %.6f Pa" % prob['nozzle.Fg']
+    print "Exhaust Ps:       %.6f Pa" % (cu(prob['fc.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Pod Gross Thrust:       %.6f lb" % prob['nozzle.Fg']
 
     print "--- Debug ---"
     print 'nozzle.Fl_I:tot:P ', prob['nozzle.Fl_I:tot:P']
