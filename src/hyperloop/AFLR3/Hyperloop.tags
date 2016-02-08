@@ -3,8 +3,10 @@
 #ID  Group    Visc    Recon  Rebuild  Fixed  Source   Trans   Delete	Spacing	 Thcknss  Layers
 1   Group_1	   0	   1	   0	   0	   0	   0	   0	   0    	   0	   0
 2   Group_2	   0	   1	   0	   0	   0	   0	   0	   0		   0	   0
-3   Group_3	   0	   1	   0	   0	   0	   0	   0	   0		   0	   0
-4   Group_4	   1	   1	   0	   0	   0	   0	   0	   5.0e-5	   0	   0
+3   Group_3	   0	   1	   1	   0	   0	   0	   0	   0		   0	   0
+4   Group_4	   0	   1	   0	   0	   0	   0	   0	   0    	   0	   0
 5   Group_5	   0	   1	   1	   0	   0	   0	   0	   0		   0	   0
 6   Group_6	   0	   1	   1	   0	   0	   0	   0	   0		   0	   0
-7   Group_7	   0	   1	   1	   0	   0	   0	   0	   0		   0	   0
+7   Group_4        1       1       0       0       0       0       0       5.0e-5          0       0
+8   Group_4        1       1       0       0       0       0       0       5.0e-5          0       0
+9   Group_4        1       1       0       0       0       0       0       5.0e-5          0       0

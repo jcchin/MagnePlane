@@ -6,7 +6,8 @@ setThermoPackage( "Janaf" );
 
 real vehicleMach = 0.6;
 real cmpMach = 0.6;
-real PsTube = 4.364;  // 30,000 ft, std alt pressure
+// real PsTube = 4.364;  // 30,000 ft, std alt pressure
+real PsTube = 14.7;  // std day sea level static pressure
 real TsTube = 524.0;  // 291 K
 real podRadius = 3.5; // ft
 
@@ -60,8 +61,8 @@ Element Duct intDuct {
 }
 
 Element Nozzle nozz {
-   switchType = "CONIC";
-   PsExhName = "start.Fl_O.Ps";
+   switchType = "CON_DIV";
+   PsExh = 4.364/2.0;
 }
 
 
@@ -112,7 +113,9 @@ void printStuff() {
    cout << "Nozzle Plenum Area=       " << intDuct.Fl_O.Aphy*0.00064516 << " m^2" << endl;
    cout << "Nozzle Plenum Radius=     " << sqrt(intDuct.Fl_O.Aphy*0.00064516/PI) << " m" << endl; 
    cout << "Nozzle Plenum TPR=        " << intDuct.Fl_O.Pt/PsTube << " kg/s" << endl; 
-   cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << " kg/s" << endl;    
+   cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << " kg/s" << endl;
+   cout << "Nozzle Throat Area=       " << nozz.Ath*0.00064516 << " m^2" << endl;
+   cout << "Nozzle Throat Radius=     " << sqrt(nozz.Ath*0.00064516/PI) << " m" << endl;        
    cout << "Nozzle Exit Area=         " << nozz.Fl_O.Aphy*0.00064516 << " m^2" << endl;
    cout << "Nozzle Exit Radius=       " << sqrt(nozz.Fl_O.Aphy*0.00064516/PI) << " m" << endl;     
    cout << "Nozzle Gross Thrust=      " << nozz.Fg << " lb" << endl;
@@ -121,7 +124,7 @@ void printStuff() {
 }
 
 void runCases() {
-   for ( vehicleMach = 0.60; vehicleMach <= 0.68; vehicleMach +=0.02 ) {
+   for ( vehicleMach = 0.60; vehicleMach <= 0.62; vehicleMach +=0.02 ) {
       run();
       //page.display();
       printStuff();
