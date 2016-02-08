@@ -39,10 +39,10 @@ class CompressionCycle(Group):
         self.connect('comp.trq', 'shaft.trq_0')
         self.connect('shaft.Nmech', 'comp.Nmech')
 
-        self.nl_solver = Newton()
-        self.nl_solver.options['rtol'] = 1.4e-8
-        self.nl_solver.options['maxiter'] = 75
-        self.nl_solver.options['iprint'] = 1
+        # self.nl_solver = Newton()
+        # self.nl_solver.options['rtol'] = 1.4e-8
+        # self.nl_solver.options['maxiter'] = 75
+        # self.nl_solver.options['iprint'] = 1
 
 if __name__ == "__main__":
 
@@ -123,7 +123,7 @@ if __name__ == "__main__":
     print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
     print "Nozzle Plenum TPR    %.6f Pa" % (prob['duct.Fl_O:tot:P']/prob['fc.Fl_O:stat:P'])
     print ""
-    
+
     print "--- Nozzle Exit Conditions ---"
     print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
     print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
