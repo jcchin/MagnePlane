@@ -52,9 +52,9 @@ if __name__ == "__main__":
     params = (
         ('MN', 0.6),
         ('inlet_MN', 0.6),
-        ('P', 17., {'units':'psi'}),
-        ('T', 500.0, {'units':'degR'}),
-        ('W', 1.0, {'units':'kg/s'}),
+        ('P', 30088.246653, {'units':'Pa'}),
+        ('T', 228.711911, {'units':'degK'}),
+        ('W', 298.17, {'units':'kg/s'}),
         ('PsE', 4.0, {'units':'psi'})
     )
 
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.W', 'fl_start.W')
     # prob.root.connect('des_vars.alt', 'fc.alt')
     # prob.root.connect('des_vars.W', 'fc.fs.W')
-    # prob.root.connect('des_vars.MN', 'fc.MN_target')
+    prob.root.connect('des_vars.MN', 'fl_start.MN_target')
     prob.root.connect('des_vars.inlet_MN', 'inlet.MN_target')
     # prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
     prob.root.connect("des_vars.PsE", "nozzle.Ps_exhaust")
