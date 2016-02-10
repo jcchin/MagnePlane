@@ -55,8 +55,8 @@ if __name__ == "__main__":
         ('alt', 30001.0, {'units':'ft'}),
         ('inlet_MN', 0.6),
         ('PR_design', 1.0),
-        ('W', 1.0, {'units':'kg/s'})
-        #('PsE', 4.0, {'units':'lbm/s'})
+        ('W', 1.0, {'units':'kg/s'}),
+        ('PsE', 4.0, {'units':'psi'})
     )
 
     prob.root.add('des_vars', IndepVarComp(params))
@@ -65,9 +65,9 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.W', 'fc.fs.W')
     prob.root.connect('des_vars.MN', 'fc.MN_target')
     prob.root.connect('des_vars.inlet_MN', 'inlet.MN_target')
-    prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
+    #prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
 
-    #prob.root.connect("des_vars.Ps_exhaust", "nozzle.Ps_exhaust")
+    prob.root.connect("des_vars.PsE", "nozzle.Ps_exhaust")
 
     prob.setup(check=False)
 
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     prob['nozzle.Cfg'] = 0.99
     prob['nozzle.dPqP'] = 0.
 
-    #prob['nozzle.Ps_exhaust'] = 14.7
+    prob['des_vars.PsE'] = 14.7
 
     # Shaft
     prob['shaft.Nmech'] = 10000.
