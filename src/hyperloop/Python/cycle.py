@@ -138,16 +138,16 @@ if __name__ == "__main__":
 
     print "--- Nozzle Plenum Conditions ---"
     print "Nozzle Plenum Area:  %.6f in^2" % (prob['duct.Fl_O:stat:area'])
-    print "Nozzle Plenum Ps:    %.6f Pa" % (cu(prob['duct.Fl_O:stat:P'], 'psi', 'Pa'))
-    print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
-    print "Nozzle Plenum TPR    %.6f Pa" % (prob['duct.Fl_O:tot:P']/prob['fl_start.Fl_O:stat:P'])
-    print "Nozzle Plenum TTR    %.6f Pa" % (prob['duct.Fl_O:tot:T']/prob['fl_start.Fl_O:stat:T'])    
+    print "Nozzle Plenum Ps:    %.6f psi" % (prob['duct.Fl_O:stat:P'])
+    print "Nozzle Plenum Pt:    %.6f psi" % (prob['duct.Fl_O:tot:P'])
+    print "Nozzle Plenum TPR    %.6f    " % (prob['duct.Fl_O:tot:P']/prob['fl_start.Fl_O:stat:P'])
+    print "Nozzle Plenum TTR    %.6f    " % (prob['duct.Fl_O:tot:T']/prob['fl_start.Fl_O:stat:T'])    
     print ""
 
     print "--- Nozzle Exit Conditions ---"
     print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
     print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Exhaust Ps:       %.6f Pa" % (cu(prob['fl_start.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Exhaust Ps:       %.6f psi" % (prob['fl_start.Fl_O:stat:P'])
     print "Pod Gross Thrust:       %.6f lb" % prob['nozzle.Fg']
 
     print "--- Debug ---"

@@ -121,12 +121,17 @@ void printStuff() {
    cout << " --- Nozzle ------------- " << endl;   
    cout << "Nozzle Plenum Area=       " << intDuct.Fl_O.Aphy << " in^2" << endl;
    cout << "Nozzle Plenum Radius=     " << sqrt(intDuct.Fl_O.Aphy/PI) << " in" << endl; 
+   cout << "Nozzle Plenum Ps=         " << intDuct.Fl_O.Ps << " psi" << endl;
+   cout << "Nozzle Plenum Ts=         " << intDuct.Fl_O.Ts << " R" << endl;  
+   cout << "Nozzle Plenum Pt=         " << intDuct.Fl_O.Pt << " psi" << endl;
+   cout << "Nozzle Plenum Tt=         " << intDuct.Fl_O.Tt << " R" << endl;     
    cout << "Nozzle Plenum TPR=        " << intDuct.Fl_O.Pt/PsTube << " kg/s" << endl; 
    cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << " kg/s" << endl;
    cout << "Nozzle Throat Area=       " << nozz.Ath*0.00064516 << " m^2" << endl;
    cout << "Nozzle Throat Radius=     " << sqrt(nozz.Ath*0.00064516/PI) << " m" << endl;        
    cout << "Nozzle Exit Area=         " << nozz.Fl_O.Aphy*0.00064516 << " m^2" << endl;
    cout << "Nozzle Exit Radius=       " << sqrt(nozz.Fl_O.Aphy*0.00064516/PI) << " m" << endl;     
+   cout << "Nozzle Exhaust Ps=        " << nozz.Fl_O.Ps << " psi" << endl;   
    cout << "Nozzle Gross Thrust=      " << nozz.Fg << " lb" << endl;
    cout << "Inlet Ram Drag=           " << intake.Fram << " lb" << endl;
    cout << "Pod Net Thrust=           " << nozz.Fg - intake.Fram << " lb" << endl << endl;
