@@ -52,8 +52,8 @@ if __name__ == "__main__":
     params = (
         ('MN', 0.6),
         ('inlet_MN', 0.6),
-        ('P', 30088.246653, {'units':'Pa'}),
-        ('T', 228.711911, {'units':'degK'}),
+        ('P', 5.568039, {'units':'psi'}),
+        ('T', 441.420664, {'units':'degR'}),
         ('W', 298.17, {'units':'kg/s'}),
         ('PsE', 4.0, {'units':'psi'})
     )
