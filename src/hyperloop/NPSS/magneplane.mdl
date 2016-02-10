@@ -6,9 +6,9 @@ setThermoPackage( "Janaf" );
 
 real vehicleMach = 0.6;
 real cmpMach = 0.6;
-// real PsTube = 4.364;  // 30,000 ft, std alt pressure
-real PsTube = 14.7;  // std day sea level static pressure
-real TsTube = 524.0;  // 291 K
+//real PsTube = 4.364;  // 30,000 ft, std alt pressure
+real PsTube = 4.363932;  // std day sea level static pressure
+real TsTube = 411.681440;  // 291 K
 real podRadius = 3.5; // ft
 
 // start -> inlet --> compressor --> duct  ---> nozzle ---> end
@@ -36,8 +36,8 @@ Element Inlet intake {
 }
 
 Element Compressor cmp25 {
-   PRdes = 12.47;
-   effDes = 0.90;
+   PRdes = 1.5;
+   effDes = 1.0;
 
    // in reality this must be slower but the internal duct can accel the flow
    void preexecute() {
@@ -49,7 +49,6 @@ Element Compressor cmp25 {
 Element Shaft shaft {
    ShaftInputPort Sh_cmp;
    Nmech = 10000.;
-   HPX = 500; // extract motor work
 }
 
 Element Duct intDuct {
@@ -61,8 +60,8 @@ Element Duct intDuct {
 }
 
 Element Nozzle nozz {
-   switchType = "CON_DIV";
-   PsExh = 4.364/2.0;
+   switchType = "CONIC";
+   PsExh = 14.7;
 }
 
 
@@ -95,23 +94,33 @@ run();
 //page.display();
 
 void printStuff() {
-   cout.precision=5;
+   cout.precision=8;
    cout.showpoint = TRUE;
-   cout << "Tube Ps=                  " << PsTube*6894.76 << " Pa" << endl;
-   cout << "Tube Ts=                  " << TsTube*0.555556 << " K" << endl;
+   cout << " --- Output ------------- " << endl;
+   cout << " --- Freestream --------- " << endl;   
+   cout << "Tube Ps=                  " << toStr(PsTube,10) << " psi" << endl;
+   cout << "Tube Ts=                  " << toStr(TsTube,10) << " R" << endl;
+   cout << "Tube Pt=                  " << toStr(start.Fl_O.Pt,10) << " psi" << endl;
+   cout << "Tube Tt=                  " << toStr(start.Fl_O.Tt,10) << " R" << endl;   
    cout << "Tube Ds=                  " << start.Fl_O.rhos*16.0185 << " kg/m^3" << endl; 
    cout << "Tube Viscocity=           " << start.Fl_O.mus*1.48816394 << " kg/(m-s)" << endl;    
    cout << "Reynolds No.=             " << (start.Fl_O.rhos*start.Fl_O.V)/(start.Fl_O.mus)/0.3048 << " -/grid unit" << endl;                 
    cout << "Pod Mach No.=             " << vehicleMach << endl;
    cout << "Pod Velocity=             " << start.Fl_O.V*0.3048 << " m/s" << endl; 
+   cout << " --- Fan ---------------- " << endl;  
    cout << "Compressor Fan Area=      " << start.Fl_O.Aphy*0.00064516 << " m^2" << endl;
    cout << "Compressor Fan Radius=    " << sqrt(start.Fl_O.Aphy*0.00064516/PI) << " m" << endl;     
-   cout << "Compressor Mach No.=      " << start.Fl_O.MN << " kg/s" << endl;   
-   cout << "Compressor MFR=           " << start.Fl_O.W*0.453592 << " kg/s" << endl;
-   cout << "Compressor SPR=           " << start.Fl_O.Ps/PsTube << " kg/s" << endl;    
+   cout << "Compressor Mach No.=      " << intake.Fl_O.MN << " kg/s" << endl; 
+   cout << "Compressor Ps=            " << intake.Fl_O.Ps << " Pa" << endl;
+   cout << "Compressor Ts=            " << intake.Fl_O.Ts << " R" << endl;  
+   cout << "Compressor Pt=            " << intake.Fl_O.Pt << " Pa" << endl;
+   cout << "Compressor Tt=            " << intake.Fl_O.Tt << " R" << endl;          
+   cout << "Compressor MFR=           " << toStr(intake.Fl_O.W*0.453592,10) << " kg/s" << endl;
+   cout << "Compressor SPR=           " << intake.Fl_O.Ps/PsTube << " kg/s" << endl;    
    cout << "Compressor Power Reqd=    " << -cmp25.pwr << " hp" << endl; 
-   cout << "Nozzle Plenum Area=       " << intDuct.Fl_O.Aphy*0.00064516 << " m^2" << endl;
-   cout << "Nozzle Plenum Radius=     " << sqrt(intDuct.Fl_O.Aphy*0.00064516/PI) << " m" << endl; 
+   cout << " --- Nozzle ------------- " << endl;   
+   cout << "Nozzle Plenum Area=       " << intDuct.Fl_O.Aphy << " in^2" << endl;
+   cout << "Nozzle Plenum Radius=     " << sqrt(intDuct.Fl_O.Aphy/PI) << " in" << endl; 
    cout << "Nozzle Plenum TPR=        " << intDuct.Fl_O.Pt/PsTube << " kg/s" << endl; 
    cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << " kg/s" << endl;
    cout << "Nozzle Throat Area=       " << nozz.Ath*0.00064516 << " m^2" << endl;
@@ -124,7 +133,7 @@ void printStuff() {
 }
 
 void runCases() {
-   for ( vehicleMach = 0.60; vehicleMach <= 0.62; vehicleMach +=0.02 ) {
+   for ( vehicleMach = 0.60; vehicleMach <= 0.61; vehicleMach +=0.02 ) {
       run();
       //page.display();
       printStuff();
