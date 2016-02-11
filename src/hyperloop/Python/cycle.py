@@ -83,7 +83,7 @@ if __name__ == "__main__":
     # Compressor Conditions
     prob['comp.map.PRdes'] = 1.5
     prob['comp.map.effDes'] = 1.0
-	prob['comp.MN_target'] = 0.6
+    prob['comp.MN_target'] = 0.6
 
     # Duct
     prob['duct.MN_target'] = 0.6
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     prob['nozzle.Cfg'] = 1.0
     prob['nozzle.dPqP'] = 0.
 
-    prob['des_vars.PsE'] = 14.7
+    prob['des_vars.PsE'] = 2.7
 
     # Shaft
     prob['shaft.Nmech'] = 10000.
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     print "Ambient Ps:  %.6f psi" % (prob['fl_start.Fl_O:stat:P'])
     print "Ambient Ts:  %.6f R" % (prob['fl_start.Fl_O:stat:T'])
     print "Ambient Pt:  %.6f psi" % (prob['fl_start.Fl_O:tot:P'])
-    print "Ambient Tt:  %.6f R" % (prob['fl_start.Fl_O:tot:T'])    
+    print "Ambient Tt:  %.6f R" % (prob['fl_start.Fl_O:tot:T'])
     print "Ambient Rho: %.6f kg/m^3" % (cu(prob['fl_start.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3'))
     print "Pod Velocity:   %.6f m/s" % (cu(prob['fl_start.Fl_O:stat:V'], 'ft/s', 'm/s'))
     print "Ambient Viscosity %.8f kg/(m-s)" % (mustar) #*1.48816394
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     print "Fan Ps:     %.6f psi" % (prob['inlet.Fl_O:stat:P'])
     print "Fan Ts:     %.6f degR" % (prob['inlet.Fl_O:stat:T'])
     print "Fan Pt:     %.6f psi" % (prob['inlet.Fl_O:tot:P'])
-    print "Fan Tt:     %.6f degR" % (prob['inlet.Fl_O:tot:T'])          
+    print "Fan Tt:     %.6f degR" % (prob['inlet.Fl_O:tot:T'])
     print "Fan SPR:    %.6f Pa" % (prob['inlet.Fl_O:stat:P']/prob['fl_start.Fl_O:stat:P'])
     print ""
 
@@ -145,6 +145,7 @@ if __name__ == "__main__":
     print prob['duct.Fl_O:stat:MN']
     print prob['nozzle.Fl_O:stat:MN']
     print prob['duct.Fl_O:stat:area']
+    print cu(prob['nozzle.Fl_O:stat:area'],'inch**2', 'm**2')
     print "Nozzle Plenum Area:  %.6f m^2" % (cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Nozzle Plenum Ps:    %.6f Pa" % (cu(prob['duct.Fl_O:stat:P'], 'psi', 'Pa'))
     print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
