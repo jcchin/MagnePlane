@@ -83,6 +83,10 @@ if __name__ == "__main__":
     # Compressor Conditions
     prob['comp.map.PRdes'] = 12.47
     prob['comp.map.effDes'] = 0.9
+    prob['comp.MN_target'] = 0.6
+
+    # Duct
+    prob['duct.MN_target'] = 0.6
 
     # Nozzle Conditions
     prob['nozzle.Cfg'] = 0.99
@@ -93,7 +97,7 @@ if __name__ == "__main__":
     # Shaft
     prob['shaft.Nmech'] = 10000.
 
-    #prob.root.nozzle.list_connections()
+    prob.root.duct.list_connections()
 
     import time
     t = time.time()
@@ -130,16 +134,21 @@ if __name__ == "__main__":
     print ""
 
     print "--- Nozzle Plenum Conditions ---"
+    print prob['inlet.Fl_O:stat:MN']
+    print prob['comp.Fl_O:stat:MN']
+    print prob['duct.Fl_O:stat:MN']
+    print prob['nozzle.Fl_O:stat:MN']
+    print prob['duct.Fl_O:stat:area']
     print "Nozzle Plenum Area:  %.6f m^2" % (cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Nozzle Plenum Ps:    %.6f Pa" % (cu(prob['duct.Fl_O:stat:P'], 'psi', 'Pa'))
     print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
-    print "Nozzle Plenum TPR    %.6f Pa" % (prob['duct.Fl_O:tot:P']/prob['fl_start.Fl_O:stat:P'])
+    print "Nozzle Plenum TPR    %.6f" % (prob['duct.Fl_O:tot:P']/prob['fl_start.Fl_O:stat:P'])
     print ""
 
     print "--- Nozzle Exit Conditions ---"
     print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
     print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Exhaust Ps:       %.6f Pa" % (cu(prob['fl_start.Fl_O:stat:P'], 'psi', 'Pa'))
+    print "Exhaust Ps:       %.6f Pa" % (cu(prob['nozzle.Ps_exhaust'], 'psi', 'Pa'))
     print "Pod Gross Thrust:       %.6f lb" % prob['nozzle.Fg']
 
     print "--- Debug ---"
