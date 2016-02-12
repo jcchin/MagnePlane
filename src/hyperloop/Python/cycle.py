@@ -98,7 +98,7 @@ if __name__ == "__main__":
     # Shaft
     prob['shaft.Nmech'] = 10000.
 
-    prob.root.duct.list_connections()
+    #prob.root.duct.list_connections()
 
     import time
     t = time.time()
@@ -122,61 +122,46 @@ if __name__ == "__main__":
     print "Ambient Pt:  %.6f psi" % (prob['fl_start.Fl_O:tot:P'])
     print "Ambient Tt:  %.6f R" % (prob['fl_start.Fl_O:tot:T'])
     print "Ambient Rho: %.6f kg/m^3" % (cu(prob['fl_start.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3'))
-    print "Pod Velocity:   %.6f m/s" % (cu(prob['fl_start.Fl_O:stat:V'], 'ft/s', 'm/s'))
     print "Ambient Viscosity %.8f kg/(m-s)" % (mustar) #*1.48816394
+    print "Pod Velocity:   %.6f m/s" % (cu(prob['fl_start.Fl_O:stat:V'], 'ft/s', 'm/s'))    
     print "Reynolds No.=  %.6f  -/grid unit" % ((cu(prob['fl_start.Fl_O:stat:rho'],'lbm/ft**3','kg/m**3')*cu(prob['fl_start.Fl_O:stat:V'],'ft/s','m/s'))/(mustar))
     print ""
 
     print "--- Fan Conditions ---"
-    print "Fan Face Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])
-    print "Fan Radius: %.6f m" % (np.sqrt((cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
-    print "Fan Area:   %.6f m^2" % (cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Fan Mdot:   %.6f kg/s" % (cu(prob['inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
-    print "Fan Ps:     %.6f psi" % (prob['inlet.Fl_O:stat:P'])
-    print "Fan Ts:     %.6f degR" % (prob['inlet.Fl_O:stat:T'])
-    print "Fan Pt:     %.6f psi" % (prob['inlet.Fl_O:tot:P'])
-    print "Fan Tt:     %.6f degR" % (prob['inlet.Fl_O:tot:T'])
-    print "Fan SPR:    %.6f Pa" % (prob['inlet.Fl_O:stat:P']/prob['fl_start.Fl_O:stat:P'])
+    print "Compressor Mach No.:   %.6f " % (prob['inlet.Fl_O:stat:MN'])
+    print "Compressor Area:       %.6f m^2" % (cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))    
+    print "Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
+    print "Compressor Ps:         %.6f psi" % (prob['inlet.Fl_O:stat:P'])
+    print "Compressor Ts:         %.6f degR" % (prob['inlet.Fl_O:stat:T'])
+    print "Compressor Pt:         %.6f psi" % (prob['inlet.Fl_O:tot:P'])
+    print "Compressor Tt:         %.6f degR" % (prob['inlet.Fl_O:tot:T'])    
+    print "Compressor MFR:        %.6f kg/s" % (cu(prob['inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
+    print "Compressor SPR:        %.6f " % (prob['inlet.Fl_O:stat:P']/prob['fl_start.Fl_O:stat:P'])
+    print "Compressor Power Reqd: %.6f hp" % (prob['comp.power'])    
     print ""
 
     print "--- Nozzle Plenum Conditions ---"
-    print prob['inlet.Fl_O:stat:MN']
-    print prob['comp.Fl_O:stat:MN']
-    print prob['duct.Fl_O:stat:MN']
-    print prob['nozzle.Fl_O:stat:MN']
-    print prob['duct.Fl_O:stat:area']
-    print cu(prob['nozzle.Fl_O:stat:area'],'inch**2', 'm**2')
-    print "Nozzle Plenum Area:  %.6f m^2" % (cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Nozzle Plenum Ps:    %.6f Pa" % (cu(prob['duct.Fl_O:stat:P'], 'psi', 'Pa'))
-    print "Nozzle Plenum Pt:    %.6f Pa" % (cu(prob['duct.Fl_O:tot:P'], 'psi', 'Pa'))
-    print "Nozzle Plenum TPR    %.6f" % (prob['duct.Fl_O:tot:P']/prob['fl_start.Fl_O:stat:P'])
+    print "Nozzle Plenum Area:   %.6f m^2" % (cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
+    print "Nozzle Plenum Radius: %.6f m  " % (np.sqrt((cu(prob['duct.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))   
+    print "Nozzle Plenum Ps:     %.6f psi " % (prob['duct.Fl_O:stat:P'])
+    print "Nozzle Plenum Ts:     %.6f degR " % (prob['duct.Fl_O:stat:T'])  
+    print "Nozzle Plenum Pt:     %.6f psi " % (prob['duct.Fl_O:tot:P'])
+    print "Nozzle Plenum Tt:     %.6f degR " % (prob['duct.Fl_O:tot:T'])    
+    print "Nozzle Plenum TPR     %.6f" % (prob['duct.Fl_O:tot:P']/prob['fl_start.Fl_O:stat:P'])
+    print "Nozzle Plenum TTR     %.6f" % (prob['duct.Fl_O:tot:T']/prob['fl_start.Fl_O:stat:T'])
     print ""
 
     print "--- Nozzle Exit Conditions ---"
-    print "Mach No.:         %.6f " % (prob['nozzle.Fl_O:stat:MN'])
-    print "Nozzle Exit Area: %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Exhaust Ps:       %.6f Pa" % (cu(prob['nozzle.Ps_exhaust'], 'psi', 'Pa'))
-    print "Pod Gross Thrust:       %.6f lb" % prob['nozzle.Fg']
-
-    print "--- Debug ---"
-    print 'nozzle.Fl_I:tot:P ', prob['nozzle.Fl_I:tot:P']
-    print 'nozzle.Fl_I:tot:T ', prob['nozzle.Fl_I:tot:T']
-    print 'nozzle.Fl_I:tot:n ', prob['nozzle.Fl_I:tot:n']
-
-    print 'nozzle.Fl_I:stat:W ', prob['nozzle.Fl_I:stat:W']
-    print 'nozzle.Fl_I:stat:V ', prob['nozzle.Fl_I:stat:V']
-    print 'nozzle.Fl_I:stat:area ', prob['nozzle.Fl_I:stat:area']
-    print 'nozzle.Fl_I:stat:P ', prob['nozzle.Fl_I:stat:P']
-    print 'nozzle.Fl_I:stat:T ', prob['nozzle.Fl_I:stat:T']
-    #print prob['nozzle.Fl_I:']
-    print "out"
-    print 'nozzle.perf_calcs.sub:P ', prob['nozzle.perf_calcs.sub:P']
-    print 'nozzle.perf_calcs.sup:P ', prob['nozzle.perf_calcs.sup:P']
-    print 'fl_start.ambient.Ps ', prob['fl_start.Fl_O:stat:P']
-    print 'nozzle.Fl_O:tot:P ', prob['nozzle.Fl_O:tot:P']
-    print 'nozzle.Fl_O:tot:T ', prob['nozzle.Fl_O:tot:T']
-
-    print "Exhaust Pt:       %.6f Pa" % (cu(prob['nozzle.Fl_O:tot:P'], 'psi', 'Pa'))
+    print "Mach No.:            %.6f " % (prob['nozzle.Fl_O:stat:MN'])
+    print "Nozzle Exit Area:    %.6f m^2" % (cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
+    print "Nozzle Exit Radius:  %.6f m  " % (np.sqrt((cu(prob['nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))    
+    print "Nozzle Exit Ps:      %.6f psi" % (prob['nozzle.Fl_O:stat:P'])
+    print "Nozzle Exit Ts:      %.6f degR" % (prob['nozzle.Fl_O:stat:T'])
+    print "Nozzle Exit Pt:      %.6f psi" % (prob['nozzle.Fl_O:tot:P'])    
+    print "Nozzle Exit Tt:      %.6f degR" % (prob['nozzle.Fl_O:tot:T'])  
+    print "Nozzle Exit MFR:     %.6f kg/s" % (cu(prob['nozzle.Fl_O:stat:W'], 'lbm/s', 'kg/s'))          
+    print "Nozzle Gross Thrust: %.6f lb" % prob['nozzle.Fg']
+    print "Inlet Ram Drag:      %.6f lb" % prob['inlet.F_ram']
 
     print ""
     print "--- Force/Power Balances ---"
