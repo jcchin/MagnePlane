@@ -3,16 +3,19 @@
 //
 
 //------------------------------------------------------------------------
-//                           Output Data Viewers 
+//                           Output Data Viewers
 //------------------------------------------------------------------------
 setThermoPackage( "Janaf" );
 
 #include <area.view_page>
 
 real C_IN2toM2 = 144.*(3.28084**2.);
+real HPtoKW = 0.7457;
+real tubeLen = 804672.0; // 500 miles in meters
+real teslaPack = 90.0; // kw-hours
 page {
-   SimpleBlock areas { 
-      
+   SimpleBlock areas {
+
       body =   "tube diameter:???.??? m \n" +
                "capsule diameter:???.??? m \n" +
                "cabin diameter:???.??? m \n\n" +
@@ -20,23 +23,25 @@ page {
          "Tube:????.??? m2    Tube B:????.??? m2    bypass throat:????.??? m2   blockage:     ????.??? m2     comp. exit:????.??? m2 \n" +
          "                    Tube C:????.??? m2    capsule:      ????.??? m2   comp. face:   ????.??? m2     passenger :????.??? m2  \n" +
          "POWER  \n" +
-         "Compressor:  ????.??? hp";
-                                                                                                    
-      vars = { "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)", 
-          "sqrt((intake.Fl_O.Aphy/C_IN2toM2)*4./PI)", 
+         "Compressor:  ????.??? hp \n" +
+         "90Kwh Tesla Batteries: ??.??";
+
+      vars = { "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)",
+          "sqrt((intake.Fl_O.Aphy/C_IN2toM2)*4./PI)",
           "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
-          "start.Fl_O.Aphy/C_IN2toM2", 
-          "split.Fl_02.Aphy/C_IN2toM2", 
+          "start.Fl_O.Aphy/C_IN2toM2",
+          "split.Fl_02.Aphy/C_IN2toM2",
           "bypass.Fl_O.Aphy/C_IN2toM2",
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)*(1.-blockage)/C_IN2toM2",
-          "cmp25.Fl_O.Aphy/C_IN2toM2",                    
-          "split.Fl_01.Aphy/C_IN2toM2", 
+          "cmp25.Fl_O.Aphy/C_IN2toM2",
+          "split.Fl_01.Aphy/C_IN2toM2",
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2",
-          "intake.Fl_O.Aphy/C_IN2toM2", 
-          "(intake.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2", 
-          "-cmp25.pwr" }
-   } 
-   inputs.bottom = "areas"; 
+          "intake.Fl_O.Aphy/C_IN2toM2",
+          "(intake.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2",
+          "-cmp25.pwr",
+          "cmp.batts" }
+   }
+   inputs.bottom = "areas";
 }
 
 //------------------------------------------------------------------------
@@ -58,19 +63,19 @@ Element FlowStart start {   //tube start
    W = 1.0;
 
    Pt = PsTube * ( 1 + (g-1)/2.0*vehicleMach**2 )**(g/(g-1)); // psi
-   Tt = TsTube * ( 1 + (g-1)/2.0*vehicleMach**2 );            // degR  
+   Tt = TsTube * ( 1 + (g-1)/2.0*vehicleMach**2 );            // degR
 
    void preexecute() {
       g = Fl_O.gamt;
       Fl_O.MN = vehicleMach;
-   }      
+   }
 }
 
 Element Duct tube {
-   void preexecute() { 
+   void preexecute() {
       Fl_O.MN = vehicleMach;
       Atube = Fl_O.Aphy/(3.28084**2.)/(144.);
-   }   
+   }
 }
 
 Element Splitter split {
@@ -79,7 +84,7 @@ Element Splitter split {
    void preexecute() {
       Fl_01.MN = Fl_I.MN;
       Fl_02.MN = Fl_I.MN;
-   } 
+   }
 
    void postexecute() {
       AtubeC = Fl_01.Aphy/(3.28084**2.)/(144.);
@@ -93,7 +98,7 @@ Element Inlet intake {
    void preexecute() {
       Fl_O.MN = cmpMach;
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
-   } 
+   }
 
    void postexecute() {
       Adiff = Fl_O.Aphy/(3.28084**2.)/(144.);
@@ -109,6 +114,9 @@ Element Compressor cmp25 {
    void preexecute() {
       Fl_O.MN = cmpMach;
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
+   }
+   void postexecute(){
+      batts = pwr*HPtoKW/(tubeLen/start.Fl_O.V/3600.0)/teslaPack
    }
 }
 
@@ -127,12 +135,12 @@ Element Duct intDuct {
    void postexecute() {
       Acmprssd = Fl_O.Aphy/(3.28084**2.)/(144.);
       Apax = Adiff - Acmprssd;
-   }   
+   }
 }
 
 Element Duct bypass {
    Fl_O.MN = 0.95;
-   
+
    void postexecute() {
       Abypass = Fl_O.Aphy/(3.28084**2.)/(144.);
    }
@@ -241,13 +249,13 @@ void printStuff() {
 }
 
 
-void runCases() { 
+void runCases() {
    for ( vehicleMach = 0.8; vehicleMach <= 0.91; vehicleMach +=0.02 ) {
       run();
       page.display();
       printStuff();
-   } 
-} 
+   }
+}
 
 //cmpMach = 0.60; runCases(); cout << endl;
 cmpMach = 0.65; runCases(); cout << endl;
@@ -259,48 +267,48 @@ void printStuff() {
    cout.precision=8;
    cout.showpoint = TRUE;
    cout << " --- Output ------------- " << endl;
-   cout << " --- Freestream --------- " << endl;   
-   cout << "Pod Mach No.=             " << vehicleMach << endl;   
+   cout << " --- Freestream --------- " << endl;
+   cout << "Pod Mach No.=             " << vehicleMach << endl;
    cout << "Ambient Ps=                  " << toStr(PsTube,10) << " psi" << endl;
    cout << "Ambient Ts=                  " << toStr(TsTube,10) << " degR" << endl;
    cout << "Ambient Pt=                  " << toStr(start.Fl_O.Pt,10) << " psi" << endl;
-   cout << "Ambient Tt=                  " << toStr(start.Fl_O.Tt,10) << " degR" << endl;   
-   cout << "Ambient Ds=                  " << start.Fl_O.rhos*16.0185 << " kg/m^3" << endl; 
-   cout << "Ambient Viscocity=           " << start.Fl_O.mus*1.48816394 << " kg/(m-s)" << endl;  
-   cout << "Pod Velocity=                " << start.Fl_O.V*0.3048 << " m/s" << endl;      
-   cout << "Reynolds No.=                " << (start.Fl_O.rhos*start.Fl_O.V)/(start.Fl_O.mus)/0.3048 << " -/grid unit" << endl;                 
+   cout << "Ambient Tt=                  " << toStr(start.Fl_O.Tt,10) << " degR" << endl;
+   cout << "Ambient Ds=                  " << start.Fl_O.rhos*16.0185 << " kg/m^3" << endl;
+   cout << "Ambient Viscocity=           " << start.Fl_O.mus*1.48816394 << " kg/(m-s)" << endl;
+   cout << "Pod Velocity=                " << start.Fl_O.V*0.3048 << " m/s" << endl;
+   cout << "Reynolds No.=                " << (start.Fl_O.rhos*start.Fl_O.V)/(start.Fl_O.mus)/0.3048 << " -/grid unit" << endl;
 
-   cout << " --- Fan ---------------- " << endl;  
-   cout << "Compressor Mach No.=      " << intake.Fl_O.MN << endl;    
+   cout << " --- Fan ---------------- " << endl;
+   cout << "Compressor Mach No.=      " << intake.Fl_O.MN << endl;
    cout << "Compressor Fan Area=      " << start.Fl_O.Aphy*0.00064516 << " m^2" << endl;
-   cout << "Compressor Fan Radius=    " << sqrt(start.Fl_O.Aphy*0.00064516/PI) << " m" << endl;     
+   cout << "Compressor Fan Radius=    " << sqrt(start.Fl_O.Aphy*0.00064516/PI) << " m" << endl;
    cout << "Compressor Ps=            " << intake.Fl_O.Ps << " Pa" << endl;
-   cout << "Compressor Ts=            " << intake.Fl_O.Ts << " degR" << endl;  
+   cout << "Compressor Ts=            " << intake.Fl_O.Ts << " degR" << endl;
    cout << "Compressor Pt=            " << intake.Fl_O.Pt << " Pa" << endl;
-   cout << "Compressor Tt=            " << intake.Fl_O.Tt << " degR" << endl;          
+   cout << "Compressor Tt=            " << intake.Fl_O.Tt << " degR" << endl;
    cout << "Compressor MFR=           " << toStr(intake.Fl_O.W*0.453592,10) << " kg/s" << endl;
-   cout << "Compressor SPR=           " << intake.Fl_O.Ps/PsTube << " kg/s" << endl;    
-   cout << "Compressor Power Reqd=    " << -cmp25.pwr << " hp" << endl; 
+   cout << "Compressor SPR=           " << intake.Fl_O.Ps/PsTube << " kg/s" << endl;
+   cout << "Compressor Power Reqd=    " << -cmp25.pwr << " hp" << endl;
 
-   cout << " --- Nozzle Plenum ------------- " << endl;   
+   cout << " --- Nozzle Plenum ------------- " << endl;
    cout << "Nozzle Plenum Area=       " << intDuct.Fl_O.Aphy*0.00064516 << " m^2" << endl;
-   cout << "Nozzle Plenum Radius=     " << sqrt(intDuct.Fl_O.Aphy*0.00064516/PI) << " m" << endl; 
+   cout << "Nozzle Plenum Radius=     " << sqrt(intDuct.Fl_O.Aphy*0.00064516/PI) << " m" << endl;
    cout << "Nozzle Plenum Ps=         " << intDuct.Fl_O.Ps << " psi" << endl;
-   cout << "Nozzle Plenum Ts=         " << intDuct.Fl_O.Ts << " degR" << endl;  
+   cout << "Nozzle Plenum Ts=         " << intDuct.Fl_O.Ts << " degR" << endl;
    cout << "Nozzle Plenum Pt=         " << intDuct.Fl_O.Pt << " psi" << endl;
-   cout << "Nozzle Plenum Tt=         " << intDuct.Fl_O.Tt << " degR" << endl;     
-   cout << "Nozzle Plenum TPR=        " << intDuct.Fl_O.Pt/PsTube << endl; 
+   cout << "Nozzle Plenum Tt=         " << intDuct.Fl_O.Tt << " degR" << endl;
+   cout << "Nozzle Plenum TPR=        " << intDuct.Fl_O.Pt/PsTube << endl;
    cout << "Nozzle Plenum TTR=        " << intDuct.Fl_O.Tt/TsTube << endl;
-       
+
    cout << " --- Nozzle Exit ------------- " << endl;
-   cout << "Nozzle Exit Mach No.=     " << nozz.Fl_O.MN << endl;         
+   cout << "Nozzle Exit Mach No.=     " << nozz.Fl_O.MN << endl;
    cout << "Nozzle Exit Area=         " << nozz.Fl_O.Aphy*0.00064516 << " m^2" << endl;
-   cout << "Nozzle Exit Radius=       " << sqrt(nozz.Fl_O.Aphy*0.00064516/PI) << " m" << endl;     
-   cout << "Nozzle Exit Ps=           " << nozz.Fl_O.Ps << " psi" << endl;  
-   cout << "Nozzle Exit Ts=           " << nozz.Fl_O.Ts << " degR" << endl;     
-   cout << "Nozzle Exit Pt=           " << nozz.Fl_O.Pt << " psi" << endl; 
-   cout << "Nozzle Exit Tt=           " << nozz.Fl_O.Tt << " degR" << endl;     
-   cout << "Nozzle MFR=               " << toStr(nozz.Fl_O.W*0.453592,10) << " kg/s" << endl;      
+   cout << "Nozzle Exit Radius=       " << sqrt(nozz.Fl_O.Aphy*0.00064516/PI) << " m" << endl;
+   cout << "Nozzle Exit Ps=           " << nozz.Fl_O.Ps << " psi" << endl;
+   cout << "Nozzle Exit Ts=           " << nozz.Fl_O.Ts << " degR" << endl;
+   cout << "Nozzle Exit Pt=           " << nozz.Fl_O.Pt << " psi" << endl;
+   cout << "Nozzle Exit Tt=           " << nozz.Fl_O.Tt << " degR" << endl;
+   cout << "Nozzle MFR=               " << toStr(nozz.Fl_O.W*0.453592,10) << " kg/s" << endl;
    cout << "Nozzle Gross Thrust=      " << nozz.Fg << " lb" << endl;
    cout << "Inlet Ram Drag=           " << intake.Fram << " lb" << endl;
    cout << "Pod Net Thrust=           " << nozz.Fg - intake.Fram << " lb" << endl << endl;
