@@ -337,12 +337,13 @@ class Lift(Component):
 
         fig2 = plt.figure()
         ax2 = fig2.add_subplot(111)
-        ax2.plot(vp,Fxp1,vp,Fyp1,vp,Fxp2,vp,Fyp2)
+
+        ax2.plot(vp[:],Fxp1,vp[:],Fyp1,vp[:],Fxp2[:],vp[:],Fyp2[1:]+Fyp2[-1:])
         plt.ylabel('Newtons')
         plt.xlabel('Velocity (meters/sec)')
         plt.title('Drag (b) Docked (r) & Levitation (g) Docked (t) Forces')
         ay2 = fig2.add_subplot(212)
-        ay2.plot(vp,Lhp)
+        ay2.plot(vp,Lhp[1:]+Lhp[-1:])
         plt.ylabel('Height (meters)')
         plt.show()
 
