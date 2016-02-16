@@ -2,42 +2,108 @@
 // magneplane model for PyCycle Verification
 //
 
+//------------------------------------------------------------------------
+//                           Output Data Viewers 
+//------------------------------------------------------------------------
 setThermoPackage( "Janaf" );
 
-real vehicleMach = 0.6;
+#include <area.view_page>
+
+real C_IN2toM2 = 144.*(3.28084**2.);
+page {
+   SimpleBlock areas { 
+      
+      body =   "tube diameter:???.??? m \n" +
+               "capsule diameter:???.??? m \n" +
+               "cabin diameter:???.??? m \n\n" +
+         "AREAS  \n" +
+         "Tube:????.??? m2    Tube B:????.??? m2    bypass throat:????.??? m2   blockage:     ????.??? m2     comp. exit:????.??? m2 \n" +
+         "                    Tube C:????.??? m2    capsule:      ????.??? m2   comp. face:   ????.??? m2     passenger :????.??? m2  \n" +
+         "POWER  \n" +
+         "Compressor:  ????.??? hp";
+                                                                                                    
+      vars = { "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)", 
+          "sqrt((intake.Fl_O.Aphy/C_IN2toM2)*4./PI)", 
+          "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
+          "start.Fl_O.Aphy/C_IN2toM2", 
+          "split.Fl_02.Aphy/C_IN2toM2", 
+          "bypass.Fl_O.Aphy/C_IN2toM2",
+          "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)*(1.-blockage)/C_IN2toM2",
+          "cmp25.Fl_O.Aphy/C_IN2toM2",                    
+          "split.Fl_01.Aphy/C_IN2toM2", 
+          "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2",
+          "intake.Fl_O.Aphy/C_IN2toM2", 
+          "(intake.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2", 
+          "-cmp25.pwr" }
+   } 
+   inputs.bottom = "areas"; 
+}
+
+//------------------------------------------------------------------------
+//                           NPSS Model
+//------------------------------------------------------------------------
+
+real vehicleMach = 0.71;
 real cmpMach = 0.6;
-//real PsTube = 4.364;  // 30,000 ft, std alt pressure
-real PsTube = 4.363932;  // std day sea level static pressure
-real TsTube = 411.681440;  // 291 K
-real podRadius = 3.5; // ft
+real PsTube = 0.507313;  // 75000 ft std alt pressure
+real TsTube = 524.0;
+real Atube, Dtube, AtubeB, AtubeC;
+real Apod, Abypass, blockage = 0.90;
+real Apax, Adiff, Acmprssd;
+real g;
 
 // start -> inlet --> compressor --> duct  ---> nozzle ---> end
 
 Element FlowStart start {   //tube start
    W = 1.0;
-   Pt = PsTube * ( 1 + 0.2*vehicleMach**2 )**3.5; // Pa
-   Tt = TsTube * ( 1 + 0.2*vehicleMach**2 );      // Pa
-   
+
+   Pt = PsTube * ( 1 + (g-1)/2.0*vehicleMach**2 )**(g/(g-1)); // psi
+   Tt = TsTube * ( 1 + (g-1)/2.0*vehicleMach**2 );            // degR  
+
    void preexecute() {
+      g = Fl_O.gamt;
       Fl_O.MN = vehicleMach;
-   }
+   }      
+}
+
+Element Duct tube {
+   void preexecute() { 
+      Fl_O.MN = vehicleMach;
+      Atube = Fl_O.Aphy/(3.28084**2.)/(144.);
+   }   
+}
+
+Element Splitter split {
+   BPR = 0.5;
+
+   void preexecute() {
+      Fl_01.MN = Fl_I.MN;
+      Fl_02.MN = Fl_I.MN;
+   } 
+
    void postexecute() {
-      Fl_O.W = Fl_O.V*Fl_O.rhos*PI*podRadius**2; // Assume all frontal flow is captured
+      AtubeC = Fl_01.Aphy/(3.28084**2.)/(144.);
+      AtubeB = Fl_02.Aphy/(3.28084**2.)/(144.);
    }
 }
 
-Element Inlet intake { 
+Element Inlet intake {
    PqP_in = 0.99; // recovery
-   
+
    void preexecute() {
-      Fl_O.MN = cmpMach;    // acceptable compressor Mach #
+      Fl_O.MN = cmpMach;
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
+   } 
+
+   void postexecute() {
+      Adiff = Fl_O.Aphy/(3.28084**2.)/(144.);
+      Apod  = Fl_O.Aphy/(3.28084**2.)/(144.)/blockage;   // Adiff/blockage
    }
 }
 
 Element Compressor cmp25 {
-   PRdes = 1.5;
-   effDes = 1.0;
+   PRdes = 12.5;
+   effDes = 0.9;
 
    // in reality this must be slower but the internal duct can accel the flow
    void preexecute() {
@@ -57,13 +123,29 @@ Element Duct intDuct {
       Fl_O.MN = cmpMach;
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
    }
+
+   void postexecute() {
+      Acmprssd = Fl_O.Aphy/(3.28084**2.)/(144.);
+      Apax = Adiff - Acmprssd;
+   }   
+}
+
+Element Duct bypass {
+   Fl_O.MN = 0.95;
+   
+   void postexecute() {
+      Abypass = Fl_O.Aphy/(3.28084**2.)/(144.);
+   }
 }
 
 Element Nozzle nozz {
-   switchType = "CONIC";
-   PsExh = 2.7;
+   switchType = "CON_DIV";
+   PsExhName = "start.Fl_O.Ps";
 }
 
+
+Element FlowEnd endB {
+}
 
 Element FlowEnd endC {
 }
@@ -71,15 +153,71 @@ Element FlowEnd endC {
 //------------------------------------------------------------------------
 //                           Component Linkages
 //------------------------------------------------------------------------
-// tube flowpath
-linkPorts( "start.Fl_O"      , "intake.Fl_I"      , "FStube"  ) ;
+linkPorts( "start.Fl_O"      , "tube.Fl_I"        , "FS_0"     ) ;
+linkPorts( "tube.Fl_O"       , "split.Fl_I"       , "FStube"   ) ;
+linkPorts( "split.Fl_01"     , "intake.Fl_I"      , "FStubeC"  ) ;
+linkPorts( "split.Fl_02"     , "bypass.Fl_I"      , "FStubeB"  ) ;
+linkPorts( "bypass.Fl_O"     , "endB.Fl_I"        , "FSbypass" ) ;
 linkPorts( "intake.Fl_O"     , "cmp25.Fl_I"       , "FSdiffused" ) ;
 linkPorts( "cmp25.Fl_O"      , "intDuct.Fl_I"     , "FScompressed" ) ;
 linkPorts( "intDuct.Fl_O"    , "nozz.Fl_I"        , "FSintduct" ) ;
 linkPorts( "nozz.Fl_O"       , "endC.Fl_I"        , "FSnozzle" ) ;
 
-//shaft
 linkPorts( "cmp25.Sh_O"      , "shaft.Sh_cmp"     , "CMPwork" ) ;
+
+
+Independent ind_Pt {
+   varName = "start.Pt";
+   autoSetup = TRUE;
+}
+
+Independent ind_Tt {
+   varName = "start.Tt";
+   autoSetup = TRUE;
+}
+
+Independent ind_W {
+   varName = "start.W";
+   autoSetup = TRUE;
+}
+
+Independent ind_BPR {
+   varName = "split.BPR";
+   autoSetup = TRUE;
+}
+
+
+/*
+Dependent dep_Ps {
+   eq_rhs = "start.Fl_O.Ps";
+   eq_lhs = "PsTube";
+   autoSetup = TRUE;
+}
+*/
+
+Dependent dep_Wcmp {
+   eq_rhs = "-cmp25.pwr";
+   eq_lhs = "3000";
+   autoSetup = TRUE;
+}
+
+Dependent dep_Ts {
+   eq_rhs = "start.Fl_O.Ts";
+   eq_lhs = "TsTube";
+   autoSetup = TRUE;
+}
+
+Dependent dep_Apod {
+   eq_rhs = "Apax"; // "start.Fl_O.Aphy";
+   eq_lhs = "1.40"; // "3.618*(3.281**2.)*(144.)";
+   autoSetup = TRUE;
+}
+
+Dependent dep_Amatch {
+   eq_rhs = "AtubeB + AtubeC";
+   eq_lhs = "Abypass + Apod";
+   autoSetup = TRUE;
+}
 
 //------------------------------------------------------------------
 //     Run Cases
@@ -89,10 +227,34 @@ solver.maxJacobians = 100;
 solver.maxIterations = 100;
 
 autoSolverSetup();
-solver.removeDependent( "shaft.integrate_Nmech" ); // Required to remove autoSolver balance
+solver.removeDependent( "shaft.integrate_Nmech" );
 run();
-//page.display();
+page.display();
 
+
+
+// Atube   AtubeB  AtubeC    Abypass    Apod    Adiff    Ablk    Acmp    Apax
+void printStuff() {
+   cout.precision=5; cout.showpoint = TRUE;
+   cout << vehicleMach << "     ";
+   cout << Atube << "    " << AtubeB << "    " << AtubeC << "          " << Abypass  << "    " << Apod   << "    " << Adiff << "    " << (Apod - Adiff ) << "    " << Acmprssd  << "    " << Apax << endl;
+}
+
+
+void runCases() { 
+   for ( vehicleMach = 0.8; vehicleMach <= 0.91; vehicleMach +=0.02 ) {
+      run();
+      page.display();
+      printStuff();
+   } 
+} 
+
+//cmpMach = 0.60; runCases(); cout << endl;
+cmpMach = 0.65; runCases(); cout << endl;
+//cmpMach = 0.70; runCases(); cout << endl;
+
+
+/*
 void printStuff() {
    cout.precision=8;
    cout.showpoint = TRUE;
@@ -152,3 +314,4 @@ void runCases() {
    }
 }
 runCases();
+*/
