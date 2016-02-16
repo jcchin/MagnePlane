@@ -24,8 +24,7 @@ class Aero(Component):
         self.add_param('coef_drag', 1.0, desc='capsule drag coefficient')
         self.add_param('area_frontal', 1.5, desc='frontal area of capsule', units='m**2')
         self.add_param('velocity_capsule', 600.0, desc='capsule velocity', units='m/s')
-        self.add_param('rho', 0.01, desc='tube air density', units='kg/m**3')
-        self.add_param('gross_thrust', 1300.0, desc='nozzle gross thrust', units='N')
+        self.add_param('gross_thrust', 0.0, desc='nozzle gross thrust', units='N')
 
         self.add_output('net_force', 0.0, desc='net force with drag considerations', units='N')
         self.add_output('drag', 0.0, desc='drag force', units='N')
@@ -68,7 +67,7 @@ class Aero(Component):
         print ("mu*     = %f  kg/(m-s)" % mustar)
 
         # --- Open template file
-        filein = open( '../Fun3D/fun3d.template' )
+        filein = open( '../Fun3D/Flow/fun3d.template' )
 
         src = Template( filein.read() )
 
