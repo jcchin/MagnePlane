@@ -58,6 +58,11 @@ if __name__ == "__main__":
     prob = Problem()
     prob.root = CompressionCycle()
 
+    recorder = SqliteRecorder('cycle')
+    recorder.options['record_params'] = True
+    recorder.options['record_metadata'] = True
+    prob.driver.add_recorder(recorder)
+
     params = (
         ('vehicleMach', 0.6),
         ('inlet_MN', 0.6),
@@ -201,15 +206,10 @@ if __name__ == "__main__":
     import sqlitedict
     from pprint import pprint
 
-    recorder = SqliteRecorder('cycle')
-    recorder.options['record_params'] = True
-    recorder.options['record_metadata'] = True
-    prob.driver.add_recorder(recorder)
-
     db = sqlitedict.SqliteDict('cycle', 'openmdao' )
     print db.keys()
     data = db['Driver/1']
-    #u = data['Unknowns']
+    u = data['Unknowns']
     #pprint(u)
     prob.cleanup()
-    #remove('./cycle')
+    remove('./cycle')
