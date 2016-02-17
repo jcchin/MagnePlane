@@ -11,8 +11,9 @@ setThermoPackage( "Janaf" );
 
 real C_IN2toM2 = 144.*(3.28084**2.);
 real HPtoKW = 0.7457;
-real tubeLen = 804672.0; // 500 miles in meters
+real tubeLen = 563270.0; // 350 miles in meters
 real teslaPack = 90.0; // kw-hours
+
 page {
    SimpleBlock areas {
 
@@ -24,11 +25,11 @@ page {
          "                    Tube C:????.??? m2    capsule:      ????.??? m2   comp. face:   ????.??? m2     passenger :????.??? m2  \n" +
          "POWER  \n" +
          "Compressor:  ????.??? hp \n" +
-         "90Kwh Tesla Batteries: ??.??";
+         "No. of 90Kwh Tesla Batteries: ???.???";
 
       vars = { "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)",
-          "sqrt((intake.Fl_O.Aphy/C_IN2toM2)*4./PI)",
-          "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
+          "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",      
+          "sqrt(((intake.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
           "start.Fl_O.Aphy/C_IN2toM2",
           "split.Fl_02.Aphy/C_IN2toM2",
           "bypass.Fl_O.Aphy/C_IN2toM2",
@@ -39,7 +40,7 @@ page {
           "intake.Fl_O.Aphy/C_IN2toM2",
           "(intake.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2",
           "-cmp25.pwr",
-          "cmp.batts" }
+          "cmp25.batteries" }
    }
    inputs.bottom = "areas";
 }
@@ -107,6 +108,8 @@ Element Inlet intake {
 }
 
 Element Compressor cmp25 {
+   real batteries;
+      
    PRdes = 12.5;
    effDes = 0.9;
 
@@ -116,7 +119,11 @@ Element Compressor cmp25 {
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
    }
    void postexecute(){
-      batts = pwr*HPtoKW/(tubeLen/start.Fl_O.V/3600.0)/teslaPack
+    
+      batteries = (-pwr*HPtoKW*(tubeLen/(start.Fl_O.V*0.3048)/3600.0))/teslaPack;
+      //cout << "Pod Velocity=                " << start.Fl_O.V*0.3048 << " m/s" << endl;
+      //cout << "Trip Time=                " << (tubeLen/(start.Fl_O.V*0.3048)/3600.0) << " hrs" << endl;
+      
    }
 }
 
