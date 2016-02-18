@@ -50,6 +50,7 @@ class Balance(Component):
         self.add_state('W', val=298.16)
         self.add_state('BPR', val=1.4)
 
+        self.fd_options['force_fd'] = True
 
     def solve_nonlinear(self, params, unknowns, resids):
         pass
@@ -65,11 +66,6 @@ class Balance(Component):
         print "Tt ", u['Tt']
         print "W ", u['W']
         print "BPR ", u['BPR']
-
-
-    def apply_linear(self, params, unknowns, dparams, dunknowns, dresids, mode):
-        pass
-
 
 
 class CompressionCycle(Group):
@@ -131,11 +127,11 @@ class Sim(Group):
         self.connect('conv.balance.W','conv.cycle.fl_start.W')
         self.connect('conv.balance.BPR','conv.cycle.splitter.BPR')
 
-        self.nl_solver = NLGaussSeidel()
-        self.nl_solver.options['atol'] = 1e-5
-        self.nl_solver.options['iprint'] = 1
-        self.nl_solver.options['rtol'] = 1e-5
-        self.nl_solver.options['maxiter'] = 50
+        conv.nl_solver = Newton()
+        conv.nl_solver.options['atol'] = 1e-5
+        conv.nl_solver.options['iprint'] = 1
+        conv.nl_solver.options['rtol'] = 1e-5
+        conv.nl_solver.options['maxiter'] = 50
 
         self.ln_solver = LinearGaussSeidel()
         self.ln_solver.options['atol'] = 1e-6
@@ -219,6 +215,7 @@ if __name__ == "__main__":
     prob['conv.cycle.shaft.Nmech'] = 10000.
 
     #prob.root.duct.list_connections()
+    prob.print_all_convergence()
 
     import time
     t = time.time()
