@@ -19,8 +19,54 @@ from openmdao.api import SqliteRecorder
 
 C_IN2toM2 = 144.*(3.28084**2.)
 HPtoKW = 0.7457
-tubeLen = 563270.0 # // 350 miles in meters
-teslaPack = 90.0 # // kw-hours
+tubeLen = 563270.0  # // 350 miles in meters
+teslaPack = 90.0  # // kw-hours
+
+
+class Balance(Component):
+
+    def __init__(self):
+        super(TempBalance, self).__init__()
+        # independents (params)
+        # self.add_param('A_in', val=1.3)
+        # self.add_param('pwr_in', val=100.)
+        self.add_param('Ts_in', val=275.)
+        self.add_param('TsTube', val=300.)
+
+        self.add_param('AtubeB', val=1.3)
+        self.add_param('AtubeC', val=1.3)
+        self.add_param('Abypass', val=1.3)
+        self.add_param('Apod', val=1.3)
+
+        self.add_state('Pt', val=1.4)
+        self.add_state('Tt', val=1.4)
+        self.add_state('W', val=1.4)
+
+
+        # dependents (states)
+        # self.add_state('Apax', val=1.4)
+        # self.add_state('pwr', val=200.)
+        self.add_state('Pt', val=1.4)
+        self.add_state('Tt', val=1.4)
+        self.add_state('W', val=1.4)
+        self.add_state('BPR', val=1.4)
+
+
+    def solve_nonlinear(self, params, unknowns, resids):
+        pass
+
+    def apply_nonlinear(self, p, u, resids):
+
+        resids['Pt'] = p['pwr'] + 3000. # pwr = -3000
+        resids['Tt'] = p['Ts_in'] - p['TsTube']
+        resids['W'] = p['Apax'] - 1.4  # Apax = 1.4
+        resids['BPR'] = (p['AtubeB']+p['AtubeC']) - (p['Abypass'] + p['Apod'])
+
+
+    def apply_linear(self, params, unknowns, dparams, dunknowns, dresids, mode):
+        pass
+
+
 
 class CompressionCycle(Group):
     """A group that models an inlet->compressor->duct->nozzle->shaft"""
@@ -38,12 +84,16 @@ class CompressionCycle(Group):
         self.add('nozzle', Nozzle(thermo_data=janaf, elements=AIR_MIX))
         self.add('shaft', Shaft(1))
 
+        self.add('bypass', Duct(thermo_data=janaf, elements=AIR_MIX))
+
         # connect components
         connect_flow(self,'fl_start.Fl_O', 'inlet.Fl_I')
         connect_flow(self,'inlet.Fl_O', 'splitter.Fl_I')
         connect_flow(self, 'splitter.Fl_O1', 'comp.Fl_I')
         connect_flow(self,'comp.Fl_O', 'duct.Fl_I')
         connect_flow(self,'duct.Fl_O', 'nozzle.Fl_I')
+
+        connect_flow(self, 'splitter.Fl_O2', 'bypass.Fl_I')
 
         self.connect('comp.trq', 'shaft.trq_0')
         self.connect('shaft.Nmech', 'comp.Nmech')
@@ -52,6 +102,31 @@ class CompressionCycle(Group):
         # self.nl_solver.options['rtol'] = 1.4e-8
         # self.nl_solver.options['maxiter'] = 75
         # self.nl_solver.options['iprint'] = 1
+
+class Sim(Group):
+    """drive indep/dep pairs"""
+
+    def __init__(self):
+        super(Sim, self).__init__()
+
+        self.add('cycle', CompressionCycle())
+        self.add('balance', Balance(), promotes=['TsTube'])
+
+        self.connect('cycle.fl_start.Fl_O:stat:Ts','Ts_in')
+        self.connect('cycle.splitter.Fl_O1:stat:area','AtubeB')
+        self.connect('cycle.splitter.Fl_O2:stat:area','AtubeC')
+        self.connect('cycle.bypass.Fl_O:stat:area','Abypass')
+        self.connect('cycle.inlet.Fl_O:stat:area','Apod')
+
+        self.connect('balance.Pt', 'fl_start.P')
+        self.connect('balance.Tt', 'fl_start.T')
+        self.connect('balance.W', 'fl_start.W')
+        self.connect('balance.BPR', 'splitter.BPR')
+
+        self.ln_solver = ScipyGMRES()
+        self.ln_solver.options['atol'] = 1e-6
+        self.ln_solver.options['maxiter'] = 100
+        self.ln_solver.options['restart'] = 100
 
 if __name__ == "__main__":
 
@@ -133,6 +208,8 @@ if __name__ == "__main__":
     Atube = prob['inlet.Fl_O:stat:area']/(3.28084**2.)/(144.)
     AtubeC = prob['splitter.Fl_O1:stat:area']/(3.28084**2.)/(144.)
     AtubeB = prob['splitter.Fl_O2:stat:area']/(3.28084**2.)/(144.)
+    batteries = (-prob['comp.power']*HPtoKW*(tubeLen/(prob['fl_start.Fl_O:stat:V']*0.3048)/3600.0))/teslaPack;
+
 
     astar = np.sqrt(prob['fl_start.Fl_O:stat:gamma']*R_UNIVERSAL_SI*(cu(prob['fl_start.Fl_O:stat:T'], 'degR', 'degK')))
     ustar = astar*prob['fl_start.Fl_O:stat:MN']
@@ -207,7 +284,6 @@ if __name__ == "__main__":
     from pprint import pprint
 
     db = sqlitedict.SqliteDict('cycle', 'openmdao' )
-    print db.keys()
     data = db['Driver/1']
     u = data['Unknowns']
     #pprint(u)
