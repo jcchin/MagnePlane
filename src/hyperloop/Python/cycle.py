@@ -45,7 +45,7 @@ class Balance(Component):
         # dependents (states)
         # self.add_state('Apax', val=1.4)
         # self.add_state('pwr', val=200.)
-        self.add_state('Pt', val=5.566211746, units='psi')
+        self.add_state('Pt', val=5.566211746, lower=0.1, units='psi')
         self.add_state('Tt', val=441.3225037, units='degR')
         self.add_state('W', val=298.16, units='lbm/s')
         self.add_state('BPR', val=1.4)
@@ -227,12 +227,14 @@ if __name__ == "__main__":
     prob['cycle.shaft.Nmech'] = 10000.
 
     #prob.root.duct.list_connections()
-    prob.print_all_convergence()
+    #prob.print_all_convergence()
 
     import time
     t = time.time()
     prob.run()
     print time.time() - t
+    #inputs = ['balance.Pt', 'balance.Tt', 'balance.W', 'balance.BPR']
+    #prob.check_total_derivatives()
 
     #Atube = prob['inlet.Fl_O:stat:area']/(3.28084**2.)/(144.)
     #AtubeC = prob['splitter.Fl_O1:stat:area']/(3.28084**2.)/(144.)
