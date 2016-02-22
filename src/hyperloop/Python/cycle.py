@@ -36,10 +36,12 @@ class Balance(Component):
 
         self.add_param('Adiff', val=2.5, units='m**2')
         self.add_param('Acmprssd', val=1., units='m**2')
+        self.add_param('AnozzExit', val=0.6, units='m**2')
 
         self.add_param('AtubeB', val=1.3, units='m**2')
         self.add_param('AtubeC', val=1.3, units='m**2')
         self.add_param('Abypass', val=1.3, units='m**2')
+        self.add_param('AbypassExit', val=1.1, units='m**2')
         #self.add_param('Apod', val=1.3)
 
         # dependents (states)
@@ -49,6 +51,7 @@ class Balance(Component):
         self.add_state('Tt', val=441.3225037, units='degR')
         self.add_state('W', val=298.16, units='lbm/s')
         self.add_state('BPR', val=1.4)
+        self.add_state('byp_exit_MN', val=0.6)
 
         #self.fd_options['force_fd'] = True
 
@@ -61,6 +64,7 @@ class Balance(Component):
         resids['Tt'] = p['Ts_in'] - p['TsTube']
         resids['W'] = (p['Adiff']-p['Acmprssd']) - 1.4  # Apax = 1.4
         resids['BPR'] = (p['AtubeB']+p['AtubeC']) - (p['Abypass'] + p['Adiff'])
+        resids['byp_exit_MN'] = (p['AtubeB'] + p['AtubeC']) - (p['AnozzExit']+p['AbypassExit'])
 
         print "Pt ", u['Pt']
         print "Tt ", u['Tt']
@@ -90,23 +94,28 @@ class CompressionCycle(Group):
         # initiate components
         #self.add('fc', FlightConditions())
         self.add('fl_start', FlowStart(thermo_data=janaf, elements=AIR_MIX))
-        self.add('inlet', Inlet(thermo_data=janaf, elements=AIR_MIX))
+        self.add('tube', Duct(thermo_data=janaf, elements=AIR_MIX))
         self.add('splitter', Splitter(thermo_data=janaf, elements=AIR_MIX))
+        # internal flow
+        self.add('inlet', Inlet(thermo_data=janaf, elements=AIR_MIX))
         self.add('comp', Compressor(thermo_data=janaf, elements=AIR_MIX))
         self.add('duct', Duct(thermo_data=janaf, elements=AIR_MIX))
         self.add('nozzle', Nozzle(thermo_data=janaf, elements=AIR_MIX))
         self.add('shaft', Shaft(1))
-
+        #external flow
         self.add('bypass', Duct(thermo_data=janaf, elements=AIR_MIX))
+        self.add('bypass_exit', Duct(thermo_data=janaf, elements=AIR_MIX))
 
         # connect components
-        connect_flow(self,'fl_start.Fl_O', 'inlet.Fl_I')
-        connect_flow(self,'inlet.Fl_O', 'splitter.Fl_I')
-        connect_flow(self, 'splitter.Fl_O1', 'comp.Fl_I')
+        connect_flow(self,'fl_start.Fl_O','tube.Fl_I')
+        connect_flow(self,'tube.Fl_O','splitter.Fl_I')
+        connect_flow(self, 'splitter.Fl_O1', 'inlet.Fl_I')
+        connect_flow(self, 'inlet.Fl_O','comp.Fl_I')
         connect_flow(self,'comp.Fl_O', 'duct.Fl_I')
         connect_flow(self,'duct.Fl_O', 'nozzle.Fl_I')
-
+        # bypass stream
         connect_flow(self, 'splitter.Fl_O2', 'bypass.Fl_I')
+        connect_flow(self, 'bypass.Fl_O', 'bypass_exit.Fl_I')
 
         self.connect('comp.trq', 'shaft.trq_0')
         self.connect('shaft.Nmech', 'comp.Nmech')
@@ -132,12 +141,16 @@ class Sim(Group):
         self.connect('cycle.bypass.Fl_O:stat:area','balance.Abypass')
         self.connect('cycle.inlet.Fl_O:stat:area','balance.Adiff')
         self.connect('cycle.duct.Fl_O:stat:area','balance.Acmprssd')
+        self.connect('cycle.bypass_exit.Fl_O:stat:area','balance.AbypassExit')
+        self.connect('cycle.nozzle.Fl_O:stat:area','balance.AnozzExit')
+
         self.connect('cycle.comp.power','balance.pwr')
 
         self.connect('balance.Pt','cycle.fl_start.P')
         self.connect('balance.Tt','cycle.fl_start.T')
         self.connect('balance.W','cycle.fl_start.W')
         self.connect('balance.BPR','cycle.splitter.BPR')
+        self.connect('balance.byp_exit_MN','cycle.bypass_exit.MN_target')
 
         #self.nl_solver = Newton()
         #self.nl_solver.options['atol'] = 1e-5
