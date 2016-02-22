@@ -47,8 +47,8 @@ class Balance(Component):
         # dependents (states)
         # self.add_state('Apax', val=1.4)
         # self.add_state('pwr', val=200.)
-        self.add_state('Pt', val=5.566211746, lower=0.01, units='psi')
-        self.add_state('Tt', val=441.3225037, units='degR')
+        self.add_state('Pt', val=0.27276, lower=0.01, units='psi')
+        self.add_state('Tt', val=591.03, units='degR')
         self.add_state('W', val=298.16, units='lbm/s')
         self.add_state('BPR', val=1.4)
         self.add_state('byp_exit_MN', val=0.6)
@@ -120,10 +120,6 @@ class CompressionCycle(Group):
         self.connect('comp.trq', 'shaft.trq_0')
         self.connect('shaft.Nmech', 'comp.Nmech')
 
-        # self.nl_solver = Newton()
-        # self.nl_solver.options['rtol'] = 1.4e-8
-        # self.nl_solver.options['maxiter'] = 75
-        # self.nl_solver.options['iprint'] = 1
 
 class Sim(Group):
     """drive indep/dep pairs"""
@@ -145,7 +141,7 @@ class Sim(Group):
         self.connect('cycle.nozzle.Fl_O:stat:area','balance.AnozzExit')
 
         self.connect('cycle.comp.power','balance.pwr')
-        self.connect('cycle.tube.Fl_O:stat:T', 'balance.TsTube')
+        self.connect('cycle.tube.Fl_O:stat:T', 'TsTube')
 
         self.connect('balance.Pt','cycle.fl_start.P')
         self.connect('balance.Tt','cycle.fl_start.T')
@@ -176,14 +172,14 @@ if __name__ == "__main__":
 
     params = (
         ('vehicleMach', 0.8),
-        ('inlet_MN', 0.8),
+        ('inlet_MN', 0.65),
         #('P', 5.566211746, {'units':'psi'}),
         #('T', 441.3225037, {'units':'degR'}),
         #('W', 298.16, {'units':'kg/s'}),
         ('PsE', 14.7, {'units':'psi'}),
-        ('cmpMach', 0.6),
-        ('PsTube', 0.507313), # // 75000 ft std alt pressure
-        ('TsTube', 524.0),
+        ('cmpMach', 0.65),
+        ('PtTube', 0.507313), # // 75000 ft std alt pressure
+        ('TtTube', 524.0),
         #('Atube, Dtube, AtubeB, AtubeC'),
         #('Apod, Abypass, blockage', 0.90),
         #('Apax, Adiff, Acmprssd'),
@@ -200,10 +196,9 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.inlet_MN', 'cycle.inlet.MN_target')
     # prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
     prob.root.connect('des_vars.PsE', 'cycle.nozzle.Ps_exhaust')
-    prob.root.connect('des_vars.PsTube', 'cycle.fl_start.P')
 
     # Make sure balance runs before cycle
-    prob.root.set_order(['des_vars', 'balance', 'cycle'])
+    #prob.root.set_order(['des_vars', 'balance', 'cycle'])
     prob.setup(check=True)
     prob.root.list_connections()
 
@@ -221,12 +216,12 @@ if __name__ == "__main__":
         prob['des_vars.inlet_MN'] = prob['des_vars.vehicleMach']
 
     # Compressor Conditions
-    prob['cycle.comp.map.PRdes'] = 1.5
-    prob['cycle.comp.map.effDes'] = 1.0
-    prob['cycle.comp.MN_target'] = 0.6
+    prob['cycle.comp.map.PRdes'] = 12.5
+    prob['cycle.comp.map.effDes'] = 0.9
+    prob['cycle.comp.MN_target'] = 0.65
 
     # Duct
-    prob['cycle.duct.MN_target'] = 0.6
+    prob['cycle.duct.MN_target'] = 0.65
     prob['cycle.duct.dPqP'] = 0.
 
     # Nozzle Conditions
@@ -275,7 +270,7 @@ if __name__ == "__main__":
     print "Reynolds No.=  %.6f  -/grid unit" % ((cu(prob['cycle.fl_start.Fl_O:stat:rho'],'lbm/ft**3','kg/m**3')*cu(prob['cycle.fl_start.Fl_O:stat:V'],'ft/s','m/s'))/(mustar))
     print ""
 
-    print "--- Fan Conditions ---"
+    print "--- Fan Face Conditions ---"
     print "Compressor Mach No.:   %.6f " % (prob['cycle.inlet.Fl_O:stat:MN'])
     print "Compressor Area:       %.6f m^2" % (cu(prob['cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))
     print "Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
@@ -286,6 +281,16 @@ if __name__ == "__main__":
     print "Compressor MFR:        %.6f kg/s" % (cu(prob['cycle.inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
     print "Compressor SPR:        %.6f " % (prob['cycle.inlet.Fl_O:stat:P']/prob['cycle.fl_start.Fl_O:stat:P'])
     print "Compressor Power Reqd: %.6f hp" % (prob['cycle.comp.power'])
+    print ""
+
+    print "--- Compressor Exit Conditions ---"
+    print "Compressor Mach No.:   %.6f " % (prob['cycle.comp.Fl_O:stat:MN'])
+    print "Compressor Area:       %.6f in^2" % (prob['cycle.comp.Fl_O:stat:area'])
+    print "Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
+    print "Compressor Ps:         %.6f psi" % (prob['cycle.comp.Fl_O:stat:P'])
+    print "Compressor Ts:         %.6f degR" % (prob['cycle.comp.Fl_O:stat:T'])
+    print "Compressor Pt:         %.6f psi" % (prob['cycle.comp.Fl_O:tot:P'])
+    print "Compressor Tt:         %.6f degR" % (prob['cycle.comp.Fl_O:tot:T'])
     print ""
 
     print "--- Nozzle Plenum Conditions ---"
