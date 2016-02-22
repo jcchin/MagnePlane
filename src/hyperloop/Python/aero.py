@@ -2,6 +2,7 @@
 
 # --- Python/system level imports
 import numpy as np
+from string import Template
 
 # --- OpenMDAO main and library imports
 from openmdao.core.component import Component
@@ -15,11 +16,16 @@ class Aero(Component):
     def __init__(self):
         super(Aero, self).__init__()
 
-        self.add_param('d_inf', 1.0, desc='Freestream static density', units='kg/m**3')
-        self.add_param('p_inf', 1.0, desc='Freestream static pressure', units='Pa')
-        self.add_param('t_inf', 1.0, desc='Freestream static temperature', units='K')
-        self.add_param('M_inf', 1.0, desc='Freestream Mach no.')
-        self.add_param('mdot', 1.0, desc='Compressor mass flow rate', units='kg/s')
+        self.add_param('p_inf', 3497.8, desc='Freestream static pressure', units='Pa')
+        self.add_param('t_inf', 291.111, desc='Freestream static temperature', units='K')
+        self.add_param('a_inf', 342.241, desc='Freestream reference speed of sound', units='m/s')             
+        self.add_param('M_inf', 0.8, desc='Freestream Mach no.')        
+        self.add_param('Re', 223789.835, desc='Reynolds no. per unit grid length')
+        self.add_param('SPR', 1.136, desc='Fan face static pressure ratio')
+        self.add_param('MFR', 5.803, desc='Compressor mass flow rate (actual)', units='kg/s')
+        self.add_param('TPR', 18.865, desc='Nozzle plenum total pressure ratio')
+        self.add_param('TTR', 2.407, desc='Nozzle plenum total temperature ratio')        
+        self.add_param('Lstar_Lref', 1.0, desc='Ratio of dimensional reference length to grid length')
 
         self.add_param('coef_drag', 1.0, desc='capsule drag coefficient')
         self.add_param('area_frontal', 1.5, desc='frontal area of capsule', units='m**2')
@@ -37,56 +43,52 @@ class Aero(Component):
         print "------- FUN3D Parameters --------"
         print "---------------------------------"
 
-        astar = np.sqrt(gamma_inf*self.R*self.t_inf)
-        ustar = astar*self.M_inf
-        dstar = gamma_inf*self.p_inf/astar**2
-        mustar = 0.00001716*(self.t_inf/273.15)**1.5*(273.15+110.4)/(self.t_inf+110.4) # --- Sutherlands Law
-        Re = dstar*ustar/mustar*Lstar_Lref
-
         print "Non-Dimensional Variables:"
-        print ("SPR(1)     = %f    " % (self.ps2/self.p_inf))
+        print "SPR(1)     = %f    " % (params['SPR'])
         print ""
-        print ("TPR(2)     = %f    " % (pp_0/self.p_inf))
-        print ("TTR(2)     = %f    " % (self.T4_0/self.t_inf))
+        print "TPR(2)     = %f    " % (params['TPR'])
+        print "TTR(2)     = %f    " % (params['TTR'])
         print ""
-        print ("c(1)     = %f    " % (a2/astar))
-        print ("u(1)     = %f    " % (v2/ustar))
-        print ("rho(1)   = %f    " % (d2/dstar))
-        print ""
-        print ("c(2)     = %f    " % (ap/astar))
-        print ("u(2)     = %f    " % (Mp*ap/ustar))
-        print ("rho(2)   = %f    " % (dp/dstar))
-        print ""
-        print ("L*/Lref = %f " % Lstar_Lref)
-        print ("Re/grid = %f " % Re)
+        print "L*/Lref = %f " % (params['Lstar_Lref'])
+        print "Re/grid = %f " % (params['Re'])
         print ""
         print "Dimensional Variables:"
-        print ("a*    = %f    m/s" % astar)
-        print ("u*    = %f    m/s" % ustar)
-        print ("rho*  = %f    kg/m^3" % dstar)
-        print ("mu*     = %f  kg/(m-s)" % mustar)
+        print "a*    = %f    m/s" % (params['a_inf'])
+        print "u*    = %f    m/s" % (params['M_inf']*params['a_inf'])
+        print "p*  = %f      Pa" % (params['p_inf'])
+        print "t*  = %f      Pa" % (params['t_inf'])
 
         # --- Open template file
         filein = open( '../Fun3D/Flow/fun3d.template' )
 
         src = Template( filein.read() )
 
-        d = { 'Re':Re, 'M_inf':self.M_inf, 'SPR':(ps2/self.p_inf), 'TPR':(pp_0/self.p_inf), 'TTR':(self.T4_0/self.t_inf), 'c1':(a2/astar), 'u1':(v2/ustar), 'rho1':(d2/dstar), 'c2':(ap/astar), 'u2':(Mp*ap/ustar), 'rho2':(dp/dstar)}
+        d = { 'Re':params['Re'], 'M_inf':params['M_inf'], 'SPR':params['SPR'], 'TPR':params['TPR'], 'TTR':params['TTR'] }
 
         # --- Perform Substitutions
         result = src.substitute(d)
 
         # --- Write output
-        fh = open('../Fun3D/fun3d.nml', 'w')
+        fh = open('../Fun3D/Flow/fun3d.nml', 'w')
         fh.write(result)
         fh.close()
 
         # --- External code call here
+        # Transfer solver input files to NAS
+            # All files in "../Fun3D/Flow/*" can be transferred to "pfe:/nobackup/username/some_directory" - Can some_directory be created on the fly?
+        
+        # Submit PBS script to queue
+            # "qsub qscript"  
+            
+        # Transfer solver output files from NAS to local host
+            # Return the following solver files:
+            # "Hyperloop_tec_boundary.plt"
+            # "Hyperloop.forces"
 
         # --- Parse output files here
 
-        unknowns['drag'] = params['coef_drag'] * params['rho'] * params['velocity_capsule'] ** 2 * params['area_frontal'] / 2.0
-        unknowns['net_force'] = params['gross_thrust'] - unknowns['drag']
+        #unknowns['drag'] = params['coef_drag'] * params['rho'] * params['velocity_capsule'] ** 2 * params['area_frontal'] / 2.0
+        #unknowns['net_force'] = params['gross_thrust'] - unknowns['drag']
 
 if __name__ == '__main__':
 
@@ -96,7 +98,7 @@ if __name__ == '__main__':
     p.root.list_connections()
     p.run()
 
-    print 'drag (N): %f' % p['aero.drag']
-    print 'net_force N(kW*hr): %f' % p['aero.net_force']
+    #print 'drag (N): %f' % p['aero.drag']
+    #print 'net_force N(kW*hr): %f' % p['aero.net_force']
 
 
