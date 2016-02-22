@@ -47,7 +47,7 @@ class Balance(Component):
         # dependents (states)
         # self.add_state('Apax', val=1.4)
         # self.add_state('pwr', val=200.)
-        self.add_state('Pt', val=5.566211746, lower=0.1, units='psi')
+        self.add_state('Pt', val=5.566211746, lower=0.01, units='psi')
         self.add_state('Tt', val=441.3225037, units='degR')
         self.add_state('W', val=298.16, units='lbm/s')
         self.add_state('BPR', val=1.4)
@@ -158,11 +158,6 @@ class Sim(Group):
         #self.nl_solver.options['rtol'] = 1e-5
         #self.nl_solver.options['maxiter'] = 50
 
-        #self.ln_solver = LinearGaussSeidel()
-        #self.ln_solver.options['atol'] = 1e-6
-        #self.ln_solver.options['maxiter'] = 100
-        #self.ln_solver.options['restart'] = 100
-
         self.ln_solver = ScipyGMRES()
         self.ln_solver.options['atol'] = 1e-6
         self.ln_solver.options['maxiter'] = 100
@@ -179,8 +174,8 @@ if __name__ == "__main__":
     prob.driver.add_recorder(recorder)
 
     params = (
-        ('vehicleMach', 0.6),
-        ('inlet_MN', 0.6),
+        ('vehicleMach', 0.8),
+        ('inlet_MN', 0.8),
         #('P', 5.566211746, {'units':'psi'}),
         #('T', 441.3225037, {'units':'degR'}),
         #('W', 298.16, {'units':'kg/s'}),
@@ -241,7 +236,7 @@ if __name__ == "__main__":
     # Shaft
     prob['cycle.shaft.Nmech'] = 10000.
 
-    #prob.print_all_convergence()
+    prob.print_all_convergence()
 
     import time
     t = time.time()
