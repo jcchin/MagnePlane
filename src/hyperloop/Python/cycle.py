@@ -123,8 +123,8 @@ class Sim(Group):
         super(Sim, self).__init__()
 
 
-        self.add('cycle', CompressionCycle())
         self.add('balance', Balance(), promotes=['TsTube'])
+        self.add('cycle', CompressionCycle())
 
         self.connect('cycle.fl_start.Fl_O:stat:T','balance.Ts_in')
         self.connect('cycle.splitter.Fl_O1:stat:area','balance.AtubeB')
@@ -139,11 +139,11 @@ class Sim(Group):
         self.connect('balance.W','cycle.fl_start.W')
         self.connect('balance.BPR','cycle.splitter.BPR')
 
-        self.nl_solver = Newton()
-        self.nl_solver.options['atol'] = 1e-5
-        self.nl_solver.options['iprint'] = 1
-        self.nl_solver.options['rtol'] = 1e-5
-        self.nl_solver.options['maxiter'] = 50
+        #self.nl_solver = Newton()
+        #self.nl_solver.options['atol'] = 1e-5
+        #self.nl_solver.options['iprint'] = 1
+        #self.nl_solver.options['rtol'] = 1e-5
+        #self.nl_solver.options['maxiter'] = 50
 
         #self.ln_solver = LinearGaussSeidel()
         #self.ln_solver.options['atol'] = 1e-6
@@ -192,6 +192,8 @@ if __name__ == "__main__":
     # prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
     prob.root.connect('des_vars.PsE', 'cycle.nozzle.Ps_exhaust')
 
+    # Make sure balance runs before cycle
+    prob.root.set_order(['des_vars', 'balance', 'cycle'])
     prob.setup(check=True)
     prob.root.list_connections()
 
@@ -226,7 +228,6 @@ if __name__ == "__main__":
     # Shaft
     prob['cycle.shaft.Nmech'] = 10000.
 
-    #prob.root.duct.list_connections()
     #prob.print_all_convergence()
 
     import time
