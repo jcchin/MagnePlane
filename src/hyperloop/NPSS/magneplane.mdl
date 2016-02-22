@@ -17,19 +17,36 @@ real teslaPack = 90.0; // kw-hours
 page {
    SimpleBlock areas {
 
-      body =   "tube diameter:???.??? m \n" +
-               "capsule diameter:???.??? m \n" +
-               "cabin diameter:???.??? m \n\n" +
+      body =   
+         "FLOW  \n" +
+         "Reynolds:???????.??? -/grid unit    Fan SPR:????.???    Fan MFR:????.??? kg/s   Plenum TPR:????.???     Plenum TTR:????.???  \n\n" +
+
+         "DIAMETERS  \n" +
+         "Tube:????.??? m     Capsule:????.??? m    Inlet:????.??? m     Fan:????.??? m     Plenum:????.??? m    Throat:????.??? m    Exit:????.??? m\n\n" +
+         
          "AREAS  \n" +
-         "Tube:????.??? m2    Tube B:????.??? m2    bypass throat:????.??? m2   blockage:     ????.??? m2     comp. exit:????.??? m2 \n" +
-         "                    Tube C:????.??? m2    capsule:      ????.??? m2   comp. face:   ????.??? m2     passenger :????.??? m2  \n" +
+         "Tube:????.??? m2    Tube B:????.??? m2    bypass:????.??? m2    blockage:????.??? m2      comp. exit:????.??? m2 \n" +
+         "                    Tube C:????.??? m2    capsule:????.??? m2   comp. face:????.??? m2    passenger:????.??? m2  \n" +
+         
          "POWER  \n" +
          "Compressor:  ????.??? hp \n" +
          "No. of 90Kwh Tesla Batteries: ???.???";
 
-      vars = { "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)",
+      vars = {
+         "(start.Fl_O.rhos*start.Fl_O.V/start.Fl_O.mus)/0.3048",
+         "inlet.Fl_O.Ps/start.Fl_O.Ps",
+         "inlet.Fl_O.W*0.453592",
+         "intDuct.Fl_O.Pt/start.Fl_O.Ps",
+         "intDuct.Fl_O.Tt/start.Fl_O.Ts",
+
+          "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)",
           "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",      
-          "sqrt(((intake.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
+          "sqrt((split.Fl_01.Aphy/C_IN2toM2)*4./PI)",          
+          "sqrt((inlet.Fl_O.Aphy/C_IN2toM2)*4./PI)",
+          "sqrt((nozz.Fl_I.Aphy/C_IN2toM2)*4./PI)",
+          "sqrt((nozz.Ath/C_IN2toM2)*4./PI)",
+          "sqrt((nozz.Fl_O.Aphy/C_IN2toM2)*4./PI)",
+
           "start.Fl_O.Aphy/C_IN2toM2",
           "split.Fl_02.Aphy/C_IN2toM2",
           "bypass.Fl_O.Aphy/C_IN2toM2",
@@ -37,8 +54,9 @@ page {
           "cmp25.Fl_O.Aphy/C_IN2toM2",
           "split.Fl_01.Aphy/C_IN2toM2",
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2",
-          "intake.Fl_O.Aphy/C_IN2toM2",
-          "(intake.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2",
+          "inlet.Fl_O.Aphy/C_IN2toM2",
+          "(inlet.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2",
+          
           "-cmp25.pwr",
           "cmp25.batteries" }
    }
@@ -49,11 +67,11 @@ page {
 //                           NPSS Model
 //------------------------------------------------------------------------
 
-real vehicleMach = 0.71;
-real cmpMach = 0.6;
+real vehicleMach = 0.8;
+real cmpMach = 0.65;
 real PsTube = 0.507313;  // 75000 ft std alt pressure
-real TsTube = 524.0;
-real Atube, Dtube, AtubeB, AtubeC;
+real TsTube = 524.0;     // degR
+real Atube, Dtube, AtubeB, AtubeC, AbypassExit, AnozzExit;
 real Apod, Abypass, blockage = 0.90;
 real Apax, Adiff, Acmprssd;
 real g;
@@ -61,7 +79,7 @@ real g;
 // start -> inlet --> compressor --> duct  ---> nozzle ---> end
 
 Element FlowStart start {   //tube start
-   W = 1.0;
+   W = 10.0;
 
    Pt = PsTube * ( 1 + (g-1)/2.0*vehicleMach**2 )**(g/(g-1)); // psi
    Tt = TsTube * ( 1 + (g-1)/2.0*vehicleMach**2 );            // degR
@@ -93,7 +111,7 @@ Element Splitter split {
    }
 }
 
-Element Inlet intake {
+Element Inlet inlet {
    PqP_in = 0.99; // recovery
 
    void preexecute() {
@@ -109,7 +127,7 @@ Element Inlet intake {
 
 Element Compressor cmp25 {
    real batteries;
-      
+
    PRdes = 12.5;
    effDes = 0.9;
 
@@ -153,11 +171,22 @@ Element Duct bypass {
    }
 }
 
-Element Nozzle nozz {
-   switchType = "CON_DIV";
-   PsExhName = "start.Fl_O.Ps";
+Element Duct bypassExit {
+   Fl_O.MN = 0.5;
+
+   void postexecute() {
+      AbypassExit = Fl_O.Aphy/(3.28084**2.)/(144.);
+   }
 }
 
+Element Nozzle nozz {
+   switchType = "CON_DIV";
+   PsExhName = "bypassExit.Fl_O.Ps";
+
+   void postexecute() {
+      AnozzExit = Fl_O.Aphy/(3.28084**2.)/(144.);
+   }
+}
 
 Element FlowEnd endB {
 }
@@ -170,10 +199,11 @@ Element FlowEnd endC {
 //------------------------------------------------------------------------
 linkPorts( "start.Fl_O"      , "tube.Fl_I"        , "FS_0"     ) ;
 linkPorts( "tube.Fl_O"       , "split.Fl_I"       , "FStube"   ) ;
-linkPorts( "split.Fl_01"     , "intake.Fl_I"      , "FStubeC"  ) ;
+linkPorts( "split.Fl_01"     , "inlet.Fl_I"      , "FStubeC"  ) ;
 linkPorts( "split.Fl_02"     , "bypass.Fl_I"      , "FStubeB"  ) ;
-linkPorts( "bypass.Fl_O"     , "endB.Fl_I"        , "FSbypass" ) ;
-linkPorts( "intake.Fl_O"     , "cmp25.Fl_I"       , "FSdiffused" ) ;
+linkPorts( "bypass.Fl_O"     , "bypassExit.Fl_I"  , "FSbypass" ) ;
+linkPorts( "bypassExit.Fl_O" , "endB.Fl_I"        , "FSexit" ) ;
+linkPorts( "inlet.Fl_O"     , "cmp25.Fl_I"       , "FSdiffused" ) ;
 linkPorts( "cmp25.Fl_O"      , "intDuct.Fl_I"     , "FScompressed" ) ;
 linkPorts( "intDuct.Fl_O"    , "nozz.Fl_I"        , "FSintduct" ) ;
 linkPorts( "nozz.Fl_O"       , "endC.Fl_I"        , "FSnozzle" ) ;
@@ -201,6 +231,10 @@ Independent ind_BPR {
    autoSetup = TRUE;
 }
 
+Independent ind_Mexit {
+   varName = "bypassExit.Fl_O.MN";
+   autoSetup = TRUE;
+}
 
 /*
 Dependent dep_Ps {
@@ -234,12 +268,18 @@ Dependent dep_Amatch {
    autoSetup = TRUE;
 }
 
+Dependent dep_Aexit {
+   eq_rhs = "AbypassExit";
+   eq_lhs = "AtubeB + AtubeC - AnozzExit";
+   autoSetup = TRUE;
+}
+
 //------------------------------------------------------------------
 //     Run Cases
 //------------------------------------------------------------------
 setOption( "switchDes", "DESIGN" );
-solver.maxJacobians = 100;
-solver.maxIterations = 100;
+solver.maxJacobians = 500;
+solver.maxIterations = 500;
 
 autoSolverSetup();
 solver.removeDependent( "shaft.integrate_Nmech" );
@@ -257,7 +297,7 @@ void printStuff() {
 
 
 void runCases() {
-   for ( vehicleMach = 0.8; vehicleMach <= 0.91; vehicleMach +=0.02 ) {
+   for ( vehicleMach = 0.8; vehicleMach <= 0.86; vehicleMach +=0.02 ) {
       run();
       page.display();
       printStuff();
@@ -286,15 +326,15 @@ void printStuff() {
    cout << "Reynolds No.=                " << (start.Fl_O.rhos*start.Fl_O.V)/(start.Fl_O.mus)/0.3048 << " -/grid unit" << endl;
 
    cout << " --- Fan ---------------- " << endl;
-   cout << "Compressor Mach No.=      " << intake.Fl_O.MN << endl;
+   cout << "Compressor Mach No.=      " << inlet.Fl_O.MN << endl;
    cout << "Compressor Fan Area=      " << start.Fl_O.Aphy*0.00064516 << " m^2" << endl;
    cout << "Compressor Fan Radius=    " << sqrt(start.Fl_O.Aphy*0.00064516/PI) << " m" << endl;
-   cout << "Compressor Ps=            " << intake.Fl_O.Ps << " Pa" << endl;
-   cout << "Compressor Ts=            " << intake.Fl_O.Ts << " degR" << endl;
-   cout << "Compressor Pt=            " << intake.Fl_O.Pt << " Pa" << endl;
-   cout << "Compressor Tt=            " << intake.Fl_O.Tt << " degR" << endl;
-   cout << "Compressor MFR=           " << toStr(intake.Fl_O.W*0.453592,10) << " kg/s" << endl;
-   cout << "Compressor SPR=           " << intake.Fl_O.Ps/PsTube << " kg/s" << endl;
+   cout << "Compressor Ps=            " << inlet.Fl_O.Ps << " Pa" << endl;
+   cout << "Compressor Ts=            " << inlet.Fl_O.Ts << " degR" << endl;
+   cout << "Compressor Pt=            " << inlet.Fl_O.Pt << " Pa" << endl;
+   cout << "Compressor Tt=            " << inlet.Fl_O.Tt << " degR" << endl;
+   cout << "Compressor MFR=           " << toStr(inlet.Fl_O.W*0.453592,10) << " kg/s" << endl;
+   cout << "Compressor SPR=           " << inlet.Fl_O.Ps/PsTube << " kg/s" << endl;
    cout << "Compressor Power Reqd=    " << -cmp25.pwr << " hp" << endl;
 
    cout << " --- Nozzle Plenum ------------- " << endl;
@@ -317,8 +357,8 @@ void printStuff() {
    cout << "Nozzle Exit Tt=           " << nozz.Fl_O.Tt << " degR" << endl;
    cout << "Nozzle MFR=               " << toStr(nozz.Fl_O.W*0.453592,10) << " kg/s" << endl;
    cout << "Nozzle Gross Thrust=      " << nozz.Fg << " lb" << endl;
-   cout << "Inlet Ram Drag=           " << intake.Fram << " lb" << endl;
-   cout << "Pod Net Thrust=           " << nozz.Fg - intake.Fram << " lb" << endl << endl;
+   cout << "Inlet Ram Drag=           " << inlet.Fram << " lb" << endl;
+   cout << "Pod Net Thrust=           " << nozz.Fg - inlet.Fram << " lb" << endl << endl;
 }
 
 void runCases() {
