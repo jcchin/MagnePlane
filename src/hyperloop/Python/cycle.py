@@ -145,6 +145,7 @@ class Sim(Group):
         self.connect('cycle.nozzle.Fl_O:stat:area','balance.AnozzExit')
 
         self.connect('cycle.comp.power','balance.pwr')
+        self.connect('cycle.tube.Fl_O:stat:T', 'balance.TsTube')
 
         self.connect('balance.Pt','cycle.fl_start.P')
         self.connect('balance.Tt','cycle.fl_start.T')
@@ -199,6 +200,7 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.inlet_MN', 'cycle.inlet.MN_target')
     # prob.root.connect('fc.ambient.Ps', 'nozzle.Ps_exhaust')
     prob.root.connect('des_vars.PsE', 'cycle.nozzle.Ps_exhaust')
+    prob.root.connect('des_vars.PsTube', 'cycle.fl_start.P')
 
     # Make sure balance runs before cycle
     prob.root.set_order(['des_vars', 'balance', 'cycle'])
@@ -208,15 +210,15 @@ if __name__ == "__main__":
     # Flight Conditions
     prob['balance.W'] = 298.1585042  # 550 lbm/s
 
-    # Inlet Conditions
-    prob['cycle.inlet.ram_recovery'] = 0.99
-    if prob['des_vars.inlet_MN'] > prob['des_vars.vehicleMach']:
-        prob['des_vars.inlet_MN'] = prob['des_vars.vehicleMach']
-
     # Splitter Conditions
     #prob['cycle.splitter.BPR'] = 0.0001
     prob['cycle.splitter.MN_target1'] = prob['des_vars.inlet_MN']
     prob['cycle.splitter.MN_target2'] = prob['des_vars.inlet_MN']
+
+    # Inlet Conditions
+    prob['cycle.inlet.ram_recovery'] = 0.99
+    if prob['des_vars.inlet_MN'] > prob['des_vars.vehicleMach']:
+        prob['des_vars.inlet_MN'] = prob['des_vars.vehicleMach']
 
     # Compressor Conditions
     prob['cycle.comp.map.PRdes'] = 1.5
