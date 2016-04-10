@@ -1,3 +1,4 @@
+# import libraries
 from math import pi, sin
 import matplotlib.pyplot as plt
 
@@ -50,6 +51,7 @@ if __name__ == '__main__':
     p.setup()
     p.run()
 
+# save variable sweeps in arrays
     cost_array = []
     cx = []
     cost_array2 = []
@@ -74,6 +76,7 @@ if __name__ == '__main__':
         cost_array2.append(p['cost.ctick'])
         cx2.append(i*1.e7)
 
+# plot variable sweeps
     fig = plt.figure()
     a1 = fig.add_subplot(211)
     a1.plot(cx,cost_array)
