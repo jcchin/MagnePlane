@@ -348,6 +348,16 @@ void printStuff() {
    cout << "Pod Net Thrust=           " << nozz.Fg - inlet.Fram << " lb" << endl << endl;
 }
 
+OutFileStream outF { filename ="wrapper.out"; }
+
+// wrapper CSV header
+outF << "nozz.Fg" << endl;
+
+// CSV values
+void wrapper_print(){
+   outF = << toStr(nozz.Fg,10) << endl;
+}
+
 void runCases() {
    for ( vehicleMach = 0.8; vehicleMach <= 0.86; vehicleMach +=0.02 ) {
       run();
@@ -358,5 +368,6 @@ void runCases() {
 
 //cmpMach = 0.60; runCases(); cout << endl;
 cmpMach = 0.65; runCases(); cout << endl;
+wrapper_print();
 //cmpMach = 0.70; runCases(); cout << endl;
 
