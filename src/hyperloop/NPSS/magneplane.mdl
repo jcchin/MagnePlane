@@ -164,7 +164,7 @@ Element Duct intDuct {
 }
 
 Element Duct bypass {
-   Fl_O.MN = 0.95;
+   Fl_O.MNdes = 0.95;
 
    void postexecute() {
       Abypass = Fl_O.Aphy/(3.28084**2.)/(144.);
@@ -232,7 +232,7 @@ Independent ind_BPR {
 }
 
 Independent ind_Mexit {
-   varName = "bypassExit.Fl_O.MN";
+   varName = "bypassExit.Fl_O.MNdes";
    autoSetup = TRUE;
 }
 
