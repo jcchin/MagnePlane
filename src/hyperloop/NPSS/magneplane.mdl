@@ -7,7 +7,7 @@
 //------------------------------------------------------------------------
 setThermoPackage( "Janaf" );
 
-#include <area.view_page>
+#include <../NPSS/area.view_page>
 
 real C_IN2toM2 = 144.*(3.28084**2.);
 real HPtoKW = 0.7457;
@@ -355,7 +355,7 @@ outF << "nozz.Fg" << endl;
 
 // CSV values
 void wrapper_print(){
-   outF = << toStr(nozz.Fg,10) << endl;
+   outF << toStr(nozz.Fg,10) << endl;
 }
 
 void runCases() {
