@@ -17,17 +17,17 @@ real teslaPack = 90.0; // kw-hours
 page {
    SimpleBlock areas {
 
-      body =   
+      body =
          "FLOW  \n" +
          "Reynolds:???????.??? -/grid unit    Fan SPR:????.???    Fan MFR:????.??? kg/s   Plenum TPR:????.???     Plenum TTR:????.???  \n\n" +
 
          "DIAMETERS  \n" +
          "Tube:????.??? m     Capsule:????.??? m    Inlet:????.??? m     Fan:????.??? m     Plenum:????.??? m    Throat:????.??? m    Exit:????.??? m\n\n" +
-         
+
          "AREAS  \n" +
          "Tube:????.??? m2    Tube B:????.??? m2    bypass:????.??? m2    blockage:????.??? m2      comp. exit:????.??? m2 \n" +
          "                    Tube C:????.??? m2    capsule:????.??? m2   comp. face:????.??? m2    passenger:????.??? m2  \n" +
-         
+
          "POWER  \n" +
          "Compressor:  ????.??? hp \n" +
          "No. of 90Kwh Tesla Batteries: ???.???";
@@ -40,8 +40,8 @@ page {
          "intDuct.Fl_O.Tt/start.Fl_O.Ts",
 
           "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)",
-          "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",      
-          "sqrt((split.Fl_01.Aphy/C_IN2toM2)*4./PI)",          
+          "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
+          "sqrt((split.Fl_01.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((inlet.Fl_O.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Fl_I.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Ath/C_IN2toM2)*4./PI)",
@@ -56,7 +56,7 @@ page {
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2",
           "inlet.Fl_O.Aphy/C_IN2toM2",
           "(inlet.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2",
-          
+
           "-cmp25.pwr",
           "cmp25.batteries" }
    }
@@ -137,11 +137,11 @@ Element Compressor cmp25 {
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
    }
    void postexecute(){
-    
+
       batteries = (-pwr*HPtoKW*(tubeLen/(start.Fl_O.V*0.3048)/3600.0))/teslaPack;
       //cout << "Pod Velocity=                " << start.Fl_O.V*0.3048 << " m/s" << endl;
       //cout << "Trip Time=                " << (tubeLen/(start.Fl_O.V*0.3048)/3600.0) << " hrs" << endl;
-      
+
    }
 }
 
@@ -199,8 +199,8 @@ Element FlowEnd endC {
 //------------------------------------------------------------------------
 linkPorts( "start.Fl_O"      , "tube.Fl_I"        , "FS_0"     ) ;
 linkPorts( "tube.Fl_O"       , "split.Fl_I"       , "FStube"   ) ;
-linkPorts( "split.Fl_01"     , "inlet.Fl_I"      , "FStubeC"  ) ;
-linkPorts( "split.Fl_02"     , "bypass.Fl_I"      , "FStubeB"  ) ;
+linkPorts( "split.Fl_O1"     , "inlet.Fl_I"      , "FStubeC"  ) ;
+linkPorts( "split.Fl_O2"     , "bypass.Fl_I"      , "FStubeB"  ) ;
 linkPorts( "bypass.Fl_O"     , "bypassExit.Fl_I"  , "FSbypass" ) ;
 linkPorts( "bypassExit.Fl_O" , "endB.Fl_I"        , "FSexit" ) ;
 linkPorts( "inlet.Fl_O"     , "cmp25.Fl_I"       , "FSdiffused" ) ;

@@ -11,36 +11,36 @@ from six import iteritems, iterkeys
 
 from openmdao.api import Problem, Group, ExternalCode
 
-fpath = os.path.dirname(os.path.realpath(__file__))
-ref_data = np.loadtxt(fpath + '/cycle.csv',
-                      delimiter=',', skiprows=1)
-# headers to extract from csv file
+# fpath = os.path.dirname(os.path.realpath(__file__))
+# ref_data = np.loadtxt(fpath + '/cycle.csv',
+#                       delimiter=',', skiprows=1)
+# # headers to extract from csv file
 
 
-header = ['inlet.eRamBase','fan.PR','fan.eff','comp.PR','comp.eff','burn.FAR','burn.eff',
-        'turbL.eff','turbL.PR','turbH.eff','turbH.PR','nozz_byp.Cfg','nozz_core.Cfg',
-        'shaftL.Nmech','shaftH.Nmech','amb.MN','amb.alt','start.W','start.Pt','start.Tt',
-        'start.Fl_O.ht','start.Fl_O.s','start.Fl_O.MN','start.Fl_O.V','start.Fl_O.A',
-        'inlet.Fl_O.W','inlet.Fl_O.Pt','inlet.Fl_O.Tt','inlet.Fl_O.ht','inlet.Fl_O.s',
-        'inlet.Fl_O.MN','inlet.Fram','inlet.Fl_O.V','inlet.Fl_O.A','fan.Fl_O.W','fan.Fl_O.Pt',
-        'fan.Fl_O.Tt','fan.Fl_O.ht','fan.Fl_O.s','fan.Fl_O.MN','fan.Fl_O.V',
-        'fan.Fl_O.A','comp.Fl_O.W','comp.Fl_O.Pt','comp.Fl_O.Tt','comp.Fl_O.ht',
-        'comp.Fl_O.s','comp.Fl_O.MN','comp.Fl_O.V','comp.Fl_O.A','burn.Fl_O.W',
-        'burn.Fl_O.Pt','burn.Fl_O.Tt','burn.Fl_O.ht','burn.Fl_O.s','burn.Fl_O.MN',
-        'burn.Fl_O.V','burn.Fl_O.A','turbL.Fl_O.W','turbL.Fl_O.Pt','turbL.Fl_O.Tt',
-        'turbL.Fl_O.ht','turbL.Fl_O.s','turbL.Fl_O.MN','turbL.Fl_O.V','turbL.Fl_O.A',
-        'turbH.Fl_O.W','turbH.Fl_O.Pt','turbH.Fl_O.Tt','turbH.Fl_O.ht','turbH.Fl_O.s',
-        'turbH.Fl_O.MN','turbH.Fl_O.V','turbH.Fl_O.A','nozz_byp.Fl_O.W','nozz_byp.Fl_O.Pt',
-        'nozz_byp.Fl_O.Tt','nozz_byp.Fl_O.ht','nozz_byp.Fl_O.s','nozz_byp.Fl_O.MN',
-        'nozz_byp.PsExh','nozz_byp.Fg','nozz_byp.Fl_O.V','nozz_byp.Fl_O.A','nozz_core.Fl_O.W',
-        'nozz_core.Fl_O.Pt','nozz_core.Fl_O.Tt','nozz_core.Fl_O.ht','nozz_core.Fl_O.s',
-        'nozz_core.Fl_O.MN','nozz_core.PsExh','nozz_core.Fg','nozz_core.Fl_O.V','nozz_core.Fl_O.A',
-        'shaftH.trqIn','shaftH.trqOut','shaftH.trqNet','shaftH.pwrIn','shaftH.pwrOut',
-        'shaftH.pwrNet','shaftL.trqIn','shaftL.trqOut','shaftL.trqNet','shaftL.pwrIn',
-        'shaftL.pwrOut','shaftL.pwrNet','perf.SFC','perf.Fn']
-h_map = dict(((v_name, i) for i, v_name in enumerate(header)))
+# header = ['inlet.eRamBase','fan.PR','fan.eff','comp.PR','comp.eff','burn.FAR','burn.eff',
+#         'turbL.eff','turbL.PR','turbH.eff','turbH.PR','nozz_byp.Cfg','nozz_core.Cfg',
+#         'shaftL.Nmech','shaftH.Nmech','amb.MN','amb.alt','start.W','start.Pt','start.Tt',
+#         'start.Fl_O.ht','start.Fl_O.s','start.Fl_O.MN','start.Fl_O.V','start.Fl_O.A',
+#         'inlet.Fl_O.W','inlet.Fl_O.Pt','inlet.Fl_O.Tt','inlet.Fl_O.ht','inlet.Fl_O.s',
+#         'inlet.Fl_O.MN','inlet.Fram','inlet.Fl_O.V','inlet.Fl_O.A','fan.Fl_O.W','fan.Fl_O.Pt',
+#         'fan.Fl_O.Tt','fan.Fl_O.ht','fan.Fl_O.s','fan.Fl_O.MN','fan.Fl_O.V',
+#         'fan.Fl_O.A','comp.Fl_O.W','comp.Fl_O.Pt','comp.Fl_O.Tt','comp.Fl_O.ht',
+#         'comp.Fl_O.s','comp.Fl_O.MN','comp.Fl_O.V','comp.Fl_O.A','burn.Fl_O.W',
+#         'burn.Fl_O.Pt','burn.Fl_O.Tt','burn.Fl_O.ht','burn.Fl_O.s','burn.Fl_O.MN',
+#         'burn.Fl_O.V','burn.Fl_O.A','turbL.Fl_O.W','turbL.Fl_O.Pt','turbL.Fl_O.Tt',
+#         'turbL.Fl_O.ht','turbL.Fl_O.s','turbL.Fl_O.MN','turbL.Fl_O.V','turbL.Fl_O.A',
+#         'turbH.Fl_O.W','turbH.Fl_O.Pt','turbH.Fl_O.Tt','turbH.Fl_O.ht','turbH.Fl_O.s',
+#         'turbH.Fl_O.MN','turbH.Fl_O.V','turbH.Fl_O.A','nozz_byp.Fl_O.W','nozz_byp.Fl_O.Pt',
+#         'nozz_byp.Fl_O.Tt','nozz_byp.Fl_O.ht','nozz_byp.Fl_O.s','nozz_byp.Fl_O.MN',
+#         'nozz_byp.PsExh','nozz_byp.Fg','nozz_byp.Fl_O.V','nozz_byp.Fl_O.A','nozz_core.Fl_O.W',
+#         'nozz_core.Fl_O.Pt','nozz_core.Fl_O.Tt','nozz_core.Fl_O.ht','nozz_core.Fl_O.s',
+#         'nozz_core.Fl_O.MN','nozz_core.PsExh','nozz_core.Fg','nozz_core.Fl_O.V','nozz_core.Fl_O.A',
+#         'shaftH.trqIn','shaftH.trqOut','shaftH.trqNet','shaftH.pwrIn','shaftH.pwrOut',
+#         'shaftH.pwrNet','shaftL.trqIn','shaftL.trqOut','shaftL.trqNet','shaftL.pwrIn',
+#         'shaftL.pwrOut','shaftL.pwrNet','perf.SFC','perf.Fn']
+# h_map = dict(((v_name, i) for i, v_name in enumerate(header)))
 
-data = ref_data[2]
+# data = ref_data[2]
 
 
 class CycleWrap(ExternalCode):
