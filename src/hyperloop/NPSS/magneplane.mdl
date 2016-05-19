@@ -296,19 +296,6 @@ void printStuff1() {
 }
 
 
-void runCases() {
-   for ( vehicleMach = 0.8; vehicleMach <= 0.86; vehicleMach +=0.02 ) {
-      run();
-      page.display();
-      printStuff();
-   }
-}
-
-//cmpMach = 0.60; runCases(); cout << endl;
-cmpMach = 0.65; runCases(); cout << endl;
-//cmpMach = 0.70; runCases(); cout << endl;
-
-
 
 void printStuff() {
    cout.precision=8;
@@ -360,3 +347,16 @@ void printStuff() {
    cout << "Inlet Ram Drag=           " << inlet.Fram << " lb" << endl;
    cout << "Pod Net Thrust=           " << nozz.Fg - inlet.Fram << " lb" << endl << endl;
 }
+
+void runCases() {
+   for ( vehicleMach = 0.8; vehicleMach <= 0.86; vehicleMach +=0.02 ) {
+      run();
+      page.display();
+      printStuff();
+   }
+}
+
+//cmpMach = 0.60; runCases(); cout << endl;
+cmpMach = 0.65; runCases(); cout << endl;
+//cmpMach = 0.70; runCases(); cout << endl;
+
