@@ -164,7 +164,7 @@ Element Duct intDuct {
 }
 
 Element Duct bypass {
-   Fl_O.MNdes = 0.95;
+   Fl_O.MN = 0.95;
 
    void postexecute() {
       Abypass = Fl_O.Aphy/(3.28084**2.)/(144.);
@@ -230,12 +230,12 @@ Independent ind_BPR {
    varName = "split.BPRdes";
    autoSetup = TRUE;
 }
-
+/*
 Independent ind_Mexit {
-   varName = "bypassExit.Fl_O.MNdes";
+   varName = "bypassExit.Fl_O.MN";
    autoSetup = TRUE;
 }
-
+*/
 /*
 Dependent dep_Ps {
    eq_rhs = "start.Fl_O.Ps";
@@ -267,13 +267,13 @@ Dependent dep_Amatch {
    eq_lhs = "Abypass + Apod";
    autoSetup = TRUE;
 }
-
+/*
 Dependent dep_Aexit {
    eq_rhs = "AbypassExit";
    eq_lhs = "AtubeB + AtubeC - AnozzExit";
    autoSetup = TRUE;
 }
-
+*/
 //------------------------------------------------------------------
 //     Run Cases
 //------------------------------------------------------------------
