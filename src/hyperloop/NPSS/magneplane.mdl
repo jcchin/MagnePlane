@@ -289,7 +289,7 @@ page.display();
 
 
 // Atube   AtubeB  AtubeC    Abypass    Apod    Adiff    Ablk    Acmp    Apax
-void printStuff() {
+void printStuff1() {
    cout.precision=5; cout.showpoint = TRUE;
    cout << vehicleMach << "     ";
    cout << Atube << "    " << AtubeB << "    " << AtubeC << "          " << Abypass  << "    " << Apod   << "    " << Adiff << "    " << (Apod - Adiff ) << "    " << Acmprssd  << "    " << Apax << endl;
