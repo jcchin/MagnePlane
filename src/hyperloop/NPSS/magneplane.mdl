@@ -309,7 +309,7 @@ cmpMach = 0.65; runCases(); cout << endl;
 //cmpMach = 0.70; runCases(); cout << endl;
 
 
-/*
+
 void printStuff() {
    cout.precision=8;
    cout.showpoint = TRUE;
@@ -368,5 +368,5 @@ void runCases() {
       printStuff();
    }
 }
-runCases();
-*/
+
+
