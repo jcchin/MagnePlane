@@ -41,18 +41,18 @@ page {
 
           "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)",
           "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
-          "sqrt((split.Fl_01.Aphy/C_IN2toM2)*4./PI)",
+          "sqrt((split.Fl_O1.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((inlet.Fl_O.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Fl_I.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Ath/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Fl_O.Aphy/C_IN2toM2)*4./PI)",
 
           "start.Fl_O.Aphy/C_IN2toM2",
-          "split.Fl_02.Aphy/C_IN2toM2",
+          "split.Fl_O2.Aphy/C_IN2toM2",
           "bypass.Fl_O.Aphy/C_IN2toM2",
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)*(1.-blockage)/C_IN2toM2",
           "cmp25.Fl_O.Aphy/C_IN2toM2",
-          "split.Fl_01.Aphy/C_IN2toM2",
+          "split.Fl_O1.Aphy/C_IN2toM2",
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2",
           "inlet.Fl_O.Aphy/C_IN2toM2",
           "(inlet.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2",
@@ -101,13 +101,13 @@ Element Splitter split {
    BPR = 0.5;
 
    void preexecute() {
-      Fl_01.MN = Fl_I.MN;
-      Fl_02.MN = Fl_I.MN;
+      Fl_O1.MN = Fl_I.MN;
+      Fl_O2.MN = Fl_I.MN;
    }
 
    void postexecute() {
-      AtubeC = Fl_01.Aphy/(3.28084**2.)/(144.);
-      AtubeB = Fl_02.Aphy/(3.28084**2.)/(144.);
+      AtubeC = Fl_O1.Aphy/(3.28084**2.)/(144.);
+      AtubeB = Fl_O2.Aphy/(3.28084**2.)/(144.);
    }
 }
 
