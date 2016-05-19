@@ -227,7 +227,7 @@ Independent ind_W {
 }
 
 Independent ind_BPR {
-   varName = "split.BPR";
+   varName = "split.BPRdes";
    autoSetup = TRUE;
 }
 
