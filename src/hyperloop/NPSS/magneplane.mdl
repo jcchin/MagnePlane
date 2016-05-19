@@ -360,13 +360,3 @@ void printStuff() {
    cout << "Inlet Ram Drag=           " << inlet.Fram << " lb" << endl;
    cout << "Pod Net Thrust=           " << nozz.Fg - inlet.Fram << " lb" << endl << endl;
 }
-
-void runCases() {
-   for ( vehicleMach = 0.60; vehicleMach <= 0.61; vehicleMach +=0.02 ) {
-      run();
-      //page.display();
-      printStuff();
-   }
-}
-
-
