@@ -1,4 +1,5 @@
 import numpy as np
+from os import remove
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 import matplotlib.pyplot as plt
@@ -29,25 +30,25 @@ class Lift(Component):
         self.ln_solver = LinearGaussSeidel()
 
         # Pod Inputs
-        self.add_param('Br', val=1.21, units='Tesla', desc='residual magnetic flux')
-        self.add_param('d', val=0.012, units='m', desc='magnet thickness')
+        self.add_param('Br', val=0.64, units='Tesla', desc='residual magnetic flux') #0.64
+        self.add_param('d', val=0.009525, units='m', desc='magnet thickness') #0.009525 - 0.00635
         self.add_param('N', val=16.0, desc='number magnets')
         self.add_param('M', val=4.0, desc='number magnets per halbach')
         self.add_param('Is', val=3.0, desc='number vertically oriented magnets')
-        self.add_param('lambda', val=0.055, units='m', desc='halbach wavelength')
-        self.add_param('edge', val=0.06, units='m', desc='edge length of cube magnets being used')
+
+        self.add_param('edge', val=0.1524, units='m', desc='edge length of cube magnets being used')
         self.add_param('mass', val=0.375, units='kg', desc='pod mass')
 
         # Track Inputs (laminated track)
         self.add_param('delta_c', val=0.0005334, units='m', desc='single layer thickness')
         self.add_param('strip_c', val=0.0105, units='m', desc='center strip spacing')
-        self.add_param('Pc', val=0.11, units='m', desc='width of track')
+        self.add_param('Pc', val=0.21, units='m', desc='width of track')
         self.add_param('rc', val=171.3, units='Ohm-m', desc='electric resistivity')
         self.add_param('Nt', val=0.005, units='m', desc='width of conductive strip')
         self.add_param('Ns', val=1, desc='number of laminated sheets')
 
         # Inductive Loading
-        self.add_param('al', val=0.0005334, units='m', desc='conductor bundle height loaded')
+        self.add_param('al', val=0.00079*8., units='m', desc='conductor bundle height loaded')
         self.add_param('wf', val=0.0, units='m', desc='total ferrite tile width')
 
         # Pod/Track Relation
@@ -71,6 +72,7 @@ class Lift(Component):
 
         # outputs
         # pod outputs
+        self.add_output('lambda', val=0.00635*4., units='m', desc='halbach wavelength')
         self.add_output('B0', val=0.9, units='T', desc='halbach peak strength')
         self.add_output('area_mag', val=0.4, units='m', desc='actual magnetized area')
         self.add_output('pforce', val=5., units ='N', desc ='required levitation force')
@@ -124,7 +126,8 @@ class Lift(Component):
 
         edge = p['edge']
         height = p['height']
-        lambdaa = p['lambda']
+        u['lambda'] = p['M']*p['d']
+        lambdaa = u['lambda']
 
         # u['n'] = p['N'] / p['M']
         # u['omega'] = p['rpm'] * 2.0 * pi / 60.0
@@ -326,45 +329,51 @@ class Lift(Component):
         y = np.arange(0,.02,0.001)
         X, Y = np.meshgrid(x, y)
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot_surface(Y.T, X.T, Bx, cmap=cm.coolwarm, shade=True)
-        plt.title('Bx')
-        ay = fig.add_subplot(212, projection='3d')
-        ay.plot_surface(Y.T, X.T, By, cmap=cm.coolwarm, shade=True)
-        plt.title('By')
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111, projection='3d')
+        # ax.plot_surface(Y.T, X.T, Bx, cmap=cm.coolwarm, shade=True)
+        # plt.title('Bx')
+        # ay = fig.add_subplot(212, projection='3d')
+        # ay.plot_surface(Y.T, X.T, By, cmap=cm.coolwarm, shade=True)
+        # plt.title('By')
+        # plt.show()
+
+        fig2, (ax2, ay2) = plt.subplots(2, sharex=True)
+        #ax2 = fig2.add_subplot(111)
+
+        ax2.plot(vp[:],Fxp1,vp[:],Fyp1,vp[:],Fxp2[:],vp[:],Fyp2[1:]+Fyp2[-1:])
+        ax2.set_ylabel('Newtons')
+        ax2.set_xlabel('Velocity (meters/sec)')
+        ax2.set_title('Drag (red) Docked (g) & Levitation (teal) Docked (b) Forces')
+        ax2.set_ylim([0,100])
+        #ay2 = fig2.add_subplot(212)
+        result = Lhp[1:]+Lhp[-1:]
+        ay2.plot(vp,[x * 39.3701 for x in result])
+        plt.ylabel('Height (inches)')
         plt.show()
 
-        fig2 = plt.figure()
-        ax2 = fig2.add_subplot(111)
-        ax2.plot(vp,Fxp1,vp,Fyp1,vp,Fxp2,vp,Fyp2)
-        plt.ylabel('Newtons')
-        plt.xlabel('Velocity (meters/sec)')
-        plt.title('Drag (b) Docked (r) & Levitation (g) Docked (t) Forces')
-        ay2 = fig2.add_subplot(212)
-        ay2.plot(vp,Lhp)
-        plt.ylabel('Height (meters)')
-        plt.show()
+#         If the magnet radius is 2" (0.05m) then for 100 m/s
 
-        print np.asarray(percentLambda).shape
-        print np.asarray(Lh).shape
+# v/r = omega
+# 100 / 0.05 = 2000 rad/s = 19,000rpm
+
+# Our large motor only goes up to 3,552rpm
+
 
         M1m, Lhm = np.meshgrid(M1, np.arange(1,51))
 
-        print np.asarray(M1m).T.shape
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot_surface(percentLambda, M1m.T, Lh, cmap=cm.coolwarm, shade=True)
-        plt.title('Optimum Magnet Thickness')
-        plt.ylabel('Number of Magnets M')
-        plt.xlabel('Magnet Thickness d as %/ lamda')
-        ay = fig.add_subplot(212)
-        ay.plot(lamda2,Lh2)
-        plt.title('Maximum Levitation Height for Wavelength')
-        plt.xlabel('Wavelength lamda')
-        plt.ylabel('Levitation Height y')
-        plt.show()
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111, projection='3d')
+        # ax.plot_surface(percentLambda, M1m.T, Lh, cmap=cm.coolwarm, shade=True)
+        # plt.title('Optimum Magnet Thickness')
+        # plt.ylabel('Number of Magnets M')
+        # plt.xlabel('Magnet Thickness d as %/ lamda')
+        # ay = fig.add_subplot(212)
+        # ay.plot(lamda2,Lh2)
+        # plt.title('Maximum Levitation Height for Wavelength')
+        # plt.xlabel('Wavelength lamda')
+        # plt.ylabel('Levitation Height y')
+        # plt.show()
 
 
 if __name__ == "__main__":
@@ -392,7 +401,7 @@ if __name__ == "__main__":
     data = db['Driver/1']
     u = data['Unknowns']
     pprint(u)
-
+    remove('./maglev')
     #print('n: ', p['lift.n'])
 
 

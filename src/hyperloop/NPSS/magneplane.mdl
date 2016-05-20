@@ -7,7 +7,7 @@
 //------------------------------------------------------------------------
 setThermoPackage( "Janaf" );
 
-#include <area.view_page>
+#include <../NPSS/area.view_page>
 
 real C_IN2toM2 = 144.*(3.28084**2.);
 real HPtoKW = 0.7457;
@@ -17,17 +17,17 @@ real teslaPack = 90.0; // kw-hours
 page {
    SimpleBlock areas {
 
-      body =   
+      body =
          "FLOW  \n" +
          "Reynolds:???????.??? -/grid unit    Fan SPR:????.???    Fan MFR:????.??? kg/s   Plenum TPR:????.???     Plenum TTR:????.???  \n\n" +
 
          "DIAMETERS  \n" +
          "Tube:????.??? m     Capsule:????.??? m    Inlet:????.??? m     Fan:????.??? m     Plenum:????.??? m    Throat:????.??? m    Exit:????.??? m\n\n" +
-         
+
          "AREAS  \n" +
          "Tube:????.??? m2    Tube B:????.??? m2    bypass:????.??? m2    blockage:????.??? m2      comp. exit:????.??? m2 \n" +
          "                    Tube C:????.??? m2    capsule:????.??? m2   comp. face:????.??? m2    passenger:????.??? m2  \n" +
-         
+
          "POWER  \n" +
          "Compressor:  ????.??? hp \n" +
          "No. of 90Kwh Tesla Batteries: ???.???";
@@ -40,23 +40,23 @@ page {
          "intDuct.Fl_O.Tt/start.Fl_O.Ts",
 
           "sqrt((start.Fl_O.Aphy/C_IN2toM2)*4./PI)",
-          "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",      
-          "sqrt((split.Fl_01.Aphy/C_IN2toM2)*4./PI)",          
+          "sqrt(((start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2)*4./PI)",
+          "sqrt((split.Fl_O1.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((inlet.Fl_O.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Fl_I.Aphy/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Ath/C_IN2toM2)*4./PI)",
           "sqrt((nozz.Fl_O.Aphy/C_IN2toM2)*4./PI)",
 
           "start.Fl_O.Aphy/C_IN2toM2",
-          "split.Fl_02.Aphy/C_IN2toM2",
+          "split.Fl_O2.Aphy/C_IN2toM2",
           "bypass.Fl_O.Aphy/C_IN2toM2",
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)*(1.-blockage)/C_IN2toM2",
           "cmp25.Fl_O.Aphy/C_IN2toM2",
-          "split.Fl_01.Aphy/C_IN2toM2",
+          "split.Fl_O1.Aphy/C_IN2toM2",
           "(start.Fl_O.Aphy-bypass.Fl_O.Aphy)/C_IN2toM2",
           "inlet.Fl_O.Aphy/C_IN2toM2",
           "(inlet.Fl_O.Aphy-cmp25.Fl_O.Aphy)/C_IN2toM2",
-          
+
           "-cmp25.pwr",
           "cmp25.batteries" }
    }
@@ -101,13 +101,13 @@ Element Splitter split {
    BPR = 0.5;
 
    void preexecute() {
-      Fl_01.MN = Fl_I.MN;
-      Fl_02.MN = Fl_I.MN;
+      Fl_O1.MN = Fl_I.MN;
+      Fl_O2.MN = Fl_I.MN;
    }
 
    void postexecute() {
-      AtubeC = Fl_01.Aphy/(3.28084**2.)/(144.);
-      AtubeB = Fl_02.Aphy/(3.28084**2.)/(144.);
+      AtubeC = Fl_O1.Aphy/(3.28084**2.)/(144.);
+      AtubeB = Fl_O2.Aphy/(3.28084**2.)/(144.);
    }
 }
 
@@ -137,11 +137,11 @@ Element Compressor cmp25 {
       if ( cmpMach > vehicleMach ) { Fl_O.MN = vehicleMach; }
    }
    void postexecute(){
-    
+
       batteries = (-pwr*HPtoKW*(tubeLen/(start.Fl_O.V*0.3048)/3600.0))/teslaPack;
       //cout << "Pod Velocity=                " << start.Fl_O.V*0.3048 << " m/s" << endl;
       //cout << "Trip Time=                " << (tubeLen/(start.Fl_O.V*0.3048)/3600.0) << " hrs" << endl;
-      
+
    }
 }
 
@@ -199,8 +199,8 @@ Element FlowEnd endC {
 //------------------------------------------------------------------------
 linkPorts( "start.Fl_O"      , "tube.Fl_I"        , "FS_0"     ) ;
 linkPorts( "tube.Fl_O"       , "split.Fl_I"       , "FStube"   ) ;
-linkPorts( "split.Fl_01"     , "inlet.Fl_I"      , "FStubeC"  ) ;
-linkPorts( "split.Fl_02"     , "bypass.Fl_I"      , "FStubeB"  ) ;
+linkPorts( "split.Fl_O1"     , "inlet.Fl_I"      , "FStubeC"  ) ;
+linkPorts( "split.Fl_O2"     , "bypass.Fl_I"      , "FStubeB"  ) ;
 linkPorts( "bypass.Fl_O"     , "bypassExit.Fl_I"  , "FSbypass" ) ;
 linkPorts( "bypassExit.Fl_O" , "endB.Fl_I"        , "FSexit" ) ;
 linkPorts( "inlet.Fl_O"     , "cmp25.Fl_I"       , "FSdiffused" ) ;
@@ -227,15 +227,15 @@ Independent ind_W {
 }
 
 Independent ind_BPR {
-   varName = "split.BPR";
+   varName = "split.BPRdes";
    autoSetup = TRUE;
 }
-
+/*
 Independent ind_Mexit {
    varName = "bypassExit.Fl_O.MN";
    autoSetup = TRUE;
 }
-
+*/
 /*
 Dependent dep_Ps {
    eq_rhs = "start.Fl_O.Ps";
@@ -267,13 +267,13 @@ Dependent dep_Amatch {
    eq_lhs = "Abypass + Apod";
    autoSetup = TRUE;
 }
-
+/*
 Dependent dep_Aexit {
    eq_rhs = "AbypassExit";
    eq_lhs = "AtubeB + AtubeC - AnozzExit";
    autoSetup = TRUE;
 }
-
+*/
 //------------------------------------------------------------------
 //     Run Cases
 //------------------------------------------------------------------
@@ -289,27 +289,14 @@ page.display();
 
 
 // Atube   AtubeB  AtubeC    Abypass    Apod    Adiff    Ablk    Acmp    Apax
-void printStuff() {
+void printStuff1() {
    cout.precision=5; cout.showpoint = TRUE;
    cout << vehicleMach << "     ";
    cout << Atube << "    " << AtubeB << "    " << AtubeC << "          " << Abypass  << "    " << Apod   << "    " << Adiff << "    " << (Apod - Adiff ) << "    " << Acmprssd  << "    " << Apax << endl;
 }
 
 
-void runCases() {
-   for ( vehicleMach = 0.8; vehicleMach <= 0.86; vehicleMach +=0.02 ) {
-      run();
-      page.display();
-      printStuff();
-   }
-}
 
-//cmpMach = 0.60; runCases(); cout << endl;
-cmpMach = 0.65; runCases(); cout << endl;
-//cmpMach = 0.70; runCases(); cout << endl;
-
-
-/*
 void printStuff() {
    cout.precision=8;
    cout.showpoint = TRUE;
@@ -361,12 +348,26 @@ void printStuff() {
    cout << "Pod Net Thrust=           " << nozz.Fg - inlet.Fram << " lb" << endl << endl;
 }
 
+OutFileStream outF { filename ="wrapper.out"; }
+
+// wrapper CSV header
+outF << "nozz.Fg" << endl;
+
+// CSV values
+void wrapper_print(){
+   outF << toStr(nozz.Fg,10) << endl;
+}
+
 void runCases() {
-   for ( vehicleMach = 0.60; vehicleMach <= 0.61; vehicleMach +=0.02 ) {
+   for ( vehicleMach = 0.8; vehicleMach <= 0.86; vehicleMach +=0.02 ) {
       run();
-      //page.display();
+      page.display();
       printStuff();
    }
 }
-runCases();
-*/
+
+//cmpMach = 0.60; runCases(); cout << endl;
+cmpMach = 0.65; runCases(); cout << endl;
+wrapper_print();
+//cmpMach = 0.70; runCases(); cout << endl;
+

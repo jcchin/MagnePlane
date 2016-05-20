@@ -18,6 +18,7 @@ Dev forks can be found here:
 
 [Jeff Chin](https://github.com/jcchin/MagnePlane)
 
+[Ken Moore](https://github.com/Kenneth-T-Moore/MagnePlane)
 
 ========
 ### File Structure
