@@ -238,9 +238,13 @@ set aipCons [ConsFromDom $modelDoms(aip)]
 set nozzleExitCons [ConsFromDom $modelDoms(nozzle-exit)]
 
 set symCons          [ConsFromDom $modelDoms(symmetry)]
+set tubeCons         [ConsFromDom $modelDoms(tube)]
 set fuseOMLSymCons   [intersect $OMLCons $symCons]
 set inletIMLSymCons  [intersect $inletIMLCons $symCons]
 set nozzleIMLSymCons [intersect $nozzleIMLCons $symCons]
+
+set freestreamCons  [ConsFromDom $modelDoms(freestream)]
+set outflowCons  [ConsFromDom $modelDoms(outflow)]
 
 ## Isolate Connectors for Specific Distributions
 
@@ -292,6 +296,19 @@ set fuseConsCollection [pw::Collection create]
    pw::Connector setCalculateDimensionSpacing $avgDs2
    $fuseConsCollection do calculateDimension
 $fuseConsCollection delete
+
+## Adjust spacings on tube, freestream and outflow connectors
+foreach con $tubeCons {
+    RedistCons 1.0 2 2 0.15 0.15 $con
+}
+
+foreach con $freestreamCons {
+    RedistCons 1.0 2 2 0.15 0.15 $con
+}
+
+foreach con $outflowCons {
+    RedistCons 1.0 2 2 0.15 0.15 $con
+}
 
 ## Redistribute Internal Inlet/Nozzle Connector Distributions
 foreach con $aipCons {
@@ -399,39 +416,39 @@ $isoMode end
 # Define boundary conditions
 
 set freestreamBC [pw::BoundaryCondition create]
-    $freestreamBC setName "bc-02"
+    $freestreamBC setName "bc-01"
     $freestreamBC apply [list $hyperloop_blk $modelDoms(freestream)]
 
 set tubeBC [pw::BoundaryCondition create]
-    $tubeBC setName "bc-03"
+    $tubeBC setName "bc-02"
     $tubeBC apply [list $hyperloop_blk $modelDoms(tube)]
 
 set symmetryBC [pw::BoundaryCondition create]
-    $symmetryBC setName "bc-04"
+    $symmetryBC setName "bc-03"
     $symmetryBC apply [list $hyperloop_blk $modelDoms(symmetry)]
 
 set outflowBC [pw::BoundaryCondition create]
-    $outflowBC setName "bc-05"
+    $outflowBC setName "bc-04"
     $outflowBC apply [list $hyperloop_blk $modelDoms(outflow)]
 
 set aipBC [pw::BoundaryCondition create]
-    $aipBC setName "bc-06"
+    $aipBC setName "bc-05"
     $aipBC apply [list $hyperloop_blk $modelDoms(aip)]
 
 set nozzleBC [pw::BoundaryCondition create]
-    $nozzleBC setName "bc-07"
+    $nozzleBC setName "bc-06"
     $nozzleBC apply [list $hyperloop_blk $modelDoms(nozzle-exit)]
 
 set inletBC [pw::BoundaryCondition create]
-    $inletBC setName "bc-08"
+    $inletBC setName "bc-07"
     $inletBC apply [list $hyperloop_blk $modelDoms(inlet-IML)]
 
 set nozzleBC [pw::BoundaryCondition create]
-    $nozzleBC setName "bc-09"
+    $nozzleBC setName "bc-08"
     $nozzleBC apply [list $hyperloop_blk $modelDoms(nozzle-IML)]
     
 set fuseBC [pw::BoundaryCondition create]
-    $fuseBC setName "bc-17"
+    $fuseBC setName "bc-09"
     $fuseBC apply [list $hyperloop_blk $modelDoms(fuselage)]
 
 timestamp
