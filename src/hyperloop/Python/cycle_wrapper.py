@@ -294,7 +294,8 @@ if __name__ == "__main__":
 
     t = time.time()
     top.run()
-    print "time:", time.time() - t
+
+    print("time", (time.time() - t))
 
     # print("num_calls:", top.root.cycle.num_calls)
     #print("success", top['turboF.success'])

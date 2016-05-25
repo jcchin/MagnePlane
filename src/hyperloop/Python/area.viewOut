@@ -1,0 +1,136 @@
+************************************************************************************************************************************
+Date:05/23/16    Time:15:53:20    Model:                                                                    converge = 1   CASE:   0 
+Version:          NPSS_2.8D3    Gas Package: Janaf    iter/pass/Jacb/Broy= 65/ 80/ 3/61    Run by:            cheath1                
+
+                                        FLOW STATION DATA                                                                           
+                                   W        Pt        Tt       ht     FAR        Wc        Ps        Ts       Aphy      MN      gamt
+FS_0         start.Fl_O     96.56584   0.27276    591.03   11.196  0.0000   5553.93   0.17893    524.00   16805.45  0.8000   1.39900
+FStube       tube.Fl_O      96.56584   0.27276    591.03   11.196  0.0000   5553.93   0.17893    524.00   16805.45  0.8000   1.39900
+FStubeB      split.Fl_O2    83.77244   0.27276    591.03   11.196  0.0000   4818.12   0.17893    524.00   14579.00  0.8000   1.39900
+FStubeC      split.Fl_O1    12.79339   0.27276    591.03   11.196  0.0000    735.80   0.17893    524.00    2226.45  0.8000   1.39900
+FSdiffused   inlet.Fl_O     12.79339   0.27003    591.03   11.196  0.0000    743.24   0.20329    545.03    2460.01  0.6500   1.39900
+FScompressed cmp25.Fl_O     12.79339   3.37541   1261.33  176.935  0.0000     86.86   2.55445   1170.38     290.01  0.6500   1.36428
+FSintduct    intDuct.Fl>    12.79339   3.37541   1261.33  176.935  0.0000     86.86   2.55445   1170.38     290.01  0.6500   1.36428
+FSbypass     bypass.Fl_O    83.77244   0.27276    591.03   11.196  0.0000   4818.12   0.15257    500.67   14072.10  0.9500   1.39900
+FSexit       bypassExit>    83.77244   0.27276    591.03   11.196  0.0000   4818.12   0.20791    546.96   16149.21  0.6351   1.39900
+FSnozzle     nozz.Fl_O      12.79339   3.37541   1261.33  176.935  0.0000     86.86   0.20791    580.22     656.09  2.4594   1.36428
+
+FLOW                                                                                                                                       
+Reynolds: 223789.875 -/grid unit    Fan SPR:   1.136    Fan MFR:   5.803 kg/s   Plenum TPR:  18.865     Plenum TTR:   2.407                
+                                                                                                                                           
+DIAMETERS                                                                                                                                  
+Tube:   3.715 m     Capsule:   1.498 m    Inlet:   1.352 m     Fan:   1.422 m     Plenum:   0.488 m    Throat:   0.458 m    Exit:   0.734 m
+                                                                                                                                           
+AREAS                                                                                                                                      
+Tube:  10.842 m2    Tube B:   9.406 m2    bypass:   9.079 m2    blockage:   0.176 m2      comp. exit:   0.187 m2                           
+                    Tube C:   1.436 m2    capsule:   1.763 m2   comp. face:   1.587 m2    passenger:   1.400 m2                            
+POWER                                                                                                                                      
+Compressor:  3000.000 hp                                                                                                                   
+No. of 90Kwh Tesla Batteries:  14.213                                                                                                      
+
+
+
+
+
+************************************************************************************************************************************
+Date:05/23/16    Time:15:53:20    Model:                                                                    converge = 1   CASE:   0 
+Version:          NPSS_2.8D3    Gas Package: Janaf    iter/pass/Jacb/Broy=  1/  1/ 0/ 0    Run by:            cheath1                
+
+                                        FLOW STATION DATA                                                                           
+                                   W        Pt        Tt       ht     FAR        Wc        Ps        Ts       Aphy      MN      gamt
+FS_0         start.Fl_O     96.56584   0.27276    591.03   11.196  0.0000   5553.93   0.17893    524.00   16805.45  0.8000   1.39900
+FStube       tube.Fl_O      96.56584   0.27276    591.03   11.196  0.0000   5553.93   0.17893    524.00   16805.45  0.8000   1.39900
+FStubeB      split.Fl_O2    83.77244   0.27276    591.03   11.196  0.0000   4818.12   0.17893    524.00   14579.00  0.8000   1.39900
+FStubeC      split.Fl_O1    12.79339   0.27276    591.03   11.196  0.0000    735.80   0.17893    524.00    2226.45  0.8000   1.39900
+FSdiffused   inlet.Fl_O     12.79339   0.27003    591.03   11.196  0.0000    743.24   0.20329    545.03    2460.01  0.6500   1.39900
+FScompressed cmp25.Fl_O     12.79339   3.37541   1261.33  176.935  0.0000     86.86   2.55445   1170.38     290.01  0.6500   1.36428
+FSintduct    intDuct.Fl>    12.79339   3.37541   1261.33  176.935  0.0000     86.86   2.55445   1170.38     290.01  0.6500   1.36428
+FSbypass     bypass.Fl_O    83.77244   0.27276    591.03   11.196  0.0000   4818.12   0.15257    500.67   14072.10  0.9500   1.39900
+FSexit       bypassExit>    83.77244   0.27276    591.03   11.196  0.0000   4818.12   0.20791    546.96   16149.21  0.6351   1.39900
+FSnozzle     nozz.Fl_O      12.79339   3.37541   1261.33  176.935  0.0000     86.86   0.20791    580.22     656.09  2.4594   1.36428
+
+FLOW                                                                                                                                       
+Reynolds: 223789.875 -/grid unit    Fan SPR:   1.136    Fan MFR:   5.803 kg/s   Plenum TPR:  18.865     Plenum TTR:   2.407                
+                                                                                                                                           
+DIAMETERS                                                                                                                                  
+Tube:   3.715 m     Capsule:   1.498 m    Inlet:   1.352 m     Fan:   1.422 m     Plenum:   0.488 m    Throat:   0.458 m    Exit:   0.734 m
+                                                                                                                                           
+AREAS                                                                                                                                      
+Tube:  10.842 m2    Tube B:   9.406 m2    bypass:   9.079 m2    blockage:   0.176 m2      comp. exit:   0.187 m2                           
+                    Tube C:   1.436 m2    capsule:   1.763 m2   comp. face:   1.587 m2    passenger:   1.400 m2                            
+POWER                                                                                                                                      
+Compressor:  3000.000 hp                                                                                                                   
+No. of 90Kwh Tesla Batteries:  14.213                                                                                                      
+
+
+
+
+
+************************************************************************************************************************************
+Date:05/23/16    Time:15:53:21    Model:                                                                    converge = 1   CASE:   0 
+Version:          NPSS_2.8D3    Gas Package: Janaf    iter/pass/Jacb/Broy=  8/ 13/ 1/ 5    Run by:            cheath1                
+
+                                        FLOW STATION DATA                                                                           
+                                   W        Pt        Tt       ht     FAR        Wc        Ps        Ts       Aphy      MN      gamt
+FS_0         start.Fl_O    122.36759   0.27203    594.42   12.011  0.0000   7077.11   0.17490    524.00   21254.35  0.8200   1.39893
+FStube       tube.Fl_O     122.36759   0.27203    594.42   12.011  0.0000   7077.11   0.17490    524.00   21254.35  0.8200   1.39893
+FStubeB      split.Fl_O2   109.64536   0.27203    594.42   12.011  0.0000   6341.32   0.17490    524.00   19044.59  0.8200   1.39893
+FStubeC      split.Fl_O1    12.72223   0.27203    594.42   12.011  0.0000    735.79   0.17490    524.00    2209.76  0.8200   1.39893
+FSdiffused   inlet.Fl_O     12.72223   0.26931    594.42   12.011  0.0000    743.22   0.20275    548.16    2459.99  0.6500   1.39893
+FScompressed cmp25.Fl_O     12.72223   3.36632   1268.11  178.677  0.0000     86.84   2.54775   1176.77     289.98  0.6500   1.36385
+FSintduct    intDuct.Fl>    12.72223   3.36632   1268.11  178.677  0.0000     86.84   2.54775   1176.77     289.98  0.6500   1.36385
+FSbypass     bypass.Fl_O   109.64536   0.27203    594.42   12.011  0.0000   6341.32   0.15216    503.55   18521.03  0.9500   1.39893
+FSexit       bypassExit>   109.64536   0.27203    594.42   12.011  0.0000   6341.32   0.20048    544.84   20584.54  0.6750   1.39893
+FSnozzle     nozz.Fl_O      12.72223   3.36632   1268.11  178.677  0.0000     86.84   0.20048    577.98     669.47  2.4808   1.36385
+
+FLOW                                                                                                                                       
+Reynolds: 224225.830 -/grid unit    Fan SPR:   1.159    Fan MFR:   5.771 kg/s   Plenum TPR:  19.247     Plenum TTR:   2.420                
+                                                                                                                                           
+DIAMETERS                                                                                                                                  
+Tube:   4.178 m     Capsule:   1.498 m    Inlet:   1.347 m     Fan:   1.422 m     Plenum:   0.488 m    Throat:   0.458 m    Exit:   0.742 m
+                                                                                                                                           
+AREAS                                                                                                                                      
+Tube:  13.712 m2    Tube B:  12.287 m2    bypass:  11.949 m2    blockage:   0.176 m2      comp. exit:   0.187 m2                           
+                    Tube C:   1.426 m2    capsule:   1.763 m2   comp. face:   1.587 m2    passenger:   1.400 m2                            
+POWER                                                                                                                                      
+Compressor:  2999.999 hp                                                                                                                   
+No. of 90Kwh Tesla Batteries:  13.866                                                                                                      
+
+
+
+
+
+************************************************************************************************************************************
+Date:05/23/16    Time:15:53:21    Model:                                                                    converge = 1   CASE:   0 
+Version:          NPSS_2.8D3    Gas Package: Janaf    iter/pass/Jacb/Broy=  8/ 13/ 1/ 5    Run by:            cheath1                
+
+                                        FLOW STATION DATA                                                                           
+                                   W        Pt        Tt       ht     FAR        Wc        Ps        Ts       Aphy      MN      gamt
+FS_0         start.Fl_O    159.86382   0.27128    597.90   12.846  0.0000   9298.16   0.17090    524.00   27741.59  0.8400   1.39885
+FStube       tube.Fl_O     159.86382   0.27128    597.90   12.846  0.0000   9298.16   0.17090    524.00   27741.59  0.8400   1.39885
+FStubeB      split.Fl_O2   147.21370   0.27128    597.90   12.846  0.0000   8562.39   0.17090    524.00   25546.38  0.8400   1.39885
+FStubeC      split.Fl_O1    12.65012   0.27128    597.90   12.846  0.0000    735.77   0.17090    524.00    2195.21  0.8400   1.39885
+FSdiffused   inlet.Fl_O     12.65012   0.26857    597.90   12.846  0.0000    743.20   0.20219    551.37    2459.96  0.6500   1.39885
+FScompressed cmp25.Fl_O     12.65012   3.35709   1275.05  180.462  0.0000     86.83   2.54095   1183.31     289.96  0.6500   1.36342
+FSintduct    intDuct.Fl>    12.65012   3.35709   1275.05  180.462  0.0000     86.83   2.54095   1183.31     289.96  0.6500   1.36342
+FSbypass     bypass.Fl_O   147.21370   0.27128    597.90   12.846  0.0000   8562.39   0.15175    506.50   25008.30  0.9500   1.39885
+FSexit       bypassExit>   147.21370   0.27128    597.90   12.846  0.0000   8562.39   0.19304    542.56   27057.35  0.7145   1.39885
+FSnozzle     nozz.Fl_O      12.65012   3.35709   1275.05  180.462  0.0000     86.83   0.19304    575.57     683.75  2.5031   1.36342
+
+FLOW                                                                                                                                       
+Reynolds: 224432.583 -/grid unit    Fan SPR:   1.183    Fan MFR:   5.738 kg/s   Plenum TPR:  19.644     Plenum TTR:   2.433                
+                                                                                                                                           
+DIAMETERS                                                                                                                                  
+Tube:   4.774 m     Capsule:   1.498 m    Inlet:   1.343 m     Fan:   1.422 m     Plenum:   0.488 m    Throat:   0.458 m    Exit:   0.749 m
+                                                                                                                                           
+AREAS                                                                                                                                      
+Tube:  17.898 m2    Tube B:  16.482 m2    bypass:  16.134 m2    blockage:   0.176 m2      comp. exit:   0.187 m2                           
+                    Tube C:   1.416 m2    capsule:   1.763 m2   comp. face:   1.587 m2    passenger:   1.400 m2                            
+POWER                                                                                                                                      
+Compressor:  3000.003 hp                                                                                                                   
+No. of 90Kwh Tesla Batteries:  13.536                                                                                                      
+
+
+
+
+

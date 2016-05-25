@@ -98,7 +98,7 @@ Element Duct tube {
 }
 
 Element Splitter split {
-   BPR = 0.5;
+   BPRdes = 0.5;
 
    void preexecute() {
       Fl_O1.MN = Fl_I.MN;
@@ -230,12 +230,12 @@ Independent ind_BPR {
    varName = "split.BPRdes";
    autoSetup = TRUE;
 }
-/*
+
 Independent ind_Mexit {
    varName = "bypassExit.Fl_O.MN";
    autoSetup = TRUE;
 }
-*/
+
 /*
 Dependent dep_Ps {
    eq_rhs = "start.Fl_O.Ps";
@@ -267,13 +267,13 @@ Dependent dep_Amatch {
    eq_lhs = "Abypass + Apod";
    autoSetup = TRUE;
 }
-/*
+
 Dependent dep_Aexit {
    eq_rhs = "AbypassExit";
    eq_lhs = "AtubeB + AtubeC - AnozzExit";
    autoSetup = TRUE;
 }
-*/
+
 //------------------------------------------------------------------
 //     Run Cases
 //------------------------------------------------------------------
@@ -370,4 +370,3 @@ void runCases() {
 cmpMach = 0.65; runCases(); cout << endl;
 wrapper_print();
 //cmpMach = 0.70; runCases(); cout << endl;
-
