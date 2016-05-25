@@ -23,24 +23,24 @@ Dev forks can be found here:
 ========
 ### File Structure
 
-* AFLR3 - 
-  * Hyperloop.aflr3.arg -
-  * Hyperloop.tags - 
-  * Hyperloop_PW.mapbc -
-* ESP -
-  * capsule.csm
+* AFLR3 - Advancing Front Local Reconnection viscous meshing software
+  * Hyperloop.aflr3.arg - Output arguments file for aflr3
+  * Hyperloop.tags - Grid boundary conditions tagging file for Magneplane geometry model
+  * Hyperloop_PW.mapbc - Flow solver boundary condition mapping file for Magneplane geometry model
+* ESP - Engineering SketchPad geometry tool developed by MIT/Syracuse University
+  * capsule.csm - Geometry input build script file
   * capsule.udc
   * flow_domain.csm
   * tube.udc
-* Fun3D - 
+* Fun3D - Aerodynamic flow solver
   * Hyperloop.mapbc
   * fun3d.nml
-  * fun3d.template
-  * qscript
+  * fun3d.template - Fun3D template file 
+  * qscript - Sample portable batch system (PBS) queing script to run aero simulation on Pleiades (NASA's Advanced Supercomputer)
 * Pointwise - 
-  * Hyperloop-Mesher.glf
-  * Hyperloop.mapbc
-  * Hyperloop.pw
+  * Hyperloop-Mesher.glf - Sample Pointwise viscous meshing script for Magneplane vehicle
+  * Hyperloop.mapbc - 
+  * Hyperloop.pw - Sample Pointwise generated surface grid
 * Geometry -
   * csm
     * hyperloop.csm
@@ -50,7 +50,7 @@ Dev forks can be found here:
 * Python - 
   * LIM.py - Linear Induction Motor Calcs [Not Started]
   * aero.py - Fun 3d Wrapper
-  * aflr3.py - AFRL External Code Wrapper
+  * aflr3.py - AFLR External Code Wrapper
   * aflr3.script - Shell Meshing Script
   * air_bearing.py - Basic Air Bearing Calcs [Deprecate]
   * api.py - Defined python imports
