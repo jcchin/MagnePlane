@@ -1,0 +1,5 @@
+
+
+*********** BEGIN NEW LOG ************** (2016-05-20 11:07:34.411000) PID=1212
+
+May 20 11:07:35 W root: In c:\openmdao-framework\openmdao.devtools\src\openmdao\devtools\utils.pyc: ImportError('No module named win32api',)
