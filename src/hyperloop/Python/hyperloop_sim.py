@@ -1,18 +1,27 @@
 #   OpenMDAO main and library imports
-from openmdao.core.api import Assembly
+from openmdao.core.problem import Problem
+from openmdao.core.group import Group
+from openmdao.components.indep_var_comp import IndepVarComp
 
 #   OpenMDAO component imports
-#from Freestream import Freestream
-#from Fun3D import Fun3D
-#from openCSM import OpenCSM
-
+from freestream import Freestream
 from cycle_wrapper import CycleWrap
+from cycle import CompressionCycle
 from pointwise import Pointwise
 from aflr3 import AFLR3
+from tube_cost import TubeCost
+from battery import Battery
+from tube_structure import TubeStructural
+from vacuum import Vacuum
+from tube_wall_temp import TubeWallTemp
+#from tube_limit_flow import TubeLimitFlow
+#from fun3D import Fun3D  # FIXME
+#from openCSM import OpenCSM
 
-class Sim(Assembly):
+class HyperloopSim(Group):
 
-    def configure(self):
+     def __init__(self):
+        super(HyperloopSim, self).__init__()
 
         # --------------------------------------------------------------------------- #
         #   Freestream Component
@@ -27,14 +36,14 @@ class Sim(Assembly):
         # --------------------------------------------------------------------------- #
         #    Thermo Cycle Component
         # --------------------------------------------------------------------------- #
-        self.add('cycle', cycle_wrapper()) # NPSS
-        #self.add('cycle', cycle()) # Pycycle
+        self.add('cycle', CycleWrap()) # NPSS
+        #self.add('cycle', CompressionCycle()) # Pycycle
 
         # --------------------------------------------------------------------------- #
         #    Geometry Component
         # --------------------------------------------------------------------------- #
-        #self.add('esp', ESP()) # Engineering Sketch Pad (uses .csm files)
-        #self.add('solidworks', SolidWorks()) # Solidworks
+        #self.add('geometry', ESP()) # Engineering Sketch Pad (uses .csm files)
+        #self.add('geometry', SolidWorks()) # Solidworks
 
         # --------------------------------------------------------------------------- #
         #    Pointwise Mesher Component
@@ -49,15 +58,17 @@ class Sim(Assembly):
         # --------------------------------------------------------------------------- #
         #    Fun3D CFD Component
         # --------------------------------------------------------------------------- #
-        self.add('fun3d', Fun3D())
+        #self.add('fun3d', Fun3D())
 
         # --------------------------------------------------------------------------- #
         #    Liner Induction Motor Component
         # --------------------------------------------------------------------------- #
+        #self.add('lim', LIM())
+
         # --------------------------------------------------------------------------- #
         #    Cost Component
         # --------------------------------------------------------------------------- #
-        self.add('tube_cost', TubeCost()) # Tom Gregory Model
+        self.add('cost', TubeCost()) # Tom Gregory Model
 
         # --------------------------------------------------------------------------- #
         #    Mission Workflow
@@ -83,18 +94,17 @@ class Sim(Assembly):
         # --------------------------------------------------------------------------- #
         #    Tube Thermal Component
         # --------------------------------------------------------------------------- #
-        self.add('thermal', TubeTemp())
+        self.add('thermal', TubeWallTemp())
 
 
 
         # --------------------------------------------------------------------------- #
-        #   Create Main Assembly Workflow
+        #   Create Main Group Workflow
         # --------------------------------------------------------------------------- #
-        #   Add component instances to top-level assembly
-        # self.driver.workflow.add(['freestream', 'npss', 'supin', 'opencsm', 'pointwise', 'aflr3', 'cart3d', 'fun3d'])
-
-        #self.driver.workflow.add(['freestream', 'supin', 'opencsm', 'pointwise', 'aflr3', 'fun3d'])
-        self.driver.workflow.add(['freestream', 'supin', 'fun3d'])
+        #   Add component instances to top-level Group
+        self.set_order(['freestream', 'cycle',  \
+             'pointwise', 'aflr3',  'cost', 'battery', 'struct', \
+              'vacuum', 'thermal']) # 'supin', geometry', 'fun3d',
 
         # --------------------------------------------------------------------------- #
         #   Create Data Connections
@@ -140,3 +150,24 @@ class Sim(Assembly):
         #     self.pointwise._filein = '../Pointwise/Load-AxiSpike.glf'
 
 if __name__ == '__main__':
+
+    p1 = Problem()
+    p1.root = Group()
+    #p1.root.add("freestream",Freestream())
+    p1.root.add('sim',HyperloopSim())
+
+
+    # --------------------------------------------------------------------------- #
+    #    Top Level Inputs
+    # --------------------------------------------------------------------------- #
+    params = (
+        ('P', 0.5, {"units" : "psi"}),
+        ('T', 291.0, {"units" : "K"}),
+        ('MN', 0.8),
+    )
+    p1.root.add('des_vars', IndepVarComp(params))
+    p1.root.connect('des_vars.P', 'sim.freestream.Ps')
+
+    p1.setup(check=True)
+    p1.run()
+
