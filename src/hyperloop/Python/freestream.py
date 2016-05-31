@@ -2,70 +2,67 @@
 
 # --- OpenMDAO imports
 from openmdao.core.component import Component
+from openmdao.core.problem import Problem
+from openmdao.core.group import Group
 
 # --- Local Python imports
 
 class Freestream(Component):
     ''' OpenMDAO component for calculating freestream properties '''
 
-    # -----------------------------------
-    # --- Initialize Input Parameters ---
-    # -----------------------------------
-    self.add_param('M_inf', 0.65,  desc='freestream vehicle Mach number', units='m**2')
-    self.add_param('T_inf', 215.0, desc='freestream vehicle static pressure', units='K')
-    self.add_param('P_inf', 0.5,   desc='freestream vehicle static temperature', units='Pa')
-
-    # ------------------------------------
-    # --- Initialize Output Parameters ---
-    # ------------------------------------
-    def solve_nonlinear(self, params, unknowns, resids):
-        unknowns['d_inf'] = params['energy'] / params['e']
-
-    d_inf = Float(1.0, iotype = 'out', desc = 'freestream static density', units = 'kg/m**3')
-    p_inf = Float(1.0, iotype = 'out', desc = 'freestream static pressure', units = 'Pa')
-    t_inf = Float(1.0, iotype = 'out', desc = 'freestream static temperature', units = 'K')
-
     def __init__(self):
         super(Freestream, self).__init__()
-        
-        self.force_execute = True
-    
-    def execute(self):
-    
-        [self.d_inf, self.p_inf, self.t_inf] = Atmosphere(self.alt*0.0003048)
-        print "-------------------------------------"
-        print " --- Freestream Static Conditions ---"       
-        print "-------------------------------------"
-        print ("P_inf = %.6f Pa = %.2f psf" % (self.p_inf, self.p_inf*0.0208854342)) 
-        print ("T_inf = %.6f K = %.2f R" % (self.t_inf, self.t_inf*1.8))
-        print ("D_inf = %.6f kg/m^3 = %.2f lb/ft^3" % (self.d_inf, self.d_inf*0.0624279606)) 
-        print "-------------------------------------"
-        print " --- Freestream Total Conditions ---"       
-        print "-------------------------------------"
-        print ("P_inf = %.6f Pa = %.2f psf" % (self.p_inf, self.p_inf*0.0208854342)) 
-        print ("T_inf = %.6f K = %.2f R" % (self.t_inf, self.t_inf*1.8))
-        print ("D_inf = %.6f kg/m^3 = %.2f lb/ft^3" % (self.d_inf, self.d_inf*0.0624279606)) 
 
-if __name__ == '__main__':
-    from openmdao.core.problem import Problem
-    from openmdao.core.group import Group
+        # -----------------------------------
+        # --- Initialize Input Parameters ---
+        # -----------------------------------        
+        self.add_param('M',  0.8,   desc='freestream Mach number', units='m**2')
+        self.add_param('Ts', 291.,  desc='freestream static pressure', units='K')
+        self.add_param('Ps', 3500., desc='freestream static temperature', units='Pa')
+        self.add_param('R', 287.05, desc='specific gas constant')
+        self.add_param('G', 1.4,    desc='ratio of specific heats')
 
-    p = Problem(root=Group())
-    p.root.add('comp', Battery())
-    p.setup()
-    p.root.list_connections()
-    p.run()
+        # -----------------------------------
+        # --- Initialize Output Parameters ---
+        # -----------------------------------
+        self.add_output('Ds', 0.0,  desc='freestream static density')
+        self.add_output('Pt', 0.0,  desc='freestream total pressure')
+        self.add_output('Tt', 0.0,  desc='freestream total temperature')
+        self.add_output('Dt', 0.0,  desc='freestream total density')
 
-    print 'mass (Kg): %f' % p['comp.mass']
-    print 'energy (kW*hr): %f' % p['comp.energy']
-    print 'volume (m**3): %f' % p['comp.volume']
-    print 'length (m): %f' % p['comp.len']
+    def solve_nonlinear(self, p, u, r):
 
+        # ---------------------------------
+        # --- Compute Output Parameters ---
+        # ---------------------------------
+        u['Ds'] = p['Ps'] / (p['R']*p['Ts'])
+        u['Pt'] = p['Ps'] / ((1+(p['G']-1)/2*p['M']**2)**(-p['G']/(p['G']-1)))
+        u['Tt'] = p['Ts'] / ((1+(p['G']-1)/2*p['M']**2))**-1  
+        u['Dt'] = u['Pt'] / (p['R']*u['Tt'])
+
+        print("-------------------------------------")
+        print(" --- Freestream Static Conditions ---")      
+        print("-------------------------------------")
+        print("MN = %.6f "                         % (p['M']))
+        print("Ps = %.3f Pa     :  = %.6f psi"     % (p['Ps'], p['Ps']*0.000145038)) 
+        print("Ts = %.4f K      :  = %.4f R"       % (p['Ts'], p['Ts']*1.8))
+        print("Ds = %.6f kg/m^3 :  = %.6f lb/ft^3" % (u['Ds'], u['Ds']*0.0624279606))
+        print (" ")
+        print("-------------------------------------")
+        print(" --- Freestream Total Conditions ----")      
+        print("-------------------------------------")
+        print("Pt = %.3f Pa     :  = %.3f psi"     % (u['Pt'], u['Pt']*0.000145038))
+        print("Tt = %.4f K      :  = %.4f R"       % (u['Tt'], u['Tt']*1.8))
+        print("Dt = %.6f kg/m^3 :  = %.6f lb/ft^3" % (u['Dt'], u['Dt']*0.0624279606)) 
 
 if __name__ == "__main__":
     
     # -------------------------
     # --- Default Test Case ---
     # ------------------------- 
-    Freestream_Comp = Freestream()
-    Freestream_Comp.run()
+    p = Problem(root=Group())
+    p.root.add('comp', Freestream())
+    p.setup()
+    p.root.list_connections()
+    p.run()
+
