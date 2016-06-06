@@ -329,14 +329,14 @@ class Lift(Component):
         y = np.arange(0,.02,0.001)
         X, Y = np.meshgrid(x, y)
 
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.plot_surface(Y.T, X.T, Bx, cmap=cm.coolwarm, shade=True)
-        # plt.title('Bx')
-        # ay = fig.add_subplot(212, projection='3d')
-        # ay.plot_surface(Y.T, X.T, By, cmap=cm.coolwarm, shade=True)
-        # plt.title('By')
-        # plt.show()
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot_surface(Y.T, X.T, Bx, cmap=cm.coolwarm, shade=True)
+        plt.title('Bx')
+        ay = fig.add_subplot(212, projection='3d')
+        ay.plot_surface(Y.T, X.T, By, cmap=cm.coolwarm, shade=True)
+        plt.title('By')
+        plt.show()
 
         fig2, (ax2, ay2) = plt.subplots(2, sharex=True)
         #ax2 = fig2.add_subplot(111)
@@ -362,18 +362,18 @@ class Lift(Component):
 
         M1m, Lhm = np.meshgrid(M1, np.arange(1,51))
 
-        # fig = plt.figure()
+        fig = plt.figure()
         # ax = fig.add_subplot(111, projection='3d')
         # ax.plot_surface(percentLambda, M1m.T, Lh, cmap=cm.coolwarm, shade=True)
         # plt.title('Optimum Magnet Thickness')
         # plt.ylabel('Number of Magnets M')
         # plt.xlabel('Magnet Thickness d as %/ lamda')
-        # ay = fig.add_subplot(212)
-        # ay.plot(lamda2,Lh2)
-        # plt.title('Maximum Levitation Height for Wavelength')
-        # plt.xlabel('Wavelength lamda')
-        # plt.ylabel('Levitation Height y')
-        # plt.show()
+        ay = fig.add_subplot(212)
+        ay.plot(lamda2,Lh2)
+        plt.title('Maximum Levitation Height for Wavelength')
+        plt.xlabel('Wavelength lamda')
+        plt.ylabel('Levitation Height y')
+        plt.show()
 
 
 if __name__ == "__main__":
@@ -398,7 +398,8 @@ if __name__ == "__main__":
     from pprint import pprint
 
     db = sqlitedict.SqliteDict( 'maglev', 'openmdao' )
-    data = db['Driver/1']
+    print(db.keys())
+    data = db['rank0:Driver/1']
     u = data['Unknowns']
     pprint(u)
     remove('./maglev')

@@ -1,13 +1,13 @@
 //
 // magneplane model for PyCycle Verification
-//
+///
 
 //------------------------------------------------------------------------
 //                           Output Data Viewers
 //------------------------------------------------------------------------
 setThermoPackage( "Janaf" );
 
-#include <../NPSS/area.view_page>
+#include <../Cycle/area.view_page> //path defined this way for the wrapper
 
 real C_IN2toM2 = 144.*(3.28084**2.);
 real HPtoKW = 0.7457;
