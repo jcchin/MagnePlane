@@ -157,12 +157,58 @@ class MagneplaneEOM(EOMComp):
 
 
 
+class AngularVelocityComp(EOMComp):
+    """ Component to compute the angular velocity of the pod in
+    the inertial NED frame.  This is from the definition of the
+    angular velocity vector based on euler angles and rates in a
+    3-2-1 Euler angle sequence.
+    """
+
+    def __init__(self, grid_data):
+        super(AngularVelocityComp, self).__init__(grid_data=grid_data, time_units='s')
+
+        self.deriv_options['type'] = 'fd'
+
+        self.add_param('psi',desc='azimuth angle',units='rad')
+        self.add_param('theta',desc='elevation angle',units='rad')
+        self.add_param('phi',desc='roll angle',units='rad')
+
+        self.add_param('dUdt:psi',desc='azimuth angle rate',units='rad/s')
+        self.add_param('dUdt:theta',desc='elevation angle rate',units='rad/s')
+        self.add_param('dUdt:phi',desc='roll angle rate',units='rad/s')
+
+        nn = grid_data['num_nodes']
+
+        self.add_output('omega_x',shape=(nn,), desc='omega about north',units='rad/s')
+        self.add_output('omega_y',shape=(nn,), desc='omega about east',units='rad/s')
+        self.add_output('omega_z',shape=(nn,), desc='omega about down',units='rad/s')
+
+    def solve_nonlinear(self, params, unknowns, resids):
+        psi = params['psi']
+        theta = params['theta']
+        phi = params['phi']
+        psi_dot = params['dUdt:psi']
+        theta_dot = params['dUdt:theta']
+        phi_dot = params['dUdt:phi']
+
+        unknowns['omega_x'][:] = phi_dot - psi_dot*np.sin(theta)
+        unknowns['omega_y'][:] = theta_dot*np.cos(phi) + psi_dot*np.sin(phi)*np.cos(theta)
+        unknowns['omega_z'][:] = -theta_dot*np.sin(phi) + psi_dot*np.cos(phi)*np.cos(theta)
+
+
+
+
+
+
+
+
 class MagneplaneRHS(RHS):
 
     def __init__(self,grid_data,dynamic_controls=None,static_controls=None):
         super(MagneplaneRHS,self).__init__(grid_data,dynamic_controls,static_controls)
 
         self.add(name='eom',system=MagneplaneEOM(grid_data),promotes=['*'])
+        self.add(name='omega',system=AngularVelocityComp(grid_data),promotes=['*'])
 
         self.complete_init()
 
@@ -194,11 +240,12 @@ def magneplane_brachistochrone(solver='SLSQP', num_seg=3, seg_ncn=3):
     prob.driver = driver
 
     dynamic_controls = [ {'name':'g','units':'m/s**2'},
-                        {'name':'psi','units':'rad'},
                         {'name':'T','units':'N'},
                         {'name':'D','units':'N'},
                         {'name':'mass','units':'kg'},
-                        {'name':'theta', 'units':'rad'} ]
+                        {'name':'psi','units':'rad'},
+                        {'name':'theta', 'units':'rad'},
+                        {'name':'phi','units':'rad'} ]
 
     phase0 = CollocationPhase(name='phase0',rhs_class=MagneplaneRHS,num_seg=num_seg,seg_ncn=seg_ncn,rel_lengths="equal",
                               dynamic_controls=dynamic_controls,static_controls=None)
@@ -209,10 +256,12 @@ def magneplane_brachistochrone(solver='SLSQP', num_seg=3, seg_ncn=3):
     phase0.set_state_options('y', lower=0,upper=0,ic_val=0,ic_fix=True,fc_val=0,fc_fix=True,defect_scaler=0.1)
     phase0.set_state_options('z', lower=-10,upper=0,ic_val=-10,ic_fix=True,fc_val=-5,fc_fix=True,defect_scaler=0.1)
     phase0.set_state_options('v', lower=0, upper=np.inf,ic_val=0.0,ic_fix=True,fc_val=10.0,fc_fix=False,defect_scaler=0.1)
-    phase0.set_dynamic_control_options('theta', val=phase0.node_space(-.46,-.46),opt=True,lower=-1.57,upper=1.57,scaler=1.0)
+
+    phase0.set_dynamic_control_options(name='psi', val=phase0.node_space(0.0, 0.0), opt=False)
+    phase0.set_dynamic_control_options(name='theta', val=phase0.node_space(-.46,-.46),opt=True,lower=-1.57,upper=1.57,scaler=1.0)
+    phase0.set_dynamic_control_options(name='phi', val=phase0.node_space(0.0, 0.0), opt=False)
 
     phase0.set_dynamic_control_options(name='g', val=phase0.node_space(9.80665, 9.80665), opt=False)
-    phase0.set_dynamic_control_options(name='psi', val=phase0.node_space(0.0, 0.0), opt=False)
     phase0.set_dynamic_control_options(name='T', val=phase0.node_space(0.0, 0.0), opt=False)
     phase0.set_dynamic_control_options(name='D', val=phase0.node_space(0.0, 0.0), opt=False)
     phase0.set_dynamic_control_options(name='mass', val=phase0.node_space(1000.0, 1000.0), opt=False)
@@ -238,14 +287,24 @@ if __name__ == "__main__":
 
     prob.run()
 
-    # simout = prob.trajectories['traj0'].simulate(dt=0.01)
-    #
-    # import matplotlib.pyplot as plt
-    # plt.plot(prob['traj0.phase0.rhs_c.x'],prob['traj0.phase0.rhs_c.z'],'ro')
-    # plt.plot(simout['phase0']['x'],simout['phase0']['z'])
-    # plt.gca().invert_yaxis()
-    # #plt.plot(simout['phase0']['t'],-simout['phase0']['z'])
-    # plt.show()
+    simout = prob.trajectories['traj0'].simulate(dt=0.01)
+
+    import matplotlib.pyplot as plt
+    plt.plot(prob['traj0.phase0.rhs_c.x'],prob['traj0.phase0.rhs_c.z'],'ro')
+    plt.plot(simout['phase0']['x'],simout['phase0']['z'])
+    plt.gca().invert_yaxis()
+    #plt.plot(simout['phase0']['t'],-simout['phase0']['z'])
+
+    plt.figure()
+
+    plt.plot(prob['traj0.phase0.rhs_c.t'],prob['traj0.phase0.rhs_c.omega_x'],'ro')
+    plt.plot(prob['traj0.phase0.rhs_c.t'],prob['traj0.phase0.rhs_c.omega_y'],'bo')
+    plt.plot(prob['traj0.phase0.rhs_c.t'],prob['traj0.phase0.rhs_c.omega_z'],'go')
+
+    #plt.plot(simout['phase0']['t'],simout['phase0']['omega_y'])
+    #plt.plot(simout['phase0']['t'],simout['phase0']['omega_z'])
+
+    plt.show()
 
     #
 
