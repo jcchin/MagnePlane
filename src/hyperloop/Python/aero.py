@@ -59,7 +59,7 @@ class Aero(Component):
         print "t*  = %f      Pa" % (params['t_inf'])
 
         # --- Open template file
-        filein = open( '../Fun3D/Flow/fun3d.template' )
+        filein = open( '../Aero/Fun3D/fun3d.template' )
 
         src = Template( filein.read() )
 
@@ -69,7 +69,7 @@ class Aero(Component):
         result = src.substitute(d)
 
         # --- Write output
-        fh = open('../Fun3D/Flow/fun3d.nml', 'w')
+        fh = open('../Aero/Fun3D/fun3d.nml', 'w')
         fh.write(result)
         fh.close()
 

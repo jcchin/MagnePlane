@@ -1,4 +1,5 @@
 ''' AFLR3 wrapper '''
+import os
 
 # --- OpenMDAO imports
 from openmdao.api import Problem, Group, ExternalCode, IndepVarComp
@@ -19,8 +20,8 @@ class AFLR3(ExternalCode):
         # -------------------------------------------------
         super(AFLR3, self).__init__()
 
-        self.options['external_input_files'] = ['../AFLR3/Hyperloop_PW.b8.ugrid','../AFLR3/Hyperloop.tags']
-        self.options['external_output_files'] = ['../Fun3D/Flow/Hyperloop.b8.ugrid']
+        self.options['external_input_files'] = [os.path.join('..', 'Meshing', 'AFLR3', 'Hyperloop_PW.b8.ugrid'), os.path.join('..', 'Meshing', 'AFLR3', 'Hyperloop.tags')]
+        self.options['external_output_files'] = [os.path.join('..', 'Aero', 'Fun3D', 'Hyperloop.b8.ugrid')]
         self.options['command'] = ['sh', self.aflr3_exec]
 
     def execute(self):
