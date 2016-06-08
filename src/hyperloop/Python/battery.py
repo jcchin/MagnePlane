@@ -1,5 +1,5 @@
 from openmdao.core.component import Component
-
+"""comment"""
 class Battery(Component):
     def __init__(self):
         super(Battery, self).__init__()
