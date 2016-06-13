@@ -21,10 +21,12 @@ from pycycle.set_total import SetTotal
 from pycycle.thermo_static import SetStaticMN, SetStaticPs
 from pycycle.constants import AIR_MIX
 
-from geometry.tube_structure import TubeStructural
-from geometry.inlet import InletGeom
+from tube_structure import TubeStructural
+from inlet import InletGeom
 
 class AreaRatio(Component):
+    '''Equation 1 of Open-Source Conceptual Sizing Models for the Hyperloop
+    Passenger Pod (Chin, Gray, Jones, Berton) '''
     def __init__(self):
         super(AreaRatio, self).__init__()
         self.add_param('tube_r', 0.9, desc='inner radius of tube', units='m')
@@ -51,6 +53,7 @@ class AreaRatio(Component):
         resids['AR_resid'] = unknowns['AR'] - AR_target
 
 class TubeThermo(Component):
+    '''Isentropic Flow Calculation'''
     def __init__(self):
         super(TubeThermo, self).__init__()
         self.add_param('Ps', 99.0, desc='static pressure in tube', units='Pa')
@@ -67,6 +70,7 @@ class TubeThermo(Component):
         unknowns['Tt'] = params['Ts'] * multiplier
 
 class TubeAero(Component):
+    '''Calculate the amount of flow before choking (flow hits Mach 1)'''
     def __init__(self):
         super(TubeAero, self).__init__()
         self.add_param('velocity_tube', 0.0, desc='travel speed where choking occurs', units='m/s')
@@ -91,8 +95,8 @@ class TubeLimitFlow(Group):
     '''Finds the limit velocity for a body traveling through a tube'''
     def __init__(self):
         super(TubeLimitFlow, self).__init__()
-        self.add('Mach_param', ParamComp('Mach', 1.0), promotes=['Mach'])
-        self.add('Mach_con', ConstraintComp('Mach > 0.0'))
+        self.add('Mach_param', IndepVarComp('Mach', 1.0), promotes=['Mach'])
+        #self.add('Mach_con', ConstraintComp('Mach > 0.0'))
         self.add('tube_struct', TubeStructural())
         self.add('inlet', InletGeom())
         self.add('AR_comp', AreaRatio(), promotes=['Mach_bypass', 'bypass_area'])
@@ -104,7 +108,7 @@ class TubeLimitFlow(Group):
         self.add('tube_aero', TubeAero(), promotes=['tube_area', 'W_tube', 'W_kant', 'W_excess'])
 
         self.connect('Mach', 'AR_comp.Mach')
-        self.connect('Mach', 'Mach_con.Mach')
+        #self.connect('Mach', 'Mach_con.Mach')
         self.connect('tube_struct.tube_r', 'AR_comp.tube_r')
         self.connect('inlet.area_out', 'AR_comp.inlet_area')
         self.connect('Mach', 'tube_thermo.Mach')
@@ -166,6 +170,8 @@ if __name__ == '__main__':
 
     p.root.add('des_vars', IndepVarComp(params))
     p.root.connect('des_vars.MN','comp.Mach_bypass')
+    p.root.connect('des_vars.W', 'comp.tube_static.W')
+    p.root.connect('des_vars.W', 'comp.bypass_static.W')
 
     p.root.ln_solver = ScipyGMRES()
     p.root.ln_solver.options['atol'] = 1e-6
