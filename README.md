@@ -24,6 +24,8 @@ Dev forks can be found here:
 
 [Andi Peng](https://github.com/andipeng/MagnePlane)
 
+[Colin Summers](https://github.com/colinxs/MagnePlane)
+
 ========
 ### File Structure
 
