@@ -335,7 +335,7 @@ if __name__ == "__main__":
     from pprint import pprint
 
     db = sqlitedict.SqliteDict('cycle', 'openmdao' )
-    data = db['Driver/1']
+    data = db['rank0:Driver/1']
     u = data['Unknowns']
     #pprint(u)
     prob.cleanup()
