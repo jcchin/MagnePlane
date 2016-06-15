@@ -53,7 +53,7 @@ class TubeWallTemp(Component):
     """ Calculates Q released/absorbed by the hyperloop tube """
     def __init__(self, thermo_data=species_data.janaf, elements=AIR_MIX):
         super(TubeWallTemp, self).__init__()
-        self.fd_options['force_fd'] = True
+        self.deriv_options['type'] = 'fd'
 
         #--Inputs--
         #Hyperloop Parameters/Design Variables
