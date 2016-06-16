@@ -1,0 +1,53 @@
+/* ******************************************************
+*  File Name: PowerCable.int                            *
+*  Date: September 5, 2012                              *
+*  Created by: David Trawick                            *
+*  Last Edited: September 02, 2015                       *
+*  By: Manish Pokhrel                                    *
+*  For: Aerospace Systems Design Lab @ Georgia Tech     *
+*******************************************************	*/
+
+/* ******************************************************
+*  Functions:                                           *
+*	PowerCable     class                                *
+*******************************************************	*/
+
+
+// ==============================================================================
+// PowerCable (class)
+// NPSS model of a power cable with simple resistance
+// for use in electric aircraft propulsion.  
+// ------------------------------------------------------------------------------
+class PowerCable extends Element{
+  real Resistance { 
+    value = 0; IOstatus = INPUT;			//  units = Ohms;
+    description = "Resistance of Cable";	//Assumed Efficiency Factor
+	}
+  real InputVoltage {
+    value = 500; IOstatus = INPUT;// units = Volts;
+	description = "Voltage at side which is fixed (bus voltage)";
+	}
+  real Current {
+    value = 2; IOstatus = INPUT;// units = Amps;
+	description = "Current through cable";
+	}
+  real OutputVoltage {
+    value = 500; IOstatus = OUTPUT;// units = Volts;
+	description = "Voltage at side which floats";
+  }
+	DataInputPort INPUT;
+	real input[4];
+	DataOutputPort OUTPUT;
+	real output[4];
+
+void calculate() 
+{
+    input = INPUT.val;
+	InputVoltage = input[0];
+	Current = input[1];
+    OutputVoltage = InputVoltage - Current*Resistance;	//Ohms Law, defines Current as positive flowing from the input to the output	
+	output = input;
+	output[0] = OutputVoltage;
+	OUTPUT.val = output;
+}
+}
