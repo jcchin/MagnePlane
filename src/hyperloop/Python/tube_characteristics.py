@@ -2,7 +2,7 @@ from __future__ import print_function
 
 from math import pi, sqrt
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
-from openmdao.api import ScipyOptimizer
+from openmdao.api import ScipyOptimizer, NLGaussSeidel
 
 class TubeCharacteristics(Component):
     """Optimize the tube diameter, thickness, and distance between pylons
@@ -16,7 +16,7 @@ class TubeCharacteristics(Component):
         self.add_param('rho', val = 7820.0, units = 'kg/m^3', desc = 'density of steel')
         self.add_param('E', val = 200.0*(10**9), units = 'Pa', desc = 'Young\'s Modulus')
         self.add_param('v', val = .3, desc = 'Poisson\'s ratio')
-        self.add_param('Su', val = 400*(10**6), units = 'Pa', desc = 'ultimate strength')
+        self.add_param('Su', val = 400.0e6, units = 'Pa', desc = 'ultimate strength')
         self.add_param('sf', val = 1.5, desc = 'safety factor')
         self.add_param('g', val = 9.81, units = 'm/s^2', desc = 'gravity')
         self.add_param('unit_cost', val = .1322, units = 'USD/kg', desc = 'cost of materials per unit mass')
@@ -104,6 +104,8 @@ class PylonCharacteristics(Component):
         self.add_param('r_pylon', val = 1.1, units = 'm', desc = 'inner tube radius')
         self.add_param('t', val = .05, units = 'm', desc = 'tube thickness')
 
+        self.deriv_options['type'] = 'fd'
+
         #Define outputs
         self.add_output('dx', val=500.0, units='m', desc='distance between tubes')
         self.add_output('m_pylon', val = 0.0, units = 'kg', desc = 'total mass of the pylon')
@@ -152,18 +154,16 @@ if __name__ == '__main__':
      root.add('p1', IndepVarComp('r', 1.1, units = 'm'))
      root.add('p2', IndepVarComp('t', .05, units = 'm'))
      root.add('p3', IndepVarComp('dx', 500.0, units = 'm'))
-     root.add('p4', IndepVarComp('Su', 400e6, units = 'Pa'))
+     root.add('p4', IndepVarComp('Su', 400.0e6, units = 'Pa'))
      root.add('p5', IndepVarComp('sf', 1.5, units=''))
      root.add('p6', IndepVarComp('p_ambient', 101300.0, units='Pa'))
      root.add('p7', IndepVarComp('p_tunnel', 100.0, units = 'Pa'))
-     root.add('p8', IndepVarComp('E', 210e9, units = 'Pa'))
+     root.add('p8', IndepVarComp('E', 210.0e9, units = 'Pa'))
      root.add('p9', IndepVarComp('v', .3, units = ''))
      root.add('p', TubeCharacteristics())
 
      root.add('con1', ExecComp('c1 = (Su/sf) - VonMises'))                                      #Impose yield stress constraint
      root.add('con2', ExecComp('c2 = (p_ambient - p_tunnel) - (E/(4*(1-v**2)))*((t/r)**3)'))    #Impose buckling constraint
-
-
 
      root.connect('p1.r', 'p.r')
      root.connect('p2.t', 'p.t')
@@ -182,9 +182,10 @@ if __name__ == '__main__':
 
      top.driver = ScipyOptimizer()
      top.driver.options['optimizer'] = 'SLSQP'
+     top.nl_solver = NLGaussSeidel()
 
-     top.driver.add_desvar('p1.r', lower = 0.0)
-     top.driver.add_desvar('p2.t', lower = 0.0)
+     top.driver.add_desvar('p1.r', lower = 0.5)
+     top.driver.add_desvar('p2.t', lower = 0.001)
      top.driver.add_desvar('p3.dx', lower = 0.0)
      top.driver.add_objective('p.m_tube')
      top.driver.add_constraint('con1.c1', lower = 0.0)
@@ -195,7 +196,7 @@ if __name__ == '__main__':
      top.run()
 
      print('\n')
-     print('Minimum tube mass is %f with a radius of %f and a thickness of %f' % (top['p.m_tube'], top['p.r'], top['p.t']))
+     print('Minimum tube mass is %f kg with a radius of %f m and a thickness of %f m' % (top['p.m_tube'], top['p.r'], top['p.t']))
 
 
 
