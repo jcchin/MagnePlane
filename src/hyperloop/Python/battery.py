@@ -2,6 +2,26 @@ from openmdao.core.component import Component
 """comment"""
 class Battery(Component):
     def __init__(self):
+        """Determine if the given variable name is being promoted from this
+        `System`.
+
+        Args
+        ----
+        name : str
+            The name of a variable, relative to this `System`.
+
+        Returns
+        -------
+        bool
+            True if the named variable is being promoted from this `System`.
+        
+        Raises
+        ------
+        TypeError
+            if the promoted variable specifications are not in a valid format
+        
+        """
+
         super(Battery, self).__init__()
         self.add_param('time_mission', 2100.0, desc='travel time', units='s')
         self.add_param('cross_section', 1.3, desc='available cross section area for battery pack', units='m**2')
@@ -30,7 +50,7 @@ if __name__ == '__main__':
     p.root.list_connections()
     p.run()
 
-    print 'mass (Kg): %f' % p['comp.mass']
-    print 'energy (kW*hr): %f' % p['comp.energy']
-    print 'volume (m**3): %f' % p['comp.volume']
-    print 'length (m): %f' % p['comp.len']
+    print ('mass (Kg): %f' % p['comp.mass'])
+    print ('energy (kW*hr): %f' % p['comp.energy'])
+    print ('volume (m**3): %f' % p['comp.volume'])
+    print ('length (m): %f' % p['comp.len'])

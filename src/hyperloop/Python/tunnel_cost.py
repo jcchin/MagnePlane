@@ -27,6 +27,6 @@ if __name__ == '__main__':
     p.root.list_connections()
     p.run()
 
-    print 'diameter (m): %f' % p['comp.diameter']
-    print 'length (km): %f' % p['comp.length']
-    print 'cost (millions USD): %f' % p['comp.cost']
+    print ('diameter (m): %f' % p['comp.diameter'])
+    print ('length (km): %f' % p['comp.length'])
+    print ('cost (millions USD): %f' % p['comp.cost'])

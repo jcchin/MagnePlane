@@ -181,8 +181,8 @@ class TubeWallTemp(Component):
         u['q_total_in'] = u['q_total_solar'] + u['total_heat_rate_pods']
 
         u['ss_temp_residual'] = (u['q_total_out'] - u['q_total_in'])/1e6
-        print "u['ss_temp_residual'] ", u['ss_temp_residual']
-        print "temp boundary", p['temp_boundary']
+        print ("u['ss_temp_residual'] ", u['ss_temp_residual'])
+        print ("temp boundary", p['temp_boundary'])
 
 class TubeTemp(Group):
     """An Assembly that computes SS temp"""
@@ -273,8 +273,8 @@ if __name__ == "__main__":
 
     prob.run()
 
-    print "temp_boundary: ", prob['tt.tm.temp_boundary']
-    print "temp_resid: ", prob['tt.tm.ss_temp_residual']
+    print ("temp_boundary: ", prob['tt.tm.temp_boundary'])
+    print ("temp_resid: ", prob['tt.tm.ss_temp_residual'])
 
     # print "-----Completed Tube Heat Flux Model Calculations---"
     # print ""
