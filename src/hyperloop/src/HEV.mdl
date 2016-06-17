@@ -1,0 +1,123 @@
+//*****************************************************
+//    Model file for a hybrid electric UAS System
+//
+//            Created by:  Jonathan Gladin
+//                  Date:  1-15-2015
+//        Last Edited by:  Jonathan Gladin 
+//                  Date:  1-15-2015
+//
+//*****************************************************
+
+#include <BasicMotor.int>
+#include <Battery.int>
+#include <BatteryPerf.int>
+#include <PowerCable.int>
+#include <DCTransformer.int>
+#include <BasicDCTransformerEfficiency.int>
+#include <BasicInverterEfficiency.int>
+#include <Bus.int>
+
+//This would eventually be replaced with a "rotor" module that 
+//would supply a torque load which extracts power from the shaft (trq < 0) 
+//and sets the Nmech of the shaft.
+
+Element Load Load1 {
+	// trqLoad = -2.581;
+	trqLoad = -0.6895*0.737;
+}
+
+Element Shaft Shaft1 { 
+   ShaftInputPort Load, Motor; 
+   Nmech = 2000.;   
+}
+
+Element BasicMotor Motor1 {
+	switchType = "BLDC";
+	DesignPower = 0.394 ; //horsepower
+	kappa = 1./1.75;
+	Max_RPM = 3500.;
+	imax = 42.;
+	LDratio = 0.822727;
+	R0 = 0.004;
+	B_p = 1.22;
+	CoreRadiusRatio = 0.;
+	I0 = 0.; //Initial Value
+	void preexecute() {
+		Torque = -Load1.trqLoad;
+	}
+}
+
+Element Inverter Inverter1 {
+	// ind_Voltage.autoSetup = TRUE;
+	InputVoltage = 24.0;
+    Subelement BasicInverterEfficiency S_Efficiency{}	
+	
+	void preexecute() {
+		DesignPower = (-Load1.trqLoad / 0.737 * Shaft1.Nmech *(PI/30.)) / Motor1.efficiency/746; //horsepower 
+	}	
+}
+
+Element PowerCable MotorCable1 {
+	Resistance = 0.001;
+}
+
+Element Bus Bus{
+   DataInputPort Motor1;
+   DataOutputPort Battery1;
+   Dependent Dependent1;
+   PowerSourceSplit = {.25, .7};
+   Voltage = 20;
+}
+
+Element PowerCable SupplyCable1 {
+	Resistance = 0.001;
+}
+
+Element Battery Battery1 {
+	Capacity = 10.;
+	ExpZoneAmp = 0.1;
+	ExpZoneTimeConst = 2.1065;
+	PolarizationVoltage = 0.0243;
+	NoLoadVoltage = 3.8;
+	Resistance = 0.0095;
+	#include <Current_load.txt>
+	StackDesignVoltage = 22.2;
+	timeStep = .1;
+	dischargeInterval = 0.05;
+	StateOfCharge = 100;
+	//Batt.switchDes = DESIGN;
+	DesPower = 180.;
+	FlightTime = 88.; 
+	CapDisLimit = 0.2; // 10% reserves
+	TimeDesPower = 0.0;	
+	TimeDesPower = 0.0;	
+	
+	Subelement BatteryWeight S_weight {
+		SpecEnergy = 170;
+		PowerDensity = 310;
+		PowerBattNom = 200;
+		VoltageNominal = 4.2; 
+	}
+	Current = 0.23;
+}
+
+Element DCTransformer DCTrans{
+	//dep_Power.autoSetup = TRUE;
+     Subelement BasicDCTransformerEfficiency S_Efficiency{}
+}
+
+// linkPorts("BatteryWeight", "Battery");
+// linkPorts("Battery", "PowerCable");
+// linkPorts("PowerCable", "DCTransformer");
+// linkPorts("DCTransformer", "BasicMotor");
+// linkPorts("DCTransformer", "DCTransformer_Efficiency");
+linkPorts("Load1.Sh_O", "Shaft1.Load", "LoadWork");
+linkPorts("Motor1.Sh_O", "Shaft1.Motor", "MotorWork");
+linkPorts("Motor1.ElectricOutput", "Inverter1.MOTOR", "M-I");
+linkPorts("Inverter1.CABLE"  ,"MotorCable1.INPUT",   "I-C");
+linkPorts("MotorCable1.OUTPUT" , "Bus.Motor1" , "C-B");
+linkPorts("Bus.Battery1", "SupplyCable1.INPUT", "B-C");
+linkPorts("SupplyCable1.OUTPUT", "DCTrans.OUTPUT" , "C-DC");
+linkPorts("Battery1.OUTPUT","DCTrans.INPUT", "DC-B");
+
+
