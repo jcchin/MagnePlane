@@ -35,6 +35,11 @@ class TubeCharacteristics(Component):
         self.add_output('delta', val = 0.0, units = 'm', desc = 'max deflection inbetween pylons')
 
     def solve_nonlinear(self, params, unknowns, resids):
+        """Evaluate equation for mass of the tube (explicit).
+        Inputs: material properties, tube pressure, initialized values for tunnel radius and wall thickness
+        Outputs: tube mass, load on pylons, max deflection of ube between pylons, max Von Mises stress in tube, material cost
+
+        Equation: m = """
 
         rho = params['rho']
         E = params['E']
@@ -144,10 +149,10 @@ if __name__ == '__main__':
      top = Problem()
 
      root = Group()
-     root.add('p1', IndepVarComp('r', 1.1))
-     root.add('p2', IndepVarComp('t', .05))
-     root.add('p3', IndepVarComp('dx', 500.0))
-     root.add('p', TubeCharacteristics)
+     root.add('p1', IndepVarComp('r', 1.1, units = 'm'))
+     root.add('p2', IndepVarComp('t', .05, units = 'm'))
+     root.add('p3', IndepVarComp('dx', 500.0, units = 'm'))
+     root.add('p', TubeCharacteristics())
 
      root.add('con1', ExecComp('c1 = (Su/sf) - VonMises'))                                      #Impose yield stress constraint
      root.add('con2', ExecComp('c2 = (p_ambient - p_tunnel) - (E/(4*(1-v**2)))*((t/r)**3)'))    #Impose buckling constraint
@@ -171,11 +176,11 @@ if __name__ == '__main__':
      top.driver.options['optimizer'] = 'SLSQP'
 
      top.driver.add_desvar('p1.r')
-     top.driver.add_desvar('p1.t')
-     top.driver.add_desvar('p1.dx')
+     top.driver.add_desvar('p2.t')
+     top.driver.add_desvar('p3.dx')
      top.driver.add_objective('p.m_tube')
-     top.driver.add_constraint('con.c1', lower = 0.0)
-     top.driver.add_constraint('con.c2', lower = 0.0)
+     top.driver.add_constraint('con1.c1', lower = 0.0)
+     top.driver.add_constraint('con2.c2', lower = 0.0)
 
      top.setup()
 
