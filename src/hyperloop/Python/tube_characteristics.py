@@ -152,21 +152,29 @@ if __name__ == '__main__':
      root.add('p1', IndepVarComp('r', 1.1, units = 'm'))
      root.add('p2', IndepVarComp('t', .05, units = 'm'))
      root.add('p3', IndepVarComp('dx', 500.0, units = 'm'))
+     root.add('p4', IndepVarComp('Su', 400e6, units = 'Pa'))
+     root.add('p5', IndepVarComp('sf', 1.5, units=''))
+     root.add('p6', IndepVarComp('p_ambient', 101300.0, units='Pa'))
+     root.add('p7', IndepVarComp('p_tunnel', 100.0, units = 'Pa'))
+     root.add('p8', IndepVarComp('E', 210e9, units = 'Pa'))
+     root.add('p9', IndepVarComp('v', .3, units = ''))
      root.add('p', TubeCharacteristics())
 
      root.add('con1', ExecComp('c1 = (Su/sf) - VonMises'))                                      #Impose yield stress constraint
      root.add('con2', ExecComp('c2 = (p_ambient - p_tunnel) - (E/(4*(1-v**2)))*((t/r)**3)'))    #Impose buckling constraint
 
+
+
      root.connect('p1.r', 'p.r')
      root.connect('p2.t', 'p.t')
      root.connect('p3.dx', 'p.dx')
-     root.connect('p.Su', 'con1.Su')
-     root.connect('p.sf', 'con1.sf')
+     root.connect('p4.Su', 'con1.Su')
+     root.connect('p5.sf', 'con1.sf')
      root.connect('p.VonMises', 'con1.VonMises')
-     root.connect('p.E', 'con2.E')
-     root.connect('p.p_tunnel', 'con2.p_tunnel')
-     root.connect('p.p_ambient', 'con2.p_ambient')
-     root.connect('p.v', 'con2.v')
+     root.connect('p8.E', 'con2.E')
+     root.connect('p7.p_tunnel', 'con2.p_tunnel')
+     root.connect('p6.p_ambient', 'con2.p_ambient')
+     root.connect('p9.v', 'con2.v')
      root.connect('p.t', 'con2.t')
      root.connect('p.r', 'con2.r')
 
@@ -175,18 +183,14 @@ if __name__ == '__main__':
      top.driver = ScipyOptimizer()
      top.driver.options['optimizer'] = 'SLSQP'
 
-     top.driver.add_desvar('p1.r')
-     top.driver.add_desvar('p2.t')
-     top.driver.add_desvar('p3.dx')
+     top.driver.add_desvar('p1.r', lower = 0.0)
+     top.driver.add_desvar('p2.t', lower = 0.0)
+     top.driver.add_desvar('p3.dx', lower = 0.0)
      top.driver.add_objective('p.m_tube')
      top.driver.add_constraint('con1.c1', lower = 0.0)
      top.driver.add_constraint('con2.c2', lower = 0.0)
 
      top.setup()
-
-     top['p1.r'] = 1.1
-     top['p2.t'] = .05
-     top['p3.dx'] = 500.0
 
      top.run()
 
