@@ -29,5 +29,5 @@ if __name__ == '__main__':
     p.root.list_connections()
     p.run()
 
-    print 'mass (Kg): %f' % p['comp.total_mass']
+    print ('mass (Kg): %f' % p['comp.total_mass'])
 

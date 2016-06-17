@@ -38,25 +38,25 @@ class Aero(Component):
     def solve_nonlinear(self, params, unknowns, resids):
         # drag = Cd * rho * Velocity ** 2 * Area / 2.0
 
-        print ""
-        print "---------------------------------"
-        print "------- FUN3D Parameters --------"
-        print "---------------------------------"
+        print ("")
+        print ("---------------------------------")
+        print ("------- FUN3D Parameters --------")
+        print ("---------------------------------")
 
-        print "Non-Dimensional Variables:"
-        print "SPR(1)     = %f    " % (params['SPR'])
-        print ""
-        print "TPR(2)     = %f    " % (params['TPR'])
-        print "TTR(2)     = %f    " % (params['TTR'])
-        print ""
-        print "L*/Lref = %f " % (params['Lstar_Lref'])
-        print "Re/grid = %f " % (params['Re'])
-        print ""
-        print "Dimensional Variables:"
-        print "a*    = %f    m/s" % (params['a_inf'])
-        print "u*    = %f    m/s" % (params['M_inf']*params['a_inf'])
-        print "p*  = %f      Pa" % (params['p_inf'])
-        print "t*  = %f      Pa" % (params['t_inf'])
+        print ("Non-Dimensional Variables:")
+        print ("SPR(1)     = %f    " % (params['SPR']))
+        print ("")
+        print ("TPR(2)     = %f    " % (params['TPR']))
+        print ("TTR(2)     = %f    " % (params['TTR']))
+        print ("")
+        print ("L*/Lref = %f " % (params['Lstar_Lref']))
+        print ("Re/grid = %f " % (params['Re']))
+        print ("")
+        print ("Dimensional Variables:")
+        print ("a*    = %f    m/s" % (params['a_inf']))
+        print ("u*    = %f    m/s" % (params['M_inf']*params['a_inf']))
+        print ("p*  = %f      Pa" % (params['p_inf']))
+        print ("t*  = %f      Pa" % (params['t_inf']))
 
         # --- Open template file
         filein = open( '../Aero/Fun3D/fun3d.template' )

@@ -66,10 +66,10 @@ class Balance(Component):
         resids['BPR'] = (p['AtubeB']+p['AtubeC']) - (p['Abypass'] + p['Adiff'])
         resids['byp_exit_MN'] = (p['AtubeB'] + p['AtubeC']) - (p['AnozzExit']+p['AbypassExit'])
 
-        print "Pt ", u['Pt']
-        print "Tt ", u['Tt']
-        print "W ", u['W']
-        print "BPR ", u['BPR']
+        print ("Pt ", u['Pt'])
+        print ("Tt ", u['Tt'])
+        print ("W ", u['W'])
+        print ("BPR ", u['BPR'])
 
     def linearize(self, params, unknowns, resids):
         J = {}
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     import time
     t = time.time()
     prob.run()
-    print time.time() - t
+    print (time.time() - t)
     #inputs = ['balance.Pt', 'balance.Tt', 'balance.W', 'balance.BPR']
     #prob.check_total_derivatives()
 
@@ -253,84 +253,84 @@ if __name__ == "__main__":
     dstar = prob['cycle.fl_start.Fl_O:stat:gamma']*cu(prob['cycle.fl_start.Fl_O:stat:P'],'psi','Pa')/astar**2
     mustar = 0.00001716*(cu(prob['cycle.fl_start.Fl_O:stat:T'], 'degR', 'degK')/273.15)**1.5*(273.15+110.4)/(cu(prob['cycle.fl_start.Fl_O:stat:T'], 'degR', 'degK')+110.4) # --- Sutherlands Law
     #Re = dstar*ustar/mustar*Lstar_Lref
-    print mustar
+    print (mustar)
 
-    print ""
-    print "--- Output ----------------------"
+    print ("")
+    print ("--- Output ----------------------")
 
-    print "--- Freestream Static Conditions ---"
-    print "Mach No.:    %.6f " % (prob['cycle.fl_start.Fl_O:stat:MN'])
-    print "Ambient Ps:  %.6f psi" % (prob['cycle.fl_start.Fl_O:stat:P'])
-    print "Ambient Ts:  %.6f R" % (prob['cycle.fl_start.Fl_O:stat:T'])
-    print "Ambient Pt:  %.6f psi" % (prob['cycle.fl_start.Fl_O:tot:P'])
-    print "Ambient Tt:  %.6f R" % (prob['cycle.fl_start.Fl_O:tot:T'])
-    print "Ambient Rho: %.6f kg/m^3" % (cu(prob['cycle.fl_start.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3'))
-    print "Ambient Viscosity %.8f kg/(m-s)" % (mustar) #*1.48816394
-    print "Pod Velocity:   %.6f m/s" % (cu(prob['cycle.fl_start.Fl_O:stat:V'], 'ft/s', 'm/s'))
-    print "Reynolds No.=  %.6f  -/grid unit" % ((cu(prob['cycle.fl_start.Fl_O:stat:rho'],'lbm/ft**3','kg/m**3')*cu(prob['cycle.fl_start.Fl_O:stat:V'],'ft/s','m/s'))/(mustar))
-    print ""
+    print ("--- Freestream Static Conditions ---")
+    print ("Mach No.:    %.6f " % (prob['cycle.fl_start.Fl_O:stat:MN']))
+    print ("Ambient Ps:  %.6f psi" % (prob['cycle.fl_start.Fl_O:stat:P']))
+    print ("Ambient Ts:  %.6f R" % (prob['cycle.fl_start.Fl_O:stat:T']))
+    print ("Ambient Pt:  %.6f psi" % (prob['cycle.fl_start.Fl_O:tot:P']))
+    print ("Ambient Tt:  %.6f R" % (prob['cycle.fl_start.Fl_O:tot:T']))
+    print ("Ambient Rho: %.6f kg/m^3" % (cu(prob['cycle.fl_start.Fl_O:stat:rho'], 'lbm/ft**3', 'kg/m**3')))
+    print ("Ambient Viscosity %.8f kg/(m-s)" % (mustar)) #*1.48816394
+    print ("Pod Velocity:   %.6f m/s" % (cu(prob['cycle.fl_start.Fl_O:stat:V'], 'ft/s', 'm/s')))
+    print ("Reynolds No.=  %.6f  -/grid unit" % ((cu(prob['cycle.fl_start.Fl_O:stat:rho'],'lbm/ft**3','kg/m**3')*cu(prob['cycle.fl_start.Fl_O:stat:V'],'ft/s','m/s'))/(mustar)))
+    print ("")
 
-    print "--- Fan Face Conditions ---"
-    print "Compressor Mach No.:   %.6f " % (prob['cycle.inlet.Fl_O:stat:MN'])
-    print "Compressor Area:       %.6f m^2" % (cu(prob['cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
-    print "Compressor Ps:         %.6f psi" % (prob['cycle.inlet.Fl_O:stat:P'])
-    print "Compressor Ts:         %.6f degR" % (prob['cycle.inlet.Fl_O:stat:T'])
-    print "Compressor Pt:         %.6f psi" % (prob['cycle.inlet.Fl_O:tot:P'])
-    print "Compressor Tt:         %.6f degR" % (prob['cycle.inlet.Fl_O:tot:T'])
-    print "Compressor MFR:        %.6f kg/s" % (cu(prob['cycle.inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
-    print "Compressor SPR:        %.6f " % (prob['cycle.inlet.Fl_O:stat:P']/prob['cycle.fl_start.Fl_O:stat:P'])
-    print "Compressor Power Reqd: %.6f hp" % (prob['cycle.comp.power'])
-    print ""
+    print ("--- Fan Face Conditions ---")
+    print ("Compressor Mach No.:   %.6f " % (prob['cycle.inlet.Fl_O:stat:MN']))
+    print ("Compressor Area:       %.6f m^2" % (cu(prob['cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2')))
+    print ("Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi)))
+    print ("Compressor Ps:         %.6f psi" % (prob['cycle.inlet.Fl_O:stat:P']))
+    print ("Compressor Ts:         %.6f degR" % (prob['cycle.inlet.Fl_O:stat:T']))
+    print ("Compressor Pt:         %.6f psi" % (prob['cycle.inlet.Fl_O:tot:P']))
+    print ("Compressor Tt:         %.6f degR" % (prob['cycle.inlet.Fl_O:tot:T']))
+    print ("Compressor MFR:        %.6f kg/s" % (cu(prob['cycle.inlet.Fl_O:stat:W'], 'lbm/s', 'kg/s')))
+    print ("Compressor SPR:        %.6f " % (prob['cycle.inlet.Fl_O:stat:P']/prob['cycle.fl_start.Fl_O:stat:P']))
+    print ("Compressor Power Reqd: %.6f hp" % (prob['cycle.comp.power']))
+    print ("")
 
-    print "--- Compressor Exit Conditions ---"
-    print "Compressor Mach No.:   %.6f " % (prob['cycle.comp.Fl_O:stat:MN'])
-    print "Compressor Area:       %.6f in^2" % (prob['cycle.comp.Fl_O:stat:area'])
-    print "Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
-    print "Compressor Ps:         %.6f psi" % (prob['cycle.comp.Fl_O:stat:P'])
-    print "Compressor Ts:         %.6f degR" % (prob['cycle.comp.Fl_O:stat:T'])
-    print "Compressor Pt:         %.6f psi" % (prob['cycle.comp.Fl_O:tot:P'])
-    print "Compressor Tt:         %.6f degR" % (prob['cycle.comp.Fl_O:tot:T'])
-    print ""
+    print ("--- Compressor Exit Conditions ---")
+    print ("Compressor Mach No.:   %.6f " % (prob['cycle.comp.Fl_O:stat:MN']))
+    print ("Compressor Area:       %.6f in^2" % (prob['cycle.comp.Fl_O:stat:area']))
+    print ("Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi)))
+    print ("Compressor Ps:         %.6f psi" % (prob['cycle.comp.Fl_O:stat:P']))
+    print ("Compressor Ts:         %.6f degR" % (prob['cycle.comp.Fl_O:stat:T']))
+    print ("Compressor Pt:         %.6f psi" % (prob['cycle.comp.Fl_O:tot:P']))
+    print ("Compressor Tt:         %.6f degR" % (prob['cycle.comp.Fl_O:tot:T']))
+    print ("")
 
-    print "--- Nozzle Plenum Conditions ---"
-    print "Nozzle Plenum Area:   %.6f m^2" % (cu(prob['cycle.duct.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Nozzle Plenum Radius: %.6f m  " % (np.sqrt((cu(prob['cycle.duct.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
-    print "Nozzle Plenum Ps:     %.6f psi " % (prob['cycle.duct.Fl_O:stat:P'])
-    print "Nozzle Plenum Ts:     %.6f degR " % (prob['cycle.duct.Fl_O:stat:T'])
-    print "Nozzle Plenum Pt:     %.6f psi " % (prob['cycle.duct.Fl_O:tot:P'])
-    print "Nozzle Plenum Tt:     %.6f degR " % (prob['cycle.duct.Fl_O:tot:T'])
-    print "Nozzle Plenum TPR     %.6f" % (prob['cycle.duct.Fl_O:tot:P']/prob['cycle.fl_start.Fl_O:stat:P'])
-    print "Nozzle Plenum TTR     %.6f" % (prob['cycle.duct.Fl_O:tot:T']/prob['cycle.fl_start.Fl_O:stat:T'])
-    print ""
+    print ("--- Nozzle Plenum Conditions ---")
+    print ("Nozzle Plenum Area:   %.6f m^2" % (cu(prob['cycle.duct.Fl_O:stat:area'], 'inch**2', 'm**2')))
+    print ("Nozzle Plenum Radius: %.6f m  " % (np.sqrt((cu(prob['cycle.duct.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi)))
+    print ("Nozzle Plenum Ps:     %.6f psi " % (prob['cycle.duct.Fl_O:stat:P']))
+    print ("Nozzle Plenum Ts:     %.6f degR " % (prob['cycle.duct.Fl_O:stat:T']))
+    print ("Nozzle Plenum Pt:     %.6f psi " % (prob['cycle.duct.Fl_O:tot:P']))
+    print ("Nozzle Plenum Tt:     %.6f degR " % (prob['cycle.duct.Fl_O:tot:T']))
+    print ("Nozzle Plenum TPR     %.6f" % (prob['cycle.duct.Fl_O:tot:P']/prob['cycle.fl_start.Fl_O:stat:P']))
+    print ("Nozzle Plenum TTR     %.6f" % (prob['cycle.duct.Fl_O:tot:T']/prob['cycle.fl_start.Fl_O:stat:T']))
+    print ("")
 
-    print "--- Nozzle Exit Conditions ---"
-    print "Mach No.:            %.6f " % (prob['cycle.nozzle.Fl_O:stat:MN'])
-    print "Nozzle Exit Area:    %.6f m^2" % (cu(prob['cycle.nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))
-    print "Nozzle Exit Radius:  %.6f m  " % (np.sqrt((cu(prob['cycle.nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi))
-    print "Nozzle Exit Ps:      %.6f psi" % (prob['cycle.nozzle.Fl_O:stat:P'])
-    print "Nozzle Exit Ts:      %.6f degR" % (prob['cycle.nozzle.Fl_O:stat:T'])
-    print "Nozzle Exit Pt:      %.6f psi" % (prob['cycle.nozzle.Fl_O:tot:P'])
-    print "Nozzle Exit Tt:      %.6f degR" % (prob['cycle.nozzle.Fl_O:tot:T'])
-    print "Nozzle Exit MFR:     %.6f kg/s" % (cu(prob['cycle.nozzle.Fl_O:stat:W'], 'lbm/s', 'kg/s'))
-    print "Nozzle Gross Thrust: %.6f lb" % prob['cycle.nozzle.Fg']
-    print "Inlet Ram Drag:      %.6f lb" % prob['cycle.inlet.F_ram']
+    print ("--- Nozzle Exit Conditions ---")
+    print ("Mach No.:            %.6f " % (prob['cycle.nozzle.Fl_O:stat:MN']))
+    print ("Nozzle Exit Area:    %.6f m^2" % (cu(prob['cycle.nozzle.Fl_O:stat:area'], 'inch**2', 'm**2')))
+    print ("Nozzle Exit Radius:  %.6f m  " % (np.sqrt((cu(prob['cycle.nozzle.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi)))
+    print ("Nozzle Exit Ps:      %.6f psi" % (prob['cycle.nozzle.Fl_O:stat:P']))
+    print ("Nozzle Exit Ts:      %.6f degR" % (prob['cycle.nozzle.Fl_O:stat:T']))
+    print ("Nozzle Exit Pt:      %.6f psi" % (prob['cycle.nozzle.Fl_O:tot:P']))
+    print ("Nozzle Exit Tt:      %.6f degR" % (prob['cycle.nozzle.Fl_O:tot:T']))
+    print ("Nozzle Exit MFR:     %.6f kg/s" % (cu(prob['cycle.nozzle.Fl_O:stat:W'], 'lbm/s', 'kg/s')))
+    print ("Nozzle Gross Thrust: %.6f lb" % prob['cycle.nozzle.Fg'])
+    print ("Inlet Ram Drag:      %.6f lb" % prob['cycle.inlet.F_ram'])
 
-    print ""
-    print "--- Force/Power Balances ---"
-    print "comp pwr out: ", prob['cycle.comp.power']
-    print "comp trq out: ", prob['cycle.comp.trq']
-    print "net trq: ", prob['cycle.shaft.trq_net']
+    print ("")
+    print ("--- Force/Power Balances ---")
+    print ("comp pwr out: ", prob['cycle.comp.power'])
+    print ("comp trq out: ", prob['cycle.comp.trq'])
+    print ("net trq: ", prob['cycle.shaft.trq_net'])
     print
     # print 'resid', prob['cycle.pwr_balance.pwr_net']
-    print "comp.Fl_O:tot:P", prob['cycle.comp.Fl_O:tot:P']
-    print "comp.Fl_O:tot:T", prob['cycle.comp.Fl_O:tot:T']
-    print "comp.Fl_O:tot:h", prob['cycle.comp.Fl_O:tot:h']
+    print ("comp.Fl_O:tot:P", prob['cycle.comp.Fl_O:tot:P'])
+    print ("comp.Fl_O:tot:T", prob['cycle.comp.Fl_O:tot:T'])
+    print ("comp.Fl_O:tot:h", prob['cycle.comp.Fl_O:tot:h'])
 
-    print "BPR ", prob['cycle.splitter.BPR']
-    print "AtubeB ", prob['balance.AtubeB']
-    print "AtubeC ", prob['balance.AtubeC']
-    print "Apax ", prob['balance.Adiff']-prob['balance.Acmprssd']
+    print ("BPR ", prob['cycle.splitter.BPR'])
+    print ("AtubeB ", prob['balance.AtubeB'])
+    print ("AtubeC ", prob['balance.AtubeC'])
+    print ("Apax ", prob['balance.Adiff']-prob['balance.Acmprssd'])
     import sqlitedict
     from pprint import pprint
 
