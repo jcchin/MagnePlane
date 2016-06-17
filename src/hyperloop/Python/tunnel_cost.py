@@ -44,6 +44,36 @@ class DefaultsHandler(object):
 
     global param
 
+class TunnelCost(Component):
+    """
+    
+    Notes
+        ----
+        Current tunnel cost estimation very rough. Needs refinement.
+        Default parameters taken from Hyperloop Alpha.
+
+    Parameters
+        ----
+        diameter : float
+            Diameter of tunnel in meters. Default value is 2.23.
+        length : float
+            Length of tunnel in km. Default value is 563.00, distance from SF to LA.
+
+    Returns
+        ----
+        cost : float
+            Total cost of tunnel in USD. Default value is 0.0.
+
+    References
+        ----
+        ..[1] Rostami, Jamal, Mahmoud Sepehrmanesh, Ehsan Alavi Gharahbagh, 
+        and Navid Mojtabai. "Planning Level Tunnel Cost Estimation Based on 
+        Statistical Analysis of Historical Data." Tunnelling and Underground 
+        Space Technology 33 (2013): 22-33. Web. 
+        <https://www.researchgate.net/publication/233926915_Planning_level_tunnel_cost_estimation_based_on_statistical_analysis_of_historical_data>.
+
+    """
+
     def __init__(self):
         pass
 
@@ -95,7 +125,7 @@ class TunnelCost(Component):
 
         self.add_output(defaults.cost.name, defaults.cost.val, desc=defaults.cost.desc, units=defaults.cost.unit)
 
-
+    # formula taken from conventional subway excavation data
     def solve_nonlinear(self, params, unknowns, resids):
 
         # # TODO for now the below regression model depends on having correct units, I believe?, this should be changed for future.

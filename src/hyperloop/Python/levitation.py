@@ -10,11 +10,6 @@ from openmdao.api import SqliteRecorder
 from openmdao.solvers.newton import Newton
 from openmdao.solvers.scipy_gmres import ScipyGMRES
 
-from pycycle.components import Compressor, Shaft, FlowStart, Inlet, Nozzle, Duct
-from pycycle.species_data import janaf
-from pycycle.connect_flow import connect_flow
-from pycycle.constants import AIR_FUEL_MIX, AIR_MIX
-
 from openmdao.solvers.ln_gauss_seidel import LinearGaussSeidel
 from openmdao.solvers.ln_direct import DirectSolver
 

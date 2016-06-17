@@ -30,13 +30,13 @@ def Atmosphere(alt):
 
     while (j > i+1):
 
-	   k = (i+j)/2
+        k = (i+j)/2
 
-	   if h < htab[k]:
-	       j = k
+        if h < htab[k]:
+            j = k
 
-	   else:
-	       i = k
+        else:
+            i = k
 
     tgrad = gtab[i]		# temp. gradient of local layer
     tbase = ttab[i]		# base  temp. of local layer
@@ -46,10 +46,10 @@ def Atmosphere(alt):
 
 
     if 0.0 == tgrad:
-	   delta=ptab[i]*math.exp(-GMR*deltah/tbase)
+        delta=ptab[i]*math.exp(-GMR*deltah/tbase)
 
     else:
-	   delta=ptab[i]*math.pow(tbase/tlocal, GMR/tgrad)
+        delta=ptab[i]*math.pow(tbase/tlocal, GMR/tgrad)
 
     sigma = delta/theta
 

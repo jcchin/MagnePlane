@@ -4,6 +4,7 @@ from openmdao.core.component import Component
 
 class Mission(Component):
     '''Place holder for real mission analysis. Could consider a pseudospectral optimal control approach'''
+    
     def __init__(self):
         super(Mission, self).__init__()
         self.add_param('max_velocity', 308.0, desc='Maximum travel speed for pod', units='m/s')
@@ -65,5 +66,5 @@ if __name__ == "__main__":
     p.setup()
     p.run()
 
-    print "energy: ",p['comp.energy'],'kW'
-    print "mission time: ",p['comp.time_mission']/(60.), "minutes"
+    print ("energy: ",p['comp.energy'],'kW')
+    print ("mission time: ",p['comp.time_mission']/(60.), "minutes")
