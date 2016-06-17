@@ -73,6 +73,7 @@ class TunnelCost(Component):
         <https://www.researchgate.net/publication/233926915_Planning_level_tunnel_cost_estimation_based_on_statistical_analysis_of_historical_data>.
 
     """
+class DefaultsHandler(object):
 
     def __init__(self):
         pass
