@@ -8,14 +8,36 @@ from tools import io_helper
 
 """Cost estimate of tunnel given length and diameter"""
 """
-Little bit of meta-programming here:
 
+Why:
+1) to be able to use central config file
+2) avoid "magic numbers"
+
+Little bit of meta-programming here:
 Basics:
 1) DefaultsHandler acts a bit like a standard Enum class, but it is mutable.
 2) It stores default values explicitly
 3) If a config file is provided, and the name of the param (the OpenMDAO param that is, i.e. the first entry in the
    namedtuple below) has a corresponding entry in the config file, then it overwrites its own class values
 4) Rest of component pulls initial values from whatever DefaultsHandler is holding at runtime
+
+Pros:
+-Let's you use autocompletion in code elsewhere!! Simply call defaults."first-few-char...." and the var you want is found
+ potentially very useful when dealing with 100's or 1000's of variables
+-Doesn't rely on OpenMDAO features (changing value, desc, and units after calling add_param() is not straightforward
+ and could break in future releases)
+-good style; avoids having 'magic numbers' throughout code and as a result is more maintainable as a variables definition
+ needs only to be changed in one location
+-potentially VERY easy to convert existing code. Straightforward to write a short Python script which parses the add_param()
+ calls in existing code and generates the variable definitions in DefaultsHandler
+
+Cons:
+-More code; for every unique add_param we add another line at the top of the code to define a var
+-Meta-programming is always a bit scary
+
+Alternative:
+-Instead of using a DefaultsHandle class to hold variables, use a Dictionary. This doesn't let you use autocompletion
+ and instead forces you to remember var names, but is a bit easier to understand and is more straightforward.
 
 """
 class DefaultsHandler(object):
@@ -97,7 +119,7 @@ if __name__ == '__main__':
     # play with these two lines:
     # x = TunnelCost(config=io_helper.InputHelper('default.JSON').get_config('tunnel_data'))
     x = TunnelCost()
-    
+
     p.root.add('comp', x)
     p.setup()
     p.root.list_connections()
