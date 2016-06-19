@@ -15,7 +15,7 @@ class Thrust(Component):
 	"""This model also conforms to the order of amount of thrust given by propulsion_mechanics component.""" 
         super(Thrust, self).__init__()
 
-        self.add_param('R2', val=.082, desc = 'resistance of rotor' ,units = 'ohms')
+        self.add_param('R2', val=.082, desc='resistance of rotor', units='ohms')
         self.add_param('R1', val = 7.6*10**-7, dest = 'per phase stator resistance', units = 'ohms')
         #self.add_param('p', val=1.0, desc = 'no. of poles', units = 'none') 
         self.add_param('P1', val = 180000, desc = 'input power', units = 'watts') 
@@ -72,14 +72,19 @@ class Thrust(Component):
         
         #Sub-module reactance_of_inductor is used to calculate stator(inductor) reactance.(X_l)
         unknowns['reactance_of_inductor'] = self.reactance_of_inductor(f,L)
-        X_l = unknowns['reactance_of_inductor']
+
         
         #Sub-module omega is used to calculate omega(w)
         unknowns['omega']= self.omega(f,L)
-        w = unknowns['omega']
+
         
         unknowns['thrust'] = (P1**2*R2*X_m**2*S*(1-S)) / (m*V1**2*numpy.cos(phi)**2*(R2**2+S**2*X_m**2))
         unknowns['a'] = self.acceleration(P1, c_time, mass)
+
+
+
+
+
     
      
     def phase_angle_calc(self, f, L, R1):
@@ -116,8 +121,9 @@ class Thrust(Component):
 		
 if __name__ == '__main__':
    
-    #set up problem 
-    p = Problem(root=Group())
+    #set up problem
+    root = Group()
+    p = Problem(root)
     p.root.add('comp', Thrust())
     p.setup()
     p.root.list_connections()
@@ -129,5 +135,7 @@ if __name__ == '__main__':
     print 'reactance of inductor : %f' %p['comp.reactance_of_inductor']
     print 'omega : %f' %p['comp.omega']
     print 'thrust : %f' %p['comp.thrust']
-    print 'acceleration : %f' %p['comp.a']
+    print 'V1: %f' %p['comp.V1']
+
+    #print 'acceleration : %f' %p['comp.a']
     
