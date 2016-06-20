@@ -34,4 +34,4 @@ if __name__ == '__main__':
     p.run()
 
     for var_name, units in (('r_back_inner', 'm'), ('r_back_outer', 'm'), ('bypass_area', 'm**2'), ('area_frontal', 'm**2')):
-        print '%s (%s): %f' % (var_name, units, p.root.comp.unknowns[var_name])
+        print ('%s (%s): %f' % (var_name, units, p.root.comp.unknowns[var_name]))

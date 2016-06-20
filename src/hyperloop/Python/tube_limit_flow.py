@@ -146,7 +146,7 @@ def plot_data(p, c='b'):
         Machs.append(Mach)
         W_kant.append(p['comp.W_kant'])
         W_tube.append(p['comp.W_tube'])
-    print 'Area in:', p['comp.inlet.area_out']
+    print ('Area in:', p['comp.inlet.area_out'])
     fig = pylab.plot(Machs, W_tube, '-', label="%3.1f Req." % (p['comp.tube_area'] / p['comp.inlet.area_out']), lw=3, c=c)
     pylab.plot(Machs, W_kant, '--', label="%3.1f Limit" % (p['comp.tube_area'] / p['comp.inlet.area_out']), lw=3, c=c)
     pylab.tick_params(axis='both', which='major', labelsize=15)

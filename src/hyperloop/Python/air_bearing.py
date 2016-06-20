@@ -34,7 +34,7 @@ if __name__ == '__main__':
     p.setup()
     p.run()
 
-    print 'total_area (m**2): %f' % p.root.comp.unknowns['total_area']
-    print 'area_per_bearing (m**2): %f' % p.root.comp.unknowns['bearing_area']
-    print 'length_per_bearing (m): %f' % p.root.comp.unknowns['bearing_len']
-    print 'bearing_width (m): %f' % p.root.comp.unknowns['bearing_width']
+    print ('total_area (m**2): %f' % p.root.comp.unknowns['total_area'])
+    print ('area_per_bearing (m**2): %f' % p.root.comp.unknowns['bearing_area'])
+    print ('length_per_bearing (m): %f' % p.root.comp.unknowns['bearing_len'])
+    print ('bearing_width (m): %f' % p.root.comp.unknowns['bearing_width'])

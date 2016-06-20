@@ -126,13 +126,13 @@ class Fun3D(Component):
         at_m = at_ft/10.7639
         ae_m = ae_ft/10.7639
 
-        print ""
-        print "Nozzle Calculations:"
+        print ("")
+        print ("Nozzle Calculations:")
         print ("Plenum Diameter = %f m = %f ft" % (diameters[0]*0.3048, diameters[0]))
         print ("Throat Diameter = %f m = %f ft" % (np.min(diameters)*0.3048, np.min(diameters)))
         print ("Exit Diameter   = %f m = %f ft" % (diameters[-1]*0.3048, diameters[-1]))
 
-        print ""
+        print ("")
         print ("Plenum Area = %f m^2 = %f ft^2" % (ap_m, ap_ft))
         print ("Throat Area = %f m^2 = %f ft^2" % (at_m, at_ft))
         print ("Exit Area   = %f m^2 = %f ft^2" % (ae_m, ae_ft))
@@ -144,7 +144,7 @@ class Fun3D(Component):
         ae_at = ae_m/at_m
         Me = fsolve(f, 2.0, args=(gamma_e, ae_at))[0]
 
-        print ""
+        print ("")
         print ("Ap/A* = %f " % (ap_at))
         print ("Ae/A* = %f " % (ae_at))
 
@@ -168,34 +168,34 @@ class Fun3D(Component):
         # --- Static rho at plenum
         dp = dp_0*(1+((gamma_p-1)/2)*Mp**2)**(-1/(gamma_p-1))
 
-        print ""        
-        print "---------------------------------"
-        print "------- FUN3D Parameters -------"
-        print "---------------------------------"
+        print ("")        
+        print ("---------------------------------")
+        print ("------- FUN3D Parameters -------")
+        print ("---------------------------------")
         astar = np.sqrt(gamma_inf*self.R*self.t_inf)
         ustar = astar*self.M_inf
         dstar = gamma_inf*self.p_inf/astar**2
         mustar = 0.00001716*(self.t_inf/273.15)**1.5*(273.15+110.4)/(self.t_inf+110.4) # --- Sutherlands Law
         Re = dstar*ustar/mustar*Lstar_Lref
         
-        print "Non-Dimensional Variables:"
+        print ("Non-Dimensional Variables:")
         print ("SPR(1)     = %f    " % (ps2/self.p_inf))  
-        print ""        
+        print ("")     
         print ("TPR(2)     = %f    " % (pp_0/self.p_inf)) 
         print ("TTR(2)     = %f    " % (self.T4_0/self.t_inf)) 
-        print ""          
+        print ("")          
         print ("c(1)     = %f    " % (a2/astar))        
         print ("u(1)     = %f    " % (v2/ustar))
         print ("rho(1)   = %f    " % (d2/dstar))
-        print ""       
+        print ("")        
         print ("c(2)     = %f    " % (ap/astar))        
         print ("u(2)     = %f    " % (Mp*ap/ustar))
         print ("rho(2)   = %f    " % (dp/dstar))
-        print ""         
+        print ("")         
         print ("L*/Lref = %f " % Lstar_Lref)                
         print ("Re/grid = %f " % Re)   
-        print ""             
-        print "Dimensional Variables:"
+        print ("")             
+        print ("Dimensional Variables:")
         print ("a*    = %f    m/s" % astar)
         print ("u*    = %f    m/s" % ustar)
         print ("rho*  = %f    kg/m^3" % dstar)

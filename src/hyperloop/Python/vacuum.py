@@ -39,10 +39,10 @@ if __name__ == '__main__':
     p.root.list_connections()
     p.run()
 
-    print 'Power Consumption (Bhp): %f' % (p['comp.BkW']*1.34102)
-    print 'Total Power Consumption (Bhp): %f  over %i pumps' % (p['comp.pwr']*1.34102, p['comp.n'])
+    print ('Power Consumption (Bhp): %f' % (p['comp.BkW']*1.34102))
+    print ('Total Power Consumption (Bhp): %f  over %i pumps' % (p['comp.pwr']*1.34102, p['comp.n']))
 
     if (p['comp.SF'] < 0.01 or p['comp.SF'] > 4.0):
-        print "invalid SF"
+        print ("invalid SF")
 
 
