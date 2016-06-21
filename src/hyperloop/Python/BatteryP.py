@@ -72,7 +72,7 @@ class BatteryP(Component):
         super(BatteryP, self).__init__()
 
         # input to the equation
-        self.add_param('DesPower', val=0.0, desc='Design Power Load', units='W')
+        self.add_param('DesPower', val=1.0, desc='Design Power Load', units='W')
         self.add_param('PqPdes_Max', val=1.5, desc='Maximum Power to Design Load Ratio', units='W')
         self.add_param('FlightTime', val=88, desc='Time since battery is discharging', units='minutes')
         self.add_param('Current', val=2.3, desc='Current Drain Applied to battery sack', units='Amps')
