@@ -221,11 +221,7 @@ if False: #__name__ == '__main__':
     print('\n')
     print('Minimum tube mass is %f kg with a radius of %f m and a thickness of %f m' % (top['p.m_tube'], top['p.r'], top['p.t']))
 
-
-
 if __name__ == '__main__':
-
-
     tube_comp = TubeCharacteristics()
     pylon_comp = PylonCharacteristics()
 
