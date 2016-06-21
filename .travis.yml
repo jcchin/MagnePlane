@@ -1,0 +1,61 @@
+#branches:
+#  only:
+#    -master
+
+sudo: false
+
+os:
+  -linux
+  -osx
+
+language: generic
+
+env:
+- PY=2.7
+- PY=3.4
+
+#notifications:
+#  email: false
+#  slack:
+
+
+before_install:
+- OS=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "MacOSX"; else echo "Linux"; fi)
+- wget "https://repo.continuum.io/miniconda/Miniconda-latest-$OS-x86_64.sh" -O miniconda.sh
+- chmod +x miniconda.sh
+- if [ "$OS" = "Linux" ]; then
+    ./miniconda.sh -b  -p /home/travis/miniconda;
+  fi
+- if [ "$OS" = "MacOSX" ]; then
+    ./miniconda.sh -b  -p /Users/travis/miniconda;
+  fi
+- PATHPREFIX=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "/Users/travis/miniconda/bin"; else echo "/home/travis/miniconda/bin"; fi)
+- export PATH=$PATHPREFIX:$PATH
+- export OPENMDAO_TEST_DOCS=1
+- conda update --yes conda
+
+install:
+- conda install --yes python=$PY numpy scipy=0.16.1 nose matplotlib sphinx==1.3.1 
+- if [ "$OS" = "Linux" ]; then
+    if [ "$PY" = "2.7" ]; then
+        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp27-none-linux_x86_64.whl;
+    elif [ "$PY" = "3.4" ]; then
+        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp34-cp34m-linux_x86_64.whl;
+    fi
+  fi
+- if [ "$OS" = "MacOSX" ]; then
+    if [ "$PY" = "2.7" ]; then
+        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp27-none-macosx_10_5_x86_64.whl;
+    elif [ "$PY" = "3.4" ]; then
+        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp34-none-macosx_10_5_x86_64.whl;
+    fi
+  fi
+#- pip install git+https://github.com/naylor-b/testflo.git
+- pip install coveralls
+- pip install -e .
+
+#command to run tests
+#script: nosetests
+
+#after_success:
+  #coveralls
