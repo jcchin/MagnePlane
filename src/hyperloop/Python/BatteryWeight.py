@@ -1,7 +1,63 @@
-'''Battery Weight Determination Class modeled after
-Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech' '''
+"""Notes
+    ----
+   Allows sizing of battery base	d on design power load and necessary capacity
 
-#Allows sizing of battery base	d on design power load and necessary capacity
+
+Parameters
+    ----
+    SpecEnergy: float
+         Specific Energy of Battery in Wh/kg. Default value is 100.0
+    PowerDensity: float
+         Power Density of Battery in 'W/m^3. Default value is 1.0
+    SpecPower : float
+        Specific Power of Battery in W/kg. Default value is 1.0.
+    PowerBattNom : float
+        Nominal Power Output of Battery in W. Default value is 1.0.
+    VoltageNominal : float
+        Nominal Voltage of Battery in Volts . Default value is 3.6.
+    SpecEnergy1: float
+        Specific Energy 1 in W-hrs/kg. Default value is 175.0
+    SpecEnergy2: float
+        Specific Energy 2 in W-hrs/kg. Default value is 128.79
+    SpecEnergy3: float
+        Specific Energy 3 in W-hrs/kg. Default value is 93.28
+    SpecEnergy4: float
+        Specific Energy 4 in W-hrs/kg. Default value is 61.94
+    SpecEnergy5: float
+        Specific Energy 5 in W-hrs/kg. Default value is 41.24
+    SpecEnergy6: float
+        Specific Energy 6 in W-hrs/kg. Default value is 11.37
+    r_accuracy: float
+        tolerance for data from ragone in percent. Default value is 0.0001
+    DesPower: float
+        Design Power Load in Watts. Default value is 100.0
+    PqPdes_Max: float
+        Maximum Power to Design Load Ratio in Watts. Default value is 1.5
+    Capacity: float
+       Single cell Nominal Capacity in Amp-hrs. Default value is 8.0
+    Ncells: float
+        Number of cells necessary to perform that mission in cells. Default value is 18900.0
+    C_Max: float
+        Maximum rating the battery can run in Amp-hrs. Default value is 0.25
+
+Returns
+    ----
+    PowerDensityR: float
+        Power Density in W/m^3. Default value is 0.0
+    StackWeight: float
+        StackWeight in kg. Default value is 0.0
+    StackVol: float
+        Volume of Stack in m^3. Default value is 0.0
+
+References
+    ----
+   Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
+   Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
+    """
+
+
+
+
 
 import math, numpy, scipy
 from openmdao.core.component import Component
@@ -13,31 +69,22 @@ class BatteryWeight(Component):
         super(BatteryWeight, self).__init__()
         self.add_param('SpecEnergy', val=100.0, desc='Specific Energy of Battery', units='Wh/kg')
         self.add_param('PowerDensity', val= 1.0, desc='Power Density of Battery', units='W/m^3')
-        self.add_param('SpecPower', val=1.0, desc='Specific Power of Battery', units='W/m^3')
+        self.add_param('SpecPower', val=1.0, desc='Specific Power of Battery', units='W/kg')
         self.add_param('PowerBattNom', val=1.0, desc='Nominal Power Output of Battery', units='W')
         self.add_param('VoltageNominal', val=3.6, desc='Nominal Voltage of Battery', units='V')
-
-        self.add_param('SpecEnergy1', val=175.0, desc='Specific Energy 1', units='W/m^3')
-        self.add_param('SpecEnergy2', val=128.79, desc='Specific Energy 2', units='W/m^3')
-        self.add_param('SpecEnergy3', val=93.28, desc='Specific Energy 3', units='W/m^3')
-        self.add_param('SpecEnergy4', val=61.94, desc='Specific Energy 4', units='W/m^3')
-        self.add_param('SpecEnergy5', val=41.24, desc='Specific Energy 5', units='W/m^3')
-        self.add_param('SpecEnergy6', val=11.37, desc='Specific Energy 6', units='W/m^3')
+        self.add_param('SpecEnergy1', val=175.0, desc='Specific Energy 1', units='W-hrs/m^3')
+        self.add_param('SpecEnergy2', val=128.79, desc='Specific Energy 2', units='W-hrs/m^3')
+        self.add_param('SpecEnergy3', val=93.28, desc='Specific Energy 3', units='W-hrs/m^3')
+        self.add_param('SpecEnergy4', val=61.94, desc='Specific Energy 4', units='W-hrs/m^3')
+        self.add_param('SpecEnergy5', val=41.24, desc='Specific Energy 5', units='W-hrs/m^3')
+        self.add_param('SpecEnergy6', val=11.37, desc='Specific Energy 6', units='W-hrs/m^3')
         self.add_param('r_accuracy', val=0.0001, desc='tolerance for data from ragone', units='')
-
         self.add_param('DesPower', val=100.0, desc='Design Power Load', units='W')
         self.add_param('PqPdes_Max', val=1.5, desc='Maximum Power to Design Load Ratio', units='W')
-
         self.add_param('Capacity', val=8.0, desc='Single cell Nominal Capacity', units='Amp-hrs')
         self.add_param('Ncells', val=18900.0, desc='Number of cells necessary to perform that mission', units='none')
         self.add_param('C_Max', val=0.25, desc='Maximum rating the battery can run', units='1/hr')
-
-
-
-
-
-
-        self.add_output('PowerDensityR', 0.0, desc='Power Density', units='TBD')
+        self.add_output('PowerDensityR', 0.0, desc='Power Density', units='W/m^3')
         self.add_output('StackWeight', 0.0, desc='Weight of Stack', units='kg')
         self.add_output('StackVol', 0.0, desc='Volume of Stack', units='m^3')
 
@@ -59,23 +106,10 @@ class BatteryWeight(Component):
         PowerBattNom = params['PowerBattNom']
 
 
-
-
-
         #unknowns['PowerDensityR'] = self.calc_power_density(SpecEnergy,SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6)
         #unknowns['theta_R'] = self.calc_theta_R(SpecEnergy, unknowns['PowerDensityR'])
 
         unknowns['StackWeight'], unknowns['StackVol'] = self. calc_stack(SpecEnergy,SpecEnergy1,SpecEnergy2,SpecEnergy3, SpecEnergy4, SpecEnergy5, SpecEnergy6, r_accuracy, DesPower, PqPdes_Max, Capacity, VoltageNominal, Ncells,C_Max, PowerBattNom)
-
-
-
-
-
-
-
-
-
-#
 
 
     def calc_power_density(self,SpecEnergy ,SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6 ):

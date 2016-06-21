@@ -1,10 +1,67 @@
-#Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech'
-
-'''Derives important parameters from given parameters from the battery discharge curve which later feeds into BatteryPerf.py'''
-#'''Capacity required is key factor, as it drives the number of cells required, voltage and current drawn.'''
 
 
-##'''Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm'''
+
+"""Notes
+        ----
+       Derives important parameters from given parameters from the battery discharge curve which later feeds into BatteryPerf.py
+       Capacity required is key factor, as it drives the number of cells required, voltage and current drawn.
+
+    Parameters
+        ----
+        V_full: float
+            Fully Charged Voltage in Volts. Default value is 2.0.
+        V_exp: float
+            End of Exponential Zone Voltage in Volts. Default value is 2.0
+        V_nom: float
+            End of Nominal Zone Voltage in Volts. Default value is 2.0
+        Q_exp: float
+            Charge at end of Exponential Curve in Amp-hrs. Default value is 2.0
+        Q_nom: float
+            Charge at end of Nominal Zone in Amp-hrs. Default value is 2.0
+        Q_n: float
+             Default value is 2.0
+        V_n: float
+             Default value is 2.0
+        I_n: float
+             Default value is 2.0
+        n: float
+            Efficiency of battery in percent. Default value is 0.8
+        Current: float
+            Current drain applied to the battery in Amps. Default value is 1000.0
+        s_limit: float
+            State of Charge limiting factor in percent. Default value is 0.2
+        DesPower: float
+            Design Power Load in Watts. Default value is 100.0
+        DesVoltage: float
+            Design Voltage in Volts. Default value is 10.0
+        FlightTime: float
+            Time since battery is discharging in minutes. Default value is 8.0
+
+    Returns
+        ----
+        Capacity_required : float
+            Total Capacity required for design in Amp-hrs. Default value is 0.0.
+
+        N_parallel : float
+            Number of cells in parallel in the battery stack in cells. Default value is 0.0.
+
+        Exp_zone_amp : float
+            Voltage lost over the exponential zone of battery in Volts. Default value is 0.0.
+        Exp_zone_time_const : float
+            Time constant for exponential zone of discharge curve in Amp-hours^-1 . Default value is 0.0.
+
+        Polarization_voltage : float
+            Internal Resistance in Volts. Default value is 0.0.
+        int_R : float
+            Voltage lost due to polarization in Ohms. Default value is 0.0.
+        No_load_voltage : float
+            No-load constant voltage of the battery in Volts. Default value is 0.0.
+    References
+        ----
+       Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
+       Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
+        """
+
 
 
 import math, numpy, scipy
@@ -18,19 +75,17 @@ class Battery_discharge_curve_params(Component):
         self.add_param('V_full', val=0.0, desc='Fully Charged Voltage', units='Volts')
         self.add_param('V_exp', val=2.0, desc='End of Exponential Zone Voltage', units='Volts')
         self.add_param('V_nom', val=2.0, desc='End of Nominal Zone Voltage', units='Volts')
-        self.add_param('Q_exp', val=2.0, desc='Charge at end of Exponential Curve', units='')
-        self.add_param('Q_nom', val=2.0, desc='Charge at end of Nominal Zone', units='')
-        self.add_param('Q_n', val=2.0, desc='', units='')
+        self.add_param('Q_exp', val=2.0, desc='Charge at end of Exponential Curve', units='Amp-hrs')
+        self.add_param('Q_nom', val=2.0, desc='Charge at end of Nominal Zone', units='Amp-hrs')
+        self.add_param('Q_n', val=2.0, desc='', units='Amp-hrs')
         self.add_param('V_n', val=2.0, desc='', units='Volts')
         self.add_param('I_n', val=2.0, desc='', units='Amps')
-        self.add_param('n', val=2.0, desc='Efficiency of battery', units='percent')
+        self.add_param('n', val=0.8, desc='Efficiency of battery', units='percent')
         self.add_param('Current', val=1000.0, desc='Current drain applied to the battery', units='Amps')
         self.add_param('s_limit', val=0.2, desc='State of Charge limiting factor', units='percent') #s_limit in the modeling plan
         self.add_param('DesPower', val=100.0, desc='Design Power Load', units='W')
-        self.add_param('DesVoltage', val=10.0, desc='Design Power Load', units='Voltage')
+        self.add_param('DesVoltage', val=10.0, desc='Design Voltage', units='Voltage')
         self.add_param('FlightTime', val=8, desc='Time since battery is discharging', units='minutes')
-
-
         self.add_output('Capacity_required', val=0.0, desc='Total Capacity required for design', units='Amp-hr') #Q_dis in the modeling plan
         self.add_output('N_parallel', val=0.0, desc='Number of cells in parallel in the battery stack', units='cells')
         self.add_output('Exp_zone_amp', 0.0, desc='Voltage lost over the exponential zone of battery', units='Volts') #A in modeling plan
