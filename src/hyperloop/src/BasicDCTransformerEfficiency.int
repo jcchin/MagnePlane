@@ -1,0 +1,65 @@
+/* ******************************************************
+*  File Name: BasicDCTransformerEfficiency.int          *
+*  Date: October 5, 2012                                *
+*  Created by: David Trawick                            *
+*  Last Edited: September 02, 2015                         *
+*  By: Manish Pokhrel                                    *
+*  For: Aerospace Systems Design Lab @ Georgia Tech     *
+*******************************************************	*/
+
+/* ******************************************************
+*  Functions:                                           *
+*	BasicDCTransformerEfficiency    class               *
+*******************************************************	*/
+
+#include <InterpIncludes.ncp>
+
+// ==============================================================================
+// BasicDCTransformerEfficiency (class)
+// Calculates Rectifier Efficiency using a Table
+// ------------------------------------------------------------------------------
+
+extern real DesignPower; 
+extern real InputPower;
+extern real Efficiency;
+
+class BasicDCTransformerEfficiency extends Subelement{
+
+  Table EfficiencyCalc( real PPower ) {
+PPower = { 0,	9.9439,	20.0481,	29.992,	39.9358,	50.0401,	59.984,	69.9278,	80.0321,	90.1363,	100.0802 }
+EFF = { 0,	73.2385,	82.9769,	87.0399,	88.9271,	90.152,	90.6202, 91.0885,	91.0838,	90.7952,	90.6013}
+}
+//http://connectedplanetonline.com/images/archive/Rectifier%20Efficiency%20Curve%20TCO2.jpg
+
+real PPower {
+	value = 1; IOstatus = OUTPUT; ;
+	description = "Fraction of Design Output Power";
+}
+//-------------INputs to equation--------------------------
+
+
+// SOCKETS
+addInterface("DCTransformer_Efficiency");
+
+//------------------------------------------------------------
+//   ******* PERFORM ENGINEERING CALCULATIONS *******
+//------------------------------------------------------------
+
+void calculate()
+{
+
+	//----------------------------------------------------------------
+	// get variables from parent
+  //----------------------------------------------------------------
+	PPower = InputPower/DesignPower*100;
+	if (PPower < 10)
+	{
+	  PPower = 10;
+	}
+	
+	real eff = 100;
+	Efficiency = eff/100;
+
+} // end calculate()
+
+} //end class BasicInverterEfficiency

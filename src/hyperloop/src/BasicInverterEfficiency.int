@@ -1,0 +1,149 @@
+/* ******************************************************
+*  File Name: BasicInverterEfficiency.int               *
+*  Date: October 5, 2012                                *
+*  Created by: David Trawick                            *
+*  Last Edited: September 02, 2015                         *
+*  By: Manish Pokhrel                                    *
+*  For: Aerospace Systems Design Lab @ Georgia Tech     *
+*******************************************************	*/
+
+/* ******************************************************
+*  Functions:                                           *
+*	BasicInverterEfficiency    class                    *
+*******************************************************	*/
+
+#include <InterpIncludes.ncp>
+
+// ==============================================================================
+// BasicInverterEfficiency (class)
+// Calculates Inverter Efficiency using a Table
+// ------------------------------------------------------------------------------
+
+extern real DesignPower; 
+extern real OutputPower;
+extern real Efficiency;
+
+class BasicInverterEfficiency extends Subelement{
+	
+real switching_frequency {
+	value = 20000.0; IOstatus = INPUT; // units = Hz;
+	description = "Switching Frequency";
+}
+real link_capacitance{
+	value = 0.1; IOstatus = INPUT; //units = F
+	description = "Link Capacitance";
+}
+real t_f{
+	value = 2*10**(-7);//IOstatus = INPUT; //units = sec 
+	description = "Switch turn off fall time";
+}
+real R_IGBT{
+	value = 0.01;//0.11; IOstatus = INPUT; //units = ohms
+	description = "Switch on resistance";
+}
+real R_diode{
+	value = 0.01;//0.02; IOstatus = INPUT; //units = ohms
+	description = "Diode resistance";
+}
+
+real V_t{
+	value = 5.3/10000*250.;//5.3; IOstatus = INPUT; //units = Volts
+	description = "IGBT voltage drop";
+}
+real V_f{
+	value = 3.75/10000*250.;//3.75; IOstatus = INPUT; //units = Volts
+	description = "Diode Voltage Drop";
+}
+real switch_conduction_losses{
+	value = 0.0;
+}
+real diode_conduction_losses{
+	value = 0.0;
+}
+real conductance_losses{
+	value = 0.0;
+}
+real switching_losses{
+	value = 0.0;
+}
+real inverter_max_current{
+	value = 0.0;
+}
+
+Table EfficiencyCalc( real PPower ) {
+PPower = {0,	0.146190125,	0.223389325,	0.297907575,	0.3725057,	0.4471277,	0.52177365,	0.596419625,	0.673961875,	0.745763375,	0.823313625,	0.906612625,	0.97267735,	1.047375175,	1.122061,	1.1967588,	1.27431705,	1.3461385,	1.4237087,	1.49553015,	1.573108325,	1.647810125,	1.7253883}
+EFF = {0,	91.6792,	93.6577,	94.5695,	95.0369,	95.3709,	95.5716,	95.7723,	95.8397,	95.8849,	95.9078,	95.9085,	95.9093,	95.8211,	95.7995,	95.7114,	95.6899,	95.6239,	95.5358,	95.4698,	95.3372,	95.2268,	95.0942}
+}//http://www.powersystemsdesign.com/library/resources/images/articles/special_reports/april2011/cree/figure6.jpg
+
+real PPower {
+	value = 1; IOstatus = OUTPUT; //units = cells;
+	description = "Fraction of Design Output Power";
+}
+real percent_load, modulation;
+//-------------Inputs to equation--------------------------
+
+
+// SOCKETS
+addInterface("Inverter_Efficiency");
+
+//------------------------------------------------------------
+//   ******* PERFORM ENGINEERING CALCULATIONS *******
+//------------------------------------------------------------
+
+void calculate()
+{
+	modulation = OutputFrequency / switching_frequency;
+	percent_load = (OutputVoltage * OutputCurrent * 3*sqrt(2.0) / 746.0 / sqrt(3.0)) / DesignPower; //Percent load output
+	real power_factor = -1.1782*percent_load**2 + 1.9898*percent_load + 0.1571; //Estimation of inverter power factor
+	
+	link_capacitance = InputVoltage / 105.6/OutputFrequency/0.0037;
+	
+	real eta_guess = 1.;
+	real efficiency_error = 1.0;
+	
+ 	if(percent_load > 0.01){
+		while(efficiency_error > 0.01){
+			//Estimate maximum current
+			inverter_max_current = OutputCurrent / (eta_guess * power_factor);
+			
+			//Calculate conduction losses
+			if(DOH_Hover==0) {
+	
+			switch_conduction_losses = 0.5 * inverter_max_current*V_t*(1.0/3.14159 + (modulation / 4.0) * power_factor) + inverter_max_current**2*R_IGBT*(sqrt(3.0)/sqrt(3.14159)+modulation/(3*3.13159)*power_factor);
+			diode_conduction_losses = 0.5*inverter_max_current*V_f*(1/3.14159 + (modulation / 4.0)*power_factor) + inverter_max_current**2 * DOH_Hover*(sqrt(3)/sqrt(3.14159)+modulation/(3.0*3.14159)*power_factor);
+			conductance_losses = 6*(diode_conduction_losses + switch_conduction_losses); //Assume 6 switched
+			}
+			
+			if(DOH_Hover != 0) {
+			switch_conduction_losses = 0.5 * inverter_max_current*V_t*(1.0/3.14159 + (modulation / 4.0) * power_factor) + inverter_max_current**2*R_IGBT*DOH_Hover*(sqrt(3.0)/sqrt(3.14159)+modulation/(3*3.13159)*power_factor);
+			diode_conduction_losses = 0.5*inverter_max_current*V_f*(1/3.14159 + (modulation / 4.0)*power_factor) + inverter_max_current**2 * DOH_Hover* R_diode*(sqrt(3)/sqrt(3.14159)+modulation/(3.0*3.14159)*power_factor);
+			conductance_losses = 6*(diode_conduction_losses + switch_conduction_losses); //Assume 6 switched
+			
+			}
+
+			//Calculate switching losses
+			switching_losses = 6*(0.5*(inverter_max_current**2*t_f**2)/(24*link_capacitance)*switching_frequency);
+			
+			//Sum losses
+			real total_losses = conductance_losses + switching_losses;
+			
+			//fix error where this doesn't account for power factor
+			Efficiency = percent_load*DesignPower*746.0 / (percent_load*DesignPower*746.0 + total_losses);
+			
+			efficiency_error = abs(Efficiency - eta_guess);
+			
+			
+			eta_guess = min(Efficiency,eta_guess) + efficiency_error/2.0;
+		}
+	}
+	else{
+		Efficiency = 0.5;
+	} 
+	//----------------------------------------------------------------
+	// get variables from parent
+  //----------------------------------------------------------------
+	
+
+} // end calculate()
+
+} //end class BasicInverterEfficiency
