@@ -1,8 +1,4 @@
-# whitelist
-branches:
-  only:
-    - master
-    - /^test.*$/
+
 
 sudo: false
 
