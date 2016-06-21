@@ -26,6 +26,14 @@ Dev forks can be found here:
 
 [Colin Summers](https://github.com/colinxs/MagnePlane)
 
+[Gazi Sakib](https://github.com/gssakib/MagnePlane)
+
+[Andrew Oberlander](https://github.com/andrewoberlander/MagnePlane)
+
+[Golda Nguyen](https://github.com/goldanguyen/MagnePlane)
+
+[Nathan Sharifrazi](https://github.com/nathansharifrazi/MagnePlane.git)
+
 ========
 ### File Structure
 

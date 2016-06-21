@@ -110,10 +110,6 @@ class BatteryP(Component):
         self.add_output('CurrBatt', val=0.0, desc='Current draw on a single cell', units='amps')
 
 
-
-
-
-
     def solve_nonlinear(self, params, unknowns, resids):
 
         switchDes = params['switchDes']
@@ -213,4 +209,3 @@ if __name__ == '__main__':
     print 'Nseries(cells) : %f' % p['comp.Nseries']
     print 'Nparallel(cells) : %f' % p['comp.Nparallel']
     print 'Ncells(cells) : %f' % p['comp.Ncells']
-    print 'C_max(Amp-hrs) : %f' % p['comp.C_max']
