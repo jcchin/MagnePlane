@@ -2,6 +2,7 @@ from __future__ import print_function
 import numpy
 from openmdao.api import IndepVarComp, Component, Problem, Group
 
+
 """
 This code models a Brushless DC (BLDC) motor component with the following inputs and outputs:
 Inputs: Desired Torque [N-m], RPM, Maximum Power [hp]
