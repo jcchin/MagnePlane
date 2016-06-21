@@ -49,12 +49,14 @@ class TubeandPylon(Component):
         self.add_output('total_material_cost', val = 0.0, units = 'USD', desc = 'cost of materials')
         self.add_output('R', val = 0.0, units = 'N', desc = 'Force on pylon')
         self.add_output('delta', val = 0.0, units = 'm', desc = 'max deflection inbetween pylons')
-        self.add_output('dx', val=500.0, units='m', desc='distance between pylons')
+        self.add_output('dx', val = 500.0, units='m', desc='distance between pylons')
+        self.add_output('t_crit', val = 0.0, units = 'm', desc = 'Minimum tunnel thickness for buckling')
 
     def solve_nonlinear(self, params, unknowns, resids):
 
         rho_tube = params['rho_tube']
         E_tube = params['E_tube']
+        v_tube = params['v_tube']
         alpha_tube = params['alpha_tube']
         dT_tube = params['dT_tube']
         unit_cost_tube = params['unit_cost_tube']
@@ -93,6 +95,7 @@ class TubeandPylon(Component):
         unknowns['m_pylon'] = m_pylon
         unknowns['R'] = .5*m_prime*dx*g+.5*m_pod*g
         unknowns['dx'] = dx
+        unknowns['t_crit'] = r*(((4.0*dp*(1.0-(v_tube**2)))/E_tube)**(1.0/3.0))
 
     def linearize(self, params, unknowns, resids):
 
@@ -140,7 +143,7 @@ if __name__ == '__main__':
     root.add('p', TubeandPylon())
 
     root.add('con1', ExecComp('c1 = (Su_tube/sf) - VonMises'))                                                      #Impose yield stress constraint for tube
-    root.add('con2', ExecComp('c2 = t - r*(((4*(p_ambient-p_tunnel)*(1-(v_tube**2)))/(E_tube))**(1/3))'))           #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
+    root.add('con2', ExecComp('c2 = t - t_crit'))                                                                    #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
     #root.add('con3', ExecComp('c3 = (Su_pylon/sf) - R/(pi*(r_pylon**2))'))                                          #Impose yield stress constraint for pylon
     root.add('con3', ExecComp('c3 = R - (((pi**3)*E_pylon*(r_pylon**4))/(4*(h**2)))'))
 
@@ -153,11 +156,7 @@ if __name__ == '__main__':
     root.connect('p.VonMises', 'con1.VonMises')
 
     root.connect('input_vars.t', 'con2.t')
-    root.connect('input_vars.r', 'con2.r')
-    root.connect('input_vars.p_ambient', 'con2.p_ambient')
-    root.connect('input_vars.p_tunnel', 'con2.p_tunnel')
-    root.connect('input_vars.v_tube', 'con2.v_tube')
-    root.connect('input_vars.E_tube', 'con2.E_tube')
+    root.connect('p.t_crit', 'con2.t_crit')
 
     root.connect('input_vars.E_pylon', 'con3.E_pylon')
     root.connect('input_vars.h', 'con3.h')
@@ -168,14 +167,14 @@ if __name__ == '__main__':
     root.p.fd_options['form'] = 'central'
     root.p.fd_options['step_size'] = 1.0e-4
 
-    #top.driver = ScipyOptimizer()
-    #top.driver.options['optimizer'] = 'SLSQP'
+    top.driver = ScipyOptimizer()
+    top.driver.options['optimizer'] = 'SLSQP'
 
-    #top.driver.add_desvar('input_vars.t', lower = .001)
-    #top.driver.add_desvar('input_vars.r_pylon', lower = .5)
-    #top.driver.add_objective('p.total_material_cost')
-    #top.driver.add_constraint('con1.c1', lower = 0.0)
-    #top.driver.add_constraint('con2.c2', lower = 0.0)
+    top.driver.add_desvar('input_vars.t', lower = .001)
+    top.driver.add_desvar('input_vars.r_pylon', lower = .5)
+    top.driver.add_objective('p.total_material_cost')
+    top.driver.add_constraint('con1.c1', lower = 0.0)
+    top.driver.add_constraint('con2.c2', lower = 0.0)
     #top.driver.add_constraint('con3.c3', lower = 0.0)
 
     top.setup()
@@ -191,6 +190,7 @@ if __name__ == '__main__':
     print('Von Mises stress is %f Pa' % top['p.VonMises'])
     print('distance between pylons is %f m' % top['p.dx'])
     print('max deflection is %f m' % top['p.delta'])
+    print('critical thickness is %f m' % top['p.t_crit'])
     print('\n')
     print('con1 = %f' % top['con1.c1'])
     print('con2 = %f' % top['con2.c2'])
