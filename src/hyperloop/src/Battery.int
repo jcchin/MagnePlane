@@ -1,0 +1,298 @@
+/* ******************************************************
+*  File Name: Battery.int                               *
+*  Date: October 24zy, 2012                               *
+*  Created by: Andrew Urcinas                           *
+*  Last Edited: September 2, 2015                        *
+*  By: Manish Pokhrel                                   *
+*  For: Aerospace Systems Design Lab @ Georgia Tech     *
+*******************************************************	*/
+
+/* ******************************************************
+*  Functions:                                           *
+*	Battery     class      element                        *
+*******************************************************	*/
+
+#include <InterpIncludes.ncp>
+// ==============================================================================
+// Battery (class)
+// 
+//  
+// ------------------------------------------------------------------------------
+
+//------------------------------------------------------------
+//     ******* SETUP VARIABLES ********
+//------------------------------------------------------------
+
+class Battery extends Element{
+	real DesPower {
+		value = 0; IOstatus = INPUT; units = "W";
+		description = "Design power load";
+	}
+
+	real PqPdes_Max {
+		value = 1.5; IOstatus = INPUT; units = "W";
+		description = "Maximum power load to design load ratio";
+	}
+
+	real FlightTime {
+		value = 88; IOstatus = INPUT;// units = minutes;
+		description = "Elapsed time battery has been discharging";
+	}
+	real Current {
+		value = 2.3; IOstatus = INPUT;// units = Amps
+		description = "Current drain applied to the battery stack";
+	}
+	real CapDisLimit {
+		value = 0.2; IOstatus = INPUT; //units = Percent;
+		description = "Percent of battery capacity left for reserves";
+	}
+	real TimeDesPower {
+		value = 1; IOstatus = INPUT; //units = minutes;
+		description = "Time from beginning of flight to moment of design power load";
+	}
+	real Ncells {
+		value = 1; IOstatus = OUTPUT; //units = cells;
+		description = "Number of cells necessary to perform mission";
+	}
+	real Nparallel {
+		value = 2; IOstatus = INPUT	; //units = Cells;
+		description = "Calculated number of cells in parallel";
+	}
+	real Nseries {
+		value = 1; IOstatus = OUTPUT; //units = Cells;
+		description = "Calculated number of cells in series";
+	}
+	real Capacity {
+		value = 12.2; IOstatus = INPUT; //units = Amp-hours;
+		description = "Single cell nominal capacity";
+	}
+
+	real C_rating {
+		value = 0.3; IOstatus = INPUT; //units = 1/hr
+		description = "C rating of the battery at which capacity is measured";
+	}
+	
+	real C_Max {
+		value = 4.1;  IOstatus = INPUT;
+		description = "Maximum C that the battery must run";
+	}
+	
+		//-------------INputs to equation--------------------------
+	real ExpZoneAmp {
+		value = 0.180; IOstatus = INPUT;// units = Volts;
+		description = "Voltage lost over the exponential zone of battery";// A in modeling plan
+	}
+	real ExpZoneTimeConst {
+		value = 2.1065; IOstatus = INPUT;// units = Amp-hours^-1;
+		description = "Time constant for exponential zone of discharge curve";// B in modeling plan
+	}
+	real PolarizationVoltage {
+		value = 0.0243; IOstatus = INPUT;// units = Volts;
+		description = "Voltage lost due to polarization";// K in modeling plan
+	}
+	real NoLoadVoltage {
+		value = 1.431; IOstatus = INPUT;// units = Volts
+		description = "No-load constant voltage of battery";// E_0 in modeling plan
+	}
+	real Resistance {
+		value = 0.0095; IOstatus = INPUT;// units = Ohms;
+		description = "Internal resistance of battery";
+	}
+	real k_1 {
+		value = 1; IOstatus = INPUT; //units = none;
+		description = "Technology factor on the polarization voltage (K)";
+	}
+	real k_2 {
+		value = 1; IOstatus = INPUT; //units = none;
+		description = "Technology factor on the battery capacity";
+	}
+	real k_3 {
+		value = 1; IOstatus = INPUT; //units = none;
+		description = "Technology factor on the exponential amplitude (A)";
+	}
+	real k_4 {
+		value = 1; IOstatus = INPUT; //units = none;
+		description = "Technology factor on the exponential time constant (B)";
+	}
+	real k_5 {
+		value = 1; IOstatus = INPUT; //units = none;
+		description = "Technology factor on the internal resistance";
+	}
+	real StackWeight{
+		value = 1; IOstatus = OUTPUT; //units = "kg";
+		description = "Weight of the battery stack";
+		}
+	real StackVol{
+		value = 1; IOstatus = OUTPUT; //units = "m3";
+		description = "Volume of the battery stack";
+	}
+	real StateOfCharge{
+		value = 100; IOstatus = INPUT; //units = "Percent";
+		description = "Initial state of charge of the battery";
+	}
+	real NewStateOfCharge{
+		value = 100; IOstatus = OUTPUT; //units = "Percent";
+		description = "Final state of charge of the battery";
+	}
+	real dischargeInterval{
+		value = 0.05; IOstatus = INPUT; //units = "Minutes";
+		description = "Time interval for the discharge of the battery";
+	}
+	real CapDis {
+		value = 0; IOstatus = OUTPUT; //units = "Amp-hours";
+		description = "Calculated capacity necessary";
+	}
+	real CapDisBattDesPower {
+		value = 0; IOstatus = OUTPUT; //units = "Amp-hours";
+		description = "Calculated discharge before design power time";
+	}
+	real VoltageBatt {
+		value = 0; IOstatus = OUTPUT; //units = "Volts";
+		description = "Voltage output of a single cell";
+	}
+	real Voltage {
+		value = 0; IOstatus = OUTPUT; //units = "Volts";
+		description = "Voltage output of battery stack";
+	}
+	real CurrBatt {
+		value = 0; IOstatus = OUTPUT; //units = "Amps";
+		description = "Current draw on a single cell";
+	}
+	real StackDesignVoltage {
+		value = 300; IOstatus = INPUT;
+		description = "Design stack voltage";
+	}
+	
+	real k_Peukert {
+		value = 1.01193; IOstatus = INPUT;
+		description = "Peukert Coefficient";
+	}
+	
+// OPTION VARIABLES
+	Option switchDes {
+		allowedValues = {DESIGN, OFFDESIGN};
+		description = "Design switch";
+		IOstatus = INPUT;
+		rewritableValues = FALSE;
+	}
+	
+// DATA PORTS
+	DataOutputPort OUTPUT;
+	real output[4];
+
+// INDEPENDENTS	
+	Independent ind_Current {
+		varName = "Current";
+		autoSetup = TRUE;
+    }
+	
+// SOCKETS
+	
+	Socket S_heat
+	{
+		description = "Heat generated during the usage of the battery";
+		socketType = "BATTERY_HEAT";
+	}
+
+	Socket S_weight
+	{
+		allowedValues = {"StackWeight","StackVol"}
+		description = "Battery weight and volume calculation";
+		socketType = "BATTERY_WEIGHT";
+	}
+	
+	Socket TB_current
+	{
+		description = "Current draw profile from electrical systems model";
+		socketType = "Function";
+		argTypes = { "real" };
+		returnType = "real";
+		required = TRUE;
+	}
+	
+	void variableChanged(string name, any oldVal) {
+		if ( name == "switchDes"){
+			//Set IOstatus of variables for DESIGN and OFFDESIGN
+			if (switchDes == DESIGN){
+				Ncells.IOstatus = OUTPUT;
+				Nparallel.IOstatus = OUTPUT;
+				Nseries.IOstatus = OUTPUT;
+				Current.IOstatus = OUTPUT;
+			}
+			else if (switchDes == OFFDESIGN) {
+				Ncells.IOstatus = INPUT;
+				Nparallel.IOstatus = INPUT;
+				Nseries.IOstatus = INPUT;
+				Current.IOstatus = INPUT;
+			}
+		}
+	} // end void variableChanged(string name, any oldVal)
+
+	void calculate(){
+		real Capacity_1; // Capacity remaining in series
+
+		if (switchDes == DESIGN) {
+
+			real PBattDesPower;
+			
+			
+			//Calculate A-h capacity based on design stack power and stack voltage
+			CapDis = Nparallel * (k_2 * Capacity * (1-CapDisLimit));
+			
+			
+			C_Max = DesPower * PqPdes_Max / StackDesignVoltage / Capacity / Nparallel;
+			
+			// calculate the current required from each battery based on stack layout
+			CurrBatt = DesPower / StackDesignVoltage / Nparallel;
+
+			CapDisBattDesPower = 0.0;
+			
+			Capacity_1 = k_2*Capacity - CapDisBattDesPower;
+		} // end if (switchDes = DESIGN) {
+		
+		real PeukCap = (Capacity*C_rating)**k_Peukert / C_rating; 
+
+		if (switchDes == OFFDESIGN) {
+			CurrBatt = Current/Nparallel;
+			Capacity_1 = StateOfCharge / 100 * k_2 * PeukCap; 
+			NewStateOfCharge = (Capacity_1 - dischargeInterval/60.*CurrBatt**k_Peukert)/PeukCap*100;
+			// StateOfCharge = NewStateOfCharge;
+		} // end if (switchDes = OFFDESIGN) {
+
+		//---------------------Battery Performance Calculation-------------------------
+
+		// calculate individual battery voltage
+		VoltageBatt = NoLoadVoltage - k_1*PolarizationVoltage*(k_2*PeukCap/Capacity_1) + k_3*ExpZoneAmp*E**(-k_4*ExpZoneTimeConst*(k_2 * PeukCap - Capacity_1)) - k_5*Resistance*CurrBatt;
+		//------------------------------------------------------------------------------
+
+		if (switchDes == DESIGN) {
+			// calculate individual battery power output at design power load
+			PBattDesPower = VoltageBatt*CurrBatt;
+
+			// calculate number of batteries required based on power requirements
+			
+			Ncells = ceil(DesPower/PBattDesPower); 
+			Nseries = ceil(Ncells/Nparallel);
+			Ncells = Nseries*Nparallel;
+
+			// Perform weight calculations
+			if ( !S_weight.isEmpty() ) {
+			S_weight.execute();
+		  }		
+		} // end if (switchDes = DESIGN)
+
+			if ( !S_heat.isEmpty() ) {
+				S_heat.execute();
+			}
+
+			Voltage = Nseries*VoltageBatt;
+
+		output[0] = Voltage;
+		output[1] = Current;
+		output[2] = 0;
+		output[3] = 0;
+		OUTPUT.val = output;
+		
+		
+	}// end calculate()
+}// end class Battery
