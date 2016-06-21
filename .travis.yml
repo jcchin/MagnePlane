@@ -2,6 +2,7 @@ sudo: false
 
 os:
   - linux
+#  -osx
 
 language: generic
 
@@ -43,11 +44,11 @@ install:
     fi
   fi
 
-- pip install coveralls
+#- pip install coveralls
 - pip install -e .
 
 #script:
 #- testflo . -n 1 --coverage --coverpkg openmdao
 
-after_success:
-  coveralls
+#after_success:
+#  coveralls
