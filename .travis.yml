@@ -33,7 +33,7 @@ addons:
     - libblas-dev
     - liblapack-dev
     - libopenmpi-dev
-s    - openmpi-bin
+    - openmpi-bin
 
 #notifications:
 #  email: false
