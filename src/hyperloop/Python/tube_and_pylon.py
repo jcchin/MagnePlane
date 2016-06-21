@@ -97,25 +97,6 @@ class TubeandPylon(Component):
         unknowns['dx'] = dx
         unknowns['t_crit'] = r*(((4.0*dp*(1.0-(v_tube**2)))/E_tube)**(1.0/3.0))
 
-    def linearize(self, params, unknowns, resids):
-
-        rho_tube = params['rho_tube']
-        unit_cost_tube = params['unit_cost_tube']
-        g = params['g']
-        r = params['r']
-        t = params['t']
-        rho_pylon = params['rho_pylon']
-        E_pylon = params['E_pylon']
-        r_pylon = params['r_pylon']
-        unit_cost_pylon = params['unit_cost_pylon']
-        h = params['h']
-
-        J={}
-        J['total_material_cost', 't'] = unit_cost_tube*2*rho_tube*pi*(r+t) + unit_cost_pylon*((8*(h**3)*g*rho_pylon*2*rho_tube*pi*(r+t))/((pi**2)*E_pylon*(r_pylon**2)))
-        J['total_material_cost', 'r_pylon'] = (-1)*unit_cost_pylon*((16*(h**3)*g*rho_pylon*rho_tube*pi*(((r+t)**2)-(r**2)))/((pi**2)*E_pylon*(r_pylon**3)))
-
-        return J
-
 if __name__ == '__main__':
 
     top = Problem()
@@ -123,7 +104,7 @@ if __name__ == '__main__':
 
     params = (
         ('r', 1.1, {'units' : 'm'}),
-        ('t', .05, {'units' : 'm'}),
+        ('t', 5., {'units' : 'm'}),
         ('r_pylon', 1.1, {'units': 'm'}),
         ('Su_tube', 152.0e6, {'units': 'Pa'}),
         ('sf', 1.5),
@@ -142,10 +123,8 @@ if __name__ == '__main__':
     root.add('input_vars', IndepVarComp(params))
     root.add('p', TubeandPylon())
 
-    root.add('con1', ExecComp('c1 = (Su_tube/sf) - VonMises'))                                                      #Impose yield stress constraint for tube
-    root.add('con2', ExecComp('c2 = t - t_crit'))                                                                    #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
-    #root.add('con3', ExecComp('c3 = (Su_pylon/sf) - R/(pi*(r_pylon**2))'))                                          #Impose yield stress constraint for pylon
-    root.add('con3', ExecComp('c3 = R - (((pi**3)*E_pylon*(r_pylon**4))/(4*(h**2)))'))
+    root.add('con1', ExecComp('c1 = ((Su_tube/sf) - VonMises)'))                                                      #Impose yield stress constraint for tube
+    root.add('con2', ExecComp('c2 = t - t_crit'))                                                                   #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
 
     root.connect('input_vars.r', 'p.r')
     root.connect('input_vars.t', 'p.t')
@@ -158,28 +137,30 @@ if __name__ == '__main__':
     root.connect('input_vars.t', 'con2.t')
     root.connect('p.t_crit', 'con2.t_crit')
 
-    root.connect('input_vars.E_pylon', 'con3.E_pylon')
-    root.connect('input_vars.h', 'con3.h')
-    root.connect('input_vars.r_pylon', 'con3.r_pylon')
-    root.connect('p.R', 'con3.R')
-
-    root.p.fd_options['force_fd'] = True
-    root.p.fd_options['form'] = 'central'
-    root.p.fd_options['step_size'] = 1.0e-4
+    root.p.deriv_options['type'] = "cs"
+    # root.p.deriv_options['form'] = 'forward'
+    root.p.deriv_options['step_size'] = 1.0e-10
 
     top.driver = ScipyOptimizer()
     top.driver.options['optimizer'] = 'SLSQP'
 
-    top.driver.add_desvar('input_vars.t', lower = .001)
-    top.driver.add_desvar('input_vars.r_pylon', lower = .5)
+    top.driver.add_desvar('input_vars.t', lower = .001, scaler=100)
+    top.driver.add_desvar('input_vars.r_pylon', lower = .1)
     top.driver.add_objective('p.total_material_cost')
-    top.driver.add_constraint('con1.c1', lower = 0.0)
+    top.driver.add_constraint('con1.c1', lower = 0.0, scaler = 1000.0)
     top.driver.add_constraint('con2.c2', lower = 0.0)
-    #top.driver.add_constraint('con3.c3', lower = 0.0)
 
     top.setup()
 
     top.run()
+
+    R_buckle = ((pi**3)*top['p.E_tube']*(top['p.r_pylon']**4))/(16*(top['p.h']**2))
+    if top['p.R'] < R_buckle:
+        print('Buckling constraint is satisfied')
+    else:
+        r_pylon_new = ((R_buckle*16*(top['p.h']**2))/((pi**3)*top['p.E_tube']))**.25
+        print('Optimizer value did not satisfy buckling condition. Pylon radius set to minimum buckling value')
+        print('new pylon radius is %f m' % r_pylon_new)
 
     print('\n')
     print('total material cost per m is $%f /m' % top['p.total_material_cost'])
@@ -196,9 +177,7 @@ if __name__ == '__main__':
     print('con2 = %f' % top['con2.c2'])
 
 
-
-
-
-
-
-
+    if top['con1.c1'] < 0.0:
+        raise ValueError('con1 not satisfied')
+    elif top['con2.c2'] < 0.0:
+        raise ValueError('con2 not satisfied')
