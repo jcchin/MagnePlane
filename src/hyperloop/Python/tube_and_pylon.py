@@ -34,8 +34,8 @@ class TubeandPylon(Component):
 
         #Define pylon material properties
         self.add_param('rho_pylon', val = 2400.0, units='kg/m^3', desc='density of pylon material')
-        self.add_param('E_pylon', val = 200.0*(10**9), units = 'Pa', desc = 'Young\'s Modulus of pylon')
-        self.add_param('v_pylon', val = .3, desc = 'Poisson\'s ratio of pylon')
+        self.add_param('E_pylon', val = 41.0*(10**9), units = 'Pa', desc = 'Young\'s Modulus of pylon')
+        self.add_param('v_pylon', val = .2, desc = 'Poisson\'s ratio of pylon')
         self.add_param('Su_pylon', val = 40.0*(10**6), units = 'Pa', desc = 'ultimate strength_pylon')
         self.add_param('unit_cost_pylon', val = .05, units = 'USD/kg', desc = 'cost of pylon materials per unit mass')
         self.add_param('h', val = 10.0, units = 'm', desc = 'height of pylon')
@@ -64,6 +64,8 @@ class TubeandPylon(Component):
         m_pod = params['m_pod']
         p_tunnel = params['p_tunnel']
         p_ambient = params['p_ambient']
+        Su_pylon = params['Su_pylon']
+        sf = params['sf']
         rho_pylon = params['rho_pylon']
         E_pylon = params['E_pylon']
         r_pylon = params['r_pylon']
@@ -76,14 +78,15 @@ class TubeandPylon(Component):
         I_tube = (pi/4.0)*(((r+t)**4)-(r**4))                                               #Calculate moment of inertia of tube
 
         m_prime = rho_tube*pi*(((r+t)**2)-(r**2))                                           #Calculate mass per unit length
-        dx = ((((pi**3)*E_pylon*(r_pylon**4))/(16*(h**2)))-5.*m_pod*g)/(.5*m_prime*g)       #Calculate distance between pylons
+        #dx = ((((pi**3)*E_pylon*(r_pylon**4))/(16*(h**2)))-.5*m_pod*g)/(.5*m_prime*g)       #Calculate distance between pylons
+        dx = ((2*(Su_pylon/sf)*pi*(r_pylon**2))-m_pod*g)/(m_prime*g)                        #Calculate dx
         M = (q*((dx**2)/8.0))+(m_pod*g*(dx/2.0))                                            #Calculate max moment
         sig_theta = (dp*r)/t                                                                #Calculate hoop stress
         sig_axial = ((dp*r)/(2*t)) + ((M*r)/I_tube) + alpha_tube*E_tube*dT_tube             #Calculate axial stress
         VonMises = (((sig_theta**2)+(sig_axial**2)+((sig_axial-sig_theta)**2))/2.0)**.5     #Calculate Von Mises stress
         m_pylon = rho_pylon*pi*(r_pylon**2)*h                                               #Calculate mass of single pylon
 
-        unknowns['total_material_cost'] = (unit_cost_tube*m_prime) + (unit_cost_pylon*m_pylon*(1/dx))
+        unknowns['total_material_cost'] = (unit_cost_tube*(rho_tube*pi*(((r+t)**2)-(r**2)))) + (unit_cost_pylon*m_pylon*(1/(((2*(Su_pylon/sf)*pi*(r_pylon**2))-m_pod*g)/(m_prime*g))))
         unknowns['m_prime'] = m_prime
         unknowns['VonMises'] = VonMises
         unknowns['delta'] = (5.0*q*(dx**4))/(384.0*E_tube*I_tube)
@@ -118,7 +121,7 @@ if __name__ == '__main__':
     params = (
         ('r', 1.1, {'units' : 'm'}),
         ('t', .05, {'units' : 'm'}),
-        ('r_pylon', 1.0, {'units': 'm'}),
+        ('r_pylon', 1.1, {'units': 'm'}),
         ('Su_tube', 152.0e6, {'units': 'Pa'}),
         ('sf', 1.5),
         ('p_ambient', 100.0, {'units': 'Pa'}),
@@ -128,6 +131,8 @@ if __name__ == '__main__':
         ('rho_tube', 7820.0, {'units': 'kg/m^3'}),
         ('rho_pylon', 2400.0, {'units': 'Pa'}),
         ('Su_pylon', 40.0e6, {'units': 'Pa'}),
+        ('E_pylon', 41.0e9, {'units' : 'Pa'}),
+        ('h', 10.0, {'units' : 'm'}),
         ('m_pod', 3100.0, {'units' : 'kg'})
 
     )
@@ -136,7 +141,8 @@ if __name__ == '__main__':
 
     root.add('con1', ExecComp('c1 = (Su_tube/sf) - VonMises'))                                                      #Impose yield stress constraint for tube
     root.add('con2', ExecComp('c2 = t - r*(((4*(p_ambient-p_tunnel)*(1-(v_tube**2)))/(E_tube))**(1/3))'))           #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
-    root.add('con3', ExecComp('c3 = (Su_pylon/sf) - R/(pi*(r_pylon**2))'))                                          #Impose yield stress constraint for pylon
+    #root.add('con3', ExecComp('c3 = (Su_pylon/sf) - R/(pi*(r_pylon**2))'))                                          #Impose yield stress constraint for pylon
+    root.add('con3', ExecComp('c3 = R - (((pi**3)*E_pylon*(r_pylon**4))/(4*(h**2)))'))
 
     root.connect('input_vars.r', 'p.r')
     root.connect('input_vars.t', 'p.t')
@@ -153,8 +159,8 @@ if __name__ == '__main__':
     root.connect('input_vars.v_tube', 'con2.v_tube')
     root.connect('input_vars.E_tube', 'con2.E_tube')
 
-    root.connect('input_vars.Su_pylon', 'con3.Su_pylon')
-    root.connect('input_vars.sf', 'con3.sf')
+    root.connect('input_vars.E_pylon', 'con3.E_pylon')
+    root.connect('input_vars.h', 'con3.h')
     root.connect('input_vars.r_pylon', 'con3.r_pylon')
     root.connect('p.R', 'con3.R')
 
@@ -162,15 +168,15 @@ if __name__ == '__main__':
     root.p.fd_options['form'] = 'central'
     root.p.fd_options['step_size'] = 1.0e-4
 
-    top.driver = ScipyOptimizer()
-    top.driver.options['optimizer'] = 'SLSQP'
+    #top.driver = ScipyOptimizer()
+    #top.driver.options['optimizer'] = 'SLSQP'
 
-    top.driver.add_desvar('input_vars.t', lower = .001)
-    top.driver.add_desvar('input_vars.r_pylon', lower = .1)
-    top.driver.add_objective('p.total_material_cost')
-    top.driver.add_constraint('con1.c1', lower = 0.0)
-    top.driver.add_constraint('con2.c2', lower=0.0)
-    top.driver.add_constraint('con3.c3', lower=0.0)
+    #top.driver.add_desvar('input_vars.t', lower = .001)
+    #top.driver.add_desvar('input_vars.r_pylon', lower = .5)
+    #top.driver.add_objective('p.total_material_cost')
+    #top.driver.add_constraint('con1.c1', lower = 0.0)
+    #top.driver.add_constraint('con2.c2', lower = 0.0)
+    #top.driver.add_constraint('con3.c3', lower = 0.0)
 
     top.setup()
 
@@ -188,7 +194,7 @@ if __name__ == '__main__':
     print('\n')
     print('con1 = %f' % top['con1.c1'])
     print('con2 = %f' % top['con2.c2'])
-    print('con3 = %f' % top['con3.c3'])
+
 
 
 
