@@ -315,17 +315,31 @@ if __name__ == "__main__":
     top.driver.add_constraint('con1.c1', lower = 0.0)
 
     root.add('obj_cmp', ExecComp('obj = Fxu + mmag'))
-    #root.connect('p.Fxu', 'obj.Fxu')
-    #root.connect('q.mmag', 'obj.mmag')
+    root.connect('p.Fxu', 'obj_cmp.Fxu')
+    root.connect('q.mmag', 'obj_cmp.mmag')
 
-    #top.driver.add_objective('obj_cmp.obj')
+    top.driver.add_objective('obj_cmp.obj')
 
-    # top.driver.add_objective('q.mmag')
+    #top.driver.add_objective('q.mmag')
 
-    top.setup()
+    top.setup(check=True)
+    top.root.list_connections()
+
     top.run()
 
-    # print('\n')
-    # print('Lift to Drag Ratio is %f' % )
-    # print('Total Magnet Area is %f m' % )
-    # print('Total Magnet Weight is %f kg' % )
+    print('\n')
+    print('Lift to Drag Ratio is %f' % top['p.LDratio'])
+    print('Total Magnet Area is %f m' % top['p.A'])
+    print('Total Magnet Weight is %f kg' % top['q.mmag'])
+
+    top.root.dump()
+
+    import sqlitedict
+    from pprint import pprint
+
+    db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
+    print(db.keys())
+    data = db['rank0:Driver/1']
+    u = data['Unknowns']
+    pprint(u)
+    remove('./maglev2')
