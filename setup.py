@@ -6,5 +6,5 @@ setup(name='hyperloop',
 	packages = find_packages('src'),
 	package_dir = {'': 'src'},
 	dependency_links = ['https://github.com/JustinSGray/pyCycle.git'],
-	install_requires = [pycycle, openmdao, scipy, matplotlib, numpy],
+	install_requires = [openmdao, scipy, matplotlib, numpy],
 	tests_require = ['pytest'])
