@@ -1,9 +1,10 @@
 from __future__ import print_function, division
 
 import unittest
-import os
+
 from numpy.testing import assert_almost_equal
-from .. import mission_pointer as mp
+
+from Python.UnmodifedMagnePlaneCode import mission_pointer as mp
 
 SOLVER = 'SNOPT'
 NUM_SEG = 10
