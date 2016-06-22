@@ -1,8 +1,10 @@
-sudo: false
+# whitelist
+branches:
+  only:
+    - master
+    - work
 
-#branches:
-#  only:
-#    -master
+sudo: false
 
 os:
   - linux
@@ -11,8 +13,8 @@ os:
 language: generic
 
 env:
-  - PY=2.7 
-  - PY=3.4 
+- PY=2.7
+- PY=3.4
 
 notifications:
   slack: nasa-marti:6JrI4B9v97JAZxujKsat50ph
@@ -29,6 +31,7 @@ before_install:
   fi
 - PATHPREFIX=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "/Users/travis/miniconda/bin"; else echo "/home/travis/miniconda/bin"; fi)
 - export PATH=$PATHPREFIX:$PATH
+- export OPENMDAO_TEST_DOCS=1
 - conda update --yes conda
 
 install:
@@ -48,11 +51,3 @@ install:
     fi
   fi
 - pip install -e .
-
-#- pip install coveralls
-  - pip install -e .
-
-#script:
-
-#after_success:
-#  coveralls
