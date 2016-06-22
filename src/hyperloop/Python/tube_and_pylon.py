@@ -5,9 +5,40 @@ from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 class TubeandPylon(Component):
-    """Optimize the tube diameter, thickness, and distance between pylons
-    using a basic sturctural analysis of a pressure cylinder supported at two ends
-    Tube is assumed open at the ends in between each support, end effects are neglected for now"""
+    """
+
+    Notes
+    -----
+
+        Estimates tube tunnel cost and pylon material cost
+        Optimizes tunnel thickness, pylon radius, and pylon spacing
+        Many parameters are currently taken from hyperloop alpha, will eventually pull from mission trajectory
+
+    Parameters
+    ----------
+
+        pylon radius : float
+            radius of cylindrical pylon
+        tunnel thickness : float
+            thickness of cylindical tube containing pod
+        tunnel radius : float
+            Assumes tunel radius from alpha paper. Will take tunnel radius from aero analysis.
+        pod mass : float
+            Assumes pod mass from alpha paper.  Will take pod mass from weight analysis
+
+
+    Returns
+    -------
+
+        material cost per mile : float
+            minimizes material cost of tunnel and pylons with respect to tunnel thickness and pylon radius
+
+    References
+    ----------
+
+        USA. NASA. Buckling of Thin-Walled Circular Cylinders. N.p.: n.p., n.d. Web. 13 June 2016.
+
+    """
 
     def __init__(self):
         super(TubeandPylon, self).__init__()
@@ -53,6 +84,11 @@ class TubeandPylon(Component):
         self.add_output('t_crit', val = 0.0, units = 'm', desc = 'Minimum tunnel thickness for buckling')
 
     def solve_nonlinear(self, params, unknowns, resids):
+        '''total material cost = ($/kg_tunnel)*m_prime + ($/kg_pylon)*m_pylon*(1/dx)
+        m_prime = mass of tunnel per unit length = rho_tube*pi*((r+t)^2-r^2)
+        m_pylon = mass of single pylon = rho_pylon*pi*(r_pylon^2)*h
+
+        Constraint equations derived from yield on buckling conditions'''
 
         rho_tube = params['rho_tube']
         E_tube = params['E_tube']
@@ -80,7 +116,6 @@ class TubeandPylon(Component):
         I_tube = (pi/4.0)*(((r+t)**4)-(r**4))                                               #Calculate moment of inertia of tube
 
         m_prime = rho_tube*pi*(((r+t)**2)-(r**2))                                           #Calculate mass per unit length
-        #dx = ((((pi**3)*E_pylon*(r_pylon**4))/(16*(h**2)))-.5*m_pod*g)/(.5*m_prime*g)       #Calculate distance between pylons
         dx = ((2*(Su_pylon/sf)*pi*(r_pylon**2))-m_pod*g)/(m_prime*g)                        #Calculate dx
         M = (q*((dx**2)/8.0))+(m_pod*g*(dx/2.0))                                            #Calculate max moment
         sig_theta = (dp*r)/t                                                                #Calculate hoop stress
@@ -123,8 +158,8 @@ if __name__ == '__main__':
     root.add('input_vars', IndepVarComp(params))
     root.add('p', TubeandPylon())
 
-    root.add('con1', ExecComp('c1 = ((Su_tube/sf) - VonMises)'))                                                      #Impose yield stress constraint for tube
-    root.add('con2', ExecComp('c2 = t - t_crit'))                                                                   #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
+    root.add('con1', ExecComp('c1 = ((Su_tube/sf) - VonMises)'))            #Impose yield stress constraint for tube
+    root.add('con2', ExecComp('c2 = t - t_crit'))                           #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
 
     root.connect('input_vars.r', 'p.r')
     root.connect('input_vars.t', 'p.t')
