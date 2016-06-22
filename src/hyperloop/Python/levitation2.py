@@ -311,11 +311,6 @@ if __name__ == "__main__":
     top.driver = ScipyOptimizer()
     top.driver.options['optimizer'] = 'SLSQP'
 
-    recorder = SqliteRecorder('maglev2')
-    recorder.options['record_params'] = True
-    recorder.options['record_metadata'] = True
-    top.driver.add_recorder(recorder)
-
     # Design Variables
     top.driver.add_desvar('input_vars.d', lower=1.0, upper=15.0)
     top.driver.add_desvar('input_vars.gamma', lower=0.0, upper=1.0)
@@ -329,6 +324,10 @@ if __name__ == "__main__":
 
     top.driver.add_objective('obj_cmp.obj')
 
+    recorder = SqliteRecorder('maglev2')
+    recorder.options['record_params'] = True
+    recorder.options['record_metadata'] = True
+    top.driver.add_recorder(recorder)
     #top.driver.add_objective('q.mmag')
 
     top.setup(check=True)
