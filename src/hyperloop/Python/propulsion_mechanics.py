@@ -4,9 +4,35 @@ from math import pi, log
 from openmdao.api import IndepVarComp, Component, Group, Problem
 
 class PropulsionMechanics(Component):
-    """Evaluates the required power a motor would have to generate to accelerate pod by 1g
-    Input values can be used for LIM or LSM models
-    Can later be modified to include current constraints, factor in cost, and optimize several variables"""
+    """
+
+    Notes
+    -----
+
+        Estimate power requirements for prouplsion sections
+        Many parameters are currently taken from hyperloop alpha
+        Can currently be used for LSM or LIM systems
+
+    Parameters
+    ----------
+
+        tunnel pressure : float
+            pressure in the tunnel
+        entrance speed : float
+            Pod speed when it enters a segment of motors
+
+    Returns
+    -------
+
+        power : float
+            Total power required to accelerate pod from entrance speed to top speed at 1g
+
+    References
+    ----------
+
+        USA. NASA. Buckling of Thin-Walled Circular Cylinders. N.p.: n.p., n.d. Web. 13 June 2016.
+
+    """
 
 
     def __init__(self):
