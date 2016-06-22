@@ -3,6 +3,7 @@ from os import remove
 from math import pi, atan, sin, cos, e, log
 
 from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp
+from openmdao.api import SqliteRecorder
 from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 
@@ -275,6 +276,9 @@ class Mass(Component):
 
 if __name__ == "__main__":
 
+    import sqlitedict
+    from pprint import pprint
+
     top = Problem()
     root = top.root = Group()
 
@@ -321,6 +325,12 @@ if __name__ == "__main__":
 
     top.driver.add_objective('obj_cmp.obj')
 
+    recorder = SqliteRecorder('maglev2')
+    recorder.options['record_params'] = True
+    recorder.options['record_metadata'] = True
+    top.driver.add_recorder(recorder)
+    #top.driver.add_objective('q.mmag')
+
     top.setup(check=True)
     top.root.list_connections()
 
@@ -330,19 +340,16 @@ if __name__ == "__main__":
     print('Lift to Drag Ratio is %f' % top['p.LDratio'])
     print('Total Magnet Area is %f m' % top['p.A'])
     print('Total Magnet Weight is %f kg' % top['q.mmag'])
-    print('lam %f' % top['p.lam'])
-    print('d %f' % top['p.d'])
-    print('gamma %f' % top['q.gamma'])
-    print('Fyu %f' % top['p.Fyu'])
-    print('Fxu %f' % top['p.Fxu'])
-    # top.root.dump()
-    #
-    # import sqlitedict
-    # from pprint import pprint
-    #
-    # db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
-    # print(db.keys())
-    # data = db['rank0:Driver/1']
-    # u = data['Unknowns']
-    # pprint(u)
-    # remove('./maglev2')
+
+    top.root.dump()
+
+    db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
+    data = db['rank0:SLSQP/1']
+    p = data['Parameters']
+    print('params')
+    pprint(p)
+
+    u = data['Unknowns']
+    print('unknowns')
+    pprint(u)
+    remove('./maglev2')
