@@ -6,3 +6,5 @@
 **/*.bak
 **/*.gz
 **/~*
+*.DS_Store
+*.gitignore
