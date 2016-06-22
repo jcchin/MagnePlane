@@ -90,7 +90,7 @@ class Drag(Component):
         self.add_param('Br', val=1.0, units='Tesla', desc='Residual Magnetic Flux')
         self.add_param('M', val=4.0, desc='Number of Magnets per Halbach Array')
         self.add_param('d', val=0.15, units='m', desc='Thickness of magnet')
-        self.add_param('rhomag', val=7.5, units='g/cm^3', desc='Density of Magnet')
+        self.add_param('rhomag', val=7.5, units='g/cm**3', desc='Density of Magnet')
         self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
 
@@ -101,7 +101,7 @@ class Drag(Component):
         self.add_param('delta_c', val=0.0005, units='m', desc='single layer thickness')
         self.add_param('strip_c', val=0.0105, units='m', desc='center strip spacing')
         self.add_param('rc', val=171.3, units='Ohm-m', desc='electric resistivity')
-        self.add_param('mu0', val=4*pi*10**-7, units='hy/m', desc='Permeability of Free Space')
+        self.add_param('mu0', val=4*pi*10**-7, units='H/m', desc='Permeability of Free Space')
 
         # Pod/Track Relation Inputs
         self.add_param('vpod', val=350.0, units='m/s', desc='pod velocity')
@@ -111,7 +111,7 @@ class Drag(Component):
         self.add_output('lam', val=0.0, units='m', desc='Halbach wavelength')
         self.add_output('L', val=0.0, units='H', desc='Inductance')
         self.add_output('B0', val=0.0, units='T', desc='Halbach peak strength')
-        self.add_output('A', val=0.4, units='m', desc='Total Area of Magnets')
+        self.add_output('A', val=0.4, units='m**2', desc='Total Area of Magnets')
         self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
         self.add_output('omega', val=2650., units ='rad/s', desc ='frequency')
         self.add_output('Fyu', val=0.0, units ='N', desc ='levitation force')
@@ -168,6 +168,7 @@ class Drag(Component):
         unknowns['omega'] = omega
         unknowns['Fyu'] = Fyu
         unknowns['Fxu'] = Fxu
+        unknowns['LDratio'] = LDratio
 
 
     # def linearize(self, params, unknowns, resids):
@@ -227,7 +228,7 @@ class Mass(Component):
 
         # Pod Inputs
         self.add_param('d', val=0.15, units='m', desc='thickness of magnet')
-        self.add_param('rhomag', val=7.5, units='g/cm^3', desc='Density of Magnet')
+        self.add_param('rhomag', val=7.5, units='g**cm^3', desc='Density of Magnet')
         self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
 
@@ -279,7 +280,7 @@ if __name__ == "__main__":
 
     #Define Parameters
     params = (
-        ('d', 1.0, {'units' : 'm'}),
+        ('d', .5, {'units' : 'm'}),
         ('gamma', 1.0, {'units' : ''}),
         ('mpod', 1300.0 ,{'units' : 'kg'})
     )
@@ -308,8 +309,8 @@ if __name__ == "__main__":
     top.driver.options['optimizer'] = 'SLSQP'
 
     # Design Variables
-    top.driver.add_desvar('input_vars.d', lower=1.0, upper=15.0)
-    top.driver.add_desvar('input_vars.gamma', lower=0.0, upper=1.0)
+    top.driver.add_desvar('input_vars.d', lower=1.1, upper=15.0)
+    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=.9)
 
     #Constraint
     top.driver.add_constraint('con1.c1', lower = 0.0)
@@ -320,8 +321,6 @@ if __name__ == "__main__":
 
     top.driver.add_objective('obj_cmp.obj')
 
-    #top.driver.add_objective('q.mmag')
-
     top.setup(check=True)
     top.root.list_connections()
 
@@ -331,15 +330,19 @@ if __name__ == "__main__":
     print('Lift to Drag Ratio is %f' % top['p.LDratio'])
     print('Total Magnet Area is %f m' % top['p.A'])
     print('Total Magnet Weight is %f kg' % top['q.mmag'])
-
-    top.root.dump()
-
-    import sqlitedict
-    from pprint import pprint
-
-    db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
-    print(db.keys())
-    data = db['rank0:Driver/1']
-    u = data['Unknowns']
-    pprint(u)
-    remove('./maglev2')
+    print('lam %f' % top['p.lam'])
+    print('d %f' % top['p.d'])
+    print('gamma %f' % top['q.gamma'])
+    print('Fyu %f' % top['p.Fyu'])
+    print('Fxu %f' % top['p.Fxu'])
+    # top.root.dump()
+    #
+    # import sqlitedict
+    # from pprint import pprint
+    #
+    # db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
+    # print(db.keys())
+    # data = db['rank0:Driver/1']
+    # u = data['Unknowns']
+    # pprint(u)
+    # remove('./maglev2')
