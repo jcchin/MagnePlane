@@ -3,6 +3,7 @@ from os import remove
 from math import pi, atan, sin, cos, e, log
 
 from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp
+from openmdao.api import SqliteRecorder
 from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 
@@ -274,8 +275,16 @@ class Mass(Component):
 
 if __name__ == "__main__":
 
+    import sqlitedict
+    from pprint import pprint
+
     top = Problem()
     root = top.root = Group()
+
+    recorder = SqliteRecorder('maglev2')
+    recorder.options['record_params'] = True
+    recorder.options['record_metadata'] = True
+    top.driver.add_recorder(recorder)
 
     #Define Parameters
     params = (
@@ -334,11 +343,8 @@ if __name__ == "__main__":
 
     top.root.dump()
 
-    import sqlitedict
-    from pprint import pprint
-
     db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
-    print(db.keys())
+    print('here', db.keys())
     data = db['rank0:Driver/1']
     u = data['Unknowns']
     pprint(u)
