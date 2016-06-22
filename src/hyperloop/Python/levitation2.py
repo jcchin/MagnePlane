@@ -92,7 +92,7 @@ class Drag(Component):
         self.add_param('d', val=0.15, units='m', desc='Thickness of magnet')
         self.add_param('rhomag', val=7.5, units='g/cm^3', desc='Density of Magnet')
         self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1.0, units='', desc='Percent Factor')
+        self.add_param('gamma', val=1.0, desc='Percent Factor')
 
         # Track Inputs (laminated track)
         self.add_param('Pc', val=2.0, units='m', desc='width of track')
@@ -109,13 +109,14 @@ class Drag(Component):
 
         # outputs
         self.add_output('lam', val=0.0, units='m', desc='Halbach wavelength')
+        self.add_output('L', val=0.0, units='H', desc='Inductance')
         self.add_output('B0', val=0.0, units='T', desc='Halbach peak strength')
         self.add_output('A', val=0.4, units='m', desc='Total Area of Magnets')
         self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
         self.add_output('omega', val=2650., units ='rad/s', desc ='frequency')
         self.add_output('Fyu', val=0.0, units ='N', desc ='levitation force')
         self.add_output('Fxu', val=0.0, units ='N', desc ='drag force')
-        self.add_output('LDratio', val=0.0, units='', desc='Lift to Drag Ratio')
+        self.add_output('LDratio', val=0.0, desc='Lift to Drag Ratio')
 
 
     def solve_nonlinear(self, params, unknowns, resids):
@@ -228,7 +229,7 @@ class Mass(Component):
         self.add_param('d', val=0.15, units='m', desc='thickness of magnet')
         self.add_param('rhomag', val=7.5, units='g/cm^3', desc='Density of Magnet')
         self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1.0, units='', desc='Percent Factor')
+        self.add_param('gamma', val=1.0, desc='Percent Factor')
 
         # Track Inputs (laminated track)
         self.add_param('Pc', val=2, units='m', desc='width of track')
@@ -313,7 +314,12 @@ if __name__ == "__main__":
     #Constraint
     top.driver.add_constraint('con1.c1', lower = 0.0)
 
-    top.driver.add_objective('p.Fxu + q.mag')
+    root.add('obj_cmp', ExecComp('obj = Fxu + mmag'))
+    #root.connect('p.Fxu', 'obj.Fxu')
+    #root.connect('q.mmag', 'obj.mmag')
+
+    #top.driver.add_objective('obj_cmp.obj')
+
     # top.driver.add_objective('q.mmag')
 
     top.setup()
@@ -323,6 +329,3 @@ if __name__ == "__main__":
     # print('Lift to Drag Ratio is %f' % )
     # print('Total Magnet Area is %f m' % )
     # print('Total Magnet Weight is %f kg' % )
-
-
-
