@@ -23,10 +23,10 @@ before_install:
   - chmod +x miniconda.sh
   - if [ "$OS" = "Linux" ]; then
     ./miniconda.sh -b  -p /home/travis/miniconda;
-  fi
+    fi
   - if [ "$OS" = "MacOSX" ]; then
     ./miniconda.sh -b  -p /Users/travis/miniconda;
-  fi
+    fi
   - PATHPREFIX=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "/Users/travis/miniconda/bin"; else echo "/home/travis/miniconda/bin"; fi)
   - export PATH=$PATHPREFIX:$PATH
   - conda update --yes conda
@@ -46,7 +46,7 @@ install:
     elif [ "$PY" = "3.4" ]; then
         pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp34-none-macosx_10_5_x86_64.whl;
     fi
-  fi
+    fi
 
 #- pip install coveralls
   - pip install -e .
