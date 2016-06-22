@@ -1,0 +1,91 @@
+/* ******************************************************
+*  File Name: Inverter.int                              *
+*  Date: August 31, 2012                                *
+*  Created by: David Trawick                            *
+*  Last Edited: August 31, 2012                         *
+*  By: David Trawick                                    *
+*  For: Aerospace Systems Design Lab @ Georgia Tech     *
+*******************************************************	*/
+
+/* ******************************************************
+*  Functions:                                           *
+*	Inverter      class                                 *
+*******************************************************	*/
+
+
+// ==============================================================================
+// Inverter (class)
+// NPSS model of an electric inverter (Device which turns DC into 3 phase AC)
+// for use in electric aircraft propulsion.  
+// ------------------------------------------------------------------------------
+class Inverter extends Element{
+  real Efficiency { 
+    value = 1;  IOstatus = INPUT;//  units = None;
+    description = "Power Out/Power In";//Assumed Efficiency Factor
+	}
+  real OutputVoltage {
+    value = 120; IOstatus = INPUT;// units = Volts;
+	description = "Amplitude of AC output";// 
+	}
+  real OutputCurrent {
+    value = 2; IOstatus = INPUT;// units = Amps;
+	description = "Amplitude of AC output current";// Motor specifies to Inverter what its current and voltage needs are
+	}
+  real InputVoltage {
+    value = 500; IOstatus = INPUT;// units = Volts;
+	description = "Voltage of DC input"; //Used if R=0
+} 	 
+  real InputCurrent {
+    value = .48; IOstatus = OUTPUT; // units = Amps;
+	description = "DC input current";// Output is Current Required from upstream bus
+	}
+  real OutputFrequency {
+    value = 60; IOstatus = INPUT; // units = Hz;
+	description = "Frequency of AC output";
+  }
+  real DesignPower {
+    value = 8000; IOstatus = INPUT; // units = horsepower;
+	description = "Design output power in hp";// Calculation done within Inverter to help solver flow, set = 0 if not desired
+	}
+	DataInputPort MOTOR;
+	DataOutputPort CABLE;
+	Independent ind_Voltage {
+     varName = "InputVoltage";
+	 autoSetup = TRUE;
+  }
+  
+ 
+  real motorvals[4];
+  	Socket S_Efficiency
+	{
+		allowedValues = {"Efficiency"}
+		description = "Inverter Efficiency";
+		socketType = "Inverter_Efficiency";
+	}
+	real OutputPower {
+    value = 12000000; IOstatus = OUTPUT; // units = Watts;
+	description = "Output Side Power";
+	}
+
+void calculate() 
+{
+    motorvals = MOTOR.val;
+	OutputVoltage = motorvals[0];
+	OutputCurrent = motorvals[1];
+	OutputFrequency = motorvals[2];
+   	OutputPower = OutputVoltage*OutputCurrent*3.0*sqrt(2.0)/sqrt(3.0); //Conversion between phase and line voltage and current
+    S_Efficiency.execute();
+	real inputPower = OutputPower/Efficiency;
+	
+	InputCurrent = -inputPower/InputVoltage;//Negative sign because drawing current from cable,
+											//	needed to keep bus voltage higher than inverter rather than lower
+	
+	real cable[4];
+	cable[0] = InputVoltage;
+	cable[1] = InputCurrent;
+	cable[2] = 0;
+	cable[3] = 0;
+	CABLE.val = cable;
+
+}
+}

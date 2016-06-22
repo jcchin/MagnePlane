@@ -1,0 +1,125 @@
+/* ******************************************************
+*  File Name: Bus.int                                   *
+*  Date: October 11, 2012                               *
+*  Created by: David Trawick                            *
+*  Last Edited: September 02, 2015                        *
+*  By: Manish Pokhrel                      *
+*  For: Aerospace Systems Design Lab @ Georgia Tech     *
+*******************************************************	*/
+
+/* ******************************************************
+*  Functions:                                           *
+*	BasicBus    class                                   *
+*******************************************************	*/
+
+
+// ==============================================================================
+// Bus (class)
+// Bus for use in electrical system model in NPSS
+// for use in electric aircraft propulsion.  
+// ------------------------------------------------------------------------------
+class Bus extends Element{
+  real Voltage { 
+    value = 10000; IOstatus = INPUT;//  units = Volts;
+    description = "Target Voltage of Bus";
+	}
+  real InputVoltage[15];
+  real NetCurrent {
+    value = 2; IOstatus = INPUT;// units = Amps;
+	description = "Net Current intp bus from inputs";
+	}
+	DataInputPort INPUT;
+	DataOutputPort OUTPUT;
+	real output[4];
+	real input[4];
+	real PowerSourceSplit[];
+    real NormPowerSourceSplit[];
+	string dataInputPortList[];
+  dataInputPortList.ptrType = "DataInputPort";
+  dataInputPortList.internal = TRUE; // maintained internal to class by postcreate()
+  	string dataOutputPortList[];
+  dataOutputPortList.ptrType = "DataOutputPort";
+  dataOutputPortList.internal = TRUE; // maintained internal to class by postcreate()
+    string dependentList[];
+	  dependentList.internal = TRUE; // maintained internal to class by postcreate()
+	
+  Dependent dep_Voltage {
+	eq_lhs = "InputVoltage";
+	eq_rhs = "Voltage";
+	 autoSetup = FALSE;
+  }
+
+void calculate() 
+{
+    int i;
+	NetCurrent = 0;
+    
+    for( i=0; i<dataInputPortList.entries(); ++i ) {
+
+      //------------------------------------------------------------
+      // Pull val into array
+      //------------------------------------------------------------
+      input = dataInputPortList[i]->val;
+	  InputVoltage[i] = input[0];// for dependent
+      //------------------------------------------------------------
+      // Sum Currents Supplied to Bus
+      //------------------------------------------------------------
+      NetCurrent = NetCurrent + input[1];
+
+    }
+	
+	//real NormPowerSourceSplit[2];
+	real normfac = 0;
+	for (i=0; i<PowerSourceSplit.entries(); ++i) {
+	   normfac = normfac + PowerSourceSplit[i];
+	}
+	if ((normfac == 0)||(PowerSourceSplit.entries() != dataOutputPortList.entries()))
+	{
+	for (i=0; i<dataOutputPortList.entries(); ++i)
+	{
+	  NormPowerSourceSplit.append(1.0/dataOutputPortList.entries());
+	}
+	}
+	else
+	{
+	for (i=0; i<dataOutputPortList.entries(); ++i)
+	{
+	  NormPowerSourceSplit.append(PowerSourceSplit[i]/normfac);
+	}
+	}
+
+  for( i=0; i<dataOutputPortList.entries(); ++i ) {
+     output[0] = Voltage;
+	 output[1] = NetCurrent*NormPowerSourceSplit[i];
+     dataOutputPortList[i]->val = output;
+	 
+  }
+  //Generator1.val = output;
+  //Generator2.val = output;
+  //InputVoltage1 = InputVoltage[0];
+  //InputVoltage2 = InputVoltage[1];
+}
+
+  void postcreate( string name ) {
+	//Similar to the Shaft the Bus allows a varied number of input ports, as well as output ports. The number of Data Input Ports must 
+	//match the number of Dependents declared in the .mdl, and the names of the Dependents don't matter but must be unique.
+    if(name->hasInterface("DataInputPort")) {
+	
+      dataInputPortList.append( name );
+	  //cout << name << endl;
+    }
+	else if(name->hasInterface("DataOutputPort")) {
+      dataOutputPortList.append( name );
+	  
+    }       
+	else if(name->hasInterface("Dependent")) {
+
+	  dependentList.append( name );
+	  int a = dependentList.entries()-1;
+	 
+	  dependentList[dependentList.entries()-1]->eq_lhs = "InputVoltage[" + toStr(a)+ "]*1.0";
+	  dependentList[dependentList.entries()-1]->eq_rhs = "Voltage";
+	  dependentList[dependentList.entries()-1]->autoSetup = TRUE;
+	}
+  }
+ }
