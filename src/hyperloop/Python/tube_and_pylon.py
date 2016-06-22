@@ -156,28 +156,29 @@ if __name__ == '__main__':
 
     R_buckle = ((pi**3)*top['p.E_tube']*(top['p.r_pylon']**4))/(16*(top['p.h']**2))
     if top['p.R'] < R_buckle:
-        print('Buckling constraint is satisfied')
+        print('Pylon buckling constraint is satisfied')
     else:
         r_pylon_new = ((R_buckle*16*(top['p.h']**2))/((pi**3)*top['p.E_tube']))**.25
-        print('Optimizer value did not satisfy buckling condition. Pylon radius set to minimum buckling value')
+        print('Optimizer value did not satisfy pylon buckling condition. Pylon radius set to minimum buckling value')
         print('new pylon radius is %f m' % r_pylon_new)
 
     print('\n')
-    print('total material cost per m is $%f /m' % top['p.total_material_cost'])
-    print('pylon radius is %f m' % top['p.r_pylon'])
-    print('tube thicknes is %f m' % top['p.t'])
-    print('mass per unit length os %f kg/m' % top['p.m_prime'])
-    print('vertical force on each pylon is %f N' % top['p.R'])
-    print('Von Mises stress is %f Pa' % top['p.VonMises'])
-    print('distance between pylons is %f m' % top['p.dx'])
-    print('max deflection is %f m' % top['p.delta'])
-    print('critical thickness is %f m' % top['p.t_crit'])
+    print('total material cost per m is $%6.2f/km' % (top['p.total_material_cost']*(1.0e3)))
+    print('pylon radius is %6.3f m' % top['p.r_pylon'])
+    print('tube thicknes is %6.4f mm' % (top['p.t']*(1.0e3)))
+    print('mass per unit length is %6.2f kg/m' % top['p.m_prime'])
+    print('vertical force on each pylon is %6.2f kN' % (top['p.R']/(1.0e3)))
+    print('Von Mises stress is %6.3f MPa' % (top['p.VonMises']/(1.0e6)))
+    print('distance between pylons is %6.2f m' % top['p.dx'])
+    print('max deflection is %6.4f mm' % (top['p.delta']*(1.0e3)))
     print('\n')
     print('con1 = %f' % top['con1.c1'])
     print('con2 = %f' % top['con2.c2'])
 
 
     if top['con1.c1'] < 0.0:
-        raise ValueError('con1 not satisfied')
+        print('con1 not satisfied')
     elif top['con2.c2'] < 0.0:
-        raise ValueError('con2 not satisfied')
+        print('con2 not satisfied')
+    else:
+        print('Yield constraints are satisfied')
