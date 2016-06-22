@@ -27,12 +27,12 @@ class Drag(Component):
             Number of Magnets per Halbach Array. Default value is 4
         d : float
             Thickness of Magnet. Default value is 0.15.
-        rhomag : float
-            Density of Magnet. Default value is 7.5.
+        g : float
+            Gravitational Acceleration. Default value is 9.81.
         lpod : float
             Length of the Hyperloop pod. Default value is 5.
         gamma : float
-            Percent factor used in Area. Default value is 1.
+            Percent factor used in Area. Default value is .5.
         Pc : float
             Width of track. Default value is 2.
         Nt : float
@@ -61,8 +61,6 @@ class Drag(Component):
             Halbach Peak Strength. Default value is 0.0.
         A : float
             Total area of the magnetic array. Default value is 0.0.
-        mmag : float
-            Mass of the permanent magnets. Default value is 0.0.
         omega : float
             Frequency of the induced current. Default value is 0.0.
         Fyu : float
@@ -87,37 +85,37 @@ class Drag(Component):
         super(Drag, self).__init__()
 
         # Pod Inputs
-        self.add_param('mpod', val=3000, units='kg', desc='Pod Mass')
-        self.add_param('Br', val=1.0, units='Tesla', desc='Residual Magnetic Flux')
+        self.add_param('mpod', val=3000.0, units='kg', desc='Pod Mass')
+        self.add_param('Br', val=1.48, units='Tesla', desc='Residual Magnetic Flux')
         self.add_param('M', val=4.0, desc='Number of Magnets per Halbach Array')
         self.add_param('d', val=0.15, units='m', desc='Thickness of magnet')
-        self.add_param('rhomag', val=7.5, units='g/cm**3', desc='Density of Magnet')
-        self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1.0, desc='Percent Factor')
+        self.add_param('lpod', val=22.0, units='m', desc='Length of Pod')
+        self.add_param('gamma', val=0.5, desc='Percent Factor')
 
         # Track Inputs (laminated track)
         self.add_param('Pc', val=2.0, units='m', desc='width of track')
         self.add_param('Nt', val=0.005, units='m', desc='width of conductive strip')
         self.add_param('Ns', val=1.0, desc='number of laminated sheets')
         self.add_param('delta_c', val=0.0005, units='m', desc='single layer thickness')
-        self.add_param('strip_c', val=0.0105, units='m', desc='center strip spacing')
-        self.add_param('rc', val=171.3, units='Ohm-m', desc='electric resistivity')
-        self.add_param('mu0', val=4*pi*10**-7, units='H/m', desc='Permeability of Free Space')
+        self.add_param('strip_c', val=0.00105, units='m', desc='center strip spacing')
+        self.add_param('rc', val=2.82*10**-8, units='Ohm-m', desc='electric resistivity')
+        self.add_param('mu0', val=4*pi*10**-7, units='Ohm*s/m', desc='Permeability of Free Space')
 
         # Pod/Track Relation Inputs
         self.add_param('vpod', val=350.0, units='m/s', desc='pod velocity')
-        self.add_param('y', val=0.025, units='m', desc='levitation height')
+        self.add_param('y', val=0.01, units='m', desc='levitation height')
+        self.add_param('g', val=9.81, units='m/s**2', desc='Gravity')
 
         # outputs
         self.add_output('lam', val=0.0, units='m', desc='Halbach wavelength')
-        self.add_output('L', val=0.0, units='H', desc='Inductance')
-        self.add_output('B0', val=0.0, units='T', desc='Halbach peak strength')
+        self.add_output('L', val=0.0, units='Ohm*s', desc='Inductance')
+        self.add_output('B0', val=0.0, units='Tesla', desc='Halbach peak strength')
         self.add_output('A', val=0.4, units='m**2', desc='Total Area of Magnets')
-        self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
         self.add_output('omega', val=2650., units ='rad/s', desc ='frequency')
         self.add_output('Fyu', val=0.0, units ='N', desc ='levitation force')
         self.add_output('Fxu', val=0.0, units ='N', desc ='drag force')
         self.add_output('LDratio', val=0.0, desc='Lift to Drag Ratio')
+        self.add_output('R', val = 0.0, desc='Lift to Drag Ratio')
 
 
     def solve_nonlinear(self, params, unknowns, resids):
@@ -130,7 +128,6 @@ class Drag(Component):
         d = params['d']
         gamma = params['gamma']
         lpod = params['lpod']
-        rhomag = params['rhomag']
 
         #Track Parameters
         Pc = params['Pc']
@@ -139,22 +136,21 @@ class Drag(Component):
         delta_c = params['delta_c']
         strip_c = params['strip_c']
         rc = params['rc']
-        mu0=params['mu0']
+        mu0 = params['mu0']
 
         # Compute Intermediate Variables
-        R = rc*Pc/(delta_c*Nt*Ns)*10**-10 # Track Resistance
+        R = rc*Pc/(delta_c*Nt*Ns) # Track Resistance
 
         lam = M*d # Compute Wavelength
         B0 = Br*(1.-e**(-2.*pi*d/lam))*((sin(pi/M))/(pi/M)) # Compute Peak Field Strength
         L = mu0*Pc/(4*pi*strip_c/lam) # Compute Track Inductance
         A = Pc*lpod*gamma # Compute Magnet Area
-        mmag = rhomag*A*d # Compute Magnet Mass
-
 
         if vpod == 0:
             omega = 0
             Fyu = 0
             Fxu = 0
+            LDratio = 0
         else:
             omega = 2*pi*vpod/lam  # Compute Induced Frequency
             Fyu = (B0**2.*Pc/(4.*pi*L*strip_c/lam))*(1./(1.+(R/(omega*L))**2))*e**(-4.*pi*(y)/lam)*A
@@ -165,11 +161,11 @@ class Drag(Component):
         unknowns['B0'] = B0
         unknowns['L'] = L
         unknowns['A'] = A
-        unknowns['mmag'] = mmag
         unknowns['omega'] = omega
         unknowns['Fyu'] = Fyu
         unknowns['Fxu'] = Fxu
         unknowns['LDratio'] = LDratio
+        unknowns['R'] = R
 
 
     # def linearize(self, params, unknowns, resids):
@@ -201,7 +197,7 @@ class Mass(Component):
         lpod : float
             Length of the Hyperloop pod. Default value is 5.
         gamma : float
-            Percent factor used in Area. Default value is 1.
+            Percent factor used in Area. Default value is .5.
         Pc : float
             Width of track. Default value is 2.
 
@@ -231,13 +227,12 @@ class Mass(Component):
         self.add_param('d', val=0.15, units='m', desc='thickness of magnet')
         self.add_param('rhomag', val=7.5, units='g**cm^3', desc='Density of Magnet')
         self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1.0, desc='Percent Factor')
+        self.add_param('gamma', val=0.5, desc='Percent Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=2, units='m', desc='width of track')
+        self.add_param('Pc', val=2.0, units='m', desc='width of track')
 
         # outputs
-        # pod outputs
         self.add_output('A', val=0.0, units='m', desc='Total Area of Magnets')
         self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
 
@@ -284,20 +279,25 @@ if __name__ == "__main__":
 
     #Define Parameters
     params = (
-        ('d', .5, {'units' : 'm'}),
-        ('gamma', 1.0, {'units' : ''}),
-        ('mpod', 1300.0 ,{'units' : 'kg'})
+        ('d', .07, {'units': 'm'}),
+        ('gamma', 0.2),
+        ('mpod', 3000.0, {'units': 'kg'}),
+        ('g', 9.81, {'units': 'm/s**2'})
     )
 
     root.add('input_vars', IndepVarComp(params))
-
     root.add('p', Drag())
-    root.add('q',Mass())
+    root.add('q', Mass())
 
     #Constraint
-    root.add('con1', ExecComp('c1 = Fyu - mpod * 9.81'))
+    root.add('con1', ExecComp('c1 = Fyu - mpod * g'))
 
+    #Connect
+    root.connect('input_vars.mpod', 'p.mpod')
+    root.connect('p.mpod', 'con1.mpod')
     root.connect('p.Fyu', 'con1.Fyu')
+    root.connect('input_vars.g', 'p.g')
+    root.connect('p.g', 'con1.g')
 
     root.connect('input_vars.d', 'p.d')
     root.connect('input_vars.d', 'q.d')
@@ -305,18 +305,20 @@ if __name__ == "__main__":
     root.connect('input_vars.gamma','p.gamma')
     root.connect('input_vars.gamma', 'q.gamma')
 
+    # Finite Difference
     root.fd_options['force_fd'] = True
     root.fd_options['form'] = 'central'
     root.fd_options['step_size'] = 1.0e-10
 
+    # Optimizer Driver
     top.driver = ScipyOptimizer()
     top.driver.options['optimizer'] = 'SLSQP'
 
     # Design Variables
-    top.driver.add_desvar('input_vars.d', lower=1.1, upper=15.0)
-    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=.9)
+    top.driver.add_desvar('input_vars.d', lower=.01, upper=.15)
+    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1)
 
-    #Constraint
+    # Constraint
     top.driver.add_constraint('con1.c1', lower = 0.0)
 
     root.add('obj_cmp', ExecComp('obj = Fxu + mmag'))
@@ -329,7 +331,6 @@ if __name__ == "__main__":
     recorder.options['record_params'] = True
     recorder.options['record_metadata'] = True
     top.driver.add_recorder(recorder)
-    #top.driver.add_objective('q.mmag')
 
     top.setup(check=True)
     top.root.list_connections()
@@ -338,18 +339,23 @@ if __name__ == "__main__":
 
     print('\n')
     print('Lift to Drag Ratio is %f' % top['p.LDratio'])
-    print('Total Magnet Area is %f m' % top['p.A'])
+    print('Fyu is %f' % top['p.Fyu'])
+    print('Fxu is %f' % top['p.Fxu'])
+    print('Total Magnet Area is %f m^2' % top['p.A'])
     print('Total Magnet Weight is %f kg' % top['q.mmag'])
+    print('d is %f m' % top['p.d'])
+    print('Gamma is %f' % top['p.gamma'])
+    print('c1 is %f' % top['con1.c1'])
 
-    top.root.dump()
-
-    db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
-    data = db['rank0:SLSQP/1']
-    p = data['Parameters']
-    print('params')
-    pprint(p)
-
-    u = data['Unknowns']
-    print('unknowns')
-    pprint(u)
-    remove('./maglev2')
+    # top.root.dump()
+    #
+    # db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
+    # data = db['rank0:SLSQP/1']
+    # p = data['Parameters']
+    # print('params')
+    # pprint(p)
+    #
+    # u = data['Unknowns']
+    # print('unknowns')
+    # pprint(u)
+    # # remove('./maglev2')
