@@ -7,45 +7,115 @@ from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 
 class Drag(Component):
-    """Calculate minimum Drag based on given track parameters"""
+    """
+
+    Notes
+    -----
+
+        Current Drag Calculation very rough. Needs refinement.
+        Default parameters taken from Inductrack I.
+
+    Parameters
+    ----------
+
+        mpod : float
+            Mass of the hyperloop pod. Default value is 3000.
+        Br : float
+            Strength of the Neodynium Magnets. Default value is 1.0.
+        M : float
+            Number of Magnets per Halbach Array. Default value is 4
+        d : float
+            Thickness of Magnet. Default value is 0.15.
+        rhomag : float
+            Density of Magnet. Default value is 7.5.
+        lpod : float
+            Length of the Hyperloop pod. Default value is 5.
+        gamma : float
+            Percent factor used in Area. Default value is 1.
+        Pc : float
+            Width of track. Default value is 2.
+        Nt : float
+            Width of conductive strip. Default value is .005.
+        Ns : float
+            Number of laminated sheets. Default value is 1.
+        delta_c : float
+            Single layer thickness. Default value is .005.
+        strip_c : float
+            Center strip spacing. Default value is .0105.
+        rc : float
+            Electric resistance. Default value is ____ .
+        mu0 : float
+            Permeability of Free Space. Default value is 4*pi*10^-7.
+        vpod : float
+            Velocity of the pod. Default value is 350.
+        y : float
+            Levitation height. Default value is .025.
+
+    Returns
+    -------
+
+        lam : float
+            Wavelength of the Halbach Array. Default value is 0.0.
+        B0 : float
+            Halbach Peak Strength. Default value is 0.0.
+        A : float
+            Total area of the magnetic array. Default value is 0.0.
+        mmag : float
+            Mass of the permanent magnets. Default value is 0.0.
+        omega : float
+            Frequency of the induced current. Default value is 0.0.
+        Fyu : float
+            Levitation force. Default value is 0.0.
+        Fxu : float
+            Drag force. Default value is 0.0.
+        LDratio : float
+            Lift to drag ratio. Default value is 0.0.
+
+    References
+    ----------
+
+        ..[1] Rostami, Jamal, Mahmoud Sepehrmanesh, Ehsan Alavi Gharahbagh,
+        and Navid Mojtabai. "Planning Level Tunnel Cost Estimation Based on
+        Statistical Analysis of Historical Data." Tunnelling and Underground
+        Space Technology 33 (2013): 22-33. Web.
+        <https://www.researchgate.net/publication/233926915_Planning_level_tunnel_cost_estimation_based_on_statistical_analysis_of_historical_data>.
+
+    """
 
     def __init__(self):
         super(Drag, self).__init__()
 
         # Pod Inputs
-        self.add_param('mpod', val=0.375, units='kg', desc='pod mass')
-        self.add_param('Br', val=0.64, units='Tesla', desc='residual magnetic flux')
-        self.add_param('M', val=4.0, desc='number magnets per Halbach')
-        self.add_param('d', val=0.1524, units='m', desc='thickness of magnet')
-        self.add_param('rhomag', val=7.5, units='g/cm^3', desc='resistivity of aluminum at 20C')
-        self.add_param('lpod', val=3, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1, units='', desc='Percent Factor')
+        self.add_param('mpod', val=3000, units='kg', desc='Pod Mass')
+        self.add_param('Br', val=1.0, units='Tesla', desc='Residual Magnetic Flux')
+        self.add_param('M', val=4.0, desc='Number of Magnets per Halbach Array')
+        self.add_param('d', val=0.15, units='m', desc='Thickness of magnet')
+        self.add_param('rhomag', val=7.5, units='g/cm^3', desc='Density of Magnet')
+        self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
+        self.add_param('gamma', val=1.0, units='', desc='Percent Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=0.21, units='m', desc='width of track')
+        self.add_param('Pc', val=2.0, units='m', desc='width of track')
         self.add_param('Nt', val=0.005, units='m', desc='width of conductive strip')
-        self.add_param('Ns', val=1, desc='number of laminated sheets')
-        self.add_param('delta_c', val=0.0005334, units='m', desc='single layer thickness')
+        self.add_param('Ns', val=1.0, desc='number of laminated sheets')
+        self.add_param('delta_c', val=0.0005, units='m', desc='single layer thickness')
         self.add_param('strip_c', val=0.0105, units='m', desc='center strip spacing')
         self.add_param('rc', val=171.3, units='Ohm-m', desc='electric resistivity')
         self.add_param('mu0', val=4*pi*10**-7, units='hy/m', desc='Permeability of Free Space')
 
         # Pod/Track Relation Inputs
         self.add_param('vpod', val=350.0, units='m/s', desc='pod velocity')
-        self.add_param('y', val=17., units='m', desc='levitation height')
+        self.add_param('y', val=0.025, units='m', desc='levitation height')
 
         # outputs
-        # pod outputs
-        self.add_output('lam', val=0.00635*4., units='m', desc='Halbach wavelength')
-        self.add_output('B0', val=0.9, units='T', desc='Halbach peak strength')
+        self.add_output('lam', val=0.0, units='m', desc='Halbach wavelength')
+        self.add_output('B0', val=0.0, units='T', desc='Halbach peak strength')
         self.add_output('A', val=0.4, units='m', desc='Total Area of Magnets')
-        self.add_output('mmag', val=5., units='kg', desc='Mass of Magnets')
-
-        #
+        self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
         self.add_output('omega', val=2650., units ='rad/s', desc ='frequency')
-        self.add_output('Fyu', val=17., units ='N', desc ='levitation force')
-        self.add_output('Fxu', val=17., units ='N', desc ='drag force')
-        self.add_output('LDratio', val=17., units='', desc='Lift to Drag Ratio')
+        self.add_output('Fyu', val=0.0, units ='N', desc ='levitation force')
+        self.add_output('Fxu', val=0.0, units ='N', desc ='drag force')
+        self.add_output('LDratio', val=0.0, units='', desc='Lift to Drag Ratio')
 
 
     def solve_nonlinear(self, params, unknowns, resids):
@@ -110,24 +180,63 @@ class Drag(Component):
     #     return J
 
 class Mass(Component):
-    """Calculate minimum magnet mass based on given track parameters"""
+    """
+
+    Notes
+    -----
+
+        Current Magnet Mass Calculation very rough. Needs refinement.
+        Default parameters taken from Inductrack I.
+
+    Parameters
+    ----------
+
+        d : float
+            Thickness of Magnet. Default value is 0.15.
+        rhomag : float
+            Density of Magnet. Default value is 7.5.
+        lpod : float
+            Length of the Hyperloop pod. Default value is 5.
+        gamma : float
+            Percent factor used in Area. Default value is 1.
+        Pc : float
+            Width of track. Default value is 2.
+
+    Returns
+    -------
+
+        A : float
+            Total area of the magnetic array. Default value is 0.0
+        mmag : float
+            Mass of the permanent magnets. Default value is 0.0.
+
+    References
+    ----------
+
+        ..[1] Rostami, Jamal, Mahmoud Sepehrmanesh, Ehsan Alavi Gharahbagh,
+        and Navid Mojtabai. "Planning Level Tunnel Cost Estimation Based on
+        Statistical Analysis of Historical Data." Tunnelling and Underground
+        Space Technology 33 (2013): 22-33. Web.
+        <https://www.researchgate.net/publication/233926915_Planning_level_tunnel_cost_estimation_based_on_statistical_analysis_of_historical_data>.
+
+    """
 
     def __init__(self):
         super(Mass, self).__init__()
 
         # Pod Inputs
-        self.add_param('d', val=0.1524, units='m', desc='thickness of magnet')
-        self.add_param('rhomag', val=7.5, units='g/cm^3', desc='resistivity of aluminum at 20C')
-        self.add_param('lpod', val=3, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1, units='', desc='Percent Factor')
+        self.add_param('d', val=0.15, units='m', desc='thickness of magnet')
+        self.add_param('rhomag', val=7.5, units='g/cm^3', desc='Density of Magnet')
+        self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
+        self.add_param('gamma', val=1.0, units='', desc='Percent Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=0.21, units='m', desc='width of track')
+        self.add_param('Pc', val=2, units='m', desc='width of track')
 
         # outputs
         # pod outputs
-        self.add_output('A', val=0.4, units='m', desc='Total Area of Magnets')
-        self.add_output('mmag', val=5., units='kg', desc='Mass of Magnets')
+        self.add_output('A', val=0.0, units='m', desc='Total Area of Magnets')
+        self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
 
     def solve_nonlinear(self, params, unknowns, resids):  # params, unknowns, residuals
 
@@ -201,16 +310,19 @@ if __name__ == "__main__":
     top.driver.add_desvar('input_vars.d', lower=1.0, upper=15.0)
     top.driver.add_desvar('input_vars.gamma', lower=0.0, upper=1.0)
 
-    top.driver.add.objective('Fxu')
-    top.driver.add.objective('mmag')
+    #Constraint
+    top.driver.add_constraint('con1.c1', lower = 0.0)
+
+    top.driver.add_objective('p.Fxu + q.mag')
+    # top.driver.add_objective('q.mmag')
 
     top.setup()
     top.run()
 
-    print('\n')
-    print('Lift to Drag Ratio is %f' % )
-    print('Total Magnet Area is %f m' % )
-    print('Total Magnet Weight is %f kg' % )
+    # print('\n')
+    # print('Lift to Drag Ratio is %f' % )
+    # print('Total Magnet Area is %f m' % )
+    # print('Total Magnet Weight is %f kg' % )
 
 
 
