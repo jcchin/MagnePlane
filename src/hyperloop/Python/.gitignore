@@ -3,3 +3,4 @@
 /maglev
 *.DS_Store
 *.gitignore
+*.viewOut
