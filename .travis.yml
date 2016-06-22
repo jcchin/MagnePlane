@@ -1,8 +1,13 @@
 sudo: false
 
+branches:
+  only:
+    -master
+    - /^test.*$/
+
 os:
-  - linux
-#  -osx
+  -linux
+  -osx
 
 language: generic
 
@@ -48,7 +53,6 @@ install:
 - pip install -e .
 
 #script:
-#- testflo . -n 1 --coverage --coverpkg openmdao
 
 #after_success:
 #  coveralls
