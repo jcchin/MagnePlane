@@ -343,8 +343,12 @@ if __name__ == "__main__":
     top.root.dump()
 
     db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
-    print('here', db.keys())
-    data = db['rank0:Driver/1']
+    data = db['rank0:SLSQP/1']
+    p = data['Parameters']
+    print('params')
+    pprint(p)
+
     u = data['Unknowns']
+    print('unknowns')
     pprint(u)
     remove('./maglev2')
