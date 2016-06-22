@@ -105,6 +105,8 @@ if __name__ == '__main__':
 
     top.run()
 
+    #Print Results
+
     print('\n')
     print('Power Required is %f W' % top['p.pwr_req'])
     print('Thrust per unit power = %f N/W' % top['p.Fg_dP'])
