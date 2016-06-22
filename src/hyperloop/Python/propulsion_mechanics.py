@@ -34,7 +34,6 @@ class PropulsionMechanics(Component):
 
     """
 
-
     def __init__(self):
         """Establish inputs to equation.  Values initialized as practical values for LSM motors
         Output: Power required"""
@@ -104,8 +103,6 @@ if __name__ == '__main__':
     top['p2.rho_pm'] = 7400.0
 
     top.run()
-
-    #Print Results
 
     print('\n')
     print('Power Required is %f W' % top['p.pwr_req'])
