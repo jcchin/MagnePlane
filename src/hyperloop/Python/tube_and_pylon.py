@@ -179,7 +179,7 @@ if __name__ == '__main__':
     top.driver = ScipyOptimizer()
     top.driver.options['optimizer'] = 'SLSQP'
 
-    top.driver.add_desvar('input_vars.t', lower = .001, scaler=100)
+    top.driver.add_desvar('input_vars.t', lower = .001, scaler=100.0)
     top.driver.add_desvar('input_vars.r_pylon', lower = .1)
     top.driver.add_objective('p.total_material_cost')
     top.driver.add_constraint('con1.c1', lower = 0.0, scaler = 1000.0)
