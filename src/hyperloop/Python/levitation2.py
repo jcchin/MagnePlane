@@ -97,7 +97,7 @@ class Drag(Component):
         self.add_param('mu0', val=4.*pi*10**-7, units='Ohm*s/m', desc='Permeability of Free Space')
 
         # Pod/Track Relation Inputs
-        self.add_param('vpod', val=350, units='m/s', desc='pod velocity')
+        self.add_param('vpod', val=23, units='m/s', desc='pod velocity')
         self.add_param('y', val=0.01, units='m', desc='levitation height')
         self.add_param('g', val=9.81, units='m/s**2', desc='Gravity')
 
@@ -111,17 +111,21 @@ class Drag(Component):
         self.add_output('Fxu', val=0.0, units='N', desc='drag force')
         self.add_output('LDratio', val=0.0, desc='Lift to Drag Ratio')
         self.add_output('R', val=0.0, units='Ohm', desc='Resistance')
+        self.add_output('omegab', val=0.0, desc='Breakpoint frequency')
+        self.add_output('vb', val=0.0, desc='Breakpoint velocity')
 
 
 
     def solve_nonlinear(self, params, unknowns, resids):
 
         #Pod Parameters
+        mpod = params['mpod']
         vpod = params['vpod']
         Br = params['Br']
         M = params['M']
         y = params['y']
         d = params['d']
+        g = params['g']
         gamma = params['gamma']
         lpod = params['lpod']
 
@@ -162,7 +166,6 @@ class Drag(Component):
         unknowns['Fxu'] = Fxu
         unknowns['LDratio'] = LDratio
         unknowns['R'] = R
-
 
     # def linearize(self, params, unknowns, resids):
     #
@@ -357,10 +360,8 @@ if __name__ == "__main__":
     print('Gamma is %f' % top['p.gamma'])
     print('\n')
     print('R is %f m' % top['p.R'])
-    print('L is %f m' % top['p.L'])
+    print('L is %12.10f m' % top['p.L'])
     print('B0 is %f m' % top['p.B0'])
-    print('lamda is %f m' % top['p.lam'])
-    print('A is %f m^2' % top['p.A'])
 
 
     # top.root.dump()
