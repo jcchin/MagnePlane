@@ -21,25 +21,25 @@ class BasicMotor(Component):
         super(BasicMotor, self).__init__()
 
         #Inputs/PArams
-        self.add_param('Torque', val=310.35*0.737, desc='Output torque', units='N-m')
-        self.add_param('Max_RPM', val=2500.0, desc='max rpm of motor', units='rpm')
-        self.add_param('DesignPower', val=110000.0/746.0, desc='Design value of motor', units='hp')
+        self.add_param('Torque', val=400*0.737, desc='Output torque', units='N-m')
+        self.add_param('Max_RPM', val=4000.0, desc='max rpm of motor', units='rpm')
+        self.add_param('DesignPower', val=150000.0/746.0, desc='Design value of motor', units='hp')
 
         self.add_param('Resistance', val=0.0,desc='Resistance of Stator',units='Ohms')
         self.add_param('Inductance', val=0.0, desc='Motor inductance', units='Henrys')
         self.add_param('Kv', val=0.1, desc='Speed/volt', units='rad/s/V')
         #self.add_param('Kt', val=10.0, desc='Torque/amp', units='ft-lb/A')
-        self.add_param('Speed', val=1900.0, desc='Output shaft mechanical speed', units='rad/s')
-        self.add_param('imax', val=450.0, desc='Max motor phase current', units='A')
+        self.add_param('Speed', val=2100.0, desc='Output shaft mechanical speed', units='rad/s')
+        self.add_param('imax', val=300, desc='Max motor phase current', units='A')
         self.add_param('PolePairs', val=6.0, desc='Number of pole pairs in motor', units='none')  # f=w*PP/2*pi
         self.add_param('kappa', val=0.5, desc='Base speed/max speed', units='none')
-        self.add_param('LDratio', val=0.83, desc='Length to diameter ratio of motor', units='none')
-        self.add_param('R0', val=0.004, desc='Motor Phase Internal Resistance at 0degC',units='Ohms')  # total internal resistance
+        self.add_param('LDratio', val=0.78, desc='Length to diameter ratio of motor', units='none')
+        self.add_param('R0', val=0.003, desc='Motor Phase Internal Resistance at 0degC',units='Ohms')  # total internal resistance
         self.add_param('I0', val=0.0, desc='Motor No-load current', units='A')
         self.add_param('I0_Des', val=0.0, desc='Motor No-load Current at Nbase', units='A')
         self.add_param('nphase', val=3.0, desc='Number of motor phases', units='none')
-        self.add_param('CoreRadiusRatio', val=0.7, desc='ratio of inner diameter of core to outer', units='')
-        self.add_param('B_p', val=1.5, desc='Peak Magnetic Field', units='Tesla')
+        self.add_param('CoreRadiusRatio', val=1.2, desc='ratio of inner diameter of core to outer', units='')
+        self.add_param('B_p', val=1.7, desc='Peak Magnetic Field', units='Tesla')
 
         #self.add_param('H_c',val=4.2,desc='Material Coercive Force',units='A/m')
         #self.add_param('V_max',val=10000.0,desc='Max phase voltage', units='V')
@@ -156,7 +156,7 @@ class BasicMotor(Component):
         D2L = 293722.0 * (Tmax ** 0.7592)  # mm^3
         return D2L
 
-    def Size_calc(self, LDratio, D2L,CoreRadiusRatio):
+    def Size_calc(self, LDratio, D2L, CoreRadiusRatio):
         Dbase = ((D2L / LDratio) ** (1.0 / 3.0)) / 1000.0  # meters
         Lbase = LDratio * Dbase  # meters
         Volume = numpy.pi * Lbase * (Dbase / 2) ** 2 * (1-CoreRadiusRatio**2)
@@ -192,13 +192,13 @@ class BasicMotor(Component):
         return Voltage
 """
 
-if __name__ == '__main__':
+def create_problem(motor):
     root = Group()
     prob = Problem(root)
-    prob.root.add('comp', BasicMotor())
-    prob.setup()
-    prob.run()
+    prob.root.add('comp', motor)
+    return prob
 
+def print_data(prob):
     print('kappa: %f' % prob['comp.kappa'])
     print('imax: %f' %prob['comp.imax'])
     print('Max_RPM: %f' % prob['comp.Max_RPM'])
@@ -226,3 +226,8 @@ if __name__ == '__main__':
     print('Motor Size (D^2*L) [mm^3]: %f x10e-6' % prob['comp.D2L'])
     print('Motor Weight [kg]: %f ' % prob['comp.Mass'])
 
+if __name__ == '__main__':
+    prob = create_problem(BasicMotor())
+    prob.setup()
+    prob.run()
+    print_data(prob)
