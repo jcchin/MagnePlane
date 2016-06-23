@@ -6,7 +6,7 @@ import numpy as np
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
-class inverter(Component):
+class Inverter(Component):
 
 
     def __init__(self):
