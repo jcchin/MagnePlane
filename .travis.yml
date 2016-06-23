@@ -51,3 +51,5 @@ install:
     fi
   fi
 - pip install -e .
+
+script: py.test --ignore=src/hyperloop/Python/tests/archive src
