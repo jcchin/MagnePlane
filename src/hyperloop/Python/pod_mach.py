@@ -19,8 +19,6 @@ class PodMach(Component):
 
         pod mach : float
             pod Mach number
-        tunnel radius : float
-            Assumes tunel radius from alpha paper. Will take tunnel radius from aero analysis.
         pod area : float
             Assumes pod mass from alpha paper.  Will take pod area from geometry analysis
 
@@ -30,6 +28,12 @@ class PodMach(Component):
 
         tunnel area : float
             will return optimal tunnel area based on pod Mach number
+        compressor power : float
+            will return the power that needs to be delivered to the flow by the compressor.  Does not account for compressor efficiency
+        Bypass area : float
+            will return area of that the flow must go through to bypass pod
+        Inlet Area : float
+            returns area of the inlet necessary to slow the flow down to M_diffuser
 
     References
     ----------
@@ -90,13 +94,14 @@ class PodMach(Component):
             return A_ratio
 
         #Define intermediate variables
-        rho_inf = p_ambient/(R*T_ambient)
-        U_inf = M_pod * ((gam*R*T_ambient)**.5)
+        rho_inf = p_ambient/(R*T_ambient)                           #Calculate density of free stream flow
+        U_inf = M_pod * ((gam*R*T_ambient)**.5)                     #Calculate velocity of free stream flow
 
-        Re = (rho_inf*U_inf*L)/mu
+        Re = (rho_inf*U_inf*L)/mu                                   #Calculate length based Reynolds Number
 
-        A_diff = BF*A_pod
+        A_diff = BF*A_pod                                           #Calculate diffuser output area based on blockage factor input
 
+        #Calculate inlet area. Inlet is necessary if free stream Mach number is greater than max compressore mach number M_diff
         if M_pod > M_diff:
             A_inlet = A_diff*mach_to_area(M_diff, M_pod, gam)
         else:
@@ -104,7 +109,7 @@ class PodMach(Component):
 
         eps = mach_to_area(M_pod, M_duct, gam)
         A_tube = (A_pod+pi*(((r_pod+delta_star)**2.0)-(r_pod**2.0))-(eps*A_inlet))/((1.0+(eps**.5))*(1.0-(eps**.5)))
-        pwr_comp = (rho_inf*U_inf*A_inlet)*cp*T_ambient*(1+((gam-1)/2)*(M_pod**2))*((prc**((gam-1)/gam))-1)
+        pwr_comp = (rho_inf*U_inf*A_inlet)*cp*T_ambient*(1.0+((gam-1)/2.0)*(M_pod**2))*((prc**((gam-1)/gam))-1)
         A_bypass = A_tube - A_inlet
         A_duct_eff = A_tube - A_pod - pi*(((r_pod+delta_star)**2)-(r_pod**2))
 
