@@ -19,6 +19,8 @@ class MissionDrag(Component):
         self.add_output('D', val = 0.0, units = 'N', desc = 'Drag Force')
 
     def solve_nonlinear(self, params, unknowns, resids):
+
+        #Calculate air density and drag force
         rho = params['p_ambient']/(params['R']*params['T_ambient'])
         unknowns['D'] = .5*rho*(params['V']**2)*params['S']
 
