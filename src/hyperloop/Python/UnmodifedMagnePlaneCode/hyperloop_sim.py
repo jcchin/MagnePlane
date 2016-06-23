@@ -1,14 +1,13 @@
 #   OpenMDAO main and library imports
-from openmdao.core.problem import Problem
-from openmdao.core.group import Group
 from openmdao.components.indep_var_comp import IndepVarComp
+from openmdao.core.group import Group
+from openmdao.core.problem import Problem
 
 #   OpenMDAO component imports
 from freestream import Freestream
 from cycle_wrapper import CycleWrap
-from cycle import CompressionCycle
 from pointwise import Pointwise
-from aflr3 import AFLR3
+from Python.UnmodifedMagnePlaneCode.aflr3 import AFLR3
 from tube_cost import TubeCost
 from battery import Battery
 from tube_structure import TubeStructural
