@@ -56,17 +56,17 @@ class Battery_perf(Component):
         super(Battery_perf,self).__init__()
         self.add_param('N_cells', val=1.0, desc='Number of cells in the battery Stack', units='cells')
         self.add_param('N_parallel', val= 1.0, desc='Number of cells in parallel in the battery stack', units='cells')
-        self.add_param('Exp_zone_amp', val=1.0, desc='Voltage lost over the exponential zone of battery', units='Volts') #A in modeling plan
-        self.add_param('Exp_zone_time_const', val=1.0, desc='Time constant for exponential zone of discharge curve', units='Amp-hours^-1') #B in modeling plan
-        self.add_param('Polarization_voltage', val=1.0, desc='Voltage lost due to polarization', units='Volts') #K in modeling plan
-        self.add_param('Capacity', val=12.5, desc='Nominal capacity of one cell', units='Amp-hours')
-        self.add_param('No_load_voltage', val=1.28, desc='No-load constant voltage of the battery', units='Volts')#V_0 in modeling plan
-        self.add_param('Resistance', val=0.0046, desc='Internal resistance of one cell', units='Ohms')
+        self.add_param('Exp_zone_amp', val=0.2838, desc='Voltage lost over the exponential zone of battery', units='Volts') #A in modeling plan
+        self.add_param('Exp_zone_time_const', val=1.1708, desc='Time constant for exponential zone of discharge curve', units='Amp-hours^-1') #B in modeling plan
+        self.add_param('Polarization_voltage', val=0.0361, desc='Voltage lost due to polarization', units='Volts') #K in modeling plan
+        self.add_param('Capacity', val=45.0, desc='Nominal capacity of one cell', units='Amp-hours')
+        self.add_param('No_load_voltage', val=4.2, desc='No-load constant voltage of the battery', units='Volts')#V_0 in modeling plan
+        self.add_param('Resistance', val=0.0006058, desc='Internal resistance of one cell', units='Ohms')
         self.add_param('State_of_charge', val=100., desc='Percent of charge left in battery', units='percentage')
         self.add_param('Old_State_of_charge', val=100., desc='Percent of charge left in battery', units='percentage')
-        self.add_param('timeStep', val=0.05, desc='Time step for model', units='minutes')
+        self.add_param('timeStep', val=6, desc='Time step for model', units='seconds')
        # self.add_param('k_Peukert', val=1.01193, desc='Peukert Coefficient', units='none')
-        self.add_param('Current', val=1000., desc='Current drain applied to the battery', units='Amps')
+        self.add_param('Current', val=200., desc='Current drain applied to the battery', units='Amps')
         self.add_param('Voltage', val=1.0, desc='Voltage output of battery based on current draw', units='Volts')
 
 

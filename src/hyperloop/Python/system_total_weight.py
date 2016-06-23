@@ -14,3 +14,17 @@ class system_total_weight(Component):
         self.add_output('sub_track_weight', val=0.0, desc='Total weight of subtrack ', unit='kg')
 
     def solve_nonlinear(self, params, unknowns, resids):
+
+
+def pylon_weight(self, nu, pylon_den, vol):
+    t_weight = nu * pylon_den * vol
+    return t_weight
+
+
+def tube_weight(self, tube_thickness, route_len, tube_den):
+    t_weight = tube_thickness * route_len * tube_den
+    return t_weight
+
+
+def sub_track(self, track_vol, route_len):
+    t_weight = track_vol * route_len

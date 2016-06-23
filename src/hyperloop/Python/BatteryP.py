@@ -1,4 +1,4 @@
-
+#from __future__ import print_function
 """Notes
         ----
        Calculates parameters like Nparallel(number of cells in parallel), Nseries(Number of cells in series), Ncells(total no of cells) and C_Max(max rating)
@@ -72,23 +72,23 @@ class BatteryP(Component):
         super(BatteryP, self).__init__()
 
         # input to the equation
-        self.add_param('DesPower', val=1.0, desc='Design Power Load', units='W')
-        self.add_param('PqPdes_Max', val=1.5, desc='Maximum Power to Design Load Ratio', units='W')
-        self.add_param('FlightTime', val=88, desc='Time since battery is discharging', units='minutes')
-        self.add_param('Current', val=2.3, desc='Current Drain Applied to battery sack', units='Amps')
-        self.add_param('CapDisLimit', val=0.2, desc='Percent of battery capacity left for reserves', units='percent')
-        self.add_param('TimeDesPower', val=1.0, desc='Time from beginning of flight to moment of design power load', units='minutes')
+        self.add_param('DesPower', val=65000., desc='Design Power Load', units='W')
+        self.add_param('PqPdes_Max', val=1.4, desc='Maximum Power to Design Load Ratio', units='W')
+        self.add_param('FlightTime', val=750, desc='Time since battery is discharging', units='seconds')
+        self.add_param('Current', val=200., desc='Current Drain Applied to battery sack', units='Amps')
+        self.add_param('CapDisLimit', val=0.1, desc='Percent of battery capacity left for reserves', units='percent')
+        self.add_param('TimeDesPower', val=0.0, desc='Time from beginning of flight to moment of design power load', units='minutes')
         self.add_param('Ncells', val=1.0, desc='Number of cells necessary to perform that mission', units='none')
         self.add_param('Nparallel', val=2.0, desc='Calculated numbers of cells in parallel', units='none')
         self.add_param('Nseries', val=1.0, desc='Calculated number of cells in series', units='none')
-        self.add_param('Capacity', val=12.0, desc='Single cell Nominal Capacity', units='Amp-hrs')
+        self.add_param('Capacity', val=45.0, desc='Single cell Nominal Capacity', units='Amp-hrs')
         self.add_param('C_rating', val=0.3, desc='C rating of the battery at which capacity is measured', units='1/hr')
         self.add_param('C_max', val=4.1, desc='Maximum rating the battery can run', units='1/hr')
-        self.add_param('ExpZoneAmp', val=0.180, desc='Voltage lost over the exponential zone of battery', units='volts')
-        self.add_param('ExpZoneTimeConst', val=2.1065, desc='Time constant for exponential zone of discharge curve',units='Amp-hours^-1')
-        self.add_param('PolarizationVoltage', val=0.0243, desc='Voltage lost due to polarization', units='volts')
-        self.add_param('NoLoadVoltage', val=1.431, desc='No-load constant voltage of battery', units='volts')
-        self.add_param('Resistance', val=0.0095, desc='Internal resistance of battery', units='ohms')
+        self.add_param('ExpZoneAmp', val=0.2838, desc='Voltage lost over the exponential zone of battery', units='volts')
+        self.add_param('ExpZoneTimeConst', val=1.1708, desc='Time constant for exponential zone of discharge curve',units='Amp-hours^-1')
+        self.add_param('PolarizationVoltage', val=0.0361, desc='Voltage lost due to polarization', units='volts')
+        self.add_param('NoLoadVoltage', val=4.2, desc='No-load constant voltage of battery', units='volts')
+        self.add_param('Resistance', val=0.0006058, desc='Internal resistance of battery', units='ohms')
         self.add_param('k_1', val=1., desc='Technology factor on the polarization voltage (K)', units='none')
         self.add_param('k_2', val=1., desc='Technology factor on the battery capacity', units='none')
         self.add_param('k_3', val=1., desc='Technology factor on the exponential amplitude (A)', units='none')
@@ -96,8 +96,7 @@ class BatteryP(Component):
         self.add_param('k_5', val=1., desc='Technology factor on the internal resistance', units='none')
         self.add_param('State_of_Charge', val=100.0, desc='Initial state of charge of the battery', units='percent')
         self.add_param('NewStateOfCharge', val=100.0, desc='Final state of charge of the battery', units='percent')
-        self.add_param('dischargeInterval', val=0.05, desc='Time interval for the discharge of the battery',units='Minutes')
-        self.add_param('switch_Des', val=True, desc="Design State", units='none')
+        self.add_param('dischargeInterval', val=0.03, desc='Time interval for the discharge of the battery',units='seconds')
         self.add_param('StackDesignVoltage', val=300.0, desc='Design stack voltage', units='volts')
         self.add_param('k_Peukert', val=1.01193, desc='Peukert Coefficient', units='none')
         self.add_param('switchDes', val="DESIGN", desc='Design State', units='boolean')
@@ -142,7 +141,7 @@ class BatteryP(Component):
         State_of_Charge = params['State_of_Charge']
         NewStateOfCharge = params['NewStateOfCharge']
         dischargeInterval = params['dischargeInterval']
-        switch_Des = params['switch_Des']
+        switchDes = params['switchDes']
         CapDis = unknowns['CapDis']
         CapDisBattDesPower = unknowns['CapDisBattDesPower']
         VoltageBatt = unknowns['VoltageBatt']
@@ -166,24 +165,47 @@ class BatteryP(Component):
                 CapDisBattDesPower = 0.0
 
                 Capacity_1 = k_2 * Capacity - CapDisBattDesPower
+            # print "Capacity 1: %f" %Capacity_1
 
             PeukCap = (Capacity * C_rating) ** k_Peukert / C_rating #Caculating total current independent capacity of cell at design point
 
 
-
+            # print "curr batt %f" %CurrBatt
+            # print "Peukcap: %f" %PeukCap
             if switchDes == "OFFDESIGN":
                 CurrBatt = Current / Nparallel
                 Capacity_1 = State_of_Charge / 100 * k_2 * PeukCap
                 NewStateOfCharge = (Capacity_1 - dischargeInterval / 60. * CurrBatt ** k_Peukert) / PeukCap * 100
                 StateOfCharge = NewStateOfCharge
 
+            # print "NoLoadVoltage: %f" % NoLoadVoltage
+            # print "k_1:  %f" % k_1
+            # print "PolarizationVoltage:  %f" % PolarizationVoltage
+            # print "k_2:  %f" % k_2
+            # print "PeukCap:  %f" % PeukCap
+            # print "Capacity_1:  %f" % Capacity_1
+            # print "ExpZoneAmp:  %f" %ExpZoneAmp
+            # print "ExpZoneTimeConst:  %f" % ExpZoneTimeConst
+            # print "k_5:  %f" % k_5
+            # print "k_3:  %f" % k_3
+            # print "Resistance :  %f" % Resistance
+            # print "CurrBatt:  %f" % CurrBatt
+            # print "val: %f" % numpy.e ** (-k_4 * ExpZoneTimeConst * (k_2 * PeukCap - Capacity_1))
+
+            print(NoLoadVoltage, k_1, k_2, k_3, k_4, k_5, PeukCap, Capacity_1, ExpZoneAmp, Resistance, CurrBatt, PolarizationVoltage)
+            VoltageBatt = NoLoadVoltage - \
+                          (k_1 * PolarizationVoltage) * \
+                          (k_2 * PeukCap / Capacity_1) + \
+                          (k_3 * ExpZoneAmp) * \
+                          (numpy.exp(((-k_4) * ExpZoneTimeConst * (k_2 * PeukCap - Capacity_1)))) - \
+                          (k_5 * Resistance * CurrBatt)
 
 
-            VoltageBatt = NoLoadVoltage - k_1 * PolarizationVoltage * (k_2 * PeukCap / Capacity_1) + k_3 * ExpZoneAmp * numpy.e ** (-k_4 * ExpZoneTimeConst * (k_2 * PeukCap - Capacity_1)) - k_5 * Resistance * CurrBatt
 
             if switchDes == "DESIGN":
 
                 PBattDesPower = VoltageBatt * CurrBatt
+                # print "PBattDesPOwer: print test 1  %f" %PBattDesPower
                 Ncells = math.ceil(DesPower / PBattDesPower)
                 Nseries = math.ceil(Ncells / Nparallel)
                 Ncells = Nseries * Nparallel
@@ -203,9 +225,11 @@ if __name__ == '__main__':
     p.root.list_connections()
     p.run()
 
-    # print following properties
+     #print following properties
     print 'Voltage(volts) : %f' % p['comp.Voltage']
     print 'Current(amps) : %f' % p['comp.Current']
     print 'Nseries(cells) : %f' % p['comp.Nseries']
     print 'Nparallel(cells) : %f' % p['comp.Nparallel']
     print 'Ncells(cells) : %f' % p['comp.Ncells']
+    print 'C_max(volt) : %f' % p['comp.C_max']
+
