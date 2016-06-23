@@ -1,10 +1,7 @@
-import numpy as np
-from os import remove
-from math import pi, atan, sin, cos, e, log
+from math import pi, sin, e
 
 from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp
-from openmdao.api import SqliteRecorder
-from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
+from openmdao.api import ScipyOptimizer
 
 
 class Drag(Component):
@@ -15,6 +12,7 @@ class Drag(Component):
 
         Current Drag Calculation very rough. Needs refinement.
         Default parameters taken from Inductrack I.
+        Calculates minimum drag given at set breakpoint velocity desired with given track parameters.
 
     Parameters
     ----------
@@ -82,7 +80,7 @@ class Drag(Component):
         # Pod Inputs
         self.add_param('mpod', val=3000.0, units='kg', desc='Pod Mass')
         self.add_param('Br', val=1.48, units='Tesla', desc='Residual Magnetic Flux')
-        self.add_param('M', val=4.0, desc='Number of Magnets per Halbach Array')
+        self.add_param('M', val=8.0, desc='Number of Magnets per Halbach Array')
         self.add_param('d', val=0.05, units='m', desc='Thickness of magnet')
         self.add_param('lpod', val=22, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
@@ -185,6 +183,7 @@ class Mass(Component):
 
         Current Magnet Mass Calculation very rough. Needs refinement.
         Default parameters taken from Inductrack I.
+        Calculates minimum magnet mass needed at set breakpoint velocity desired with given track parameters.
 
     Parameters
     ----------
