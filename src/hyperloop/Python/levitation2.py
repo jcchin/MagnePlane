@@ -88,21 +88,21 @@ class Drag(Component):
         self.add_param('mpod', val=3000.0, units='kg', desc='Pod Mass')
         self.add_param('Br', val=1.48, units='Tesla', desc='Residual Magnetic Flux')
         self.add_param('M', val=4.0, desc='Number of Magnets per Halbach Array')
-        self.add_param('d', val=0.15, units='m', desc='Thickness of magnet')
-        self.add_param('lpod', val=22.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=0.5, desc='Percent Factor')
+        self.add_param('d', val=0.05, units='m', desc='Thickness of magnet')
+        self.add_param('lpod', val=22, units='m', desc='Length of Pod')
+        self.add_param('gamma', val=1.0, desc='Percent Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=2.0, units='m', desc='width of track')
+        self.add_param('Pc', val=3, units='m', desc='width of track')
         self.add_param('Nt', val=0.005, units='m', desc='width of conductive strip')
         self.add_param('Ns', val=1.0, desc='number of laminated sheets')
-        self.add_param('delta_c', val=0.0005, units='m', desc='single layer thickness')
-        self.add_param('strip_c', val=0.00105, units='m', desc='center strip spacing')
-        self.add_param('rc', val=2.82*10**-8, units='Ohm-m', desc='electric resistivity')
-        self.add_param('mu0', val=4*pi*10**-7, units='Ohm*s/m', desc='Permeability of Free Space')
+        self.add_param('delta_c', val=0.0005334, units='m', desc='single layer thickness')
+        self.add_param('strip_c', val=0.0105, units='m', desc='center strip spacing')
+        self.add_param('rc', val=1.713*10**-8, units='Ohm-m', desc='electric resistivity')
+        self.add_param('mu0', val=4.*pi*10**-7, units='Ohm*s/m', desc='Permeability of Free Space')
 
         # Pod/Track Relation Inputs
-        self.add_param('vpod', val=350.0, units='m/s', desc='pod velocity')
+        self.add_param('vpod', val=23, units='m/s', desc='pod velocity')
         self.add_param('y', val=0.01, units='m', desc='levitation height')
         self.add_param('g', val=9.81, units='m/s**2', desc='Gravity')
 
@@ -224,13 +224,13 @@ class Mass(Component):
         super(Mass, self).__init__()
 
         # Pod Inputs
-        self.add_param('d', val=0.15, units='m', desc='thickness of magnet')
-        self.add_param('rhomag', val=7.5, units='g**cm^3', desc='Density of Magnet')
-        self.add_param('lpod', val=5.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=0.5, desc='Percent Factor')
+        self.add_param('d', val=0.05, units='m', desc='thickness of magnet')
+        self.add_param('rhomag', val=7500, units='kg**m^3', desc='Density of Magnet')
+        self.add_param('lpod', val=22, units='m', desc='Length of Pod')
+        self.add_param('gamma', val=1.0, desc='Percent Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=2.0, units='m', desc='width of track')
+        self.add_param('Pc', val=3, units='m', desc='width of track')
 
         # outputs
         self.add_output('A', val=0.0, units='m', desc='Total Area of Magnets')
@@ -279,8 +279,8 @@ if __name__ == "__main__":
 
     #Define Parameters
     params = (
-        ('d', .07, {'units': 'm'}),
-        ('gamma', 0.2),
+        ('d', .05, {'units': 'm'}),
+        ('gamma', 1.0),
         ('mpod', 3000.0, {'units': 'kg'}),
         ('g', 9.81, {'units': 'm/s**2'})
     )
@@ -290,7 +290,7 @@ if __name__ == "__main__":
     root.add('q', Mass())
 
     #Constraint
-    root.add('con1', ExecComp('c1 = Fyu - mpod * g'))
+    root.add('con1', ExecComp('c1 = (Fyu - mpod * g)/1e5'))
 
     #Connect
     root.connect('input_vars.mpod', 'p.mpod')
@@ -302,28 +302,28 @@ if __name__ == "__main__":
     root.connect('input_vars.d', 'p.d')
     root.connect('input_vars.d', 'q.d')
 
-    root.connect('input_vars.gamma','p.gamma')
+    root.connect('input_vars.gamma', 'p.gamma')
     root.connect('input_vars.gamma', 'q.gamma')
 
     # Finite Difference
-    root.fd_options['force_fd'] = True
-    root.fd_options['form'] = 'central'
-    root.fd_options['step_size'] = 1.0e-10
+    root.deriv_options['type'] = 'fd'
+    root.fd_options['form'] = 'forward'
+    root.fd_options['step_size'] = 1.0e-6
 
     # Optimizer Driver
     top.driver = ScipyOptimizer()
-    top.driver.options['optimizer'] = 'SLSQP'
+    top.driver.options['optimizer'] = 'COBYLA'
 
     # Design Variables
-    top.driver.add_desvar('input_vars.d', lower=.01, upper=.15)
-    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1)
+    top.driver.add_desvar('input_vars.d', lower=.01, upper=.15, scaler=100)
+    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
 
     # Constraint
     top.driver.add_constraint('con1.c1', lower = 0.0)
 
-    root.add('obj_cmp', ExecComp('obj = Fxu + mmag'))
+    root.add('obj_cmp', ExecComp('obj = Fxu'))
     root.connect('p.Fxu', 'obj_cmp.Fxu')
-    root.connect('q.mmag', 'obj_cmp.mmag')
+    # root.connect('q.mmag', 'obj_cmp.mmag')
 
     top.driver.add_objective('obj_cmp.obj')
 
@@ -333,10 +333,12 @@ if __name__ == "__main__":
     top.driver.add_recorder(recorder)
 
     top.setup(check=True)
-    top.root.list_connections()
+    # top.root.list_connections()
 
     top.run()
 
+    # from openmdao.devtools.partition_tree_n2 import view_tree
+    # view_tree(top)
     print('\n')
     print('Lift to Drag Ratio is %f' % top['p.LDratio'])
     print('Fyu is %f' % top['p.Fyu'])
