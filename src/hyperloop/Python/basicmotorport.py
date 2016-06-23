@@ -192,11 +192,6 @@ class BasicMotor(Component):
         return Voltage
 """
 
-def create_problem(motor):
-    root = Group()
-    prob = Problem(root)
-    prob.root.add('comp', motor)
-    return prob
 
 def print_data(prob):
     print('kappa: %f' % prob['comp.kappa'])
@@ -225,9 +220,3 @@ def print_data(prob):
     # print ('Max Torque: %f' %prob['comp.Tmax'])
     print('Motor Size (D^2*L) [mm^3]: %f x10e-6' % prob['comp.D2L'])
     print('Motor Weight [kg]: %f ' % prob['comp.Mass'])
-
-if __name__ == '__main__':
-    prob = create_problem(BasicMotor())
-    prob.setup()
-    prob.run()
-    print_data(prob)
