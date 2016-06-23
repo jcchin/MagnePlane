@@ -73,12 +73,7 @@ class Drag(Component):
     References
     ----------
 
-        ..[1] Rostami, Jamal, Mahmoud Sepehrmanesh, Ehsan Alavi Gharahbagh,
-        and Navid Mojtabai. "Planning Level Tunnel Cost Estimation Based on
-        Statistical Analysis of Historical Data." Tunnelling and Underground
-        Space Technology 33 (2013): 22-33. Web.
-        <https://www.researchgate.net/publication/233926915_Planning_level_tunnel_cost_estimation_based_on_statistical_analysis_of_historical_data>.
-
+        ..[1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis. Bradley University, 2004. N.p.: n.p., n.d. Print.
     """
 
     def __init__(self):
@@ -102,7 +97,7 @@ class Drag(Component):
         self.add_param('mu0', val=4.*pi*10**-7, units='Ohm*s/m', desc='Permeability of Free Space')
 
         # Pod/Track Relation Inputs
-        self.add_param('vpod', val=23, units='m/s', desc='pod velocity')
+        self.add_param('vpod', val=350, units='m/s', desc='pod velocity')
         self.add_param('y', val=0.01, units='m', desc='levitation height')
         self.add_param('g', val=9.81, units='m/s**2', desc='Gravity')
 
@@ -111,11 +106,12 @@ class Drag(Component):
         self.add_output('L', val=0.0, units='Ohm*s', desc='Inductance')
         self.add_output('B0', val=0.0, units='Tesla', desc='Halbach peak strength')
         self.add_output('A', val=0.4, units='m**2', desc='Total Area of Magnets')
-        self.add_output('omega', val=2650., units ='rad/s', desc ='frequency')
-        self.add_output('Fyu', val=0.0, units ='N', desc ='levitation force')
-        self.add_output('Fxu', val=0.0, units ='N', desc ='drag force')
+        self.add_output('omega', val=2650., units ='rad/s', desc='frequency')
+        self.add_output('Fyu', val=0.0, units='N', desc='levitation force')
+        self.add_output('Fxu', val=0.0, units='N', desc='drag force')
         self.add_output('LDratio', val=0.0, desc='Lift to Drag Ratio')
-        self.add_output('R', val = 0.0, desc='Lift to Drag Ratio')
+        self.add_output('R', val=0.0, units='Ohm', desc='Resistance')
+
 
 
     def solve_nonlinear(self, params, unknowns, resids):
@@ -200,6 +196,8 @@ class Mass(Component):
             Percent factor used in Area. Default value is .5.
         Pc : float
             Width of track. Default value is 2.
+        costperkg : flost
+            Cost of the magnets per kilogram. Default value is 120.
 
     Returns
     -------
@@ -208,15 +206,13 @@ class Mass(Component):
             Total area of the magnetic array. Default value is 0.0
         mmag : float
             Mass of the permanent magnets. Default value is 0.0.
+        cost : float
+            Total cost of the magnets. Default value is 0.0.
 
     References
     ----------
 
-        ..[1] Rostami, Jamal, Mahmoud Sepehrmanesh, Ehsan Alavi Gharahbagh,
-        and Navid Mojtabai. "Planning Level Tunnel Cost Estimation Based on
-        Statistical Analysis of Historical Data." Tunnelling and Underground
-        Space Technology 33 (2013): 22-33. Web.
-        <https://www.researchgate.net/publication/233926915_Planning_level_tunnel_cost_estimation_based_on_statistical_analysis_of_historical_data>.
+        ..[1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis. Bradley University, 2004. N.p.: n.p., n.d. Print.
 
     """
 
@@ -228,6 +224,7 @@ class Mass(Component):
         self.add_param('rhomag', val=7500, units='kg**m^3', desc='Density of Magnet')
         self.add_param('lpod', val=22, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
+        self.add_param('costperkg', val=44, units= '$/kg',desc='Cost of Magnet per kilogram')
 
         # Track Inputs (laminated track)
         self.add_param('Pc', val=3, units='m', desc='width of track')
@@ -235,6 +232,7 @@ class Mass(Component):
         # outputs
         self.add_output('A', val=0.0, units='m', desc='Total Area of Magnets')
         self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
+        self.add_output('cost', val = 0.0, units='$', desc='Cost of Magnets')
 
     def solve_nonlinear(self, params, unknowns, resids):  # params, unknowns, residuals
 
@@ -243,6 +241,7 @@ class Mass(Component):
         gamma = params['gamma']
         lpod = params['lpod']
         rhomag = params['rhomag']
+        costperkg = params['costperkg']
 
         # Track Parameters
         Pc = params['Pc']
@@ -250,9 +249,11 @@ class Mass(Component):
         # Compute Intermediate Variables
         A = Pc * lpod * gamma  # Compute Magnet Area
         mmag = rhomag * A * d  # Compute Magnet Mass
+        cost = mmag * costperkg
 
         unknowns['A'] = A
         unknowns['mmag'] = mmag
+        unknowns['cost'] = cost
 
     # def linearize(self, params, unknowns, resids):
     #
@@ -292,6 +293,7 @@ if __name__ == "__main__":
     #Constraint
     root.add('con1', ExecComp('c1 = (Fyu - mpod * g)/1e5'))
 
+
     #Connect
     root.connect('input_vars.mpod', 'p.mpod')
     root.connect('p.mpod', 'con1.mpod')
@@ -321,16 +323,18 @@ if __name__ == "__main__":
     # Constraint
     top.driver.add_constraint('con1.c1', lower = 0.0)
 
-    root.add('obj_cmp', ExecComp('obj = Fxu'))
+    #Problem Objective
+    root.add('obj_cmp', ExecComp('obj = Fxu + mmag'))
     root.connect('p.Fxu', 'obj_cmp.Fxu')
-    # root.connect('q.mmag', 'obj_cmp.mmag')
+    root.connect('q.mmag', 'obj_cmp.mmag')
 
     top.driver.add_objective('obj_cmp.obj')
 
-    recorder = SqliteRecorder('maglev2')
-    recorder.options['record_params'] = True
-    recorder.options['record_metadata'] = True
-    top.driver.add_recorder(recorder)
+    #Problem Recorder
+    # recorder = SqliteRecorder('maglev2')
+    # recorder.options['record_params'] = True
+    # recorder.options['record_metadata'] = True
+    # top.driver.add_recorder(recorder)
 
     top.setup(check=True)
     # top.root.list_connections()
@@ -339,20 +343,30 @@ if __name__ == "__main__":
 
     # from openmdao.devtools.partition_tree_n2 import view_tree
     # view_tree(top)
+
+    # Print Outputs
     print('\n')
     print('Lift to Drag Ratio is %f' % top['p.LDratio'])
     print('Fyu is %f' % top['p.Fyu'])
     print('Fxu is %f' % top['p.Fxu'])
+    print('c1 is %f' % top['con1.c1'])
     print('Total Magnet Area is %f m^2' % top['p.A'])
     print('Total Magnet Weight is %f kg' % top['q.mmag'])
+    print('Total Magnet Cost is $%f' % top['q.cost'])
     print('d is %f m' % top['p.d'])
     print('Gamma is %f' % top['p.gamma'])
-    print('c1 is %f' % top['con1.c1'])
+    print('\n')
+    print('R is %f m' % top['p.R'])
+    print('L is %f m' % top['p.L'])
+    print('B0 is %f m' % top['p.B0'])
+    print('lamda is %f m' % top['p.lam'])
+    print('A is %f m^2' % top['p.A'])
+
 
     # top.root.dump()
-    #
+
     # db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
-    # data = db['rank0:SLSQP/1']
+    # data = db['rank0:COBYA/1']
     # p = data['Parameters']
     # print('params')
     # pprint(p)
