@@ -1,14 +1,21 @@
+# whitelist
+branches:
+  only:
+    - master
+    - work
+    - release
+
 sudo: false
 
 os:
   - linux
-#  -osx
+  - osx
 
 language: generic
 
 env:
-- PY=2.7 
-- PY=3.4 
+- PY=2.7
+- PY=3.4
 
 notifications:
   slack: nasa-marti:6JrI4B9v97JAZxujKsat50ph
@@ -25,10 +32,11 @@ before_install:
   fi
 - PATHPREFIX=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "/Users/travis/miniconda/bin"; else echo "/home/travis/miniconda/bin"; fi)
 - export PATH=$PATHPREFIX:$PATH
+- export OPENMDAO_TEST_DOCS=1
 - conda update --yes conda
 
 install:
-- conda install --yes python=$PY numpy scipy=0.16.1 pytest sphinx==1.3.1 matplotlib
+- conda install --yes python=$PY numpy scipy=0.16.1 sphinx==1.3.1 matplotlib pytest
 - if [ "$OS" = "Linux" ]; then
     if [ "$PY" = "2.7" ]; then
         pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp27-none-linux_x86_64.whl;
@@ -43,12 +51,6 @@ install:
         pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp34-none-macosx_10_5_x86_64.whl;
     fi
   fi
-
-#- pip install coveralls
 - pip install -e .
 
-#script:
-#- testflo . -n 1 --coverage --coverpkg openmdao
-
-#after_success:
-#  coveralls
+script: py.test --ignore=src/hyperloop/Python/tests/archive src
