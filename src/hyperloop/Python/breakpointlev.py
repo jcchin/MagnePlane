@@ -44,7 +44,7 @@ class Drag(Component):
         strip_c : float
             Center strip spacing. Default value is .0105.
         rc : float
-            Electric resistance. Default value is ____ .
+            Electric resistance. Default value is 1.713*10**-8.
         mu0 : float
             Permeability of Free Space. Default value is 4*pi*10^-7.
         vb : float
