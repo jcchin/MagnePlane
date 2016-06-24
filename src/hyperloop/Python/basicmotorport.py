@@ -167,6 +167,35 @@ class BasicMotor(Component):
         Dbase = ((D2L / LDratio) ** (1 / 3)) / 1000  # meters
         Mass = 0.0000070646 * (D2L ** 0.9386912061)
         return Mass
+    
+    def print_data():
+        print('kappa: %f' % prob['comp.kappa'])
+        print('imax: %f' %prob['comp.imax'])
+        print('Max_RPM: %f' % prob['comp.Max_RPM'])
+        print('DesignPower: %f' %prob['comp.DesignPower'])
+        print('LDratio:%f' %prob['comp.LDratio'])
+        print('R0: %f' % prob['comp.R0'])
+        print('B_p: %f' % prob['comp.B_p'])
+        print('CoreRadiusRatio: %f' % prob['comp.CoreRadiusRatio'])
+        print('I0: %f' % prob['comp.I0'])
+        print('Torque: %f' %prob['comp.Torque'])
+
+        print('-----------------------------')
+
+        #print('Current: %f' % prob['comp.Current'])
+        print('Phase Current [A]: %f' % prob['comp.phaseCurrent'])
+        print('Phase Voltage [V]: %f' % prob['comp.phaseVoltage'])
+        print('Frequency [Hz]: %f ' % prob['comp.Frequency'])
+        print('Phase: %f' % prob['comp.Phase'])
+        # print('Tmax: %f [N-m]' % prob['comp.Tmax'])
+        # print('Kt: %f' %prob['comp.Kt'])
+        print('Kv [rad/s/V]: %f' % prob['comp.Kv'])
+
+        print('Motor Size (Volume) [m^3] [L]: %f' % prob['comp.Volume'])
+        # print ('Max Torque: %f' %prob['comp.Tmax'])
+        print('Motor Size (D^2*L) [mm^3]: %f x10e-6' % prob['comp.D2L'])
+        print('Motor Weight [kg]: %f ' % prob['comp.Mass'])
+
 """
     def R_calc(self, imax, D2L, LDratio, nphase):
         As = 688.7 * imax
@@ -191,32 +220,3 @@ class BasicMotor(Component):
         Voltage = Voltage * numpy.sqrt(3. / 2.)
         return Voltage
 """
-
-
-def print_data(prob):
-    print('kappa: %f' % prob['comp.kappa'])
-    print('imax: %f' %prob['comp.imax'])
-    print('Max_RPM: %f' % prob['comp.Max_RPM'])
-    print('DesignPower: %f' %prob['comp.DesignPower'])
-    print('LDratio:%f' %prob['comp.LDratio'])
-    print('R0: %f' % prob['comp.R0'])
-    print('B_p: %f' % prob['comp.B_p'])
-    print('CoreRadiusRatio: %f' % prob['comp.CoreRadiusRatio'])
-    print('I0: %f' % prob['comp.I0'])
-    print('Torque: %f' %prob['comp.Torque'])
-
-    print('-----------------------------')
-
-    #print('Current: %f' % prob['comp.Current'])
-    print('Phase Current [A]: %f' % prob['comp.phaseCurrent'])
-    print('Phase Voltage [V]: %f' % prob['comp.phaseVoltage'])
-    print('Frequency [Hz]: %f ' % prob['comp.Frequency'])
-    print('Phase: %f' % prob['comp.Phase'])
-    # print('Tmax: %f [N-m]' % prob['comp.Tmax'])
-    # print('Kt: %f' %prob['comp.Kt'])
-    print('Kv [rad/s/V]: %f' % prob['comp.Kv'])
-
-    print('Motor Size (Volume) [m^3] [L]: %f' % prob['comp.Volume'])
-    # print ('Max Torque: %f' %prob['comp.Tmax'])
-    print('Motor Size (D^2*L) [mm^3]: %f x10e-6' % prob['comp.D2L'])
-    print('Motor Weight [kg]: %f ' % prob['comp.Mass'])

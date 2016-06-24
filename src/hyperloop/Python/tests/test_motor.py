@@ -76,7 +76,6 @@ class TestMotor(object):
         prob['comp.B_p'] = 2.2
 
         prob.run()
-        basicmotorport.print_data(prob)
 
         assert np.isclose(prob['comp.phaseCurrent'], 101.686, rtol = 0.01)
         assert np.isclose(prob['comp.phaseVoltage'], 512.926, rtol = 0.01)
