@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import basicmotorport
+from src.hyperloop.Python import BasicMotorPython
 import numpy as np
 from openmdao.api import Group, Problem
 
@@ -16,7 +16,7 @@ class TestMotor(object):
     def test_case1_vs_npss(self):
 
 
-        motor  =  basicmotorport.BasicMotor()
+        motor  =  BasicMotorPython.BasicMotor()
 
         prob = create_problem(motor)
 
@@ -42,16 +42,16 @@ class TestMotor(object):
 
         prob.run()
 
-        assert np.isclose(prob['comp.phaseCurrent'], 101.686, rtol = 0.01)
-        assert np.isclose(prob['comp.phaseVoltage'], 456.555)
-        assert np.isclose(prob['comp.Frequency'], 190)
-        assert np.isclose(prob['comp.Phase'], 0)
-        assert np.isclose(prob['comp.Kv'], 5.11363)
-        assert np.isclose(prob['comp.Mass'], 116.39)
+        assert np.isclose(prob['comp.phaseCurrent'], 101.686, rtol = 0.001)
+        assert np.isclose(prob['comp.phaseVoltage'], 456.555, rtol = 0.001)
+        assert np.isclose(prob['comp.Frequency'], 190, rtol = 0.001)
+        assert np.isclose(prob['comp.Phase'], 0, rtol = 0.001)
+        assert np.isclose(prob['comp.Kv'], 5.11363, rtol = 0.001)
+        assert np.isclose(prob['comp.Mass'], 116.39, rtol = 0.001)
 
 
     def test_case2_vs_npss(self):
-        motor  =  basicmotorport.BasicMotor()
+        motor  =  BasicMotorPython.BasicMotor()
 
         prob = create_problem(motor)
 
@@ -77,11 +77,11 @@ class TestMotor(object):
 
         prob.run()
 
-        assert np.isclose(prob['comp.phaseCurrent'], 101.686, rtol = 0.01)
-        assert np.isclose(prob['comp.phaseVoltage'], 512.926, rtol = 0.01)
-        assert np.isclose(prob['comp.Frequency'], 250, rtol = 0.01)
-        assert np.isclose(prob['comp.Phase'], 0, rtol = 0.01)
-        assert np.isclose(prob['comp.Kv'], 5.99999, rtol = 0.01)
-        assert np.isclose(prob['comp.Mass'], 103.859)
+        assert np.isclose(prob['comp.phaseCurrent'], 101.686, rtol = 0.001)
+        assert np.isclose(prob['comp.phaseVoltage'], 512.926, rtol = 0.001)
+        assert np.isclose(prob['comp.Frequency'], 250, rtol = 0.001)
+        assert np.isclose(prob['comp.Phase'], 0, rtol = 0.001)
+        assert np.isclose(prob['comp.Kv'], 5.99999, rtol = 0.001)
+        assert np.isclose(prob['comp.Mass'], 103.859, rtol = 0.001)
 
 
