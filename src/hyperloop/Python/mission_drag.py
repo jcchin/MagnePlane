@@ -32,18 +32,16 @@ if __name__ == '__main__':
 
     params = (
         ('Cd', .2),
-        ('V', 335.0)
+        ('V', 335.0, {'units' : 'm/s'}),
+        ('D_magnetic', 150.0, {'units' : 'N'})
     )
 
-    root.add('input_vars', IndepVarComp(params))
-    root.add('p', MissionDrag())
-
-    root.connect('input_vars.Cd', 'p.Cd')
-    root.connect('input_vars.V', 'p.V')
+    root.add('input_vars', IndepVarComp(params), promotes = ['Cd', 'V', 'D_magnetic'])
+    root.add('p', MissionDrag(), promotes = ['D', 'Cd', 'V', 'D_magnetic'])
 
     top.setup()
     top.run()
 
     print('\n')
-    print('Drag Force = %f N' % top['p.D'])
+    print('Drag Force = %f N' % top['D'])
 
