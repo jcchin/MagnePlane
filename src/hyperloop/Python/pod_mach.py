@@ -18,9 +18,9 @@ class PodMach(Component):
     ----------
 
         pod mach : float
-            pod Mach number
+            pod Mach number. Default value is .8
         pod area : float
-            Assumes pod mass from alpha paper.  Will take pod area from geometry analysis
+            Assumes pod mass from alpha paper. Default value is 1.4 m**2  Will take pod area from geometry analysis
 
 
     Returns
@@ -34,12 +34,6 @@ class PodMach(Component):
             will return area of that the flow must go through to bypass pod
         Inlet Area : float
             returns area of the inlet necessary to slow the flow down to M_diffuser
-
-    References
-    ----------
-
-        USA. NASA. Buckling of Thin-Walled Circular Cylinders. N.p.: n.p., n.d. Web. 13 June 2016.
-
     """
 
     def __init__(self):
@@ -94,7 +88,7 @@ class PodMach(Component):
             return A_ratio
 
         #Define intermediate variables
-        rho_inf = p_tube/(R*T_ambient)                           #Calculate density of free stream flow
+        rho_inf = p_tube/(R*T_ambient)                              #Calculate density of free stream flow
         U_inf = M_pod * ((gam*R*T_ambient)**.5)                     #Calculate velocity of free stream flow
 
         Re = (rho_inf*U_inf*L)/mu                                   #Calculate length based Reynolds Number

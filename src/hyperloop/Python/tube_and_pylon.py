@@ -18,13 +18,15 @@ class TubeandPylon(Component):
     ----------
 
         pylon radius : float
-            radius of cylindrical pylon
+            radius of cylindrical pylon. Default value is 1.1 m.
         tunnel thickness : float
-            thickness of cylindical tube containing pod
+            thickness of cylindical tube containing pod. Default value is .05 m
         tunnel radius : float
-            Assumes tunel radius from alpha paper. Will take tunnel radius from aero analysis.
+            tunnel radius. Default value is 1.1 m. Will take tunnel radius from aero analysis.
         pod mass : float
             Assumes pod mass from alpha paper.  Will take pod mass from weight analysis
+        tube pressure : float
+            pressure of air inside tube. Will take value from vacuum component
 
 
     Returns
@@ -32,6 +34,10 @@ class TubeandPylon(Component):
 
         material cost per mile : float
             minimizes material cost of tunnel and pylons with respect to tunnel thickness and pylon radius
+        Distance between pylons : float
+            outputs distance in between pylons in m
+        Mass per unit length of tube: float
+            Calculates mass per unit length of tube
 
     References
     ----------

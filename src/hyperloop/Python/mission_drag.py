@@ -4,7 +4,33 @@ from math import pi, sqrt
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 
 class MissionDrag(Component):
-    '''...'''
+    """
+
+    Notes
+    -----
+
+        Computes the total drag force acting on the pod.  Will be fed into Mission EOM component
+
+    Parameters
+    ----------
+
+        Drag coefficient : float
+            Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
+        Tube Pressure : float
+            Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+        Magnetic Drag: float
+            Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
+        Pod Speed : float
+            Speed of the pod.  Default value is 335 m/s.
+
+    Returns
+    -------
+
+        Drag : float
+            Total drag force acting on pod. Default value is 0.0.
+
+    """
+
     def __init__(self):
         super(MissionDrag, self).__init__()
 
