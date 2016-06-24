@@ -34,12 +34,22 @@ class Battery(Component):
         self.add_output('mass', 0.0, desc='total mass of batteries', units='kg')
         self.add_output('volume', 0.0, desc='total volume of batteries', units='m**3')
         self.add_output('len', 0.0, desc='required length of battery pack', units='m')
-
+        self.add_output('test', 0.0, desc = 'test', units = 'none')
+		
+        
     def solve_nonlinear(self, params, unknowns, resids):
         unknowns['mass'] = params['energy'] / params['e']
         unknowns['volume'] = params['energy'] / params['U']
         unknowns['len'] = unknowns['volume'] / params['cross_section']
-
+        #self.lala(unknowns)
+        unknowns['test'] = self.foo(unknowns['len'])
+		
+    def foo(self, input):
+	    return input + 1
+		
+    def lala(self, unknowns):
+	    unknowns['test'] = unknowns['len'] + 1
+    
 if __name__ == '__main__':
     from openmdao.core.problem import Problem
     from openmdao.core.group import Group
@@ -49,6 +59,9 @@ if __name__ == '__main__':
     p.setup()
     p.root.list_connections()
     p.run()
+	
+	
+
 
     print ('mass (Kg): %f' % p['comp.mass'])
     print ('energy (kW*hr): %f' % p['comp.energy'])

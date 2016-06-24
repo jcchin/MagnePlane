@@ -1,10 +1,10 @@
 from openmdao.core.group import Group
 
-from inlet import InletGeom
+from Python.UnmodifedMagnePlaneCode.aero import Aero
 from battery import Battery
+from inlet import InletGeom
 from pax_cabin import PassengerCapsule
 from tube_structure import TubeStructural
-from aero import Aero
 
 class Pod(Group):
     def __init__(self):

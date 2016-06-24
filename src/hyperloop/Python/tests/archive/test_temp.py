@@ -1,15 +1,15 @@
-import numpy as np
+import inspect
+import os
+import sys
 import unittest
 
 from openmdao.api import Problem, Group
 from openmdao.components.indep_var_comp import IndepVarComp
-
-import os,sys,inspect
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
-from Python.tube_wall_temp import TubeTemp
+from Python.UnmodifedMagnePlaneCode.tube_wall_temp import TubeTemp
 #from hyperloop.tube_wall_temp import TubeWallTemp
 
 
