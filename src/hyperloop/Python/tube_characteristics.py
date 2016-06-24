@@ -13,7 +13,7 @@ class TubeCharacteristics(Component):
         super(TubeCharacteristics, self).__init__()
 
         #Define material properties of steel
-        self.add_param('rho', val = 7820.0, units = 'kg/m^3', desc = 'density of steel')
+        self.add_param('rho_tube', val = 7820.0, units = 'kg/m^3', desc = 'density of steel')
         self.add_param('E', val = 200.0*(10**9), units = 'Pa', desc = 'Young\'s Modulus')
         self.add_param('v', val = .3, desc = 'Poisson\'s ratio')
         self.add_param('Su', val = 400.0e6, units = 'Pa', desc = 'ultimate strength')
@@ -27,7 +27,7 @@ class TubeCharacteristics(Component):
         self.add_param('t', val = .05, units = 'm', desc = 'tube thickness')
         self.add_param('dx', val = 500.0, units = 'm', desc = 'distance between tubes')
 
-        self.deriv_options['type'] = 'fd'
+        self.deriv_options['type'] = 'user'
 
         #Define outputs
         self.add_output('m_tube', val = 100.0, units = 'kg', desc = 'total mass of the tube')
@@ -43,7 +43,7 @@ class TubeCharacteristics(Component):
 
         Equation: m = """
 
-        rho = params['rho']
+        rho_tube = params['rho_tube']
         E = params['E']
         g = params['g']
         r = params['r']
@@ -54,14 +54,14 @@ class TubeCharacteristics(Component):
 
 
         #Calculate intermeiate variables
-        q = rho*pi*(((r+t)**2)-(r**2))*g
+        q = rho_tube*pi*(((r+t)**2)-(r**2))*g
         I = (pi/4)*(((r+t)**2)-(r**2))
         Z = ((pi/4)*(((r+t)**4)-(r**4)))/(r+t)
         sig_theta = ((p_tunnel-p_ambient)*r)/t
         sig_axial = (((p_tunnel - p_ambient)*r)/(2*t)) + ((q*dx)/(8*Z))
 
         unknowns['VonMises'] = (.5*((sig_axial**2)+(sig_theta**2)+((sig_axial-sig_theta)**2)))**.5
-        unknowns['m_tube'] = rho*pi*(((r+t)**2)-(r**2))*dx
+        unknowns['m_tube'] = rho_tube*pi*(((r+t)**2)-(r**2))*dx
         unknowns['R'] = .5*q*dx
         unknowns['delta'] = (5*q*(dx**4))/(384*E*I)
         unknowns['materials_cost'] = params['unit_cost'] * unknowns['m_tube']
@@ -105,6 +105,7 @@ class PylonCharacteristics(Component):
 
         self.add_param('r_pylon', val = 1.1, units = 'm', desc = 'inner tube radius')
         self.add_param('t', val = .05, units = 'm', desc = 'tube thickness')
+        self.add_param('m_tube', val = 0.0, units = 'kg', desc = 'mass of the tube')
 
         #Define outputs
         self.add_output('dx', val=500.0, units='m', desc='distance between tubes')
@@ -112,6 +113,9 @@ class PylonCharacteristics(Component):
         #self.add_output('materials_cost', val = 0.0, units = 'USD', desc = 'cost of tube materials')
 
     def solve_nonlinear(self, params, unknowns, resids):
+        """Evaluate equaion for distance in between pylons (explicit)
+        Inputs: materil properties, tube radius (r), tube thickness (t)
+        Outputs: distance between pylons (dx)"""
 
         rho_tube = params['rho_tube']
         rho_pylon = params['rho_pylon']
@@ -134,7 +138,6 @@ class PylonCharacteristics(Component):
     def linearize(self, params, unknowns, resids):
 
         rho_tube = params['rho_tube']
-        rho_pylon = params['rho_pylon']
         E = params['E']
         r_pylon = params['r_pylon']
         r = params['r']
@@ -147,7 +150,7 @@ class PylonCharacteristics(Component):
 
         return J
 
-if __name__ == '__main__':
+if False: #__name__ == '__main__':
     top = Problem()
 
     root = top.root = Group()
@@ -202,9 +205,9 @@ if __name__ == '__main__':
     root.nl_solver.options['iprint'] = 1
     root.nl_solver.options['maxiter'] = 10
 
-    top.driver.add_desvar('des_vars.r', lower = 0.5, upper=6.)
-    top.driver.add_desvar('des_vars.t', lower = 0.001, upper= 1.)
-    top.driver.add_desvar('des_vars.dx', lower = 0.0)
+    top.driver.add_desvar('des_vars.r', lower = 0.5)
+    top.driver.add_desvar('des_vars.t', lower = 0.001)
+    top.driver.add_desvar('des_vars.dx', lower = 1.0)
     top.driver.add_objective('p.m_tube')
     top.driver.add_constraint('con1.c1', lower = 0.0)
     top.driver.add_constraint('con2.c2', lower = 0.0)
@@ -217,6 +220,65 @@ if __name__ == '__main__':
 
     print('\n')
     print('Minimum tube mass is %f kg with a radius of %f m and a thickness of %f m' % (top['p.m_tube'], top['p.r'], top['p.t']))
+
+if __name__ == '__main__':
+    tube_comp = TubeCharacteristics()
+    pylon_comp = PylonCharacteristics()
+
+    g1 = Group()
+    g1.add('comp1', tube_comp, promotes = ['r', 't'])
+    g1.add('comp2', pylon_comp, promotes = ['r', 't'])
+
+    g1.r = 1.1
+    g1.t = .05
+    g1.rho_tube = 7820.0
+
+    tube_params = (
+        ('Su', 400.0e6, {'units':'Pa'}),
+        ('sf', 1.5),
+        ('p_ambient', 101300.0, {'units': 'Pa'}),
+        ('p_tunnel', 100.0, {'units': 'Pa'}),
+        ('E', 210.0e9, {'units': 'Pa'}),
+        ('v', 0.3)
+    )
+    g1.add('tube_vars', IndepVarComp(tube_params))
+
+    pylon_params = (
+        ('Su', 40.0e6, {'units' : 'Pa'}),
+        ('sf',1.5),
+        ('h', 10, {'units' : 'm'}),
+        ('E', 14.0e9, {'units' : 'Pa'}),
+        ('g', 9.81, {'units':'m/s^2'}),
+        ('r_pylon', .1, {'units' : 'm'})
+    )
+
+    g1.add('pylon_vars', IndepVarComp(pylon_params))
+    g1.add('con1', ExecComp('c1 = (Su/sf) - VonMises'))                                      #Impose yield stress constraint
+    g1.add('con2', ExecComp('c2 = (p_ambient - p_tunnel) - (E/(4*(1-v**2)))*((t/r)**3)'))    #Impose buckling constraint
+    g1.add('con3', ExecComp('c3 = (Su/sf)-(R/(pi*(r_pylon**2)))'))                           #Impose yield stress constraint on pylon
+
+    g1.connect('comp2.dx', 'comp1.dx')
+
+    g1.connect('tube_vars.Su', 'con1.Su')
+    g1.connect('tube_vars.sf', 'con1.sf')
+    g1.connect('comp1.VonMises', 'con1.VonMises')
+    g1.connect('tube_vars.p_ambient', 'con2.p_ambient')
+    g1.connect('tube_vars.p_tunnel', 'con2.p_tunnel')
+    g1.connect('tube_vars.E', 'con2.E')
+    g1.connect('tube_vars.v', 'con2.v')
+
+    g1.connect('pylon_vars.Su', 'con3.Su')
+    g1.connect('pylon_vars.sf', 'con3.sf')
+    g1.connect('comp1.R', 'con3.R')
+    g1.connect('pylon_vars.r_pylon','con3.r_pylon')
+
+    top = Problem()
+    top.root = g1
+
+
+
+
+
 
 
 

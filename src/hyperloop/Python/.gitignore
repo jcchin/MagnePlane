@@ -3,3 +3,5 @@
 /maglev
 *.DS_Store
 *.gitignore
+/.idea/
+*.html
