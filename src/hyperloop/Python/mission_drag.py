@@ -10,7 +10,7 @@ class MissionDrag(Component):
 
         self.add_param('Cd', val = .2, desc = 'Drag Coefficient')
         self.add_param('S', val = 1.4, units = 'm^2', desc = 'Frontal Area')
-        self.add_param('p_ambient', val = 850.0, units = 'Pa', desc = 'Ambient Pressure')
+        self.add_param('p_tube', val = 850.0, units = 'Pa', desc = 'Ambient Pressure')
         self.add_param('T_ambient', val = 298.0, units = 'K', desc = 'Ambient Temperture')
         self.add_param('R', val = 287.0, units = 'J/(kg*K)', desc = 'Ideal Gas Constant')
         self.add_param('D_magnetic', val = 150.0, units = 'N', desc = 'Drag from magnetic levitation')
@@ -22,7 +22,7 @@ class MissionDrag(Component):
     def solve_nonlinear(self, params, unknowns, resids):
 
         #Calculate air density and drag force
-        rho = params['p_ambient']/(params['R']*params['T_ambient'])
+        rho = params['p_tube']/(params['R']*params['T_ambient'])
         unknowns['D'] = (.5*rho*(params['V']**2)*params['S']) + params['D_magnetic']
 
 if __name__ == '__main__':
