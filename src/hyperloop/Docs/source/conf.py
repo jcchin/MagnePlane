@@ -182,7 +182,7 @@ def _parse(self):
             if not section.startswith('..'):
                 section = ' '.join([s.capitalize() for s in section.split(' ')])
             if section in ('Args', 'Options', 'Params', 'Returns', 'Raises', 'Warns',
-                           'Other Args', 'Attributes', 'Methods'):
+                           'Other Args', 'Attributes', 'Methods', 'Outputs', 'Components'):
                 self[section] = self._parse_param_list(content)
             elif section.startswith('.. index::'):
                 self['index'] = self._parse_index(section, content)
