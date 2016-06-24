@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import BasicMotorPython
+from src.hyperloop.Python import ElectricMotor
 import numpy as np
 from openmdao.api import Group, Problem
 
@@ -16,7 +16,7 @@ class TestMotor(object):
     def test_case1_vs_npss(self):
 
 
-        motor  =  BasicMotorPython.BasicMotor()
+        motor  =  ElectricMotor.BasicMotor()
 
         prob = create_problem(motor)
 
@@ -51,7 +51,7 @@ class TestMotor(object):
 
 
     def test_case2_vs_npss(self):
-        motor  =  BasicMotorPython.BasicMotor()
+        motor  =  ElectricMotor.BasicMotor()
 
         prob = create_problem(motor)
 

@@ -3,13 +3,13 @@ import numpy
 from openmdao.api import IndepVarComp, Component, Problem, Group
 
 
-"""
+"""Basic model of a Brushless DC (BLDC) motor
 
 Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
 Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
 
-Parameters
-----------
+Params
+------
 
     Torque: float
         Output Torque from motor in N*m. Default value is 1000.0
@@ -118,7 +118,7 @@ class BasicMotor(Component):
     def __init__(self):
         super(BasicMotor, self).__init__()
 
-        #Inputs/PArams
+        #Inputs/Params
         self.add_param('Resistance', val=0.0, desc='Resistance of Stator', units='ohm')
         self.add_param('Inductance', val=0.0, desc='Motor inductance', units='H')
         self.add_param('Speed',val=1900.0,desc='Output shaft mechanical speed',units='rad/s')
@@ -238,23 +238,23 @@ class BasicMotor(Component):
 
         unknowns['Frequency'] = Speed*PolePairs/60
         Frequency = unknowns['Frequency']
-        """
-        unknowns['Resistance'] = self.R_calc(imax, D2L, LDratio, nphase)
-        Resistance = unknowns['Resistance']
 
-        unknowns['P_iron']=self.Iron_loss(Lbase,Dbase,CoreRadiusRatio,B_p,Frequency)
-        P_iron = unknowns['P_iron']
-
-        unknowns['P_windage']=self.P_windage_calc(Dbase,CoreRadiusRatio,w,k_Friction,Lbase)
-        P_windage = unknowns['P_windage']
-
-        unknowns['P_input'] = self.P_input_calc(Pmax,w,wmax,Current,Rtotal,nphase,P_iron,P_windage)
-        P_input = unknowns['P_input']
-
-        unknowns['P_mech'] = w*Torque*1.355818
-        P_mech=unknowns['P_mech']
-
-        unknowns['efficiency'] =P _input/P_mech
+        # unknowns['Resistance'] = self.R_calc(imax, D2L, LDratio, nphase)
+        # Resistance = unknowns['Resistance']
+        #
+        # unknowns['P_iron']=self.Iron_loss(Lbase,Dbase,CoreRadiusRatio,B_p,Frequency)
+        # P_iron = unknowns['P_iron']
+        #
+        # unknowns['P_windage']=self.P_windage_calc(Dbase,CoreRadiusRatio,w,k_Friction,Lbase)
+        # P_windage = unknowns['P_windage']
+        #
+        # unknowns['P_input'] = self.P_input_calc(Pmax,w,wmax,Current,Rtotal,nphase,P_iron,P_windage)
+        # P_input = unknowns['P_input']
+        #
+        # unknowns['P_mech'] = w*Torque*1.355818
+        # P_mech=unknowns['P_mech']
+        #
+        # unknowns['efficiency'] =P _input/P_mech
 
 
     def Current_calc(self, Torque, Kv, nphase):
@@ -264,7 +264,7 @@ class BasicMotor(Component):
         Current = Current/nphase
         return Current
 
-    """
+
 
 
     def Tmax_calc(self,Pmax,wmax,kappa):
