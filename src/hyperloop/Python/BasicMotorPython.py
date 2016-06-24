@@ -15,19 +15,17 @@ Parameters
 ----------
 
     Torque: float
-        Output Torque from motor in N-m. Default value is
+        Output Torque from motor in N-m. Default value is 1000.0
     Max_RPM: float
-        Maximum RPM of motor. Default value is
+        Maximum RPM of motor. Default value is 4600.0
     DesignPower: float
-        Desired design value for motor power in hp. Default value is
+        Desired design value for motor power in hp. Default value is 0.0
     Resistance: float
         Resistance of Stator in Ohms. Default value is 0.0
     Inductance: float
         Motor inductance in Henrys. Default value is 0.0
-    Torque: float
-        Output torque in N-m. Default value is
     Speed: float
-        Output shaft mechanical speed in rad/s. Default value is
+        Output shaft mechanical speed in rad/s. Default value is 50.0
     Kv: float
         Motor constant (Speed/volt) in rad/s/V. Default value is 0.1
     Kt: float
@@ -71,24 +69,24 @@ Parameters
     Rd: float
         D-axis resistance per motor phase at very high speed (short circuit). Default value is
     efficiency: float
-        Motor efficiency (Input Power/Mechanical Power output). Default value is
+        Motor efficiency (Input Power/Mechanical Power output). Default value is 0.0
     Pmax: float
-        Conversion of DesignPower in hp to Watts. Default value is
+        Conversion of DesignPower in hp to Watts. Default value is 0.0
     D2L: float
-        D-squared*L parameter which is ~ to Torque in mm^3. Default value is
-    Dbase: float
-        Motor diameter in mm. Default value is
+        D-squared*L parameter which is ~ to Torque in mm^3. Default value is 0.0
+    D2L_ft: float
+        D-squared*L parameter converted to ft^3. Default value is 0.0
     w: float
         Speed converted to rad/s. Default value is 50.0
     wmax: float
-        Max speed in rad/s. Default value is
+        Max speed in rad/s. Default value is 0.0
 
 Returns
 -------
     Current: float
         Current magnitude in Amps. Default value is 2.0
     phaseCurrent: float
-        Phase current for AC current in Amps. Default value is
+        Phase current for AC current in Amps. Default value is 0.0
     phaseVoltage: float
         AC voltage across motor in Volts. Default value is 500.0
     Phase: float
@@ -96,21 +94,23 @@ Returns
     Frequency: float
         Frequency of Electric output waveform in Hz. Default value is 60.0
     P_mech: float
-        Mechanical output power. Default value is
+        Mechanical output power. Default value is 0.0
     P_copper: float
-        Copper losses. Default value is
+        Copper losses. Default value is 0.0
     P_iron: float
-        Iron Losses. Default value is
+        Iron Losses. Default value is 0.0
     P_windage: float
-        Windage Losses. Default value is
+        Windage Losses. Default value is 0.0
     P_input: float
-        Total Power input needed. Default value is
+        Total Power input needed. Default value is 0.0
     Mass: float
-        Mass of motor in kg. Default value is
+        Mass of motor in kg. Default value is 0.0
     Volume: float
-        Volume of motor modeled as a cylinder in m^3. Default value is
+        Volume of motor modeled as a cylinder in m^3. Default value is 0.0
+    Volume_ft: float
+        Volume of motor modeled as a cylinder in ft^3. Default value is 0.0
     R_calc: float
-        Resistance of stator in Ohms. Default value is
+        Resistance of stator in Ohms. Default value is 0.0
     Tmax: float
         Max Torque in N-m. Default value is 1000.0
 
@@ -146,8 +146,8 @@ class BasicMotor(Component):
         self.add_param('kappa', val=0.5, desc='Base speed/max speed', units='none')
         #self.add_param('V_max',val=10000.0,desc='Max phase voltage', units='V')
         #self.add_param('As',val=95000.0,desc='Electrical Loading',units='')
-        #self.add_param('Dbase',val=0.48,desc='Base 8000hp diameter for scaling purposes',units='m')
-        #self.add_param('Lbase',val=0.4,desc='Base 8000hp length for scaling purposes',units='m')
+        self.add_param('Dbase',val=0.48,desc='Base 8000hp diameter for scaling purposes',units='m')
+        self.add_param('Lbase',val=0.4,desc='Base 8000hp length for scaling purposes',units='m')
         self.add_param('LDratio', val=0.83, desc='Length to diameter ratio of motor', units='none')
         self.add_param('CoreRadiusRatio', val=0.7, desc='ratio of inner diameter of core to outer', units='')
         #self.add_param('k_Friction',val=1.0,desc'Friction coefficient calibration factor',units='')
@@ -155,7 +155,7 @@ class BasicMotor(Component):
         #self.add_param('efficiency',val=0.0,desc='Motor efficiency',units='')
         self.add_param('Pmax',val=0.0,desc='Conversion of DesignPower in hp to Watts',units='Watts')
         self.add_param('D2L', val=0.0, desc='D-squared*L parameter which is ~ to Torque', units='mm^3')
-        self.add_param('Dbase',val=0.0,desc='Motor diameter',units='mm')
+        self.add_param('D2L_ft',val=0.0,desc='D-squared*L parameter converted to ft^3', units='ft^3')
         self.add_param('w',val=0.0,desc='speed in rad/s',units='rad/s')
         self.add_param('wmax',val=0.0,desc='Max speed in rad/s',units='rad/s')
 
@@ -172,7 +172,8 @@ class BasicMotor(Component):
         #self.add_output('P_input',val=0.0,desc='Total Power input needed',units='')
         self.add_output('Mass', val=0.0, desc='Mass of motor', units='')
 
-        self.add_output('Volume', val=0.0, desc='Volume of motor modeled as a cylinder', units='L')
+        self.add_output('Volume', val=0.0, desc='Volume of motor modeled as a cylinder', units='m^3')
+        self.add_output('Volume_ft',val=0.0,desc='Volume of motor modeled as a cylinder in ft',units='ft^3')
         self.add_output('R_calc', val=0.0, desc='Resistance of stator', units='Ohms')
         self.add_output('Tmax', val=0.0, desc='Max Torque', units='N-m')
 
@@ -218,6 +219,9 @@ class BasicMotor(Component):
         params['D2L'] = 293722.0 * (Tmax ** 0.7592)  # mm^3
         D2L = params['D2L']
 
+        params['D2L_ft'] = D2L*3.53147*(10**-8)
+        D2L_ft = params['D2L_ft']
+
         params['Dbase'] = ((D2L / LDratio) ** (1.0 / 3.0)) / 1000.0
         Dbase = params['Dbase']
 
@@ -232,6 +236,12 @@ class BasicMotor(Component):
 
         unknowns['Volume'] = self.Size_calc(LDratio, Dbase,CoreRadiusRatio)
         Volume = unknowns['Volume']
+
+        unknowns['Volume_ft'] = Volume*35.3147
+        Volume_ft = unknowns['Volume_ft']
+
+        params['Lbase'] = LDratio * Dbase
+        Lbase = params['Lbase']
 
         unknowns['Frequency'] = Speed*PolePairs/60
         Frequency = unknowns['Frequency']
@@ -380,8 +390,13 @@ if __name__ == '__main__':
     # print('Kt: %f' %prob['comp.Kt'])
     print('Kv [rad/s/V]: %f' % prob['comp.Kv'])
 
-    print('Motor Size (Volume) [m^3] [L]: %f' % prob['comp.Volume'])
+    #print('Dbase: %f' %prob['comp.Dbase'])
+    #print('Lbase: %f' % prob['comp.Lbase'])
     # print ('Max Torque: %f' %prob['comp.Tmax'])
-    print('Motor Size (D^2*L) [mm^3]: %f x10e-6' % prob['comp.D2L'])
     print('Motor Weight [kg]: %f ' % prob['comp.Mass'])
+    print('Motor Size (D^2*L) [mm^3]: %f ' % prob['comp.D2L'])
+    print('Motor Size (D^2*L) [ft^3]: %f ' % prob['comp.D2L_ft'])
+    print('Motor Size (Volume=pi*radius^2*L) [m^3]: %f' % prob['comp.Volume'])
+    print('Motor Size (Volume=pi*radius^2*L) [ft^3]: %f' % prob['comp.Volume_ft'])
+
 
