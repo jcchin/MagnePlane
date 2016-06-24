@@ -42,7 +42,7 @@ class PropulsionMechanics(Component):
 
         super(PropulsionMechanics, self).__init__()
 
-        self.add_param('p_ambient', val = 100.0, desc = 'Ambient Pressure', units = 'Pa')
+        self.add_param('p_tube', val = 100.0, desc = 'Ambient Pressure', units = 'Pa')
         self.add_param('R', val = 286.9, desc = 'Ideal gas constant of air', units = 'J/(kg * K)' )
         self.add_param('T_ambient', val = 293.0, desc = 'Ambient Temperature', units = 'K')
         self.add_param('g', val = 9.81, desc = 'Gavity', units = 'm/s^2')
@@ -73,7 +73,7 @@ class PropulsionMechanics(Component):
         S = params['S']
 
         #Calculate intermediate variables
-        rho = params['p_ambient']/(params['R']*params['T_ambient'])         #Calculate air density, rho = P/(RT)
+        rho = params['p_tube']/(params['R']*params['T_ambient'])         #Calculate air density, rho = P/(RT)
         m = params['m_pod'] + params['rho_pm']*params['A']*params['t']      #Calculate total mass, m = m_pod + rho*A*t
         L = ((vf**2)-(v0**2))/(2*g)                                         #Calculate necessary track length
 
