@@ -51,7 +51,7 @@ class PodMach(Component):
         self.add_param('A_pod', val = 1.4, units = 'm^2', desc = 'pod area')
         self.add_param('L', val = 22.0, units='m', desc = 'pod length')
         self.add_param('prc', val = 12.5, units='m^2', desc = 'pressure ratio of a compressor')
-        self.add_param('p_ambient', val = 850.0, units='Pa', desc = 'ambient pressure')
+        self.add_param('p_tube', val = 850.0, units='Pa', desc = 'ambient pressure')
         self.add_param('T_ambient', val = 298.0, units='K', desc = 'ambient temperature')
         self.add_param('mu', val = 1.846e-5, units = 'kg/(m*s)', desc = 'dynamic viscosity')
         self.add_param('M_duct', val = .95, desc = 'maximum pod mach number')
@@ -77,7 +77,7 @@ class PodMach(Component):
         A_pod = params['A_pod']
         L = params['L']
         prc = params['prc']
-        p_ambient = params['p_ambient']
+        p_tube = params['p_tube']
         R = params['R']
         T_ambient = params['T_ambient']
         mu = params['mu']
@@ -94,7 +94,7 @@ class PodMach(Component):
             return A_ratio
 
         #Define intermediate variables
-        rho_inf = p_ambient/(R*T_ambient)                           #Calculate density of free stream flow
+        rho_inf = p_tube/(R*T_ambient)                           #Calculate density of free stream flow
         U_inf = M_pod * ((gam*R*T_ambient)**.5)                     #Calculate velocity of free stream flow
 
         Re = (rho_inf*U_inf*L)/mu                                   #Calculate length based Reynolds Number
