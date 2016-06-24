@@ -4,7 +4,7 @@ from math import pi, sqrt
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 
 class MissionDrag(Component):
-
+    '''...'''
     def __init__(self):
         super(MissionDrag, self).__init__()
 
