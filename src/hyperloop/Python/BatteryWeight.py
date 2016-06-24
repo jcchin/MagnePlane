@@ -31,11 +31,6 @@ class BatteryWeight(Component):
         self.add_param('Ncells', val=1.0, desc='Number of cells necessary to perform that mission', units='none')
         self.add_param('C_max', val=4.1, desc='Maximum rating the battery can run', units='1/hr')
 
-
-
-
-
-
         self.add_output('PowerDensityR', 0.0, desc='Power Density', units='TBD')
         self.add_output('StackWeight', 0.0, desc='Weight of Stack', units='kg')
         self.add_output('StackVol', 0.0, desc='Volume of Stack', units='m^3')
@@ -54,7 +49,7 @@ class BatteryWeight(Component):
         Capacity = params['Capacity']
         VoltageNominal = params['VoltageNominal']
         Ncells = params['Ncells']
-        C_Max = params['C_Max']
+        C_Max = params['C_max']
         PowerBattNom = params['PowerBattNom']
 
 
@@ -125,8 +120,8 @@ class BatteryWeight(Component):
             thetaR = math.arctan(PowerDensityR/SpecEnergy)
             count = 0.0
             if(SpecEnergy == 175. and theta <= thetaR):
-		        break
-			count = count + 1
+                break
+            count = count + 1
             if(count > 500):
                 break
 
@@ -147,5 +142,5 @@ if __name__ == '__main__':
     p.run()
 
     # print following properties
-    print 'StackWeight : %f' % p['comp.StackWeight']
-    print 'StackVol : %f' % p['comp.StackVol']
+    print ('StackWeight : %f' % p['comp.StackWeight'])
+    print ('StackVol : %f' % p['comp.StackVol'])

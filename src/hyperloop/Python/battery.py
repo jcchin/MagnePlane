@@ -15,7 +15,7 @@ class battery(Group):
 		self.add('batteryWeight', BatteryWeight())
 
 		self.connect('batteryP.Ncells', 'batteryWeight.Ncells')
-		self.connect('batteryP.C_max', 'batteryWeight.C_Max')
+		self.connect('batteryP.C_max', 'batteryWeight.C_max')
 
 if __name__ == '__main__':
 	from openmdao.api import IndepVarComp
