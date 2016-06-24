@@ -145,7 +145,7 @@ if __name__ == '__main__':
     p.run()
 
     # print following properties
-    print 'Voltage : %f' % p['comp.Voltage']
-    print 'Current : %f' % p['comp.Current']
-    print 'Nseries : %f' % p['comp.Nseries']
+    print ('Voltage : %f' % p['comp.Voltage'])
+    print ('Current : %f' % p['comp.Current'])
+    print ('Nseries : %f' % p['comp.Nseries'])
 
