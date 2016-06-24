@@ -5,19 +5,16 @@ from openmdao.api import IndepVarComp, Component, Problem, Group
 
 """
 
-Notes
------
-
-    Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
-    Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
+Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
+Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
 
 Parameters
 ----------
 
     Torque: float
-        Output Torque from motor in N-m. Default value is 1000.0
+        Output Torque from motor in N*m. Default value is 1000.0
     Max_RPM: float
-        Maximum RPM of motor. Default value is 4600.0
+        Maximum rotations per minute of motor in rpm. Default value is 4600.0
     DesignPower: float
         Desired design value for motor power in hp. Default value is 0.0
     Resistance: float
@@ -46,10 +43,6 @@ Parameters
         Max motor phase current in Amps. Default value is 500.0
     nphase: float
         Number of motor phases. Default value is 3.0
-    DesignPower: float
-        Desired power design value of motor in hp. Default value is 0.0
-    Max_RPM: float
-        Maximum rpm of motor. Default value is 4600.0
     kappa: float
         Ratio of Base speed to max speed. Default value is 0.6
     V_max: float
@@ -81,7 +74,7 @@ Parameters
     wmax: float
         Max speed in rad/s. Default value is 0.0
 
-Returns
+Outputs
 -------
     Current: float
         Current magnitude in Amps. Default value is 2.0
@@ -126,17 +119,17 @@ class BasicMotor(Component):
         super(BasicMotor, self).__init__()
 
         #Inputs/PArams
-        self.add_param('Resistance', val=0.0, desc='Resistance of Stator', units='Ohms')
-        self.add_param('Inductance', val=0.0, desc='Motor inductance', units='Henrys')
-        self.add_param('Torque', val=310.35*0.737, desc='Output torque', units='N-m')
-        self.add_param('Speed', val=1900.0, desc='Output shaft mechanical speed', units='rad/s')
+        self.add_param('Resistance', val=0.0, desc='Resistance of Stator', units='ohm')
+        self.add_param('Inductance', val=0.0, desc='Motor inductance', units='H')
+        self.add_param('Speed',val=1900.0,desc='Output shaft mechanical speed',units='rad/s')
+        self.add_param('Torque', val=310.35*0.737, desc='Output torque', units='N*m')
         self.add_param('Kv', val=0.1, desc='Speed/volt', units='rad/s/V')
-        self.add_param('Kt', val=10.0, desc='Torque/amp', units='ft-lb/A')
+        self.add_param('Kt', val=10.0, desc='Torque/amp', units='N*m/A')
         self.add_param('PolePairs', val=6.0, desc='Number of pole pairs in motor', units='none')  # f=w*PP/2*pi
         #self.add_param('H_c',val=4.2,desc='Material Coercive Force',units='A/m')
-        self.add_param('B_p', val=1.5, desc='Peak Magnetic Field', units='Tesla')
+        self.add_param('B_p', val=1.5, desc='Peak Magnetic Field', units='T') #Tesla
 
-        self.add_param('R0', val=0.004, desc='Motor Phase Internal Resistance at 0degC',units='Ohms')  # total internal resistance
+        self.add_param('R0', val=0.004, desc='Motor Phase Internal Resistance at 0degC',units='ohm') #ohms  # total internal resistance
         self.add_param('I0', val=0.0, desc='Motor No-load current', units='A')
         self.add_param('I0_Des', val=0.0, desc='Motor No-load Current at Nbase', units='A')
         self.add_param('imax', val=450.0, desc='Max motor phase current', units='A')
@@ -149,13 +142,13 @@ class BasicMotor(Component):
         self.add_param('Dbase',val=0.48,desc='Base 8000hp diameter for scaling purposes',units='m')
         self.add_param('Lbase',val=0.4,desc='Base 8000hp length for scaling purposes',units='m')
         self.add_param('LDratio', val=0.83, desc='Length to diameter ratio of motor', units='none')
-        self.add_param('CoreRadiusRatio', val=0.7, desc='ratio of inner diameter of core to outer', units='')
-        #self.add_param('k_Friction',val=1.0,desc'Friction coefficient calibration factor',units='')
-        #self.add_param('Rd',val=0.0,desc='D-axis resistance per motor phase at very high speed (short circuit)',units='')
-        #self.add_param('efficiency',val=0.0,desc='Motor efficiency',units='')
-        self.add_param('Pmax',val=0.0,desc='Conversion of DesignPower in hp to Watts',units='Watts')
-        self.add_param('D2L', val=0.0, desc='D-squared*L parameter which is ~ to Torque', units='mm^3')
-        self.add_param('D2L_ft',val=0.0,desc='D-squared*L parameter converted to ft^3', units='ft^3')
+        self.add_param('CoreRadiusRatio', val=0.7, desc='ratio of inner diameter of core to outer', units='none')
+        #self.add_param('k_Friction',val=1.0,desc'Friction coefficient calibration factor',units='none')
+        #self.add_param('Rd',val=0.0,desc='D-axis resistance per motor phase at very high speed (short circuit)',units='ohm')
+        #self.add_param('efficiency',val=0.0,desc='Motor efficiency',units='none')
+        self.add_param('Pmax',val=0.0,desc='Conversion of DesignPower in hp to Watts',units='W')
+        self.add_param('D2L', val=0.0, desc='D-squared*L parameter which is ~ to Torque', units='mm**3')
+        self.add_param('D2L_ft',val=0.0,desc='D-squared*L parameter converted to ft^3', units='ft**3')
         self.add_param('w',val=0.0,desc='speed in rad/s',units='rad/s')
         self.add_param('wmax',val=0.0,desc='Max speed in rad/s',units='rad/s')
 
@@ -165,17 +158,17 @@ class BasicMotor(Component):
         self.add_output('phaseVoltage', val=500.0, desc='AC voltage across motor', units='V')
         self.add_output('Phase', val=0.0, desc='phase offset between Current and Voltage', units='rad')
         self.add_output('Frequency', val=60.0, desc='Frequency of Electric output waveform', units='Hz')
-        #self.add_output('P_mech',val=0.0,desc='Mechanical output power',units='')
-        #self.add_output('P_copper',val=0.0,desc='Copper losses',units='')
-        #self.add_output('P_iron',val=0.0,desc='Iron Losses',units='')
-        #self.add_output('P_windage',val=0.0,desc='Windage Losses',units='')
-        #self.add_output('P_input',val=0.0,desc='Total Power input needed',units='')
-        self.add_output('Mass', val=0.0, desc='Mass of motor', units='')
+        #self.add_output('P_mech',val=0.0,desc='Mechanical output power',units='hp')
+        #self.add_output('P_copper',val=0.0,desc='Copper losses',units='hp')
+        #self.add_output('P_iron',val=0.0,desc='Iron Losses',units='hp')
+        #self.add_output('P_windage',val=0.0,desc='Windage Losses',units='hp')
+        #self.add_output('P_input',val=0.0,desc='Total Power input needed',units='hp')
+        self.add_output('Mass', val=0.0, desc='Mass of motor', units='kg')
 
-        self.add_output('Volume', val=0.0, desc='Volume of motor modeled as a cylinder', units='m^3')
-        self.add_output('Volume_ft',val=0.0,desc='Volume of motor modeled as a cylinder in ft',units='ft^3')
-        self.add_output('R_calc', val=0.0, desc='Resistance of stator', units='Ohms')
-        self.add_output('Tmax', val=0.0, desc='Max Torque', units='N-m')
+        self.add_output('Volume', val=0.0, desc='Volume of motor modeled as a cylinder', units='m**3')
+        self.add_output('Volume_ft',val=0.0,desc='Volume of motor modeled as a cylinder in ft',units='ft**3')
+        self.add_output('R_calc', val=0.0, desc='Resistance of stator', units='ohm')
+        self.add_output('Tmax', val=0.0, desc='Max Torque', units='N*m')
 
     def solve_nonlinear(self, params, unknowns, resids):
 
@@ -284,8 +277,8 @@ class BasicMotor(Component):
         # Calculates phase Current
         #wmin = 0.086*wmax
         Torque= Pmax/wmax
-        phaseCurrent = Torque * 1.355818 / Kt + I0
-        phaseCurrent = phaseCurrent/nphase
+        Current = Torque * 1.355818 / Kt + I0
+        phaseCurrent = Current/nphase
         return phaseCurrent
 
     def phaseVoltage_calc(self,w,phaseCurrent,nphase,R0,Kv):
