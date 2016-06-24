@@ -167,31 +167,7 @@ class BasicMotor(Component):
         Dbase = ((D2L / LDratio) ** (1 / 3)) / 1000  # meters
         Mass = 0.0000070646 * (D2L ** 0.9386912061)
         return Mass
-"""
-    def R_calc(self, imax, D2L, LDratio, nphase):
-        As = 688.7 * imax
-        Dbase = ((D2L / LDratio) ** (1 / 3)) / 1000  # meters
-        Tph = As * numpy.pi * Dbase / imax / nphase / 2.0  # Calculate number of coil turns required
-        rpert = 48.8387296964863 * imax ** (-1.00112597971171)  # Calculate resistance per km per turn
-        lm = Dbase * 3.14159  # Calculate length of a single winding
-        Rpturn = lm * rpert / 1000.0  # Calculate total resistance per turn
-        Resistance = Rpturn * Tph * nphase
-        return Resistance
-
-    def Voltage_calc(self, Speed, PolePairs, Inductance, Current, Kv, Resistance):
-        # Frequency = Speed*PolePairs/(2*numpy.pi)
-        Frequency = Speed * PolePairs / 60.0
-        inductorImpedance = Frequency * Inductance  # j (j=sqrt(-1))
-        speedVoltage = Kv * Speed
-        resistorVoltage = Current * Resistance
-        inductorVoltage = Current * inductorImpedance  # *j
-        realVoltage = speedVoltage + resistorVoltage
-        # Phase = numpy.atan2(inductorVoltage,realVoltage)
-        Voltage = numpy.sqrt(inductorVoltage ** 2 + realVoltage ** 2)
-        Voltage = Voltage * numpy.sqrt(3. / 2.)
-        return Voltage
-"""
-
+    
     def print_data():
         print('kappa: %f' % prob['comp.kappa'])
         print('imax: %f' %prob['comp.imax'])
@@ -219,3 +195,28 @@ class BasicMotor(Component):
         # print ('Max Torque: %f' %prob['comp.Tmax'])
         print('Motor Size (D^2*L) [mm^3]: %f x10e-6' % prob['comp.D2L'])
         print('Motor Weight [kg]: %f ' % prob['comp.Mass'])
+
+"""
+    def R_calc(self, imax, D2L, LDratio, nphase):
+        As = 688.7 * imax
+        Dbase = ((D2L / LDratio) ** (1 / 3)) / 1000  # meters
+        Tph = As * numpy.pi * Dbase / imax / nphase / 2.0  # Calculate number of coil turns required
+        rpert = 48.8387296964863 * imax ** (-1.00112597971171)  # Calculate resistance per km per turn
+        lm = Dbase * 3.14159  # Calculate length of a single winding
+        Rpturn = lm * rpert / 1000.0  # Calculate total resistance per turn
+        Resistance = Rpturn * Tph * nphase
+        return Resistance
+
+    def Voltage_calc(self, Speed, PolePairs, Inductance, Current, Kv, Resistance):
+        # Frequency = Speed*PolePairs/(2*numpy.pi)
+        Frequency = Speed * PolePairs / 60.0
+        inductorImpedance = Frequency * Inductance  # j (j=sqrt(-1))
+        speedVoltage = Kv * Speed
+        resistorVoltage = Current * Resistance
+        inductorVoltage = Current * inductorImpedance  # *j
+        realVoltage = speedVoltage + resistorVoltage
+        # Phase = numpy.atan2(inductorVoltage,realVoltage)
+        Voltage = numpy.sqrt(inductorVoltage ** 2 + realVoltage ** 2)
+        Voltage = Voltage * numpy.sqrt(3. / 2.)
+        return Voltage
+"""
