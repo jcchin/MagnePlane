@@ -20,6 +20,8 @@ class PropulsionMechanics(Component):
             pressure in the tunnel
         entrance speed : float
             Pod speed when it enters a segment of motors
+        Magnetic drag : float
+            Drag force on pod from passiv maglev.Value will come from breakpointlev.py
 
     Returns
     -------
@@ -53,6 +55,7 @@ class PropulsionMechanics(Component):
         self.add_param('eta', val = .8, desc = 'LSM efficiency')
         self.add_param('Cd', val = .2, desc = 'Aerodynamic drag coefficient')
         self.add_param('S', val = 1.4, desc = 'Frontal Area', units = 'm^2')
+        self.add_param('D_magnetic', val = 150.0, units = 'N', desc = 'Magnetic Drag')
 
         self.add_output('pwr_req', val = 0.0)             #Define power as output
         self.add_output('Fg_dP', val = 0.0)               #Define Thrust per unit Power output
@@ -75,7 +78,7 @@ class PropulsionMechanics(Component):
         L = ((vf**2)-(v0**2))/(2*g)                                         #Calculate necessary track length
 
         #Evaluate equation
-        unknowns['pwr_req'] = (1.0/eta)*((m*g*(vf-v0))+(1.0/6.0)*(Cd*rho*S*((vf**3.0)-(v0**3.0))))
+        unknowns['pwr_req'] = (1.0/eta)*((m*g*(vf-v0))+(1.0/6.0)*(Cd*rho*S*((vf**3.0)-(v0**3.0))))+params['D_magnetic']
         unknowns['Fg_dP'] = (m*g)/unknowns['pwr_req']
         unknowns['m_dP'] = m/unknowns['pwr_req']
 

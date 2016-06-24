@@ -23,7 +23,7 @@ class MissionDrag(Component):
 
         #Calculate air density and drag force
         rho = params['p_ambient']/(params['R']*params['T_ambient'])
-        unknowns['D'] = (.5*rho*(params['V']**2)*params['S']) + D_magnetic
+        unknowns['D'] = (.5*rho*(params['V']**2)*params['S']) + params['D_magnetic']
 
 if __name__ == '__main__':
 
