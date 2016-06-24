@@ -87,7 +87,7 @@ if __name__ == '__main__':
     top.run()
 
     print('\n')
-    print('Total drag force = %f N' % top['Thrust'])
+    print('Total thrust force = %f N' % top['Thrust'])
 
 
 
