@@ -32,7 +32,9 @@ class Drag(Component):
         gamma : float
             Percent factor used in Area. Default value is .5.
         Pc : float
-            Width of track. Default value is 2.
+            Width of track. Default value is 3.
+        w : float
+            Width of magnet array. Default value is 3.
         Nt : float
             Width of conductive strip. Default value is .005.
         Ns : float
@@ -45,8 +47,8 @@ class Drag(Component):
             Electric resistance. Default value is ____ .
         mu0 : float
             Permeability of Free Space. Default value is 4*pi*10^-7.
-        vpod : float
-            Velocity of the pod. Default value is 350.
+        vb : float
+            Breakpoint velocity of the pod. Default value is 23.
         y : float
             Levitation height. Default value is .025.
 
@@ -59,8 +61,8 @@ class Drag(Component):
             Halbach Peak Strength. Default value is 0.0.
         A : float
             Total area of the magnetic array. Default value is 0.0.
-        omega : float
-            Frequency of the induced current. Default value is 0.0.
+        omegab : float
+            Breakpoint frequency of the induced current. Default value is 0.0.
         Fyu : float
             Levitation force. Default value is 0.0.
         Fxu : float
@@ -78,88 +80,86 @@ class Drag(Component):
         super(Drag, self).__init__()
 
         # Pod Inputs
-        self.add_param('mpod', val=3000.0, units='kg', desc='Pod Mass')
-        self.add_param('Br', val=1.48, units='Tesla', desc='Residual Magnetic Flux')
-        self.add_param('M', val=8.0, desc='Number of Magnets per Halbach Array')
-        self.add_param('d', val=0.05, units='m', desc='Thickness of magnet')
-        self.add_param('lpod', val=22, units='m', desc='Length of Pod')
+        self.add_param('mpod', val=.375, units='kg', desc='Pod Mass')
+        self.add_param('Br', val=1.21, units='T', desc='Residual Magnetic Flux')
+        self.add_param('M', val=4.0, desc='Number of Magnets per Halbach Array')
+        self.add_param('d', val=0.012, units='m', desc='Thickness of magnet')
+        self.add_param('lpod', val=.06, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
+        self.add_param('w', val=.06, units='m', desc='Width of magnet array')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=3, units='m', desc='width of track')
-        self.add_param('Nt', val=0.005, units='m', desc='width of conductive strip')
-        self.add_param('Ns', val=1.0, desc='number of laminated sheets')
-        self.add_param('delta_c', val=0.0005334, units='m', desc='single layer thickness')
-        self.add_param('strip_c', val=0.0105, units='m', desc='center strip spacing')
-        self.add_param('rc', val=1.713*10**-8, units='Ohm-m', desc='electric resistivity')
-        self.add_param('mu0', val=4.*pi*10**-7, units='Ohm*s/m', desc='Permeability of Free Space')
+        self.add_param('Pc', val=.11, units='m', desc='Width of Track')
+        self.add_param('Nt', val=0.005, units='m', desc='Width of Conductive Strip')
+        self.add_param('Ns', val=1.0, desc='Number of Laminated Sheets')
+        self.add_param('delta_c', val=0.0005334, units='m', desc='Single Layer Thickness')
+        self.add_param('strip_c', val=0.0105, units='m', desc='Center Strip Spacing')
+        self.add_param('rc', val=1.713*10**-8, units='ohm-m', desc='Electric Resistivity')
+        self.add_param('mu0', val=4.*pi*10**-7, units='ohm*s/m', desc='Permeability of Free Space')
 
         # Pod/Track Relation Inputs
-        self.add_param('vpod', val=23, units='m/s', desc='pod velocity')
-        self.add_param('y', val=0.01, units='m', desc='levitation height')
+        self.add_param('vb', val=23.2038, units='m/s', desc='Desired Breakpoint Velocity')
+        self.add_param('y', val=0.0102667, units='m', desc='Levitation Height')
         self.add_param('g', val=9.81, units='m/s**2', desc='Gravity')
 
         # outputs
         self.add_output('lam', val=0.0, units='m', desc='Halbach wavelength')
-        self.add_output('L', val=0.0, units='Ohm*s', desc='Inductance')
-        self.add_output('B0', val=0.0, units='Tesla', desc='Halbach peak strength')
+        self.add_output('L', val=0.0, units='ohm*s', desc='Inductance')
+        self.add_output('B0', val=0.0, units='T', desc='Halbach peak strength')
         self.add_output('A', val=0.4, units='m**2', desc='Total Area of Magnets')
-        self.add_output('omega', val=2650., units ='rad/s', desc='frequency')
-        self.add_output('Fyu', val=0.0, units='N', desc='levitation force')
-        self.add_output('Fxu', val=0.0, units='N', desc='drag force')
+        self.add_output('omegab', val=2650., units ='rad/s', desc='Breakpoint Frequency')
+        self.add_output('Fyu', val=0.0, units='N', desc='Levitation Force')
+        self.add_output('Fxu', val=0.0, units='N', desc='Drag Force')
         self.add_output('LDratio', val=0.0, desc='Lift to Drag Ratio')
-        self.add_output('R', val=0.0, units='Ohm', desc='Resistance')
-        self.add_output('omegab', val=0.0, desc='Breakpoint frequency')
-        self.add_output('vb', val=0.0, desc='Breakpoint velocity')
+        self.add_output('R', val=0.0, units='ohm', desc='Resistance')
 
 
 
     def solve_nonlinear(self, params, unknowns, resids):
 
         #Pod Parameters
-        mpod = params['mpod']
-        vpod = params['vpod']
-        Br = params['Br']
-        M = params['M']
-        y = params['y']
-        d = params['d']
-        g = params['g']
-        gamma = params['gamma']
-        lpod = params['lpod']
+        vb = params['vb']  # Breakpoint Velocity
+        Br = params['Br']  # Magnet Strength
+        M = params['M']  # Number of Magnets per Wavelength
+        y = params['y']  # Desired Levitation Height
+        d = params['d']  # Magnet Thickness
+        gamma = params['gamma']  # Area Scalar
+        lpod = params['lpod']  # Length of the Pod
+        w = params['w']  # Width of Magnetic Array
 
         #Track Parameters
-        Pc = params['Pc']
-        Nt = params['Nt']
-        Ns = params['Ns']
-        delta_c = params['delta_c']
-        strip_c = params['strip_c']
-        rc = params['rc']
-        mu0 = params['mu0']
+        Pc = params['Pc']  # Width of Track
+        Nt = params['Nt']  # Width of Conductive Strip
+        Ns = params['Ns']  # Number of Laminated Layers
+        delta_c = params['delta_c']  # Single Layer Thickness
+        strip_c = params['strip_c']  # Center Strip Spacing
+        rc = params['rc']  # Electrical Resistivity of Material
+        mu0 = params['mu0']  # Permeability of Free Space
 
         # Compute Intermediate Variables
-        R = rc*Pc/(delta_c*Nt*Ns) # Track Resistance
+        R = rc*Pc/(delta_c*Nt*Ns)  # Track Resistance
 
         lam = M*d # Compute Wavelength
-        B0 = Br*(1.-e**(-2.*pi*d/lam))*((sin(pi/M))/(pi/M)) # Compute Peak Field Strength
-        L = mu0*Pc/(4*pi*strip_c/lam) # Compute Track Inductance
-        A = Pc*lpod*gamma # Compute Magnet Area
+        B0 = Br*(1.-e**(-2.*pi*d/lam))*((sin(pi/M))/(pi/M))  # Compute Peak Field Strength
+        L = mu0*Pc/(4*pi*strip_c/lam)  # Compute Track Inductance
+        A = w*lpod*gamma  # Compute Magnet Area
 
-        if vpod == 0:
-            omega = 0
+        if vb == 0:
+            omegab = 0
             Fyu = 0
             Fxu = 0
             LDratio = 0
         else:
-            omega = 2*pi*vpod/lam  # Compute Induced Frequency
-            Fyu = (B0**2.*Pc/(4.*pi*L*strip_c/lam))*(1./(1.+(R/(omega*L))**2))*e**(-4.*pi*(y)/lam)*A
-            Fxu = (B0**2.*Pc/(4.*pi*L*strip_c/lam))*((R/(omega*L))/(1.+(R/(omega*L))**2.))*e**(-4*pi*(y)/lam)*A
-            LDratio = Fyu/Fxu
+            omegab = 2*pi*vb/lam  # Compute Induced Frequency
+            Fyu = (B0**2.*Pc/(4.*pi*L*strip_c/lam))*(1./(1.+(R/(omegab*L))**2))*e**(-4.*pi*(y)/lam)*A  # Compute Lift Force
+            Fxu = (B0**2.*Pc/(4.*pi*L*strip_c/lam))*((R/(omegab*L))/(1.+(R/(omegab*L))**2.))*e**(-4*pi*(y)/lam)*A  #Compute Drag Force
+            LDratio = Fyu/Fxu  # Compute Lift to Drag Ratio
 
         unknowns['lam'] = lam
         unknowns['B0'] = B0
         unknowns['L'] = L
         unknowns['A'] = A
-        unknowns['omega'] = omega
+        unknowns['omegab'] = omegab
         unknowns['Fyu'] = Fyu
         unknowns['Fxu'] = Fxu
         unknowns['LDratio'] = LDratio
@@ -174,6 +174,7 @@ class Drag(Component):
     #     J['Fxu', 'gamma'] =
     #
     #     return J
+
 
 class Mass(Component):
     """
@@ -196,10 +197,11 @@ class Mass(Component):
             Length of the Hyperloop pod. Default value is 5.
         gamma : float
             Percent factor used in Area. Default value is .5.
-        Pc : float
-            Width of track. Default value is 2.
+        w : float
+            Width of magnet array. Default value is 3.
         costperkg : flost
             Cost of the magnets per kilogram. Default value is 120.
+
 
     Returns
     -------
@@ -222,36 +224,35 @@ class Mass(Component):
         super(Mass, self).__init__()
 
         # Pod Inputs
-        self.add_param('d', val=0.05, units='m', desc='thickness of magnet')
-        self.add_param('rhomag', val=7500, units='kg**m^3', desc='Density of Magnet')
-        self.add_param('lpod', val=22, units='m', desc='Length of Pod')
+        self.add_param('d', val=0.012, units='m', desc='Thickness of Magnet')
+        self.add_param('rhomag', val=7500, units='kg/m**3', desc='Density of Magnet')
+        self.add_param('lpod', val=.06, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
-        self.add_param('costperkg', val=44, units= '$/kg',desc='Cost of Magnet per kilogram')
+        self.add_param('costperkg', val=44, units= 'USD/kg',desc='Cost of Magnet per Kilogram')
+        self.add_param('w', val=.06, units='m', desc='Width of Magnet Array')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=3, units='m', desc='width of track')
+        self.add_param('Pc', val=.11, units='m', desc='width of track')
 
         # outputs
         self.add_output('A', val=0.0, units='m', desc='Total Area of Magnets')
         self.add_output('mmag', val=0.0, units='kg', desc='Mass of Magnets')
-        self.add_output('cost', val = 0.0, units='$', desc='Cost of Magnets')
+        self.add_output('cost', val = 0.0, units='USD', desc='Cost of Magnets')
 
     def solve_nonlinear(self, params, unknowns, resids):  # params, unknowns, residuals
 
-        # Pod Parameters
-        d = params['d']
-        gamma = params['gamma']
-        lpod = params['lpod']
-        rhomag = params['rhomag']
-        costperkg = params['costperkg']
-
-        # Track Parameters
-        Pc = params['Pc']
+        #Parameters
+        d = params['d'] # Thickness of Magnet
+        w = params['w'] # Width of Magnet Array
+        gamma = params['gamma'] # Area Scalar
+        lpod = params['lpod'] # Length of Pod
+        rhomag = params['rhomag'] # Density of Magnets
+        costperkg = params['costperkg'] # Cost per kg of Magnet
 
         # Compute Intermediate Variables
-        A = Pc * lpod * gamma  # Compute Magnet Area
+        A = w * lpod * gamma  # Compute Magnet Area
         mmag = rhomag * A * d  # Compute Magnet Mass
-        cost = mmag * costperkg
+        cost = mmag * costperkg # Compute Total Magnet Cost
 
         unknowns['A'] = A
         unknowns['mmag'] = mmag
@@ -274,29 +275,26 @@ class Mass(Component):
 
 if __name__ == "__main__":
 
-    import sqlitedict
-    from pprint import pprint
-
     top = Problem()
     root = top.root = Group()
 
-    #Define Parameters
+    # Define Parameters
     params = (
-        ('d', .05, {'units': 'm'}),
+        ('d', .012, {'units': 'm'}),
         ('gamma', 1.0),
-        ('mpod', 3000.0, {'units': 'kg'}),
+        ('mpod', .375, {'units': 'kg'}),
         ('g', 9.81, {'units': 'm/s**2'})
     )
 
+    # Add Components
     root.add('input_vars', IndepVarComp(params))
     root.add('p', Drag())
     root.add('q', Mass())
 
-    #Constraint
+    # Constraint Equation
     root.add('con1', ExecComp('c1 = (Fyu - mpod * g)/1e5'))
 
-
-    #Connect
+    # Connect
     root.connect('input_vars.mpod', 'p.mpod')
     root.connect('p.mpod', 'con1.mpod')
     root.connect('p.Fyu', 'con1.Fyu')
@@ -322,7 +320,7 @@ if __name__ == "__main__":
     top.driver.add_desvar('input_vars.d', lower=.01, upper=.15, scaler=100)
     top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
 
-    # Constraint
+    # Add Constraint
     top.driver.add_constraint('con1.c1', lower = 0.0)
 
     #Problem Objective
@@ -332,14 +330,8 @@ if __name__ == "__main__":
 
     top.driver.add_objective('obj_cmp.obj')
 
-    #Problem Recorder
-    # recorder = SqliteRecorder('maglev2')
-    # recorder.options['record_params'] = True
-    # recorder.options['record_metadata'] = True
-    # top.driver.add_recorder(recorder)
-
     top.setup(check=True)
-    # top.root.list_connections()
+
 
     top.run()
 
@@ -361,17 +353,3 @@ if __name__ == "__main__":
     print('R is %f m' % top['p.R'])
     print('L is %12.10f m' % top['p.L'])
     print('B0 is %f m' % top['p.B0'])
-
-
-    # top.root.dump()
-
-    # db = sqlitedict.SqliteDict( 'maglev2', 'openmdao' )
-    # data = db['rank0:COBYA/1']
-    # p = data['Parameters']
-    # print('params')
-    # pprint(p)
-    #
-    # u = data['Unknowns']
-    # print('unknowns')
-    # pprint(u)
-    # # remove('./maglev2')
