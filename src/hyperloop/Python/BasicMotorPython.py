@@ -10,110 +10,109 @@ Notes
 
     Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
     Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
-    Parameters and relations were taken from Georgia Tech ASDL paper:
 
 Parameters
 ----------
 
     Torque: float
-        Output Torque from motor in N-m
+        Output Torque from motor in N-m. Default value is
     Max_RPM: float
-        Maximum RPM of motor
+        Maximum RPM of motor. Default value is
     DesignPower: float
-        Desired design value for motor power in hp
+        Desired design value for motor power in hp. Default value is
     Resistance: float
-        Resistance of Stator in Ohms
+        Resistance of Stator in Ohms. Default value is 0.0
     Inductance: float
-        Motor inductance in Henrys
+        Motor inductance in Henrys. Default value is 0.0
     Torque: float
-        Output torque in N-m
+        Output torque in N-m. Default value is
     Speed: float
-        Output shaft mechanical speed in rad/s
+        Output shaft mechanical speed in rad/s. Default value is
     Kv: float
-        Motor constant (Speed/volt) in rad/s/V
+        Motor constant (Speed/volt) in rad/s/V. Default value is 0.1
     Kt: float
-        Motor constant (Torque/amp) in ft-lb/A
+        Motor constant (Torque/amp) in ft-lb/A. Default value is 10.0
     PolePairs: float
-        Number of pole pairs in motor
+        Number of pole pairs in motor. Default value is 6.0
     H_c: float
-        Material Coercive Force in A/m
+        Material Coercive Force in A/m. Default value is 4.2
     B_p: float
-        Peak Magnetic Field in Tesla
+        Peak Magnetic Field in Tesla. Default value is 2.5
     R0: float
-        Total Internal Resistance at 0degC in Ohms
+        Total Internal Resistance at 0degC in Ohms. Default value is 0.2
     I0: float
-        Motor No-load current in Amps
+        Motor No-load current in Amps. Default value is 0.0
     I0_Des: float
-        Motor No-load Current at Nbase in Amps
+        Motor No-load Current at Nbase in Amps. Default value is 0.0
     imax: float
-        Max motor phase current in Amps
+        Max motor phase current in Amps. Default value is 500.0
     nphase: float
-        Number of motor phases
+        Number of motor phases. Default value is 3.0
     DesignPower: float
-        Desired power design value of motor in hp
+        Desired power design value of motor in hp. Default value is 0.0
     Max_RPM: float
-        Maximum rpm of motor
+        Maximum rpm of motor. Default value is 4600.0
     kappa: float
-        Ratio of Base speed to max speed
+        Ratio of Base speed to max speed. Default value is 0.6
     V_max: float
-        Max phase voltage in volts
+        Max phase voltage in volts. Default value is 10000.0
     As: float
-        Electrical Loading
+        Electrical Loading. Default value is 95000.0
     Dbase: float
-        Base 8000hp diameter for scaling purposes in m
+        Base 8000hp diameter for scaling purposes in m.  Default value is 0.48
     Lbase: float
-        Base 8000hp length for scaling purposes in m
+        Base 8000hp length for scaling purposes in m. Default value is 0.4
     LDratio: float
-        Length to diameter ratio of motor
+        Length to diameter ratio of motor. Default value is 1.5
     CoreRadiusRatio: float
-        Ratio of inner diameter of core to outer
+        Ratio of inner diameter of core to outer. Default value is 0.4
     k_Friction: float
-        Friction coefficient calibration factor
+        Friction coefficient calibration factor. Default value is 1.0
     Rd: float
-        D-axis resistance per motor phase at very high speed (short circuit)
+        D-axis resistance per motor phase at very high speed (short circuit). Default value is
     efficiency: float
-        Motor efficiency (Input Power/Mechanical Power output)
+        Motor efficiency (Input Power/Mechanical Power output). Default value is
     Pmax: float
-        Conversion of DesignPower in hp to Watts
+        Conversion of DesignPower in hp to Watts. Default value is
     D2L: float
-        D-squared*L parameter which is ~ to Torque in mm^3
+        D-squared*L parameter which is ~ to Torque in mm^3. Default value is
     Dbase: float
-        Motor diameter in mm
+        Motor diameter in mm. Default value is
     w: float
-        Speed converted to rad/s
+        Speed converted to rad/s. Default value is 50.0
     wmax: float
-        Max speed in rad/s
+        Max speed in rad/s. Default value is
 
 Returns
 -------
     Current: float
-        Current magnitude in Amps
+        Current magnitude in Amps. Default value is 2.0
     phaseCurrent: float
-        Phase current for AC current in Amps
+        Phase current for AC current in Amps. Default value is
     phaseVoltage: float
-        AC voltage across motor in Volts
+        AC voltage across motor in Volts. Default value is 500.0
     Phase: float
-        phase offset between Current and Voltage
+        phase offset between Current and Voltage. Default value is 0.0
     Frequency: float
-        Frequency of Electric output waveform in Hz
+        Frequency of Electric output waveform in Hz. Default value is 60.0
     P_mech: float
-        Mechanical output power
+        Mechanical output power. Default value is
     P_copper: float
-        Copper losses
+        Copper losses. Default value is
     P_iron: float
-        Iron Losses
+        Iron Losses. Default value is
     P_windage: float
-        Windage Losses
+        Windage Losses. Default value is
     P_input: float
-        Total Power input needed
+        Total Power input needed. Default value is
     Mass: float
-        Mass of motor in kg
+        Mass of motor in kg. Default value is
     Volume: float
-        Volume of motor modeled as a cylinder in m^3
+        Volume of motor modeled as a cylinder in m^3. Default value is
     R_calc: float
-        Resistance of stator in Ohms
+        Resistance of stator in Ohms. Default value is
     Tmax: float
-        Max Torque in N-m
+        Max Torque in N-m. Default value is 1000.0
 
 References
 ----------
@@ -237,30 +236,30 @@ class BasicMotor(Component):
         unknowns['Frequency'] = Speed*PolePairs/60
         Frequency = unknowns['Frequency']
         """
-            unknowns['Resistance'] = self.R_calc(imax, D2L, LDratio, nphase)
-            Resistance = unknowns['Resistance']
+        unknowns['Resistance'] = self.R_calc(imax, D2L, LDratio, nphase)
+        Resistance = unknowns['Resistance']
 
-            unknowns['P_iron']=self.Iron_loss(Lbase,Dbase,CoreRadiusRatio,B_p,Frequency)
-            P_iron = unknowns['P_iron']
+        unknowns['P_iron']=self.Iron_loss(Lbase,Dbase,CoreRadiusRatio,B_p,Frequency)
+        P_iron = unknowns['P_iron']
 
-            unknowns['P_windage']=self.P_windage_calc(Dbase,CoreRadiusRatio,w,k_Friction,Lbase)
-            P_windage = unknowns['P_windage']
+        unknowns['P_windage']=self.P_windage_calc(Dbase,CoreRadiusRatio,w,k_Friction,Lbase)
+        P_windage = unknowns['P_windage']
 
-            unknowns['P_input'] = self.P_input_calc(Pmax,w,wmax,Current,Rtotal,nphase,P_iron,P_windage)
-            P_input = unknowns['P_input']
+        unknowns['P_input'] = self.P_input_calc(Pmax,w,wmax,Current,Rtotal,nphase,P_iron,P_windage)
+        P_input = unknowns['P_input']
 
-            unknowns['P_mech'] = w*Torque*1.355818
-            P_mech=unknowns['P_mech']
+        unknowns['P_mech'] = w*Torque*1.355818
+        P_mech=unknowns['P_mech']
 
-            unknowns['efficiency'] =P _input/P_mech
+        unknowns['efficiency'] =P _input/P_mech
 
 
-        def Current_calc(self, Torque, Kv, nphase):
-        #Calculates Current for Total Voltage calculation
-            Kt = .73756214837/Kv
-            Current = Torque*Kt
-            Current = Current/nphase
-            return Current
+    def Current_calc(self, Torque, Kv, nphase):
+    #Calculates Current for Total Voltage calculation
+        Kt = .73756214837/Kv
+        Current = Torque*Kt
+        Current = Current/nphase
+        return Current
 
     """
 
@@ -280,12 +279,13 @@ class BasicMotor(Component):
         return phaseCurrent
 
     def phaseVoltage_calc(self,w,phaseCurrent,nphase,R0,Kv):
-
+        #Calculates phase voltage
         Voltage = (phaseCurrent*nphase)*R0 + w/(Kv*numpy.pi/30.0)
         phaseVoltage = Voltage*numpy.sqrt(3.0/2.0)
         return phaseVoltage
 
     def Size_calc(self, LDratio, Dbase,CoreRadiusRatio):
+        #Calculates volume by representing motor as a cylinder: V=pi(r^2)*L = pi*((d/2)^2)*L
         Lbase = LDratio * Dbase  # meters
         Volume = numpy.pi * Lbase * (Dbase / 2) ** 2 * (1-CoreRadiusRatio**2)
         return Volume
@@ -331,13 +331,13 @@ class BasicMotor(Component):
         P_iron = (Kh * B_p * B_p * Frequency + Kc*(B_p*Frequency)**2.0 + Ke*(B_p*Frequency)**(1.5)) * Core_Weight
         #Scales iron volume on power (assuming speed range is close to baseline)
 
-    def P_windage_calc(self,Dbase,CoreRadiusRatio,w,k_Friction,Lbase)
+    def P_windage_calc(self,Dbase,CoreRadiusRatio,w,k_Friction,Lbase):
         c_friction=0.1
         P_disc_wind = 0.5 * c_friction * 1.2041 * w**3. * ((Dbase/2)**5.)*(1-CoreRadiusRatio**5.0)
         P_windage=k_Friction * (c_friction * numpy.pi * (w**3.0) * (Dbase/2)**4 * Lbase * 1.2041 + P_disc_wind)
         return P_windage
 
-    def P_input_calc(self,Pmax,w,wmax,Current,Rtotal,nphase,P_iron,P_windage)
+    def P_input_calc(self,Pmax,w,wmax,Current,Rtotal,nphase,P_iron,P_windage):
         #Calculates total Power input required with losses and friction included
         Torque = Pmax/wmax
         P_mech=w*Torque*1.355818
