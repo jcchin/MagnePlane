@@ -145,7 +145,7 @@ if __name__ == '__main__':
 
     params = (
         ('r', 1.1, {'units' : 'm'}),
-        ('t', 5., {'units' : 'm'}),
+        ('t', 5.0, {'units' : 'm'}),
         ('r_pylon', 1.1, {'units': 'm'}),
         ('Su_tube', 152.0e6, {'units': 'Pa'}),
         ('sf', 1.5),
@@ -182,14 +182,14 @@ if __name__ == '__main__':
     # root.p.deriv_options['form'] = 'forward'
     root.p.deriv_options['step_size'] = 1.0e-10
 
-    top.driver = ScipyOptimizer()
-    top.driver.options['optimizer'] = 'SLSQP'
-
-    top.driver.add_desvar('input_vars.t', lower = .001, scaler=100.0)
-    top.driver.add_desvar('input_vars.r_pylon', lower = .1)
-    top.driver.add_objective('p.total_material_cost')
-    top.driver.add_constraint('con1.c1', lower = 0.0, scaler = 1000.0)
-    top.driver.add_constraint('con2.c2', lower = 0.0)
+    # top.driver = ScipyOptimizer()
+    # top.driver.options['optimizer'] = 'SLSQP'
+    #
+    # top.driver.add_desvar('input_vars.t', lower = .001, scaler=100.0)
+    # top.driver.add_desvar('input_vars.r_pylon', lower = .1)
+    # top.driver.add_objective('p.total_material_cost')
+    # top.driver.add_constraint('con1.c1', lower = 0.0, scaler = 1000.0)
+    # top.driver.add_constraint('con2.c2', lower = 0.0)
 
     top.setup()
 
