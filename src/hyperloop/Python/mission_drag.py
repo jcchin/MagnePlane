@@ -9,7 +9,7 @@ class MissionDrag(Component):
         super(MissionDrag, self).__init__()
 
         self.add_param('Cd', val = .2, desc = 'Drag Coefficient')
-        self.add_param('S', val = 1.4, units = 'm^2', desc = 'Frontal Area')
+        self.add_param('S', val = 1.4, units = 'm**2', desc = 'Frontal Area')
         self.add_param('p_tube', val = 850.0, units = 'Pa', desc = 'Ambient Pressure')
         self.add_param('T_ambient', val = 298.0, units = 'K', desc = 'Ambient Temperture')
         self.add_param('R', val = 287.0, units = 'J/(kg*K)', desc = 'Ideal Gas Constant')

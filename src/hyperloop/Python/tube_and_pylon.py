@@ -44,12 +44,12 @@ class TubeandPylon(Component):
         super(TubeandPylon, self).__init__()
 
         #Define material properties of tube
-        self.add_param('rho_tube', val = 7820.0, units = 'kg/m^3', desc = 'density of steel')
+        self.add_param('rho_tube', val = 7820.0, units = 'kg/m**3', desc = 'density of steel')
         self.add_param('E_tube', val = 200.0*(10**9), units = 'Pa', desc = 'Young\'s Modulus of tube')
         self.add_param('v_tube', val = .3, desc = 'Poisson\'s ratio of tube')
         self.add_param('Su_tube', val = 152.0e6, units = 'Pa', desc = 'ultimate strength of tube')
         self.add_param('sf', val = 1.5, desc = 'safety factor')
-        self.add_param('g', val = 9.81, units = 'm/s^2', desc = 'gravity')
+        self.add_param('g', val = 9.81, units = 'm/s**2', desc = 'gravity')
         self.add_param('unit_cost_tube', val = .3307, units = 'USD/kg', desc = 'cost of tube materials per unit mass')
         self.add_param('p_tunnel', val = 100.0, units = 'Pa', desc = 'Tunnel Pressure')
         self.add_param('p_ambient', val = 101300.0, units = 'Pa', desc = 'Ambient Pressure')
@@ -64,7 +64,7 @@ class TubeandPylon(Component):
         self.deriv_options['type'] = 'fd'
 
         #Define pylon material properties
-        self.add_param('rho_pylon', val = 2400.0, units='kg/m^3', desc='density of pylon material')
+        self.add_param('rho_pylon', val = 2400.0, units='kg/m**3', desc='density of pylon material')
         self.add_param('E_pylon', val = 41.0*(10**9), units = 'Pa', desc = 'Young\'s Modulus of pylon')
         self.add_param('v_pylon', val = .2, desc = 'Poisson\'s ratio of pylon')
         self.add_param('Su_pylon', val = 40.0*(10**6), units = 'Pa', desc = 'ultimate strength_pylon')
