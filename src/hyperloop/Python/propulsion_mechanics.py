@@ -81,7 +81,7 @@ class PropulsionMechanics(Component):
         L = ((vf**2)-(v0**2))/(2*g)                                         #Calculate necessary track length
 
         #Evaluate equation
-        unknowns['pwr_req'] = (1.0/eta)*((m*g*(vf-v0))+(1.0/6.0)*(Cd*rho*S*((vf**3.0)-(v0**3.0)))+params['D_magnetic']*(vf-vo)-params['Trust_pod']*(vf-vo))
+        unknowns['pwr_req'] = (1.0/eta)*((m*g*(vf-v0))+(1.0/6.0)*(Cd*rho*S*((vf**3.0)-(v0**3.0)))+params['D_magnetic']*(vf-v0)-params['Thrust_pod']*(vf-v0))
         unknowns['Fg_dP'] = (m*g)/unknowns['pwr_req']
         unknowns['m_dP'] = m/unknowns['pwr_req']
 
