@@ -96,7 +96,7 @@ class Drag(Component):
         self.add_param('spacing', val=0.0, units='m', desc='Halbach Spacing Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=.11, units='m', desc='Width of Track')
+        self.add_param('Pc', val=3, units='m', desc='Width of Track')
         self.add_param('Nt', val=0.005, units='m', desc='Width of Conductive Strip')
         self.add_param('Ns', val=1.0, desc='Number of Laminated Sheets')
         self.add_param('delta_c', val=0.0005334, units='m', desc='Single Layer Thickness')
