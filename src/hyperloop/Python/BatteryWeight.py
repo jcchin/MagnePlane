@@ -1,6 +1,4 @@
-import sys
-sys.path.insert(0,'C:\Users\gazi\Documents\OpenMDAO')
-import openmdao
+
 
 """
 Notes
@@ -65,6 +63,7 @@ References
 
 
 import math, numpy, scipy
+import matplotlib.pyplot as plt
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
@@ -193,6 +192,19 @@ if __name__ == '__main__':
     p.setup()
     p.root.list_connections()
     p.run()
+
+    # plotting and polyfitting power density vs specific energy of 5th order
+    power_den = []
+    power_den2 = []
+    for i in range(11, 175):
+        power_den.append(BatteryWeight().calc_power_density(i, 175.0, 128.79, 93.28, 61.94, 41.24, 11.37))
+        power_den2.append(numpy.polyval([3.08157099e-07, -8.98578291e-05, -4.02194358e-03, 3.97380319e+00, -4.98700200e+02, 2.10772320e+04], i))
+    i = range(11, 175)
+    z = numpy.polyfit(i, power_den, 5)
+    print "The nodes for 5th order polyfit are: %f" %z
+    plt.plot(i, power_den)
+    plt.plot(i, power_den2)
+    plt.show()
 
     # print following properties
     print ('StackWeight(kg) : %f' % p['comp.StackWeight'])
