@@ -201,7 +201,7 @@ if __name__ == '__main__':
         power_den2.append(numpy.polyval([3.08157099e-07, -8.98578291e-05, -4.02194358e-03, 3.97380319e+00, -4.98700200e+02, 2.10772320e+04], i))
     i = range(11, 175)
     z = numpy.polyfit(i, power_den, 5)
-    print "The nodes for 5th order polyfit are: %f" %z
+    print  z
     plt.plot(i, power_den)
     plt.plot(i, power_den2)
     plt.show()
