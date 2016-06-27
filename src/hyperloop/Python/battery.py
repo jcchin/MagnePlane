@@ -4,11 +4,11 @@ from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer
 from BatteryP import BatteryP
 from BatteryWeight import BatteryWeight
 
-class battery(Group):
+class Battery(Group):
 	""" Group containing the battery MDA. This version uses the disciplines
     with derivatives."""
 	def __init__(self):
-		super(battery, self).__init__()
+		super(Battery, self).__init__()
 
 		# creates components of group
 		self.add('batteryP', BatteryP())
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
 	p = Problem()
 	p.root = Group()
-	p.root.add('battery', battery())
+	p.root.add('battery', Battery())
 
 	p.setup()
 	p.root.list_connections()
