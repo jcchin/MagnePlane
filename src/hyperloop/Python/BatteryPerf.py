@@ -3,13 +3,13 @@ from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
 class Battery_perf(Component):
-
-    """Notes
-        ----
+    """
+    Notes
+    -----
         Allows stand-alone batteries to be simulated without an electric circuit within NPSS for use in validating the procedure.
 
     Parameters
-        ----
+    ----------
         Ncells: float
              Number of cells in the battery Stack in cells. Default value is 1.0
         Nparallel: float
@@ -36,18 +36,20 @@ class Battery_perf(Component):
             Peukert Coefficient in none. Default value is 1.01193
 
     Returns
-        ----
+    -------
         Current : float
             Current drain applied to the battery in A. Default value is 0.0.
-
+        Voltage : float
+            Voltage output of battery based on current draw in V. Default value is 0.0.
         Voltage : float
             Voltage output of battery based on current draw in V. Default value is 0.0.
 
     References
-        ----
+    ----------
         Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
         Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
     """
+
     def __init__(self):
         super(Battery_perf,self).__init__()
         self.add_param('Ncells', val=1.0, desc='Number of cells in the battery Stack', units='unitless')
@@ -113,4 +115,3 @@ if __name__ == '__main__':
     # print following properties
     print ('Voltage(volts) individual: %f' % p['comp.Voltage'])
     print ('Current(amps) individual: %f' % p['comp.Current'])
-    

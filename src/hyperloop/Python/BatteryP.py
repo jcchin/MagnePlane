@@ -3,13 +3,14 @@ from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
 class BatteryP(Component):
-    """Notes
-        ----
+    """
+    Notes
+    -----
        Calculates parameters like Nparallel(number of cells in parallel), Nseries(Number of cells in series), Ncells(total no of cells) and C_Max(max rating)
        The calculated parameters are then use to estimate battery weight in BatteryWeight.py
 
     Params
-        ----
+    ------
         DesPower: float
             Fully Charged Voltage in V. Default value is 2.0.
         PqPdes_Max: float
@@ -58,18 +59,15 @@ class BatteryP(Component):
             Design State in boolean. Default value is "DESIGN"
 
     Outputs
-        ----
+    -------
         StackWeight : float
             Total Capacity required for design in A*h. Default value is 1.0.
-
         StackVol : float
             Number of cells in parallel in the battery stack in cells. Default value is 1.0.
-
         CapDis : float
             Voltage lost over the exponential zone of battery in V. Default value is 0.0.
         CapDisBattDesPower : float
             Time constant for exponential zone of discharge curve in A*h^-1 . Default value is 0.0.
-
         VoltageBatt: float
             Internal Resistance in V. Default value is 0.0.
         Voltage: float
@@ -86,7 +84,7 @@ class BatteryP(Component):
             Charge at end of Exponential Curve in A*h. Default value is 2.0
 
     References
-        ----
+    ----------
        Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
        Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
        """
@@ -229,4 +227,5 @@ if __name__ == '__main__':
     print ('Current of stack: %f' % p['comp.Current'])
     print ('Nparallel : %f' % p['comp.Nparallel'])
     print ('Ncells(cells) : %f' % p['comp.Ncells'])
+    print ('C_max(volt) : %f' % p['comp.C_max'])
     print ('C_max(volt) : %f' % p['comp.C_max'])

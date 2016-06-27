@@ -6,11 +6,11 @@ from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer
 class BatteryWeight(Component):
     """
     Notes
-        ----
+    -----
         Allows sizing of battery based on design power load and necessary capacity
 
     Parameters
-        ----
+    ----------
         SpecEnergy: float.
              Specific Energy of Battery in W*h/kg. Default value is 120.0
         PowerBattNom : float
@@ -41,7 +41,7 @@ class BatteryWeight(Component):
             Maximum rating the battery can run in A*h. Default value is 3.37037
 
     Returns
-        ----
+    -------
         PowerDensity: float
             Power Density in W/m^3. Default value is 0.0
         StackWeight: float
@@ -49,8 +49,8 @@ class BatteryWeight(Component):
         StackVol: float
             Volume of Stack in m^3. Default value is 0.0
 
-        References
-        ----
+    References
+    ----------
         Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
         Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
     """

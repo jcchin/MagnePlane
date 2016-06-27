@@ -42,7 +42,6 @@ class battery(Group):
         Current: float
             Charge at end of Exponential Curve in A*h. Default value is 2.0
     """
-
 	def __init__(self):
 		super(battery, self).__init__()
 
@@ -84,3 +83,4 @@ if __name__ == '__main__':
 	print ('Ncells : %f' % p['battery.batteryWeight.Ncells'])
 	print ('Voltage Stack : %f' % p['battery.batteryP.Voltage'])
 	print ('Current Stack: %f' % p['battery.batteryP.Current'])
+	print ('Voltage Current : %f' % p['battery.batteryP.Current'])
