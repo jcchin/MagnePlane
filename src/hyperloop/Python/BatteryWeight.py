@@ -11,9 +11,7 @@ Parameters
     SpecEnergy: float
          Specific Energy of Battery in W*h/kg. Default value is 100.0
     PowerDensity: float
-         Power Density of Battery in 'W/m^3. Default value is 1.0
-    SpecPower : float
-        Specific Power of Battery in W/kg. Default value is 1.0.
+         Power Density of Battery in 'W/m^3. Default value is 1.0.
     PowerBattNom : float
         Nominal Power Output of Battery in W. Default value is 1.0.
     VoltageNominal : float
@@ -31,15 +29,15 @@ Parameters
     SpecEnergy6: float
         Specific Energy 6 in W*h/kg. Default value is 11.37
     DesPower: float
-        Design Power Load in W. Default value is 100.0
+        Design Power Load in W. Default value is 65000.0
     PqPdes_Max: float
-        Maximum Power to Design Load Ratio in W. Default value is 1.5
+        Maximum Power to Design Load Ratio in W. Default value is 1.4
     Capacity: float
-       Single cell Nominal Capacity in A*h. Default value is 8.0
+       Single cell Nominal Capacity in A*h. Default value is 45.0
     Ncells: float
-        Number of cells necessary to perform that mission in cells. Default value is 18900.0
+        Number of cells necessary to perform that mission in cells. Default value is 146.0
     C_max: float
-        Maximum rating the battery can run in A*h. Default value is 0.25
+        Maximum rating the battery can run in A*h. Default value is 3.37037
 
 Returns
     ----
@@ -92,7 +90,7 @@ class BatteryWeight(Component):
         self.add_param('Ncells', val=146.0, desc='Number of cells necessary to perform that mission', units='none')
         self.add_param('C_max', val=3.37037, desc='Maximum rating the battery can run', units='1/h')
 
-        self.add_state('SpecEnergy', val=120., desc='specific energy', units='W*h/m^3', upper=175. )
+        self.add_state('SpecEnergy', val=120., desc='specific energy', units='W*h/kg', upper=175. )
         self.add_output('PowerDensity', 0.0, desc='Power Density', units='W/m^3')
         self.add_output('StackWeight', 0.0, desc='Weight of Stack', units='kg')
         self.add_output('StackVol', 1.0, desc='Volume of Stack', units='m^3')
