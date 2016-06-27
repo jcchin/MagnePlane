@@ -58,7 +58,7 @@ class BatteryWeight(Component):
     def __init__(self):
         super(BatteryWeight, self).__init__()
 
-        self.add_param('PowerBattNom', val=97500, desc='Nominal Power Output of Battery', units='W')
+        self.add_param('PowerBattNom', val=97500.0, desc='Nominal Power Output of Battery', units='W')
         self.add_param('VoltageNominal', val=3.09, desc='Nominal Voltage of Battery', units='V')
         self.add_param('SpecEnergy1', val=175.0, desc='Specific Energy 1', units='W*h/kg')
         self.add_param('SpecEnergy2', val=128.79, desc='Specific Energy 2', units='W*h/kg')

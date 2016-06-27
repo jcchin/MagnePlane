@@ -55,8 +55,6 @@ class BatteryP(Component):
             Design stack voltage in V. Default value is 300.0
         k_Peukert: float
             Peukert Coefficient in none. Default value is 1.01193
-        switchDess: boolean
-            Design State in boolean. Default value is "DESIGN"
 
     Outputs
     -------
@@ -94,9 +92,9 @@ class BatteryP(Component):
         super(BatteryP, self).__init__()
 
         # input to the equation
-        self.add_param('DesPower', val=65000., desc='Design Power Load', units='W')
+        self.add_param('DesPower', val=65000.0, desc='Design Power Load', units='W')
         self.add_param('PqPdes_Max', val=1.4, desc='Maximum Power to Design Load Ratio', units='W')
-        self.add_param('FlightTime', val=750, desc='Time since battery is discharging', units='s')
+        self.add_param('FlightTime', val=750.0, desc='Time since battery is discharging', units='s')
         self.add_param('CapDisLimit', val=0.1, desc='Percent of battery capacity left for reserves', units='percent')
         self.add_param('TimeDesPower', val=0.0, desc='Time from beginning of flight to moment of design power load', units='h')
         self.add_param('Nparallel', val=2.0, desc='Calculated numbers of cells in parallel', units='unitless')
@@ -119,7 +117,6 @@ class BatteryP(Component):
         self.add_param('dischargeInterval', val=3.0, desc='Time interval for the discharge of the battery',units='s')
         self.add_param('StackDesignVoltage', val=300.0, desc='Design stack voltage', units='V')
         self.add_param('k_Peukert', val=1.01193, desc='Peukert Coefficient', units='unitless')
-        self.add_param('switchDes', val="DESIGN", desc='Design State', units='boolean')
         self.add_output('StackWeight', val=1.0, desc='Weight of the battery stack', units='kg')
         self.add_output('StackVol', val=1.0, desc='Volume of the battery stack', units='m^3')
         self.add_output('CapDis', val=0.0, desc='Calculated capacity necessary', units='A*h')
@@ -134,7 +131,7 @@ class BatteryP(Component):
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        switchDes = params['switchDes']
+        switchDes = "DESIGN"
         DesPower = params['DesPower']
         PqPdes_Max = params['PqPdes_Max']
         FlightTime = params['FlightTime']
@@ -165,7 +162,6 @@ class BatteryP(Component):
         State_of_Charge = params['State_of_Charge']
         NewStateOfCharge = params['NewStateOfCharge']
         dischargeInterval = params['dischargeInterval']
-        switchDes = params['switchDes']
         CapDis = unknowns['CapDis']
         CapDisBattDesPower = unknowns['CapDisBattDesPower']
         VoltageBatt = unknowns['VoltageBatt']
@@ -227,5 +223,4 @@ if __name__ == '__main__':
     print ('Current of stack: %f' % p['comp.Current'])
     print ('Nparallel : %f' % p['comp.Nparallel'])
     print ('Ncells(cells) : %f' % p['comp.Ncells'])
-    print ('C_max(volt) : %f' % p['comp.C_max'])
     print ('C_max(volt) : %f' % p['comp.C_max'])

@@ -3,24 +3,11 @@ import numpy
 from openmdao.api import IndepVarComp, Component, Problem, Group
 
 
-<<<<<<< HEAD
-
-
 """Basic model of a Brushless DC (BLDC) motor
 Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
 Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
 Params
 ------
-=======
-"""Basic model of a Brushless DC (BLDC) motor
-
-Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
-Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
-
-Params
-------
-
->>>>>>> ProjectMaster/master
     Torque: float
         Output Torque from motor in N*m. Default value is 1000.0
     Max_RPM: float
@@ -83,10 +70,6 @@ Params
         Speed converted to rad/s. Default value is 50.0
     wmax: float
         Max speed in rad/s. Default value is 0.0
-<<<<<<< HEAD
-=======
-
->>>>>>> ProjectMaster/master
 Outputs
 -------
     Current: float
@@ -119,18 +102,10 @@ Outputs
         Resistance of stator in Ohms. Default value is 0.0
     Tmax: float
         Max Torque in N-m. Default value is 1000.0
-<<<<<<< HEAD
-=======
-
->>>>>>> ProjectMaster/master
 References
 ----------
     Main Source: Georgia Tech ASDL:
     "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications" (Gladin, Ali, Collins)
-<<<<<<< HEAD
-=======
-
->>>>>>> ProjectMaster/master
 """
 
 class ElectricMotor(Component):
@@ -322,21 +297,11 @@ class ElectricMotor(Component):
         lm = Dbase * 3.14159  # Calculate length of a single winding
         R = lm * rpert / 1000.0  # Calculate total resistance per turn
         Rcalc = R * Tph * nphase
-<<<<<<< HEAD
-=======
-
->>>>>>> ProjectMaster/master
         if w>wbase:
             Rtotal = R*Tph+Rd*(1-wbase/w)**2
         else:
             Rtotal = R*Tph
-<<<<<<< HEAD
         return Rtotal
-=======
-
-        return Rtotal
-
->>>>>>> ProjectMaster/master
     def Voltage_calc(self, Speed, PolePairs, Inductance, Current, Kv, Resistance):
         Frequency = Speed*PolePairs/(2*numpy.pi)
         Current = Torque*Kt
@@ -346,15 +311,8 @@ class ElectricMotor(Component):
         speedVoltage = Kv * Speed
         realVoltage = speedVoltage + resistorVoltage
         Voltage = numpy.sqrt(inductorVoltage ** 2 + realVoltage ** 2)
-<<<<<<< HEAD
         Phase = numpy.atan2(inductorVoltage,realVoltage)
         return Voltage
-=======
-
-        Phase = numpy.atan2(inductorVoltage,realVoltage)
-        return Voltage
-
->>>>>>> ProjectMaster/master
     def Iron_loss(self,Lbase,Dbase,CoreRadiusRatio,B_p,Frequency):
         #Calculates iron losses
         Kh=0.0275
@@ -364,32 +322,17 @@ class ElectricMotor(Component):
         Core_Weight = 7650.0*Volume
         P_iron = (Kh * B_p * B_p * Frequency + Kc*(B_p*Frequency)**2.0 + Ke*(B_p*Frequency)**(1.5)) * Core_Weight
         #Scales iron volume on power (assuming speed range is close to baseline)
-<<<<<<< HEAD
-=======
-
->>>>>>> ProjectMaster/master
     def P_windage_calc(self,Dbase,CoreRadiusRatio,w,k_Friction,Lbase):
         c_friction=0.1
         P_disc_wind = 0.5 * c_friction * 1.2041 * w**3. * ((Dbase/2)**5.)*(1-CoreRadiusRatio**5.0)
         P_windage=k_Friction * (c_friction * numpy.pi * (w**3.0) * (Dbase/2)**4 * Lbase * 1.2041 + P_disc_wind)
         return P_windage
-<<<<<<< HEAD
-=======
-
->>>>>>> ProjectMaster/master
     def P_input_calc(self,Pmax,w,wmax,Current,Rtotal,nphase,P_iron,P_windage):
         #Calculates total Power input required with losses and friction included
         Torque = Pmax/wmax
         P_mech=w*Torque*1.355818
-<<<<<<< HEAD
         P_copper_phase=Current*Current*Rtotal
         P_copper=P_copper_phase*nphase
-=======
-
-        P_copper_phase=Current*Current*Rtotal
-        P_copper=P_copper_phase*nphase
-
->>>>>>> ProjectMaster/master
         P_input = P_mech + P_copper + P_iron + P_windage
         return P_input
 """
@@ -433,8 +376,4 @@ if __name__ == '__main__':
     print('Motor Size (D^2*L) [ft^3]: %f ' % prob['comp.D2L_ft'])
     print('Motor Size (Volume=pi*radius^2*L) [m^3]: %f' % prob['comp.Volume'])
     print('Motor Size (Volume=pi*radius^2*L) [ft^3]: %f' % prob['comp.Volume_ft'])
-<<<<<<< HEAD
-=======
 
-
->>>>>>> ProjectMaster/master

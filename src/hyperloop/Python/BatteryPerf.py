@@ -52,8 +52,8 @@ class Battery_perf(Component):
 
     def __init__(self):
         super(Battery_perf,self).__init__()
-        self.add_param('Ncells', val=1.0, desc='Number of cells in the battery Stack', units='unitless')
-        self.add_param('Nparallel', val= 1.0, desc='Number of cells in parallel in the battery stack', units='unitless')
+        self.add_param('Ncells', val=146.0, desc='Number of cells in the battery Stack', units='unitless')
+        self.add_param('Nparallel', val= 2.0, desc='Number of cells in parallel in the battery stack', units='unitless')
         self.add_param('Exp_zone_amp', val=0.2838, desc='Voltage lost over the exponential zone of battery', units='V') #A in modeling plan
         self.add_param('Exp_zone_time_const', val=1.1708, desc='Time constant for exponential zone of discharge curve', units='A*h^-1') #B in modeling plan
         self.add_param('Polarization_voltage', val=0.0361, desc='Voltage lost due to polarization', units='V') #K in modeling plan
@@ -62,7 +62,7 @@ class Battery_perf(Component):
         self.add_param('Resistance', val=0.0006058, desc='Internal resistance of one cell', units='ohm')
         self.add_param('State_of_charge', val=100., desc='Percent of charge left in battery', units='percent')
         self.add_param('Old_State_of_charge', val=100., desc='Percent of charge left in battery', units='percent')
-        self.add_param('timeStep', val=6, desc='Time step for model', units='s')
+        self.add_param('timeStep', val=6.0, desc='Time step for model', units='s')
         self.add_param('k_Peukert', val=1.01193, desc='Peukert Coefficient', units='unitless')
         self.add_output('Current', val=200., desc='Current drain applied to the battery', units='A')
         self.add_output('Voltage', val=1.0, desc='Voltage output of battery based on current draw', units='V')

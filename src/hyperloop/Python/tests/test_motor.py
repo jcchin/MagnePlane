@@ -1,7 +1,8 @@
 import pytest
-import ElectricMotor
+from src.hyperloop.Python import ElectricMotor
 import numpy as np
 from openmdao.api import Group, Problem
+
 
 def create_problem(motor):
     root = Group()
@@ -82,5 +83,3 @@ class TestMotor(object):
         assert np.isclose(prob['comp.Phase'], 0, rtol = 0.001)
         assert np.isclose(prob['comp.Kv'], 5.99999, rtol = 0.001)
         assert np.isclose(prob['comp.Mass'], 103.859, rtol = 0.001)
-
-
