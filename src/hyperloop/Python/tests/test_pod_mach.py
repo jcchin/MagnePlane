@@ -34,8 +34,6 @@ class TestPodMach(object):
         prob['comp.M_duct'] = .95
         prob['comp.M_diff'] = .6
         prob['comp.cp'] = 1009.0
-        prob['comp.r_pod'] = .668
-        prob['comp.r_tube'] = 1.11
         prob['comp.delta_star'] = .07
         prob['comp.M_pod'] = .8
 
