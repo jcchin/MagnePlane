@@ -15,7 +15,7 @@ class TestMotor(object):
     def test_case1_vs_npss(self):
 
 
-        motor  =  ElectricMotor.BasicMotor()
+        motor  =  ElectricMotor.ElectricMotor()
 
         prob = create_problem(motor)
 
@@ -50,7 +50,7 @@ class TestMotor(object):
 
 
     def test_case2_vs_npss(self):
-        motor  =  ElectricMotor.BasicMotor()
+        motor  =  ElectricMotor.ElectricMotor()
 
         prob = create_problem(motor)
 
