@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import BatteryWeight
+from hyperloop.Python import BatteryWeight
 import numpy as np
 from openmdao.api import Group, Problem, Newton, ScipyGMRES, NLGaussSeidel
 

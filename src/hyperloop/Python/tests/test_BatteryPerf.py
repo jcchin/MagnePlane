@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import BatteryPerf
+from hyperloop.Python import BatteryPerf
 import numpy as np
 from openmdao.api import Group, Problem
 

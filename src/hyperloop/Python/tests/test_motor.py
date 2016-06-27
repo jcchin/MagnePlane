@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import ElectricMotor
+from hyperloop.Python import ElectricMotor
 import numpy as np
 from openmdao.api import Group, Problem
 

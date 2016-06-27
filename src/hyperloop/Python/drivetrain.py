@@ -1,9 +1,9 @@
 from openmdao.api import ExecComp, IndepVarComp, Group, NLGaussSeidel, \
     ScipyGMRES, Problem, ScipyOptimizer
-from src.hyperloop.Python.ElectricMotor import ElectricMotor
-from src.hyperloop.Python.Inverter import Inverter
-from src.hyperloop.Python.dc_transformer import DCTransformer
-from src.hyperloop.Python.battery import Battery
+from hyperloop.Python.ElectricMotor import ElectricMotor
+from hyperloop.Python.Inverter import Inverter
+from hyperloop.Python.dc_transformer import DCTransformer
+from hyperloop.Python.battery import Battery
 
 class PMAD(Group):
     """ Group containing the Sellar MDA. This version uses the disciplines
