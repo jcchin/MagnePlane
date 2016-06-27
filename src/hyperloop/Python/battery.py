@@ -1,8 +1,8 @@
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
-from src.hyperloop.Python.BatteryP import BatteryP
-from src.hyperloop.Python.BatteryWeight import BatteryWeight
-from src.hyperloop.Python.BatteryPerf import Battery_perf
+from hyperloop.Python.BatteryP import BatteryP
+from hyperloop.Python.BatteryWeight import BatteryWeight
+from hyperloop.Python.BatteryPerf import Battery_perf
 
 class battery(Group):
 	"""
