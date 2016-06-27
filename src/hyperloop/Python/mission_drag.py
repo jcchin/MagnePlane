@@ -16,8 +16,14 @@ class MissionDrag(Component):
 
         Drag coefficient : float
             Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
+        Reference Area: float
+            Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
         Tube Pressure : float
             Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+        Ambient Temperature : float
+            Tunnel ambient temperature. Default value is 298 K.
+        Ideal Gas Constant: float
+            Ideal gas constant. Default valut is 287 J/(m*K).
         Magnetic Drag: float
             Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
         Pod Speed : float

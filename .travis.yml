@@ -1,0 +1,45 @@
+# whitelist
+branches:
+  only:
+    - master
+    - work
+    - release
+
+sudo: false
+
+os:
+  - linux
+  - osx
+
+language: generic
+
+env:
+- PY=2.7
+- PY=3.4
+
+notifications:
+  slack: nasa-marti:6JrI4B9v97JAZxujKsat50ph
+    on_success: never
+
+before_install:
+- OS=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "MacOSX"; else echo "Linux"; fi)
+- wget "https://repo.continuum.io/miniconda/Miniconda-latest-$OS-x86_64.sh" -O miniconda.sh
+- chmod +x miniconda.sh
+- if [ "$OS" = "Linux" ]; then
+    ./miniconda.sh -b  -p /home/travis/miniconda;
+  fi
+- if [ "$OS" = "MacOSX" ]; then
+    ./miniconda.sh -b  -p /Users/travis/miniconda;
+  fi
+- PATHPREFIX=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "/Users/travis/miniconda/bin"; else echo "/home/travis/miniconda/bin"; fi)
+- export PATH=$PATHPREFIX:$PATH
+- export OPENMDAO_TEST_DOCS=1
+- conda update --yes conda
+
+install:
+- conda install --yes python=$PY numpy scipy=0.16.1 sphinx==1.3.1 matplotlib pytest
+- pip install git+http://github.com/OpenMDAO/OpenMDAO.git@master
+- pip install pylint
+- pip install -e .
+
+script: py.test --ignore=src/hyperloop/Python/tests/archive -s -src
