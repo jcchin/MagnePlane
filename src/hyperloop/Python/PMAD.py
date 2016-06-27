@@ -11,18 +11,35 @@ class PMAD(Group):
 
         self.add('InputVoltage', IndepVarComp('Voltage', 500.0))
 
-        self.add('Motor', Motor())
+
+
+        self.add('Motor', ElectricMotor())
         self.add('Inverter', Inverter())
+        self.add('DCTransformer', DCTransformer())
+        self.add('Battery', Battery())
 
-        # what about power connection?
+        # connect ElectricMotor outputs to Inverter inputs
         self.connect('Motor.InputFrequency', 'Inverter.OutputFrequency')
-        self.connect('Motor.InputVoltage', 'Inverter.OutputVoltage')
-        self.connect('Motor.InputCurrent', 'Inverter.OutputCurrent')
+        self.connect('Motor.PhaseVoltage', 'Inverter.OutputVoltage')
+        self.connect('Motor.PhaseCurrent', 'Inverter.OutputCurrent')
 
-        self.nl_solver = NLGaussSeidel()
-        self.nl_solver.options['atol'] = 1.0e-12
+        # connect Inverter outputs to DCTransformer inputs
+        self.connect('Inverter.InputVoltage', 'DCTransformer.OutputVoltage')
+        self.connect('Inverter.InputCurrent', 'DCTransformer.OutputCurrent')
 
-        self.ln_solver = ScipyGMRES()
+        # connect Battery outputs to DCTransformer inputs
+        self.connect('Battery.Voltage', 'DCTransformer.InputVoltage')
+        self.connect('Battery.Current', 'DCTransformer.InputCurrent')
+
+
+
+
+
+
+        # self.nl_solver = NLGaussSeidel()
+        # self.nl_solver.options['atol'] = 1.0e-12
+        #
+        # self.ln_solver = ScipyGMRES()
 
 if __name__ == '__main__':
 
