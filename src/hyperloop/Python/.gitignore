@@ -1,3 +1,7 @@
 *.out
 /test2png.png
 /maglev
+*.DS_Store
+*.gitignore
+/.idea/
+*.html

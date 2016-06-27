@@ -7,15 +7,15 @@
     Parameters
         ----
         DesPower: float
-            Fully Charged Voltage in Volts. Default value is 2.0.
+            Fully Charged Voltage in V. Default value is 2.0.
         PqPdes_Max: float
-            End of Exponential Zone Voltage in Volts. Default value is 2.0
+            End of Exponential Zone Voltage in V. Default value is 2.0
         FlightTime: float
-            End of Nominal Zone Voltage in Volts. Default value is 2.0
+            End of Nominal Zone Voltage in V. Default value is 2.0
         Current: float
-            Charge at end of Exponential Curve in Amp-hrs. Default value is 2.0
+            Charge at end of Exponential Curve in A*h. Default value is 2.0
         CapDisLimit: float
-            Charge at end of Nominal Zone in Amp-hrs. Default value is 2.0
+            Charge at end of Nominal Zone in A*h. Default value is 2.0
         TimeDesPower: float
              Default value is 2.0
         Ncells: float
@@ -25,35 +25,62 @@
         Nseries: float
             Calculated number of cells in series in cells. Default value is 0.0
         Capacity: float
-            Current drain applied to the battery in Amps. Default value is 1000.0
+            Current drain applied to the battery in A. Default value is 1000.0
         C_rating: float
             State of Charge limiting factor in percent. Default value is 0.2
         C_max: float
-            Design Power Load in Watts. Default value is 100.0
-        DesVoltage: float
-            Design Voltage in Volts. Default value is 10.0
-        FlightTime: float
-            Time since battery is discharging in minutes. Default value is 8.0
+            Design Power Load in W. Default value is 100.0
+        ExpZoneAmp: float
+            Design Voltage in V. Default value is 0.2838
+        ExpZoneTimeConst: float
+            Design Voltage in A*h^-1. Default value is 1.1708
+        PolarizationVoltage: float
+            Design Voltage in V. Default value is 0.0361
+        Resistance: float
+            Design Voltage in ohm. Default value is 0.0006058
+        k_1: float
+            Technology factor on the polarization voltage (K) in none. Default value is 1.0
+        k_2: float
+            Technology factor on the battery capacity in none. Default value is 1.0
+        k_3: float
+            Technology factor on the exponential amplitude (A) in none. Default value is 1.0
+        k_4: float
+            Technology factor on the exponential time constant (B) in none. Default value is 1.0
+        k_5: float
+            Technology factor on the internal resistance. in none Default value is 1.0
+        State_of_Charge: float
+            Initial state of charge of the battery in percent. Default value is 100.0
+        NewStateOfCharge: float
+            Final state of charge of the battery in percent. Default value is 100.0
+        dischargeInterval: float
+            Time interval for the discharge of the battery in s. Default value is 3.0
+        StackDesignVoltage: float
+            Design stack voltage in V. Default value is 300.0
+        k_Peukert: float
+            Peukert Coefficient in none. Default value is 1.01193
+        switchDess: boolean
+            Design State in boolean. Default value is "DESIGN"
+
 
     Returns
         ----
         StackWeight : float
-            Total Capacity required for design in Amp-hrs. Default value is 0.0.
+            Total Capacity required for design in A*h. Default value is 1.0.
 
         StackVol : float
-            Number of cells in parallel in the battery stack in cells. Default value is 0.0.
+            Number of cells in parallel in the battery stack in cells. Default value is 1.0.
 
         CapDis : float
-            Voltage lost over the exponential zone of battery in Volts. Default value is 0.0.
+            Voltage lost over the exponential zone of battery in V. Default value is 0.0.
         CapDisBattDesPower : float
-            Time constant for exponential zone of discharge curve in Amp-hours^-1 . Default value is 0.0.
+            Time constant for exponential zone of discharge curve in A*h^-1 . Default value is 0.0.
 
         VoltageBatt: float
-            Internal Resistance in Volts. Default value is 0.0.
+            Internal Resistance in V. Default value is 0.0.
         Voltage: float
-            Voltage lost due to polarization in Ohms. Default value is 0.0.
+            Voltage lost due to polarization in ohms. Default value is 0.0.
         CurrBatt : float
-            No-load constant voltage of the battery in Volts. Default value is 0.0.
+            No-load constant voltage of the battery in V. Default value is 0.0.
     References
         ----
        Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
@@ -74,21 +101,21 @@ class BatteryP(Component):
         # input to the equation
         self.add_param('DesPower', val=65000., desc='Design Power Load', units='W')
         self.add_param('PqPdes_Max', val=1.4, desc='Maximum Power to Design Load Ratio', units='W')
-        self.add_param('FlightTime', val=750, desc='Time since battery is discharging', units='seconds')
-        self.add_param('Current', val=200., desc='Current Drain Applied to battery sack', units='Amps')
+        self.add_param('FlightTime', val=750, desc='Time since battery is discharging', units='s')
+        self.add_param('Current', val=200., desc='Current Drain Applied to battery sack', units='A')
         self.add_param('CapDisLimit', val=0.1, desc='Percent of battery capacity left for reserves', units='percent')
-        self.add_param('TimeDesPower', val=0.0, desc='Time from beginning of flight to moment of design power load', units='minutes')
+        self.add_param('TimeDesPower', val=0.0, desc='Time from beginning of flight to moment of design power load', units='h')
         self.add_param('Ncells', val=1.0, desc='Number of cells necessary to perform that mission', units='none')
         self.add_param('Nparallel', val=2.0, desc='Calculated numbers of cells in parallel', units='none')
         self.add_param('Nseries', val=1.0, desc='Calculated number of cells in series', units='none')
-        self.add_param('Capacity', val=45.0, desc='Single cell Nominal Capacity', units='Amp-hrs')
-        self.add_param('C_rating', val=0.3, desc='C rating of the battery at which capacity is measured', units='1/hr')
-        self.add_param('C_max', val=4.1, desc='Maximum rating the battery can run', units='1/hr')
-        self.add_param('ExpZoneAmp', val=0.2838, desc='Voltage lost over the exponential zone of battery', units='volts')
-        self.add_param('ExpZoneTimeConst', val=1.1708, desc='Time constant for exponential zone of discharge curve',units='Amp-hours^-1')
-        self.add_param('PolarizationVoltage', val=0.0361, desc='Voltage lost due to polarization', units='volts')
-        self.add_param('NoLoadVoltage', val=4.2, desc='No-load constant voltage of battery', units='volts')
-        self.add_param('Resistance', val=0.0006058, desc='Internal resistance of battery', units='ohms')
+        self.add_param('Capacity', val=45.0, desc='Single cell Nominal Capacity', units='A*h')
+        self.add_param('C_rating', val=0.3, desc='C rating of the battery at which capacity is measured', units='1/h')
+        self.add_param('C_max', val=4.1, desc='Maximum rating the battery can run', units='1/h')
+        self.add_param('ExpZoneAmp', val=0.2838, desc='Voltage lost over the exponential zone of battery', units='V')
+        self.add_param('ExpZoneTimeConst', val=1.1708, desc='Time constant for exponential zone of discharge curve',units='A*h^-1')
+        self.add_param('PolarizationVoltage', val=0.0361, desc='Voltage lost due to polarization', units='V')
+        self.add_param('NoLoadVoltage', val=4.2, desc='No-load constant voltage of battery', units='V')
+        self.add_param('Resistance', val=0.0006058, desc='Internal resistance of battery', units='ohm')
         self.add_param('k_1', val=1., desc='Technology factor on the polarization voltage (K)', units='none')
         self.add_param('k_2', val=1., desc='Technology factor on the battery capacity', units='none')
         self.add_param('k_3', val=1., desc='Technology factor on the exponential amplitude (A)', units='none')
@@ -96,17 +123,17 @@ class BatteryP(Component):
         self.add_param('k_5', val=1., desc='Technology factor on the internal resistance', units='none')
         self.add_param('State_of_Charge', val=100.0, desc='Initial state of charge of the battery', units='percent')
         self.add_param('NewStateOfCharge', val=100.0, desc='Final state of charge of the battery', units='percent')
-        self.add_param('dischargeInterval', val=0.03, desc='Time interval for the discharge of the battery',units='seconds')
-        self.add_param('StackDesignVoltage', val=300.0, desc='Design stack voltage', units='volts')
+        self.add_param('dischargeInterval', val=3.0, desc='Time interval for the discharge of the battery',units='s')
+        self.add_param('StackDesignVoltage', val=300.0, desc='Design stack voltage', units='V')
         self.add_param('k_Peukert', val=1.01193, desc='Peukert Coefficient', units='none')
         self.add_param('switchDes', val="DESIGN", desc='Design State', units='boolean')
         self.add_output('StackWeight', val=1.0, desc='Weight of the battery stack', units='kg')
         self.add_output('StackVol', val=1.0, desc='Volume of the battery stack', units='m^3')
-        self.add_output('CapDis', val=0.0, desc='Calculated capacity necessary', units='Amp-hours')
-        self.add_output('CapDisBattDesPower', val=0.0, desc='Calculated discharge before design power time', units='Amp-hours')
-        self.add_output('VoltageBatt', val=0.0, desc='Voltage output of a single cell', units='volts')
-        self.add_output('Voltage', val=0.0, desc='Voltage output of battery stack', units='volts')
-        self.add_output('CurrBatt', val=0.0, desc='Current draw on a single cell', units='amps')
+        self.add_output('CapDis', val=0.0, desc='Calculated capacity necessary', units='A*h')
+        self.add_output('CapDisBattDesPower', val=0.0, desc='Calculated discharge before design power time', units='A*h')
+        self.add_output('VoltageBatt', val=0.0, desc='Voltage output of a single cell', units='V')
+        self.add_output('Voltage', val=0.0, desc='Voltage output of battery stack', units='V')
+        self.add_output('CurrBatt', val=0.0, desc='Current draw on a single cell', units='A')
 
 
     def solve_nonlinear(self, params, unknowns, resids):
@@ -163,34 +190,16 @@ class BatteryP(Component):
                 C_max = DesPower * PqPdes_Max / StackDesignVoltage / Capacity / Nparallel
                 CurrBatt = DesPower / StackDesignVoltage / Nparallel # Caculating current of battery
                 CapDisBattDesPower = 0.0
-
                 Capacity_1 = k_2 * Capacity - CapDisBattDesPower
-            # print "Capacity 1: %f" %Capacity_1
 
             PeukCap = (Capacity * C_rating) ** k_Peukert / C_rating #Caculating total current independent capacity of cell at design point
 
-
-            # print "curr batt %f" %CurrBatt
-            # print "Peukcap: %f" %PeukCap
             if switchDes == "OFFDESIGN":
                 CurrBatt = Current / Nparallel
                 Capacity_1 = State_of_Charge / 100 * k_2 * PeukCap
                 NewStateOfCharge = (Capacity_1 - dischargeInterval / 60. * CurrBatt ** k_Peukert) / PeukCap * 100
                 StateOfCharge = NewStateOfCharge
 
-            # print "NoLoadVoltage: %f" % NoLoadVoltage
-            # print "k_1:  %f" % k_1
-            # print "PolarizationVoltage:  %f" % PolarizationVoltage
-            # print "k_2:  %f" % k_2
-            # print "PeukCap:  %f" % PeukCap
-            # print "Capacity_1:  %f" % Capacity_1
-            # print "ExpZoneAmp:  %f" %ExpZoneAmp
-            # print "ExpZoneTimeConst:  %f" % ExpZoneTimeConst
-            # print "k_5:  %f" % k_5
-            # print "k_3:  %f" % k_3
-            # print "Resistance :  %f" % Resistance
-            # print "CurrBatt:  %f" % CurrBatt
-            # print "val: %f" % numpy.e ** (-k_4 * ExpZoneTimeConst * (k_2 * PeukCap - Capacity_1))
 
             print(NoLoadVoltage, k_1, k_2, k_3, k_4, k_5, PeukCap, Capacity_1, ExpZoneAmp, Resistance, CurrBatt, PolarizationVoltage)
             VoltageBatt = NoLoadVoltage - \
@@ -205,7 +214,6 @@ class BatteryP(Component):
             if switchDes == "DESIGN":
 
                 PBattDesPower = VoltageBatt * CurrBatt
-                # print "PBattDesPOwer: print test 1  %f" %PBattDesPower
                 Ncells = math.ceil(DesPower / PBattDesPower)
                 Nseries = math.ceil(Ncells / Nparallel)
                 Ncells = Nseries * Nparallel
@@ -225,6 +233,7 @@ if __name__ == '__main__':
     p.root.list_connections()
     p.run()
 
+
      #print following properties
     print 'Voltage(volts) : %f' % p['comp.Voltage']
     print 'Current(amps) : %f' % p['comp.Current']
@@ -232,4 +241,10 @@ if __name__ == '__main__':
     print 'Nparallel(cells) : %f' % p['comp.Nparallel']
     print 'Ncells(cells) : %f' % p['comp.Ncells']
     print 'C_max(volt) : %f' % p['comp.C_max']
+
+    # print following properties
+    print ('Voltage : %f' % p['comp.Voltage'])
+    print ('Current : %f' % p['comp.Current'])
+    print ('Nseries : %f' % p['comp.Nseries'])
+
 

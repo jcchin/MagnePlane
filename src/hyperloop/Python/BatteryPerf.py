@@ -5,37 +5,37 @@
 Parameters
     ----
     Ncells: float
-         Number of cells in the battery Stack in cells. Default value is 378.0
+         Number of cells in the battery Stack in cells. Default value is 1.0
     N_parallel: float
-         Number of cells in parallel in the battery stack in cells.Default value is 100.0
+         Number of cells in parallel in the battery stack in cells.Default value is 1.0
     Exp_zone_amp : float
-        Voltage lost over the exponential zone of battery in Volts. Default value is 0.284.
+        Voltage lost over the exponential zone of battery in V. Default value is 0.2838.
     Exp_zone_time_const : float
-        Time constant for exponential zone of discharge curve in Amp-hours^-1 . Default value is 1.171.
+        Time constant for exponential zone of discharge curve in A*h^-1 . Default value is 1.171.
     Polarization_voltage: float
-        Voltage lost due to polarization in Volts. Default value is 0.0036
+        Voltage lost due to polarization in V. Default value is 0.0036
     Capacity: float
-        Nominal capacity of one cell in Amp-hrs. Default value is 8.0
+        Nominal capacity of one cell in A*h. Default value is 45.0
     No_load_voltage: float
-        No-load constant voltage of the battery in Volts. Default value is 1.28
+        No-load constant voltage of the battery in V. Default value is 4.2
     Resistance: float
-        No-load constant voltage of the battery in Volts. Default value is 0.035
+        Internal resistance of one cell in ohm. Default value is 0.0006058
     State_of_charge: float
-        No-load constant voltage of the battery in Volts. Default value is 100.0
+        Percent of charge left in battery in percent. Default value is 100.0
     Old_State_of_charge: float
-        No-load constant voltage of the battery in Volts. Default value is 100.0
+        Percent of charge left in battery in percent. Default value is 100.0
     timeStep: float
-        No-load constant voltage of the battery in Volts. Default value is 0.05
+        Time step for model in s. Default value is 6.0
     k_Peukert: float
-        No-load constant voltage of the battery in Volts. Default value is 1.01193
+        Peukert Coefficient in none. Default value is 1.01193
 
 Returns
     ----
     Current : float
-        Current drain applied to the battery in Amps. Default value is 0.0.
+        Current drain applied to the battery in A. Default value is 0.0.
 
     Voltage : float
-        Voltage output of battery based on current draw in Volts. Default value is 0.0.
+        Voltage output of battery based on current draw in V. Default value is 0.0.
 
 References
     ----
@@ -56,18 +56,18 @@ class Battery_perf(Component):
         super(Battery_perf,self).__init__()
         self.add_param('N_cells', val=1.0, desc='Number of cells in the battery Stack', units='cells')
         self.add_param('N_parallel', val= 1.0, desc='Number of cells in parallel in the battery stack', units='cells')
-        self.add_param('Exp_zone_amp', val=0.2838, desc='Voltage lost over the exponential zone of battery', units='Volts') #A in modeling plan
-        self.add_param('Exp_zone_time_const', val=1.1708, desc='Time constant for exponential zone of discharge curve', units='Amp-hours^-1') #B in modeling plan
-        self.add_param('Polarization_voltage', val=0.0361, desc='Voltage lost due to polarization', units='Volts') #K in modeling plan
-        self.add_param('Capacity', val=45.0, desc='Nominal capacity of one cell', units='Amp-hours')
-        self.add_param('No_load_voltage', val=4.2, desc='No-load constant voltage of the battery', units='Volts')#V_0 in modeling plan
-        self.add_param('Resistance', val=0.0006058, desc='Internal resistance of one cell', units='Ohms')
-        self.add_param('State_of_charge', val=100., desc='Percent of charge left in battery', units='percentage')
-        self.add_param('Old_State_of_charge', val=100., desc='Percent of charge left in battery', units='percentage')
-        self.add_param('timeStep', val=6, desc='Time step for model', units='seconds')
-       # self.add_param('k_Peukert', val=1.01193, desc='Peukert Coefficient', units='none')
-        self.add_param('Current', val=200., desc='Current drain applied to the battery', units='Amps')
-        self.add_param('Voltage', val=1.0, desc='Voltage output of battery based on current draw', units='Volts')
+        self.add_param('Exp_zone_amp', val=0.2838, desc='Voltage lost over the exponential zone of battery', units='V') #A in modeling plan
+        self.add_param('Exp_zone_time_const', val=1.1708, desc='Time constant for exponential zone of discharge curve', units='A*h^-1') #B in modeling plan
+        self.add_param('Polarization_voltage', val=0.0361, desc='Voltage lost due to polarization', units='V') #K in modeling plan
+        self.add_param('Capacity', val=45.0, desc='Nominal capacity of one cell', units='A*h')
+        self.add_param('No_load_voltage', val=4.2, desc='No-load constant voltage of the battery', units='V')#V_0 in modeling plan
+        self.add_param('Resistance', val=0.0006058, desc='Internal resistance of one cell', units='ohm')
+        self.add_param('State_of_charge', val=100., desc='Percent of charge left in battery', units='percent')
+        self.add_param('Old_State_of_charge', val=100., desc='Percent of charge left in battery', units='percent')
+        self.add_param('timeStep', val=6, desc='Time step for model', units='s')
+        self.add_param('k_Peukert', val=1.01193, desc='Peukert Coefficient', units='none')
+        self.add_param('Current', val=200., desc='Current drain applied to the battery', units='A')
+        self.add_param('Voltage', val=1.0, desc='Voltage output of battery based on current draw', units='V')
 
 
 
