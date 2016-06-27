@@ -1,78 +1,59 @@
-
-
-"""
-Notes
-    ----
-   Allows sizing of battery base	d on design power load and necessary capacity
-
-
-Parameters
-    ----
-    SpecEnergy: float.
-         Specific Energy of Battery in W*h/kg. Default value is 120.0
-    PowerBattNom : float
-        Nominal Power Output of Battery in W. Default value is 1.0.
-    VoltageNominal : float
-        Nominal Voltage of Battery in V. Default value is 3.09.
-    SpecEnergy1: float
-        Specific Energy 1 in W*h/kg. Default value is 175.0
-    SpecEnergy2: float
-        Specific Energy 2 in W*h/kg. Default value is 128.79
-    SpecEnergy3: float
-        Specific Energy 3 in W*h/kg. Default value is 93.28
-    SpecEnergy4: float
-        Specific Energy 4 in W*h/kg. Default value is 61.94
-    SpecEnergy5: float
-        Specific Energy 5 in W*h/kg. Default value is 41.24
-    SpecEnergy6: float
-        Specific Energy 6 in W*h/kg. Default value is 11.37
-    DesPower: float
-        Design Power Load in W. Default value is 65000.0
-    PqPdes_Max: float
-        Maximum Power to Design Load Ratio in W. Default value is 1.4
-    Capacity: float
-       Single cell Nominal Capacity in A*h. Default value is 45.0
-    Ncells: float
-        Number of cells necessary to perform that mission in cells. Default value is 146.0
-    C_max: float
-        Maximum rating the battery can run in A*h. Default value is 3.37037
-
-Returns
-    ----
-    PowerDensity: float
-        Power Density in W/m^3. Default value is 0.0
-    StackWeight: float
-        StackWeight in kg. Default value is 0.0
-    StackVol: float
-        Volume of Stack in m^3. Default value is 0.0
-
-References
-    ----
-   Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
-   Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
-
-"""
-
-
-
-
 import math, numpy, scipy
 import matplotlib.pyplot as plt
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
-
-
-
-import math, numpy, scipy
-from openmdao.core.component import Component
-from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
-
-
 class BatteryWeight(Component):
+    """
+    Notes
+        ----
+        Allows sizing of battery based on design power load and necessary capacity
+    Parameters
+        ----
+        SpecEnergy: float.
+             Specific Energy of Battery in W*h/kg. Default value is 120.0
+        PowerBattNom : float
+            Nominal Power Output of Battery in W. Default value is 1.0.
+        VoltageNominal : float
+            Nominal Voltage of Battery in V. Default value is 3.09.
+        SpecEnergy1: float
+            Specific Energy 1 in W*h/kg. Default value is 175.0
+        SpecEnergy2: float
+            Specific Energy 2 in W*h/kg. Default value is 128.79
+        SpecEnergy3: float
+            Specific Energy 3 in W*h/kg. Default value is 93.28
+        SpecEnergy4: float
+            Specific Energy 4 in W*h/kg. Default value is 61.94
+        SpecEnergy5: float
+            Specific Energy 5 in W*h/kg. Default value is 41.24
+        SpecEnergy6: float
+            Specific Energy 6 in W*h/kg. Default value is 11.37
+        DesPower: float
+            Design Power Load in W. Default value is 65000.0
+        PqPdes_Max: float
+            Maximum Power to Design Load Ratio in W. Default value is 1.4
+        Capacity: float
+           Single cell Nominal Capacity in A*h. Default value is 45.0
+        Ncells: float
+            Number of cells necessary to perform that mission in cells. Default value is 146.0
+        C_max: float
+            Maximum rating the battery can run in A*h. Default value is 3.37037
+    Returns
+        ----
+        PowerDensity: float
+            Power Density in W/m^3. Default value is 0.0
+        StackWeight: float
+            StackWeight in kg. Default value is 0.0
+        StackVol: float
+            Volume of Stack in m^3. Default value is 0.0
+        References
+        ----
+        Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
+        Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
+    """
+
     def __init__(self):
         super(BatteryWeight, self).__init__()
-
 
         self.add_param('PowerBattNom', val=97500, desc='Nominal Power Output of Battery', units='W')
         self.add_param('VoltageNominal', val=3.09, desc='Nominal Voltage of Battery', units='V')
@@ -85,7 +66,7 @@ class BatteryWeight(Component):
         self.add_param('DesPower', val=65000.0, desc='Design Power Load', units='W')
         self.add_param('PqPdes_Max', val=1.4, desc='Maximum Power to Design Load Ratio', units='W')
         self.add_param('Capacity', val=45.0, desc='Single cell Nominal Capacity', units='A*h')
-        self.add_param('Ncells', val=146.0, desc='Number of cells necessary to perform that mission', units='none')
+        self.add_param('Ncells', val=146.0, desc='Number of cells necessary to perform that mission', units='unitless')
         self.add_param('C_max', val=3.37037, desc='Maximum rating the battery can run', units='1/h')
 
         self.add_state('SpecEnergy', val=120., desc='specific energy', units='W*h/kg', upper=175. )
@@ -120,7 +101,6 @@ class BatteryWeight(Component):
 
     def apply_nonlinear(self, p, u ,r):
         # Linear solver drives residual to 0 to find Stack Weight and Stack Volume
-
         sw, sv, pdr = self._compute_outputs(p, u, r)
         theta = numpy.arctan(p['C_max'])
         thetaR = numpy.arctan(pdr/u['SpecEnergy'])
@@ -133,7 +113,6 @@ class BatteryWeight(Component):
         sw, sv, pdr = self._compute_outputs(p,u,r)
         u['StackWeight'] = sw
         u['StackVol'] = sv
-
 
     def calc_power_density(self,SpecEnergy ,SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6 ):
         #Caculates Power Density
@@ -179,14 +158,10 @@ if __name__ == '__main__':
     p.run()
 
     # print following properties
-    print ('SpecEnergy: %f' % p['comp.SpecEnergy'])
     print ('StackWeight(kg) : %f' % p['comp.StackWeight'])
     print ('StackVol(m^3) : %f' % p['comp.StackVol'])
 
-
-
     #poly-fitting power-density calc
-
 
     power_den = []
     power_den2 = []
@@ -195,7 +170,7 @@ if __name__ == '__main__':
         power_den2.append(numpy.polyval([3.08157099e-07, -8.98578291e-05, -4.02194358e-03, 3.97380319e+00, -4.98700200e+02, 2.10772320e+04], i))
     i = range(11, 175)
     z = numpy.polyfit(i, power_den, 5)
-    print  z
+    print (z)
     plt.plot(i, power_den)
     plt.plot(i, power_den2)
     plt.show()
