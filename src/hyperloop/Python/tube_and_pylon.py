@@ -109,8 +109,6 @@ class TubeandPylon(Component):
         self.add_param('t', val = .05, units = 'm', desc = 'tube thickness')
         #self.add_param('dx', val = 500.0, units = 'm', desc = 'distance between pylons')
 
-        self.deriv_options['type'] = 'fd'
-
         #Define pylon material properties
         self.add_param('rho_pylon', val = 2400.0, units='kg/m**3', desc='density of pylon material')
         self.add_param('E_pylon', val = 41.0*(10**9), units = 'Pa', desc = 'Young\'s Modulus of pylon')
