@@ -37,20 +37,7 @@ before_install:
 
 install:
 - conda install --yes python=$PY numpy scipy=0.16.1 sphinx==1.3.1 matplotlib pytest
-- if [ "$OS" = "Linux" ]; then
-    if [ "$PY" = "2.7" ]; then
-        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp27-none-linux_x86_64.whl;
-    elif [ "$PY" = "3.4" ]; then
-        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp34-cp34m-linux_x86_64.whl;
-    fi
-  fi
-- if [ "$OS" = "MacOSX" ]; then
-    if [ "$PY" = "2.7" ]; then
-        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp27-none-macosx_10_5_x86_64.whl;
-    elif [ "$PY" = "3.4" ]; then
-        pip install https://openmdao.org/dists/pyoptsparse-1.0.0-cp34-none-macosx_10_5_x86_64.whl;
-    fi
-  fi
+- pip install openmdao
 - pip install -e .
 
 script: py.test --ignore=src/hyperloop/Python/tests/archive src
