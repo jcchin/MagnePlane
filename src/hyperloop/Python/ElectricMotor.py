@@ -114,9 +114,9 @@ References
 
 """
 
-class BasicMotor(Component):
+class ElectricMotor(Component):
     def __init__(self):
-        super(BasicMotor, self).__init__()
+        super(ElectricMotor, self).__init__()
 
         #Inputs/Params
         self.add_param('Resistance', val=0.0, desc='Resistance of Stator', units='ohm')
@@ -355,7 +355,7 @@ class BasicMotor(Component):
 if __name__ == '__main__':
     root = Group()
     prob = Problem(root)
-    prob.root.add('comp', BasicMotor())
+    prob.root.add('comp', ElectricMotor())
     prob.setup()
     prob.run()
 
