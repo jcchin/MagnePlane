@@ -7,7 +7,7 @@ class BatteryWeight(Component):
     """
     Notes
         ----
-        Allows sizing of battery base    d on design power load and necessary capacity
+        Allows sizing of battery based on design power load and necessary capacity
 
     Parameters
         ----
