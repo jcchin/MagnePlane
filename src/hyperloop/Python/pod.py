@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-<<<<<<< HEAD:src/hyperloop/Python/pod.py
 from math import pi, sqrt
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
@@ -9,13 +8,6 @@ class TubeandPylon(Component):
     """Optimize the tube diameter, thickness, and distance between pylons
     using a basic sturctural analysis of a pressure cylinder supported at two ends
     Tube is assumed open at the ends in between each support, end effects are neglected for now"""
-=======
-from Python.UnmodifedMagnePlaneCode.aero import Aero
-from battery import Battery
-from inlet import InletGeom
-from pax_cabin import PassengerCapsule
-from tube_structure import TubeStructural
->>>>>>> ProjectMaster/master:src/hyperloop/Python/UnmodifedMagnePlaneCode/pod.py
 
     def __init__(self):
         super(TubeandPylon, self).__init__()

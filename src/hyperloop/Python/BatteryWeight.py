@@ -1,82 +1,128 @@
-''' Battery Weight Determination Class modeled after
-Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech '''
-
-
 import math, numpy, scipy
+import matplotlib.pyplot as plt
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
-
 class BatteryWeight(Component):
+    """
+    Notes
+        ----
+        Allows sizing of battery base    d on design power load and necessary capacity
+
+    Parameters
+        ----
+        SpecEnergy: float.
+             Specific Energy of Battery in W*h/kg. Default value is 120.0
+        PowerBattNom : float
+            Nominal Power Output of Battery in W. Default value is 1.0.
+        VoltageNominal : float
+            Nominal Voltage of Battery in V. Default value is 3.09.
+        SpecEnergy1: float
+            Specific Energy 1 in W*h/kg. Default value is 175.0
+        SpecEnergy2: float
+            Specific Energy 2 in W*h/kg. Default value is 128.79
+        SpecEnergy3: float
+            Specific Energy 3 in W*h/kg. Default value is 93.28
+        SpecEnergy4: float
+            Specific Energy 4 in W*h/kg. Default value is 61.94
+        SpecEnergy5: float
+            Specific Energy 5 in W*h/kg. Default value is 41.24
+        SpecEnergy6: float
+            Specific Energy 6 in W*h/kg. Default value is 11.37
+        DesPower: float
+            Design Power Load in W. Default value is 65000.0
+        PqPdes_Max: float
+            Maximum Power to Design Load Ratio in W. Default value is 1.4
+        Capacity: float
+           Single cell Nominal Capacity in A*h. Default value is 45.0
+        Ncells: float
+            Number of cells necessary to perform that mission in cells. Default value is 146.0
+        C_max: float
+            Maximum rating the battery can run in A*h. Default value is 3.37037
+
+    Returns
+        ----
+        PowerDensity: float
+            Power Density in W/m^3. Default value is 0.0
+        StackWeight: float
+            StackWeight in kg. Default value is 0.0
+        StackVol: float
+            Volume of Stack in m^3. Default value is 0.0
+
+        References
+        ----
+        Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
+        Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
+    """
+
     def __init__(self):
         super(BatteryWeight, self).__init__()
-        self.add_param('SpecEnergy', val=100.0, desc='Specific Energy of Battery', units='Wh/kg')
-        self.add_param('PowerDensity', val= 1.0, desc='Power Density of Battery', units='W/m^3')
-        self.add_param('SpecPower', val=1.0, desc='Specific Power of Batter', units='W/m^3')
-        self.add_param('PowerBattNom', val=1.0, desc='Nominal Power Output of Battery', units='W')
-        self.add_param('VoltageNominal', val=3.6, desc='Nominal Voltage of Battery', units='V')
 
-        self.add_param('SpecEnergy1', val=175.0, desc='Specific Energy 1', units='W/m^3')
-        self.add_param('SpecEnergy2', val=128.79, desc='Specific Energy 2', units='W/m^3')
-        self.add_param('SpecEnergy3', val=93.28, desc='Specific Energy 3', units='W/m^3')
-        self.add_param('SpecEnergy4', val=61.94, desc='Specific Energy 4', units='W/m^3')
-        self.add_param('SpecEnergy5', val=41.24, desc='Specific Energy 5', units='W/m^3')
-        self.add_param('SpecEnergy6', val=11.37, desc='Specific Energy 6', units='W/m^3')
-        self.add_param('r_accuracy', val=0.0001, desc='tolerance for data from ragone', units='')
+        self.add_param('PowerBattNom', val=97500, desc='Nominal Power Output of Battery', units='W')
+        self.add_param('VoltageNominal', val=3.09, desc='Nominal Voltage of Battery', units='V')
+        self.add_param('SpecEnergy1', val=175.0, desc='Specific Energy 1', units='W*h/kg')
+        self.add_param('SpecEnergy2', val=128.79, desc='Specific Energy 2', units='W*h/kg')
+        self.add_param('SpecEnergy3', val=93.28, desc='Specific Energy 3', units='W*h/kg')
+        self.add_param('SpecEnergy4', val=61.94, desc='Specific Energy 4', units='W*h/kg')
+        self.add_param('SpecEnergy5', val=41.24, desc='Specific Energy 5', units='W*h/kg')
+        self.add_param('SpecEnergy6', val=11.37, desc='Specific Energy 6', units='W*h/kg')
+        self.add_param('DesPower', val=65000.0, desc='Design Power Load', units='W')
+        self.add_param('PqPdes_Max', val=1.4, desc='Maximum Power to Design Load Ratio', units='W')
+        self.add_param('Capacity', val=45.0, desc='Single cell Nominal Capacity', units='A*h')
+        self.add_param('Ncells', val=146.0, desc='Number of cells necessary to perform that mission', units='unitless')
+        self.add_param('C_max', val=3.37037, desc='Maximum rating the battery can run', units='1/h')
 
-        self.add_param('DesPower', val=100.0, desc='Design Power Load', units='W')
-        self.add_param('PqPdes_Max', val=1.5, desc='Maximum Power to Design Load Ratio', units='W')
-
-        self.add_param('Capacity', val=1.0, desc='Single cell Nominal Capacity', units='Amp-hrs')
-        self.add_param('Ncells', val=1.0, desc='Number of cells necessary to perform that mission', units='none')
-        self.add_param('C_max', val=4.1, desc='Maximum rating the battery can run', units='1/hr')
-
-        self.add_output('PowerDensityR', 0.0, desc='Power Density', units='TBD')
+        self.add_state('SpecEnergy', val=120., desc='specific energy', units='W*h/kg', upper=175. )
+        self.add_output('PowerDensity', 0.0, desc='Power Density', units='W/m^3')
         self.add_output('StackWeight', 0.0, desc='Weight of Stack', units='kg')
-        self.add_output('StackVol', 0.0, desc='Volume of Stack', units='m^3')
+        self.add_output('StackVol', 1.0, desc='Volume of Stack', units='m^3')
 
-    def solve_nonlinear(self, params, unknowns, resids):
-        SpecEnergy = params['SpecEnergy']
+    def _compute_outputs(self, params, unknowns, resids):
+        SpecEnergy = unknowns['SpecEnergy'] #upper bound -- far right
         SpecEnergy1 = params['SpecEnergy1']
         SpecEnergy2 = params['SpecEnergy2']
         SpecEnergy3 = params['SpecEnergy3']
         SpecEnergy4 = params['SpecEnergy4']
         SpecEnergy5 = params['SpecEnergy5']
-        SpecEnergy6 = params['SpecEnergy6']
-        r_accuracy = params['r_accuracy']
+        SpecEnergy6 = params['SpecEnergy6'] #lower bound -- far left
         DesPower = params['DesPower']
         PqPdes_Max = params['PqPdes_Max']
         Capacity = params['Capacity']
         VoltageNominal = params['VoltageNominal']
         Ncells = params['Ncells']
-        C_Max = params['C_max']
+        C_max = params['C_max']
         PowerBattNom = params['PowerBattNom']
 
+        PowerDensity = self.calc_power_density(SpecEnergy, SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6)
 
+        #calculates battery weight and volume
+        Energy = Capacity * VoltageNominal * Ncells
+        StackWeight = Energy / SpecEnergy
+        StackVol = Ncells*PowerBattNom/PowerDensity # Possible Error: used to be PowerDensity??
 
+        return StackWeight, StackVol, PowerDensity
 
+    def apply_nonlinear(self, p, u ,r):
+        # Linear solver drives residual to 0 to find Stack Weight and Stack Volume
+        sw, sv, pdr = self._compute_outputs(p, u, r)
+        theta = numpy.arctan(p['C_max'])
+        thetaR = numpy.arctan(pdr/u['SpecEnergy'])
+        r['SpecEnergy'] = ((thetaR - theta) / theta)
 
-        #unknowns['PowerDensityR'] = self.calc_power_density(SpecEnergy,SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6)
-        #unknowns['theta_R'] = self.calc_theta_R(SpecEnergy, unknowns['PowerDensityR'])
+        r['StackWeight'] = sw - u['StackWeight']
+        r['StackVol'] = sv - u['StackVol']
 
-        unknowns['StackWeight'], unknowns['StackVol'] = self. calc_stack(SpecEnergy,SpecEnergy1,SpecEnergy2,SpecEnergy3, SpecEnergy4, SpecEnergy5, SpecEnergy6, r_accuracy, DesPower, PqPdes_Max, Capacity, VoltageNominal, Ncells,C_Max, PowerBattNom)
-
-
-
-
-
-
-
-
-
-
-
+    def solve_nonlinear(self, p, u, r):
+        sw, sv, pdr = self._compute_outputs(p,u,r)
+        u['StackWeight'] = sw
+        u['StackVol'] = sv
 
     def calc_power_density(self,SpecEnergy ,SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6 ):
+        #Caculates Power Density
 
         if SpecEnergy < SpecEnergy1 and SpecEnergy >= SpecEnergy2:
             PowerDensity_ret = (0.053*SpecEnergy**2) - (21.14*SpecEnergy) + 2084.1
-        elif SpecEnergy < SpecEnergy2 and SpecEnergy and SpecEnergy >= SpecEnergy3:
+        elif SpecEnergy <= SpecEnergy2 and SpecEnergy and SpecEnergy >= SpecEnergy3:
             PowerDensity_ret = (0.1942*SpecEnergy**2) - (69.348*SpecEnergy) + 5975.6
 
         elif SpecEnergy <= SpecEnergy3 and SpecEnergy >= SpecEnergy4:
@@ -89,7 +135,6 @@ class BatteryWeight(Component):
             PowerDensity_ret = (-2.5546 * SpecEnergy ** 2) - (174.67 * SpecEnergy) + 17510
 
         elif (SpecEnergy >= SpecEnergy1):
-
             SpecEnergy = SpecEnergy1
             PowerDensity_ret = (0.053 * SpecEnergy ** 2) - (21.14 * SpecEnergy) + 2084.1
 
@@ -99,48 +144,36 @@ class BatteryWeight(Component):
 
         return PowerDensity_ret
 
-    def calc_theta_R(self, SpecEnergy, PowerDensityR):
-        theta_R = numpy.arctan(PowerDensityR / SpecEnergy)
-        return theta_R
-
-
-
-    def calc_stack(self, SpecEnergy,SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6, r_accuracy, DesPower, PqPdes_Max, Capacity, VoltageNominal, Ncells,C_Max, PowerBattNom):
-        PowerDensityR = self.calc_power_density(SpecEnergy, SpecEnergy1,SpecEnergy2,SpecEnergy3,SpecEnergy4,SpecEnergy5,SpecEnergy6 )
-        thetaR = self.calc_theta_R(SpecEnergy,PowerDensityR )
-
-        Power = DesPower * PqPdes_Max
-        Energy = Capacity * VoltageNominal * Ncells
-        theta = numpy.arctan(C_Max)
-
-
-        while abs((theta - thetaR) > r_accuracy):
-            SpecEnergy = min((SpecEnergy * (1 + .1 * ((thetaR - theta) / theta))), 175.)
-            PowerDensityR = self.calc_power_density(SpecEnergy)
-            thetaR = math.arctan(PowerDensityR/SpecEnergy)
-            count = 0.0
-            if(SpecEnergy == 175. and theta <= thetaR):
-                break
-            count = count + 1
-            if(count > 500):
-                break
-
-
-        StackWeight = Energy / SpecEnergy
-        StackVol = Ncells*PowerBattNom / PowerDensityR
-        return StackWeight, StackVol
-
-
 
 if __name__ == '__main__':
+    from openmdao.api import Newton, ScipyGMRES, NLGaussSeidel
+    import matplotlib.pyplot as plt
     # set up problem
     root = Group()
     p = Problem(root)
     p.root.add('comp', BatteryWeight())
+
+    p.root.deriv_options['type'] = 'fd'
+    p.root.nl_solver = Newton()
+    p.root.ln_solver = ScipyGMRES()
+
     p.setup()
-    p.root.list_connections()
     p.run()
 
     # print following properties
-    print ('StackWeight : %f' % p['comp.StackWeight'])
-    print ('StackVol : %f' % p['comp.StackVol'])
+    print ('StackWeight(kg) : %f' % p['comp.StackWeight'])
+    print ('StackVol(m^3) : %f' % p['comp.StackVol'])
+
+    #poly-fitting power-density calc
+
+    power_den = []
+    power_den2 = []
+    for i in range(11, 175):
+        power_den.append(BatteryWeight().calc_power_density(i, 175.0, 128.79, 93.28, 61.94, 41.24, 11.37))
+        power_den2.append(numpy.polyval([3.08157099e-07, -8.98578291e-05, -4.02194358e-03, 3.97380319e+00, -4.98700200e+02, 2.10772320e+04], i))
+    i = range(11, 175)
+    z = numpy.polyfit(i, power_den, 5)
+    print (z)
+    plt.plot(i, power_den)
+    plt.plot(i, power_den2)
+    plt.show()
