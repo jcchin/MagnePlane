@@ -18,7 +18,9 @@ env:
 - PY=3.4
 
 notifications:
-  slack: nasa-marti:6JrI4B9v97JAZxujKsat50ph
+  slack:
+    rooms:
+      - nasa-marti:LQtJC0nM2e2m8eVCcGlPzCsk#build-updates
     on_success: never
 
 before_install:
