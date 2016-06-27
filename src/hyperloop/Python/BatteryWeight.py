@@ -8,7 +8,7 @@ Notes
 
 Parameters
     ----
-    SpecEnergy: float
+    SpecEnergy: float.
          Specific Energy of Battery in W*h/kg. Default value is 100.0
     PowerDensity: float
          Power Density of Battery in 'W/m^3. Default value is 1.0.
