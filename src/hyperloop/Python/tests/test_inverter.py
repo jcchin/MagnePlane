@@ -19,11 +19,9 @@ class TestInverter(object):
 
         prob['comp.Efficiency'] = 0.704995
         prob['comp.DesignPower'] = 8000
-
         prob['comp.OutputVoltage'] = 10.1528
         prob['comp.OutputCurrent'] = 11.0613
         prob['comp.InputVoltage'] = 24
-
         prob['comp.OutputFrequency'] = 200
 
         prob.run()

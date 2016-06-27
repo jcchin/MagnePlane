@@ -5,12 +5,12 @@ from src.hyperloop.Python.Inverter import Inverter
 from src.hyperloop.Python.dc_transformer import DCTransformer
 from src.hyperloop.Python.battery import Battery
 
-class PMAD(Group):
+class Drivetrain(Group):
     """ Group containing the Sellar MDA. This version uses the disciplines
     with derivatives."""
 
     def __init__(self):
-        super(PMAD, self).__init__()
+        super(Drivetrain, self).__init__()
 
         self.add('InputVoltage', IndepVarComp('Voltage', 500.0))
 
@@ -45,7 +45,7 @@ class PMAD(Group):
 if __name__ == '__main__':
 
 top = Problem()
-top.root = PMAD()
+top.root = Drivetrain()
 
 top.driver = ScipyOptimizer()
 top.driver.options['optimizer'] = 'SLSQP'
