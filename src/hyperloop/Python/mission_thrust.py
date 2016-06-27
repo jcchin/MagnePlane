@@ -17,16 +17,26 @@ class MissionThrust(Component):
 
         Drag coefficient : float
             Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
+        Reference Area: float
+            Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
         Tube Pressure : float
             Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+        Ambient Temperature : float
+            Tunnel ambient temperature. Default value is 298 K.
+        Ideal Gas Constant : float
+            Ideal gas constant. Default valut is 287 J/(m*K).
         Magnetic Drag: float
             Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
+        Pod Thrust : float
+            Thrust produced by pod compressed air. Default value 3500 N. Will pull value from NPSS
+        Inclination angle : float
+            Incline angle of pod in NED frame. Default value is 0.0 rad.
         Pod Speed : float
             Speed of the pod.  Default value is 335 m/s.
         Pod mass : float
             total mass of pod. Default value is 3100 kg. Value will come from weight component
-        theta : float
-            elevation angle of the pod in NED frame. Default value is 0 rad.
+        Gravity : float
+            Gravitational acceleration. Default value is 9.81 m/s**2
 
     Returns
     -------
@@ -87,7 +97,7 @@ if __name__ == '__main__':
     top.run()
 
     print('\n')
-    print('Total drag force = %f N' % top['Thrust'])
+    print('Total thrust force = %f N' % top['Thrust'])
 
 
 

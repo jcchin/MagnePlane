@@ -17,27 +17,69 @@ class TubeandPylon(Component):
     Parameters
     ----------
 
-        pylon radius : float
-            radius of cylindrical pylon. Default value is 1.1 m.
-        tunnel thickness : float
-            thickness of cylindical tube containing pod. Default value is .05 m
-        tunnel radius : float
-            tunnel radius. Default value is 1.1 m. Will take tunnel radius from aero analysis.
-        pod mass : float
-            Assumes pod mass from alpha paper.  Will take pod mass from weight analysis
-        tube pressure : float
-            pressure of air inside tube. Will take value from vacuum component
+        tube density : float
+            density of tube material. Default is 7820 kg/m**3
+        tube stiffness : float
+            Young's modulus of tube material. Default value is 200e9 Pa
+        Tube Poisson's ratio: float
+            Poisson's ratio of tube material.  Default value is .3
+        Tube strength : float
+            Ultimate strength of tube material. Default value is 152e6 Pa
+        safety factor : float
+            Tube safety factor. Default value is 1.5
+        Gravity : float
+            Gravitational acceleration. Default value is 9.81 m/s**2
+        Tube unit cost : float
+            Cost of tube material per unit mass. Default value is .33 USD/kg
+        Tube Pressure : float
+            Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+        Ambient Pressure : float
+            Pressure of atmosphere. Default value is 101.3e3 Pa.
+        Tube coefficient of thermal expansion : float
+            Coefficient of thermal expansion of tube material. Default value is 0.0
+        Change in tube Temperature : float
+            Difference in tunnel temperature as compared ot a reference temperature. Default value is 0.0
+        Pod mass : float
+            total mass of pod. Default value is 3100 kg. Value will come from weight component
+        Tube radius : float
+            Radius of tube. Default value is 1.1 m. Value will come from aero module
+        Tube thickness : float
+            Thickness of the tube. Default value is 50 mm. Value is optimized in problem driver.
+        Pylon density : float
+            Density of pylon material. Default value is 2400 kg/m**3
+        Pylon stiffness : float
+            Young's modulus of pylon material. Default value is 41e9 Pa
+        Pylon Poisson's ratio : float
+            Poisson's ratio of pylon material. Default value is .2
+        Pylon strength : float
+            Ultimate strength of pylon material. Default value is 40e6 Pa
+        Pylon material cost : float
+            Cost of pylon material per unit mass. Default value is .05 USD/kg
+        Pylon height : float
+            Height of each pylon. Default value is 10 m.
+        Pylon radius : float
+            Radius of each pylon. Default value is 1 m. Value will be optimized in problem driver
 
 
     Returns
     -------
 
-        material cost per mile : float
-            minimizes material cost of tunnel and pylons with respect to tunnel thickness and pylon radius
+        pylon mass : float
+            mass of individual pylon in kg/pylon
+        Mass per unit length of tube: float
+            Calculates mass per unit length of tube in kg/m
+        Von Mises : float
+            Von Mises stress in the tube in Pa
+        Material Cost : float
+            returns total cost of tube and pylon materials per unit distance in USD/m
+        Pylon load : float
+            Returns vertical component of force on each pylon in N
+        Tube deflection : float
+            Maximum deflection of tube between pylons in m
         Distance between pylons : float
             outputs distance in between pylons in m
-        Mass per unit length of tube: float
-            Calculates mass per unit length of tube
+        Critical thickness :
+            Minimum tube thickness to satisfy vacuum tube buckling condition in m
 
     References
     ----------
@@ -145,7 +187,7 @@ if __name__ == '__main__':
 
     params = (
         ('r', 1.1, {'units' : 'm'}),
-        ('t', 5., {'units' : 'm'}),
+        ('t', 5.0, {'units' : 'm'}),
         ('r_pylon', 1.1, {'units': 'm'}),
         ('Su_tube', 152.0e6, {'units': 'Pa'}),
         ('sf', 1.5),
