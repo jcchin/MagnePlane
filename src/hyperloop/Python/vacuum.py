@@ -1,3 +1,7 @@
+"""
+Current calculation to determine total number of pumps needed and their respective cost per year.
+The National average for Electricity runs $.13 cents per kilowatt hour.
+"""
 from openmdao.core.component import Component
 from math import pi
 
@@ -6,59 +10,52 @@ import numpy as np
 
 class Vacuum(Component):
     """
-
-    Notes
-    ----
-        Current calculation to determine total number of pumps needed and their respective cost per year.
-        The National average for Electricity runs $.13 cents per kilowatt hour.
-
-    Parameters
-    ----------
-
-        pinit : float
-            Operating Pressure of system evacuated. Default value is 760.2.
-        pfinal : float
-            Desired pressure within tube. Default value is 7.0.
-        speed : float
-            Pumping speed. Default value is 163333.3.
-        rad : float
-            Radius of the tube. Default value is 5.0.
-        len : float
-            Length of the tube. Default value is 5000.0.
-        pwr : float
-            Motor rating. Default value is 18.5.
-        eprice : float
-            Cost of electricity per kilowatt hour. Default value is 0.13.
-        tdown : float
-            Desired pump down time. Default value is 300.0.
-        gamma : float
-            Operational percentage of the pump per day. Default value is 0.8.
-        pumpweight : float
-            Weight of one pump. Default value is 715.0.
+    Params
+    ------
+    pinit : float
+        Operating Pressure of system evacuated. Default value is 760.2.
+    pfinal : float
+        Desired pressure within tube. Default value is 7.0.
+    speed : float
+        Pumping speed. Default value is 163333.3.
+    rad : float
+        Radius of the tube. Default value is 5.0.
+    len : float
+        Length of the tube. Default value is 5000.0.
+    pwr : float
+        Motor rating. Default value is 18.5.
+    eprice : float
+        Cost of electricity per kilowatt hour. Default value is 0.13.
+    tdown : float
+        Desired pump down time. Default value is 300.0.
+    gamma : float
+        Operational percentage of the pump per day. Default value is 0.8.
+    pumpweight : float
+        Weight of one pump. Default value is 715.0.
 
     Returns
-    ----
-        totpwr : float
-            Total power consumption. Default value is 0.0.
-        n : float
-            Number of pumps. Default value is 1.0.
-        volft : float
-            Volume of tube in feet cubed. Default value is 0.0.
-        vol : float
-            Volume of tube in liters. Default value is 0.0.
-        etot : float
-            Total energy required to run the pumps. Default value is 0.0.
-        cost : float
-            Total cost of pumps. The cost of purchasing the pumps and running them per year in USD.
-        weighttot: float
-            Total weight of the pumps throughout the track in kg.
+    -------
+    totpwr : float
+        Total power consumption. Default value is 0.0.
+    n : float
+        Number of pumps. Default value is 1.0.
+    volft : float
+        Volume of tube in feet cubed. Default value is 0.0.
+    vol : float
+        Volume of tube in liters. Default value is 0.0.
+    etot : float
+        Total energy required to run the pumps. Default value is 0.0.
+    cost : float
+        Total cost of pumps. The cost of purchasing the pumps and running them per year in USD.
+    weighttot: float
+        Total weight of the pumps throughout the track in kg.
 
-    References
-    ----
-        Laughlin, Robert B., Prof. "Energy Information Administration - Electricity Price." EIA.
-        Stanford University, 30 Dec. 2008. Web. 24 June 2016.
-        <http://large.stanford.edu/publications/power/references/voltprice/>
-        Umrath, Walter, Dr. Fundamentals of Vacuum Technology. N.p.: Oerlikon Leybold Vacuum, n.d. Print.
+    Notes
+    -----
+    [1] Laughlin, Robert B., Prof. "Energy Information Administration - Electricity Price." EIA.
+    Stanford University, 30 Dec. 2008. Web. 24 June 2016.
+    <http://large.stanford.edu/publications/power/references/voltprice/>
+    Umrath, Walter, Dr. Fundamentals of Vacuum Technology. N.p.: Oerlikon Leybold Vacuum, n.d. Print.
     """
 
     def __init__(self):

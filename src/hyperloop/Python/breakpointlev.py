@@ -1,7 +1,8 @@
 """
-Current Drag Calculation very rough. Needs refinement.
-Default parameters taken from Inductrack I.
-Calculates minimum drag given at set breakpoint velocity desired with given track parameters.
+Current Levitation Code
+Outputs minimum mass and area of magnets needed for levitation at desired breakpoint velocity.
+Outputs Halbach array wavelength, track resistance, and inductance can be used to find
+drag force at any velocity using given pod weight.
 """
 from math import pi, sin, e
 from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp
@@ -10,6 +11,10 @@ from openmdao.api import ScipyOptimizer
 
 class Drag(Component):
     """
+    Current Drag Calculation very rough. Needs refinement.
+    Default parameters taken from Inductrack I.
+    Calculates minimum drag given at set breakpoint velocity desired with given track parameters.
+
     Params
     ------
     mpod : float
@@ -179,8 +184,6 @@ class Drag(Component):
 
 class Mass(Component):
     """
-    Notes
-    -----
     Current Magnet Mass Calculation very rough. Needs refinement.
     Default parameters taken from Inductrack I.
     Calculates minimum magnet mass needed at set breakpoint velocity desired with given track parameters.
@@ -209,8 +212,8 @@ class Mass(Component):
     cost : float
         Total cost of the magnets. Default value is 0.0.
 
-    References
-    ----------
+    Notes
+    -----
     [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis. Bradley University, 2004. N.p.: n.p., n.d. Print.
     """
 
