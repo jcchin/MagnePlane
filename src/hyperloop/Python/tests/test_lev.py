@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import lev_group
+from hyperloop.Python import lev_group
 from math import pi
 
 import numpy as np
