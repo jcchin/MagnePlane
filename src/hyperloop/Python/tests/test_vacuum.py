@@ -10,8 +10,8 @@ def create_problem(vac):
     prob.root.add('comp', vac)
     return prob
 
-class TestVac(object):
 
+class TestVac(object):
 
     def test_case1_vs_handcalc(self):
 
@@ -34,9 +34,10 @@ class TestVac(object):
 
         prob.run()
 
-        # assert np.isclose(prob['comp.totpwr'], 101.686, rtol = 0.001)
-        assert np.isclose(prob['comp.n'], 2.127, rtol = 0.001)
+        assert np.isclose(prob['comp.n'], 2.13, rtol=0.01)
+        assert np.isclose(prob['comp.cost'], 35859.51, rtol=0.01)
+        assert np.isclose(prob['comp.weighttot'], 1521.25, rtol=0.01)
+
         # assert np.isclose(prob['comp.vol'], 190, rtol = 0.001)
         # assert np.isclose(prob['comp.etot'], 0, rtol = 0.001)
-        assert np.isclose(prob['comp.cost'], 35859.51, rtol = 0.01)
-        assert np.isclose(prob['comp.weighttot'], 1521.25, rtol = 0.01)
+        # assert np.isclose(prob['comp.totpwr'], 101.686, rtol = 0.001)
