@@ -83,4 +83,3 @@ if __name__ == '__main__':
 	print ('Ncells : %f' % p['battery.batteryWeight.Ncells'])
 	print ('Voltage Stack : %f' % p['battery.batteryP.Voltage'])
 	print ('Current Stack: %f' % p['battery.batteryP.Current'])
-	print ('Voltage Current : %f' % p['battery.batteryP.Current'])

@@ -1,6 +1,7 @@
 """
 Allows sizing of battery based on design power load and necessary capacity
 """
+
 import math, numpy, scipy
 import matplotlib.pyplot as plt
 from openmdao.core.component import Component
@@ -8,6 +9,7 @@ from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer
 
 class BatteryWeight(Component):
     """
+
     Params
     ------
     SpecEnergy: float.
