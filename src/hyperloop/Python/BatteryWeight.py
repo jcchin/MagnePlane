@@ -15,9 +15,9 @@ class BatteryWeight(Component):
     SpecEnergy: float.
          Specific Energy of Battery in W*h/kg. Default value is 120.0
     PowerBattNom : float
-        Nominal Power Output of Battery in W. Default value is 1.0.
+        Nominal Power Output of Battery in W. Default value is 1.0
     VoltageNominal : float
-        Nominal Voltage of Battery in V. Default value is 3.09.
+        Nominal Voltage of Battery in V. Default value is 3.09
     SpecEnergy1: float
         Specific Energy 1 in W*h/kg. Default value is 175.0
     SpecEnergy2: float
