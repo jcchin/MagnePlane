@@ -9,45 +9,44 @@ from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer
 
 class BatteryWeight(Component):
     """
-
     Params
     ------
-    SpecEnergy: float.
-         Specific Energy of Battery in W*h/kg. Default value is 120.0
+    SpecEnergy : float
+        Specific Energy of Battery in W*h/kg. Default value is 120.0
     PowerBattNom : float
         Nominal Power Output of Battery in W. Default value is 1.0
     VoltageNominal : float
         Nominal Voltage of Battery in V. Default value is 3.09
-    SpecEnergy1: float
+    SpecEnergy1 : float
         Specific Energy 1 in W*h/kg. Default value is 175.0
-    SpecEnergy2: float
+    SpecEnergy2 : float
         Specific Energy 2 in W*h/kg. Default value is 128.79
-    SpecEnergy3: float
+    SpecEnergy3 : float
         Specific Energy 3 in W*h/kg. Default value is 93.28
-    SpecEnergy4: float
+    SpecEnergy4 : float
         Specific Energy 4 in W*h/kg. Default value is 61.94
-    SpecEnergy5: float
+    SpecEnergy5 : float
         Specific Energy 5 in W*h/kg. Default value is 41.24
-    SpecEnergy6: float
+    SpecEnergy6 : float
         Specific Energy 6 in W*h/kg. Default value is 11.37
-    DesPower: float
+    DesPower : float
         Design Power Load in W. Default value is 65000.0
-    PqPdes_Max: float
+    PqPdes_Max : float
         Maximum Power to Design Load Ratio in W. Default value is 1.4
-    Capacity: float
+    Capacity : float
        Single cell Nominal Capacity in A*h. Default value is 45.0
-    Ncells: float
+    Ncells : float
         Number of cells necessary to perform that mission in cells. Default value is 146.0
-    C_max: float
+    C_max : float
         Maximum rating the battery can run in A*h. Default value is 3.37037
 
-    Outputs
+    Returns
     -------
-    PowerDensity: float
+    PowerDensity : float
         Power Density in W/m^3. Default value is 0.0
-    StackWeight: float
+    StackWeight : float
         StackWeight in kg. Default value is 0.0
-    StackVol: float
+    StackVol : float
         Volume of Stack in m^3. Default value is 0.0
 
     Notes

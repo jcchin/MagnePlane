@@ -1,3 +1,9 @@
+"""
+Estimates tube diameter, inlet diameter, and compressor power
+Will optimize some sort of cost function based on pod mach number
+Many parameters are currently taken from hyperloop alpha, pod sizing analysis
+"""
+
 from __future__ import print_function
 
 from math import pi, sqrt
@@ -6,62 +12,52 @@ from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 class PodMach(Component):
     """
-
-    Notes
-    -----
-
-        Estimates tube diameter, inlet diameter, and compressor power
-        Will optimize some sort of cost function based on pod mach number
-        Many parameters are currently taken from hyperloop alpha, pod sizing analysis
-
-    Parameters
-    ----------
-
-        Ratio of specific heats : float
-            Ratio of specific heats. Default value is 1.4
-        Ideal Gas Constant : float
-            Ideal gas constant. Default valut is 287 J/(m*K).
-        Blockage factor : float
-            ratio of diffused area to pod area. Default value is .9. Value will be taken from pod geometry module
-        A pod : float
-            cross sectional area of the pod. Default value is 1.4 m**2. Value will be taken from pod geometry module
-        L : float
-            Pod length. Default value is 22 m. Value will be taken from pod geometry module
-        Compressor pressure ratio : float
-            Pressure ratio across compressor inlet and outlet.  Default value is 12.5.  Value will be taken from NPSS
-        Tube Pressure : float
-            Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
-        Ambient Temperature : float
-            Tunnel ambient temperature. Default value is 298 K.
-        Dynamic viscosity : float
-            Fluid dynamic viscosity. Default value is 1.846e-5 kg/(m*s)
-        Duct Mach number : float
-            Maximum Mach number allowed in the duct. Default value is .95
-        Diffuser Mach number : float
-            Maximum Mach number allowed at compressor inlet. Default valu is .6
-        Specific heat : float
-            Specific heat of fluid. Default value is 1009 J/(kg*K)
-        pod mach : float
-            pod Mach number. Default value is .8
+    Params
+    ------
+    Ratio of specific heats : float
+        Ratio of specific heats. Default value is 1.4
+    Ideal Gas Constant : float
+        Ideal gas constant. Default valut is 287 J/(m*K).
+    Blockage factor : float
+        ratio of diffused area to pod area. Default value is .9. Value will be taken from pod geometry module
+    A pod : float
+        cross sectional area of the pod. Default value is 1.4 m**2. Value will be taken from pod geometry module
+    L : float
+        Pod length. Default value is 22 m. Value will be taken from pod geometry module
+    Compressor pressure ratio : float
+        Pressure ratio across compressor inlet and outlet.  Default value is 12.5.  Value will be taken from NPSS
+    Tube Pressure : float
+        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+    Ambient Temperature : float
+        Tunnel ambient temperature. Default value is 298 K.
+    Dynamic viscosity : float
+        Fluid dynamic viscosity. Default value is 1.846e-5 kg/(m*s)
+    Duct Mach number : float
+        Maximum Mach number allowed in the duct. Default value is .95
+    Diffuser Mach number : float
+        Maximum Mach number allowed at compressor inlet. Default valu is .6
+    Specific heat : float
+        Specific heat of fluid. Default value is 1009 J/(kg*K)
+    pod mach : float
+        pod Mach number. Default value is .8
 
 
     Returns
     -------
-
-        tunnel area : float
-            will return optimal tunnel area based on pod Mach number
-        compressor power : float
-            will return the power that needs to be delivered to the flow by the compressor.  Does not account for compressor efficiency
-        Bypass area : float
-            will return area of that the flow must go through to bypass pod
-        Inlet Area : float
-            returns area of the inlet necessary to slow the flow down to M_diffuser
-        Effective duct area : float
-            returns effective duct area which accounts for displacement boundary layer thickness approximation
-        Diffuser area : float
-            returns area of diffuser outlet
-        Reynolds number : float
-            returns free stream Reynolds number
+    tunnel area : float
+        will return optimal tunnel area based on pod Mach number
+    compressor power : float
+        will return the power that needs to be delivered to the flow by the compressor.  Does not account for compressor efficiency
+    Bypass area : float
+        will return area of that the flow must go through to bypass pod
+    Inlet Area : float
+        returns area of the inlet necessary to slow the flow down to M_diffuser
+    Effective duct area : float
+        returns effective duct area which accounts for displacement boundary layer thickness approximation
+    Diffuser area : float
+        returns area of diffuser outlet
+    Reynolds number : float
+        returns free stream Reynolds number
     """
 
     def __init__(self):

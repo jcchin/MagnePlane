@@ -1,114 +1,118 @@
+"""
+Basic model of a Brushless DC (BLDC) motor
+Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
+Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
+"""
 from __future__ import print_function
 import numpy
 from openmdao.api import IndepVarComp, Component, Problem, Group
 
-
-"""Basic model of a Brushless DC (BLDC) motor
-Basic model of a Brushless DC (BLDC) motor to aid with motor sizing.
-Calculates Phase Current, Phase Voltage, Frequency, Motor Size, and Weight.
-Params
-------
-    Torque: float
-        Output Torque from motor in N*m. Default value is 1000.0
-    Max_RPM: float
-        Maximum rotations per minute of motor in rpm. Default value is 4600.0
-    DesignPower: float
-        Desired design value for motor power in hp. Default value is 0.0
-    Resistance: float
-        Resistance of Stator in Ohms. Default value is 0.0
-    Inductance: float
-        Motor inductance in Henrys. Default value is 0.0
-    Speed: float
-        Output shaft mechanical speed in rad/s. Default value is 50.0
-    Kv: float
-        Motor constant (Speed/volt) in rad/s/V. Default value is 0.1
-    Kt: float
-        Motor constant (Torque/amp) in ft-lb/A. Default value is 10.0
-    PolePairs: float
-        Number of pole pairs in motor. Default value is 6.0
-    H_c: float
-        Material Coercive Force in A/m. Default value is 4.2
-    B_p: float
-        Peak Magnetic Field in Tesla. Default value is 2.5
-    R0: float
-        Total Internal Resistance at 0degC in Ohms. Default value is 0.2
-    I0: float
-        Motor No-load current in Amps. Default value is 0.0
-    I0_Des: float
-        Motor No-load Current at Nbase in Amps. Default value is 0.0
-    imax: float
-        Max motor phase current in Amps. Default value is 500.0
-    nphase: float
-        Number of motor phases. Default value is 3.0
-    kappa: float
-        Ratio of Base speed to max speed. Default value is 0.6
-    V_max: float
-        Max phase voltage in volts. Default value is 10000.0
-    As: float
-        Electrical Loading. Default value is 95000.0
-    Dbase: float
-        Base 8000hp diameter for scaling purposes in m.  Default value is 0.48
-    Lbase: float
-        Base 8000hp length for scaling purposes in m. Default value is 0.4
-    LDratio: float
-        Length to diameter ratio of motor. Default value is 1.5
-    CoreRadiusRatio: float
-        Ratio of inner diameter of core to outer. Default value is 0.4
-    k_Friction: float
-        Friction coefficient calibration factor. Default value is 1.0
-    Rd: float
-        D-axis resistance per motor phase at very high speed (short circuit). Default value is
-    efficiency: float
-        Motor efficiency (Input Power/Mechanical Power output). Default value is 0.0
-    Pmax: float
-        Conversion of DesignPower in hp to Watts. Default value is 0.0
-    D2L: float
-        D-squared*L parameter which is ~ to Torque in mm^3. Default value is 0.0
-    D2L_ft: float
-        D-squared*L parameter converted to ft^3. Default value is 0.0
-    w: float
-        Speed converted to rad/s. Default value is 50.0
-    wmax: float
-        Max speed in rad/s. Default value is 0.0
-Outputs
--------
-    Current: float
-        Current magnitude in Amps. Default value is 2.0
-    phaseCurrent: float
-        Phase current for AC current in Amps. Default value is 0.0
-    phaseVoltage: float
-        AC voltage across motor in Volts. Default value is 500.0
-    Phase: float
-        phase offset between Current and Voltage. Default value is 0.0
-    Frequency: float
-        Frequency of Electric output waveform in Hz. Default value is 60.0
-    P_mech: float
-        Mechanical output power. Default value is 0.0
-    P_copper: float
-        Copper losses. Default value is 0.0
-    P_iron: float
-        Iron Losses. Default value is 0.0
-    P_windage: float
-        Windage Losses. Default value is 0.0
-    P_input: float
-        Total Power input needed. Default value is 0.0
-    Mass: float
-        Mass of motor in kg. Default value is 0.0
-    Volume: float
-        Volume of motor modeled as a cylinder in m^3. Default value is 0.0
-    Volume_ft: float
-        Volume of motor modeled as a cylinder in ft^3. Default value is 0.0
-    R_calc: float
-        Resistance of stator in Ohms. Default value is 0.0
-    Tmax: float
-        Max Torque in N-m. Default value is 1000.0
-References
-----------
-    Main Source: Georgia Tech ASDL:
-    "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications" (Gladin, Ali, Collins)
-"""
-
 class ElectricMotor(Component):
+    """
+    Params
+    ------
+    Torque : float
+        Output Torque from motor in N*m. Default value is 1000.0
+    Max_RPM : float
+        Maximum rotations per minute of motor in rpm. Default value is 4600.0
+    DesignPower : float
+        Desired design value for motor power in hp. Default value is 0.0
+    Resistance : float
+        Resistance of Stator in Ohms. Default value is 0.0
+    Inductance : float
+        Motor inductance in Henrys. Default value is 0.0
+    Speed : float
+        Output shaft mechanical speed in rad/s. Default value is 50.0
+    Kv : float
+        Motor constant (Speed/volt) in rad/s/V. Default value is 0.1
+    Kt : float
+        Motor constant (Torque/amp) in ft-lb/A. Default value is 10.0
+    PolePairs : float
+        Number of pole pairs in motor. Default value is 6.0
+    H_c : float
+        Material Coercive Force in A/m. Default value is 4.2
+    B_p : float
+        Peak Magnetic Field in Tesla. Default value is 2.5
+    R0 : float
+        Total Internal Resistance at 0degC in Ohms. Default value is 0.2
+    I0 : float
+        Motor No-load current in Amps. Default value is 0.0
+    I0_Des : float
+        Motor No-load Current at Nbase in Amps. Default value is 0.0
+    imax : float
+        Max motor phase current in Amps. Default value is 500.0
+    nphase : float
+        Number of motor phases. Default value is 3.0
+    kappa : float
+        Ratio of Base speed to max speed. Default value is 0.6
+    V_max : float
+        Max phase voltage in volts. Default value is 10000.0
+    As : float
+        Electrical Loading. Default value is 95000.0
+    Dbase : float
+        Base 8000hp diameter for scaling purposes in m.  Default value is 0.48
+    Lbase : float
+        Base 8000hp length for scaling purposes in m. Default value is 0.4
+    LDratio : float
+        Length to diameter ratio of motor. Default value is 1.5
+    CoreRadiusRatio : float
+        Ratio of inner diameter of core to outer. Default value is 0.4
+    k_Friction : float
+        Friction coefficient calibration factor. Default value is 1.0
+    Rd : float
+        D-axis resistance per motor phase at very high speed (short circuit). Default value is
+    efficiency : float
+        Motor efficiency (Input Power/Mechanical Power output). Default value is 0.0
+    Pmax : float
+        Conversion of DesignPower in hp to Watts. Default value is 0.0
+    D2L : float
+        D-squared*L parameter which is ~ to Torque in mm^3. Default value is 0.0
+    D2L_ft : float
+        D-squared*L parameter converted to ft^3. Default value is 0.0
+    w : float
+        Speed converted to rad/s. Default value is 50.0
+    wmax : float
+        Max speed in rad/s. Default value is 0.0
+
+    Returns
+    -------
+    Current : float
+        Current magnitude in Amps. Default value is 2.0
+    phaseCurrent : float
+        Phase current for AC current in Amps. Default value is 0.0
+    phaseVoltage : float
+        AC voltage across motor in Volts. Default value is 500.0
+    Phase : float
+        phase offset between Current and Voltage. Default value is 0.0
+    Frequency : float
+        Frequency of Electric output waveform in Hz. Default value is 60.0
+    P_mech : float
+        Mechanical output power. Default value is 0.0
+    P_copper : float
+        Copper losses. Default value is 0.0
+    P_iron : float
+        Iron Losses. Default value is 0.0
+    P_windage : float
+        Windage Losses. Default value is 0.0
+    P_input : float
+        Total Power input needed. Default value is 0.0
+    Mass : float
+        Mass of motor in kg. Default value is 0.0
+    Volume : float
+        Volume of motor modeled as a cylinder in m^3. Default value is 0.0
+    Volume_ft : float
+        Volume of motor modeled as a cylinder in ft^3. Default value is 0.0
+    R_calc : float
+        Resistance of stator in Ohms. Default value is 0.0
+    Tmax : float
+        Max Torque in N-m. Default value is 1000.0
+
+    Notes
+    -----
+    [1] Main Source: Georgia Tech ASDL:
+    "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications" (Gladin, Ali, Collins)
+    """
+    
     def __init__(self):
         super(ElectricMotor, self).__init__()
 

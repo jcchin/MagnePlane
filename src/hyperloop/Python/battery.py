@@ -1,3 +1,7 @@
+"""
+Battery group of components BatteryP, BatteryPerf, and BatteryWeight.
+"""
+
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 from hyperloop.Python.BatteryP import BatteryP
@@ -6,42 +10,44 @@ from hyperloop.Python.BatteryPerf import Battery_perf
 
 class battery(Group):
 	"""
-	Notes
-	-----
-		Battery group of components BatteryP, BatteryPerf, and BatteryWeight.
-
     Params
     ------
-        DesPower: float
-            Fully Charged Voltage in V. Default value is 2.0.
-        FlightTime: float
-            End of Nominal Zone Voltage in V. Default value is 2.0
-        StackDesignVoltage: float
-            Design stack voltage in V. Default value is 300.0
+    DesPower : float
+        Fully Charged Voltage in V. Default value is 2.0.
+    FlightTime : float
+        End of Nominal Zone Voltage in V. Default value is 2.0
+    StackDesignVoltage : float
+        Design stack voltage in V. Default value is 300.0
 
     Components
   	----------
-  		batteryP : from BatteryP.py
-  			Calculates parameters like Nparallel(number of cells in parallel), Nseries(Number of cells in series), Ncells(total no of cells) and C_Max(max rating)
-       		The calculated parameters are then use to estimate battery weight in BatteryWeight.py
-		batteryPerf : from Battery_perf.py
-			Allows stand-alone batteries to be simulated without an electric circuit within NPSS for use in validating the procedure.
-		batteryWeight : from BatteryWeight.py
-			Allows sizing of battery based on design power load and necessary capacity
+	batteryP : from BatteryP.py
+		Calculates parameters like Nparallel(number of cells in parallel), Nseries(Number of cells in series), Ncells(total no of cells) and C_Max(max rating)
+		The calculated parameters are then use to estimate battery weight in BatteryWeight.py
+	batteryPerf : from Battery_perf.py
+		Allows stand-alone batteries to be simulated without an electric circuit within NPSS for use in validating the procedure.
+	batteryWeight : from BatteryWeight.py
+		Allows sizing of battery based on design power load and necessary capacity
 
-    Outputs
+    Returns
     -------
-        StackWeight : float
-            Total Capacity required for design in A*h. Default value is 1.0.
-        StackVol : float
-            Number of cells in parallel in the battery stack in cells. Default value is 1.0.
-        Voltage: float
-            Voltage lost due to polarization in ohms. Default value is 0.0.
-        Ncells: float
-             Number of cells necessary to perform that mission in cells. Default value is 2.0
-        Current: float
-            Charge at end of Exponential Curve in A*h. Default value is 2.0
+    StackWeight : float
+        Total Capacity required for design in A*h. Default value is 1.0.
+    StackVol : float
+        Number of cells in parallel in the battery stack in cells. Default value is 1.0.
+    Voltage: float
+        Voltage lost due to polarization in ohms. Default value is 0.0.
+    Ncells : float
+         Number of cells necessary to perform that mission in cells. Default value is 2.0
+    Current : float
+        Charge at end of Exponential Curve in A*h. Default value is 2.0
+   
+    Notes
+    -----
+    [1] Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
+    Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
     """
+
 	def __init__(self):
 		super(battery, self).__init__()
 

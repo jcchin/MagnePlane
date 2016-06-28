@@ -1,3 +1,9 @@
+"""
+A group that models an inlet->compressor->duct->nozzle->shaft
+using PyCycle v2 https://github.com/OpenMDAO/Pycycle2.
+Calculates flow properties at the front and back of each thermodynamic
+element, compressor power required, some geometry, and drag/thrust.
+"""
 import numpy as np
 from os import remove
 
@@ -23,65 +29,50 @@ HPtoKW = 0.7457
 tubeLen = 563270.0  # // 350 miles in meters
 teslaPack = 90.0  # // kw-hours
 
-
-
 class CompressionCycle(Group):
     """
-
-    Notes
-    -----
-
-        A group that models an inlet->compressor->duct->nozzle->shaft
-        using PyCycle v2 https://github.com/OpenMDAO/Pycycle2.
-        Calculates flow properties at the front and back of each thermodynamic
-        element, compressor power required, some geometry, and drag/thrust.
-
-    Parameters
-    ----------
-
-        ram_recovery : float
-            Perfcentage of ram pressure recovered (1-ram_recovery) is lost
-        inlet_MN : float
-            Mach Number at the front face of the inlet
-        comp.PRdes : float
-            Pressure Ratio used to "design" and size the compressor
-        comp.effDes : float
-            Target Efficiency of the "design" compressor
-        comp.MN_target : float
-            Mach Number at the front face of the compressor
-        duct.dPqP : float
-            Pressure loss across a duct
-        duct.MN_target : float
-            Mach Number at the front face of the duct
-        nozzle.Cfg : float
-            Gross Thrust Performance Coefficient
-        nozzle.dPqP : float
-            Pressure loss in the nozzle
-        shaft.Nmech : float
-            Mechanical RPM of the shaft (connected to compressor and motor)
+    Params
+    ------
+    ram_recovery : float
+        Perfcentage of ram pressure recovered (1-ram_recovery) is lost
+    inlet_MN : float
+        Mach Number at the front face of the inlet
+    comp.PRdes : float
+        Pressure Ratio used to "design" and size the compressor
+    comp.effDes : float
+        Target Efficiency of the "design" compressor
+    comp.MN_target : float
+        Mach Number at the front face of the compressor
+    duct.dPqP : float
+        Pressure loss across a duct
+    duct.MN_target : float
+        Mach Number at the front face of the duct
+    nozzle.Cfg : float
+        Gross Thrust Performance Coefficient
+    nozzle.dPqP : float
+        Pressure loss in the nozzle
+    shaft.Nmech : float
+        Mechanical RPM of the shaft (connected to compressor and motor)
 
     Returns
     -------
+    Freestream Conditions : float
+        Required as boundary conditions for CFD
+    Fan Face Conditions : float
+        Required as boundary conditions for CFD
+    Nozzle Plenum Conditions : float
+        Required as boundary conditions for CFD
+    Nozzle Exit Conditions : float
+        Required as boundary conditions for CFD.
+        Also includes Thrust, Inlet Ram Drag, and Pod Gross Thrust
+    comp pwr out : float
+        Power required by the compressor
+    comp trq out : float
+        Torque required by compressor motor
 
-        Freestream Conditions : float
-            Required as boundary conditions for CFD
-        Fan Face Conditions : float
-            Required as boundary conditions for CFD
-        Nozzle Plenum Conditions : float
-            Required as boundary conditions for CFD
-        Nozzle Exit Conditions : float
-            Required as boundary conditions for CFD.
-            Also includes Thrust, Inlet Ram Drag, and Pod Gross Thrust
-        comp pwr out : float
-            Power required by the compressor
-        comp trq out : float
-            Torque required by compressor motor
-
-    References
-    ----------
-
-        see https://github.com/jcchin/Pycycle2/wiki
-
+    Notes
+    -----
+    [1] see https://github.com/jcchin/Pycycle2/wiki
     """
 
     def __init__(self):

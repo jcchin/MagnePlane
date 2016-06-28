@@ -1,6 +1,3 @@
-
-
-
 import math, scipy
 import numpy as np
 from openmdao.core.component import Component
