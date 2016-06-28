@@ -5,7 +5,6 @@ from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer
 
 class system_total_weight(Component):
     def __init__(self):
-        '''input params '''
         super(system_total_weight,self).__init__()
 
         self.add_output('pylon_weight', val=0.0, desc='Total weight of pylons ', unit='kg')

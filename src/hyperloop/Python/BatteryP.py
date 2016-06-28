@@ -1,91 +1,91 @@
+"""
+Calculates parameters like Nparallel(number of cells in parallel), Nseries(Number of cells in series), Ncells(total no of cells) and C_Max(max rating)
+The calculated parameters are then use to estimate battery weight in BatteryWeight.py
+"""
+
 import math, numpy, scipy
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
 class BatteryP(Component):
     """
-    Notes
-    -----
-       Calculates parameters like Nparallel(number of cells in parallel), Nseries(Number of cells in series), Ncells(total no of cells) and C_Max(max rating)
-       The calculated parameters are then use to estimate battery weight in BatteryWeight.py
-
     Params
     ------
-        DesPower: float
-            Fully Charged Voltage in V. Default value is 2.0.
-        PqPdes_Max: float
-            End of Exponential Zone Voltage in V. Default value is 2.0
-        FlightTime: float
-            End of Nominal Zone Voltage in V. Default value is 2.0
-        CapDisLimit: float
-            Charge at end of Nominal Zone in A*h. Default value is 2.0
-        TimeDesPower: float
-             Default value is 2.0
-        Nparallel: float
-             Calculated numbers of cells in parallel in cells.Default value is 10.0
-        Capacity: float
-            Current drain applied to the battery in A. Default value is 1000.0
-        C_rating: float
-            State of Charge limiting factor in percent. Default value is 0.2
-        ExpZoneAmp: float
-            Design Voltage in V. Default value is 0.2838
-        ExpZoneTimeConst: float
-            Design Voltage in A*h^-1. Default value is 1.1708
-        PolarizationVoltage: float
-            Design Voltage in V. Default value is 0.0361
-        Resistance: float
-            Design Voltage in ohm. Default value is 0.0006058
-        k_1: float
-            Technology factor on the polarization voltage (K) in none. Default value is 1.0
-        k_2: float
-            Technology factor on the battery capacity in none. Default value is 1.0
-        k_3: float
-            Technology factor on the exponential amplitude (A) in none. Default value is 1.0
-        k_4: float
-            Technology factor on the exponential time constant (B) in none. Default value is 1.0
-        k_5: float
-            Technology factor on the internal resistance. in none Default value is 1.0
-        State_of_Charge: float
-            Initial state of charge of the battery in percent. Default value is 100.0
-        NewStateOfCharge: float
-            Final state of charge of the battery in percent. Default value is 100.0
-        dischargeInterval: float
-            Time interval for the discharge of the battery in s. Default value is 3.0
-        StackDesignVoltage: float
-            Design stack voltage in V. Default value is 300.0
-        k_Peukert: float
-            Peukert Coefficient in none. Default value is 1.01193
+    DesPower : float
+        Fully Charged Voltage in V. Default value is 2.0.
+    PqPdes_Max : float
+        End of Exponential Zone Voltage in V. Default value is 2.0
+    FlightTime : float
+        End of Nominal Zone Voltage in V. Default value is 2.0
+    CapDisLimit : float
+        Charge at end of Nominal Zone in A*h. Default value is 2.0
+    TimeDesPower : float
+         Default value is 2.0
+    Nparallel : float
+         Calculated numbers of cells in parallel in cells.Default value is 10.0
+    Capacity : float
+        Current drain applied to the battery in A. Default value is 1000.0
+    C_rating : float
+        State of Charge limiting factor in percent. Default value is 0.2
+    ExpZoneAmp : float
+        Design Voltage in V. Default value is 0.2838
+    ExpZoneTimeConst : float
+        Design Voltage in A*h^-1. Default value is 1.1708
+    PolarizationVoltage : float
+        Design Voltage in V. Default value is 0.0361
+    Resistance : float
+        Design Voltage in ohm. Default value is 0.0006058
+    k_1 : float
+        Technology factor on the polarization voltage (K) in none. Default value is 1.0
+    k_2 : float
+        Technology factor on the battery capacity in none. Default value is 1.0
+    k_3 : float
+        Technology factor on the exponential amplitude (A) in none. Default value is 1.0
+    k_4 : float
+        Technology factor on the exponential time constant (B) in none. Default value is 1.0
+    k_5: float
+        Technology factor on the internal resistance. in none Default value is 1.0
+    State_of_Charge : float
+        Initial state of charge of the battery in percent. Default value is 100.0
+    NewStateOfCharge : float
+        Final state of charge of the battery in percent. Default value is 100.0
+    dischargeInterval : float
+        Time interval for the discharge of the battery in s. Default value is 3.0
+    StackDesignVoltage : float
+        Design stack voltage in V. Default value is 300.0
+    k_Peukert : float
+        Peukert Coefficient in none. Default value is 1.01193
 
-    Outputs
+    Returns
     -------
-        StackWeight : float
-            Total Capacity required for design in A*h. Default value is 1.0.
-        StackVol : float
-            Number of cells in parallel in the battery stack in cells. Default value is 1.0.
-        CapDis : float
-            Voltage lost over the exponential zone of battery in V. Default value is 0.0.
-        CapDisBattDesPower : float
-            Time constant for exponential zone of discharge curve in A*h^-1 . Default value is 0.0.
-        VoltageBatt: float
-            Internal Resistance in V. Default value is 0.0.
-        Voltage: float
-            Voltage lost due to polarization in ohms. Default value is 0.0.
-        CurrBatt : float
-            No-load constant voltage of the battery in V. Default value is 0.0.
-        Ncells: float
-             Number of cells necessary to perform that mission in cells. Default value is 2.0
-        C_max: float
-            Design Power Load in W. Default value is 100.0
-        Nseries: float
-            Calculated number of cells in series in cells. Default value is 0.0
-        Current: float
-            Charge at end of Exponential Curve in A*h. Default value is 2.0
+    StackWeight : float
+        Total Capacity required for design in A*h. Default value is 1.0.
+    StackVol : float
+        Number of cells in parallel in the battery stack in cells. Default value is 1.0.
+    CapDis : float
+        Voltage lost over the exponential zone of battery in V. Default value is 0.0.
+    CapDisBattDesPower : float
+        Time constant for exponential zone of discharge curve in A*h^-1 . Default value is 0.0.
+    VoltageBatt : float
+        Internal Resistance in V. Default value is 0.0.
+    Voltage : float
+        Voltage lost due to polarization in ohms. Default value is 0.0.
+    CurrBatt : float
+        No-load constant voltage of the battery in V. Default value is 0.0.
+    Ncells : float
+         Number of cells necessary to perform that mission in cells. Default value is 2.0
+    C_max : float
+        Design Power Load in W. Default value is 100.0
+    Nseries : float
+        Calculated number of cells in series in cells. Default value is 0.0
+    Current : float
+        Charge at end of Exponential Curve in A*h. Default value is 2.0
 
-    References
-    ----------
-       Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
-       Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
-       """
+    Notes
+    -----
+    [1] Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
+    Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
+    """
 
     def __init__(self):
 

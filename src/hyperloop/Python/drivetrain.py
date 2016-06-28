@@ -1,3 +1,7 @@
+"""
+Group containing the Sellar MDA. This version uses the disciplines with derivatives.
+"""
+
 from openmdao.api import ExecComp, IndepVarComp, Group, NLGaussSeidel, \
     ScipyGMRES, Problem, ScipyOptimizer
 from hyperloop.Python.ElectricMotor import ElectricMotor
@@ -6,9 +10,6 @@ from hyperloop.Python.dc_transformer import DCTransformer
 from hyperloop.Python.battery import Battery
 
 class PMAD(Group):
-    """ Group containing the Sellar MDA. This version uses the disciplines
-    with derivatives."""
-
     def __init__(self):
         super(PMAD, self).__init__()
 
@@ -31,11 +32,6 @@ class PMAD(Group):
         # connect Battery outputs to DCTransformer inputs
         self.connect('Battery.Voltage', 'DCTransformer.InputVoltage')
         self.connect('Battery.Current', 'DCTransformer.InputCurrent')
-
-
-
-
-
 
         # self.nl_solver = NLGaussSeidel()
         # self.nl_solver.options['atol'] = 1.0e-12

@@ -1,53 +1,53 @@
+"""
+Allows stand-alone batteries to be simulated without an electric circuit within NPSS for use in validating the procedure.
+"""
+
 import math, numpy, scipy
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
 class Battery_perf(Component):
     """
-    Notes
-    -----
-        Allows stand-alone batteries to be simulated without an electric circuit within NPSS for use in validating the procedure.
-
-    Parameters
-    ----------
-        Ncells: float
-             Number of cells in the battery Stack in cells. Default value is 1.0
-        Nparallel: float
-             Number of cells in parallel in the battery stack in cells.Default value is 1.0
-        Exp_zone_amp : float
-            Voltage lost over the exponential zone of battery in V. Default value is 0.2838.
-        Exp_zone_time_const : float
-            Time constant for exponential zone of discharge curve in A*h^-1 . Default value is 1.171.
-        Polarization_voltage: float
-            Voltage lost due to polarization in V. Default value is 0.0036
-        Capacity: float
-            Nominal capacity of one cell in A*h. Default value is 45.0
-        No_load_voltage: float
-            No-load constant voltage of the battery in V. Default value is 4.2
-        Resistance: float
-            Internal resistance of one cell in ohm. Default value is 0.0006058
-        State_of_charge: float
-            Percent of charge left in battery in percent. Default value is 100.0
-        Old_State_of_charge: float
-            Percent of charge left in battery in percent. Default value is 100.0
-        timeStep: float
-            Time step for model in s. Default value is 6.0
-        k_Peukert: float
-            Peukert Coefficient in none. Default value is 1.01193
+    Params
+    ------
+    Ncells : float
+         Number of cells in the battery Stack in cells. Default value is 1.0
+    Nparallel: float
+         Number of cells in parallel in the battery stack in cells.Default value is 1.0
+    Exp_zone_amp : float
+        Voltage lost over the exponential zone of battery in V. Default value is 0.2838.
+    Exp_zone_time_const : float
+        Time constant for exponential zone of discharge curve in A*h^-1 . Default value is 1.171.
+    Polarization_voltage : float
+        Voltage lost due to polarization in V. Default value is 0.0036
+    Capacity : float
+        Nominal capacity of one cell in A*h. Default value is 45.0
+    No_load_voltage : float
+        No-load constant voltage of the battery in V. Default value is 4.2
+    Resistance : float
+        Internal resistance of one cell in ohm. Default value is 0.0006058
+    State_of_charge : float
+        Percent of charge left in battery in percent. Default value is 100.0
+    Old_State_of_charge : float
+        Percent of charge left in battery in percent. Default value is 100.0
+    timeStep : float
+        Time step for model in s. Default value is 6.0
+    k_Peukert : float
+        Peukert Coefficient in none. Default value is 1.01193
 
     Returns
     -------
-        Current : float
-            Current drain applied to the battery in A. Default value is 0.0.
-        Voltage : float
-            Voltage output of battery based on current draw in V. Default value is 0.0.
-        Voltage : float
-            Voltage output of battery based on current draw in V. Default value is 0.0.
+    Current : float
+        Current drain applied to the battery in A. Default value is 0.0.
+    Voltage : float
+        Voltage output of battery based on current draw in V. Default value is 0.0.
+    Voltage : float
+        Voltage output of battery based on current draw in V. Default value is 0.0.
 
-    References
-    ----------
-        Main Source : 'Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
-        Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
+    Notes
+    -----
+    [1] Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
+    Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
     """
 
     def __init__(self):

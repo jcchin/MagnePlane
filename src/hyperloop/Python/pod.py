@@ -1,3 +1,9 @@
+"""
+Optimize the tube diameter, thickness, and distance between pylons
+using a basic sturctural analysis of a pressure cylinder supported at two ends
+Tube is assumed open at the ends in between each support, end effects are neglected for now
+"""
+
 from __future__ import print_function
 
 from math import pi, sqrt
@@ -5,10 +11,6 @@ from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 class TubeandPylon(Component):
-    """Optimize the tube diameter, thickness, and distance between pylons
-    using a basic sturctural analysis of a pressure cylinder supported at two ends
-    Tube is assumed open at the ends in between each support, end effects are neglected for now"""
-
     def __init__(self):
         super(TubeandPylon, self).__init__()
 
