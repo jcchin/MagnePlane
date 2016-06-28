@@ -1,85 +1,78 @@
+"""
+Current Drag Calculation very rough. Needs refinement.
+Default parameters taken from Inductrack I.
+Calculates minimum drag given at set breakpoint velocity desired with given track parameters.
+"""
 from math import pi, sin, e
-
 from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp
 from openmdao.api import ScipyOptimizer
 
 
 class Drag(Component):
     """
-
-    Notes
-    -----
-
-        Current Drag Calculation very rough. Needs refinement.
-        Default parameters taken from Inductrack I.
-        Calculates minimum drag given at set breakpoint velocity desired with given track parameters.
-
-    Parameters
-    ----------
-
-        mpod : float
-            Mass of the hyperloop pod. Default value is 3000.
-        Br : float
-            Strength of the Neodynium Magnets. Default value is 1.48.
-        M : float
-            Number of Magnets per Halbach Array. Default value is 4
-        d : float
-            Thickness of Magnet. Default value is 0.15.
-        g : float
-            Gravitational Acceleration. Default value is 9.81.
-        lpod : float
-            Length of the Hyperloop pod. Default value is 22.
-        gamma : float
-            Percent factor used in Area. Default value is 1.
-        Pc : float
-            Width of track. Default value is 3.
-        w : float
-            Width of magnet array. Default value is 3.
-        spacing : float
-            Halbach Spacing Factor. Default value is 0.0.
-        Nt : float
-            Width of conductive strip. Default value is .005.
-        Ns : float
-            Number of laminated sheets. Default value is 1.0.
-        delta_c : float
-            Single layer thickness. Default value is .005.
-        strip_c : float
-            Center strip spacing. Default value is .0105.
-        rc : float
-            Electric resistance. Default value is 1.713*10**-8.
-        mu0 : float
-            Permeability of Free Space. Default value is 4*pi*10^-7.
-        vb : float
-            Breakpoint velocity of the pod. Default value is 23.
-        y : float
-            Levitation height. Default value is .01.
+    Params
+    ------
+    mpod : float
+        Mass of the hyperloop pod. Default value is 3000.
+    Br : float
+        Strength of the Neodynium Magnets. Default value is 1.48.
+    M : float
+        Number of Magnets per Halbach Array. Default value is 4
+    d : float
+        Thickness of Magnet. Default value is 0.15.
+    g : float
+        Gravitational Acceleration. Default value is 9.81.
+    lpod : float
+        Length of the Hyperloop pod. Default value is 22.
+    gamma : float
+        Percent factor used in Area. Default value is 1.
+    Pc : float
+        Width of track. Default value is 3.
+    w : float
+        Width of magnet array. Default value is 3.
+    spacing : float
+        Halbach Spacing Factor. Default value is 0.0.
+    Nt : float
+        Width of conductive strip. Default value is .005.
+    Ns : float
+        Number of laminated sheets. Default value is 1.0.
+    delta_c : float
+        Single layer thickness. Default value is .005.
+    strip_c : float
+        Center strip spacing. Default value is .0105.
+    rc : float
+        Electric resistance. Default value is 1.713*10**-8.
+    mu0 : float
+        Permeability of Free Space. Default value is 4*pi*10^-7.
+    vb : float
+        Breakpoint velocity of the pod. Default value is 23.
+    y : float
+        Levitation height. Default value is .01.
 
     Returns
     -------
+    lam : float
+        Wavelength of the Halbach Array. Default value is 0.0.
+    R : float
+        Resistance of the track. Default value is 0.0
+    L : float
+        Inductance of the track. Default value is 0.0.
+    B0 : float
+        Halbach Peak Strength. Default value is 0.0.
+    A : float
+        Total area of the magnetic array. Default value is 0.0.
+    omegab : float
+        Breakpoint frequency of the induced current. Default value is 0.0.
+    Fyu : float
+        Levitation force. Default value is 0.0.
+    Fxu : float
+        Drag force. Default value is 0.0.
+    LDratio : float
+        Lift to drag ratio. Default value is 0.0.
 
-        lam : float
-            Wavelength of the Halbach Array. Default value is 0.0.
-        R : float
-            Resistance of the track. Default value is 0.0
-        L : float
-            Inductance of the track. Default value is 0.0.
-        B0 : float
-            Halbach Peak Strength. Default value is 0.0.
-        A : float
-            Total area of the magnetic array. Default value is 0.0.
-        omegab : float
-            Breakpoint frequency of the induced current. Default value is 0.0.
-        Fyu : float
-            Levitation force. Default value is 0.0.
-        Fxu : float
-            Drag force. Default value is 0.0.
-        LDratio : float
-            Lift to drag ratio. Default value is 0.0.
-
-    References
-    ----------
-
-        ..[1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis. Bradley University, 2004. N.p.: n.p., n.d. Print.
+    Notes
+    -----
+    [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis. Bradley University, 2004. N.p.: n.p., n.d. Print.
     """
 
     def __init__(self):
@@ -186,46 +179,39 @@ class Drag(Component):
 
 class Mass(Component):
     """
-
     Notes
     -----
+    Current Magnet Mass Calculation very rough. Needs refinement.
+    Default parameters taken from Inductrack I.
+    Calculates minimum magnet mass needed at set breakpoint velocity desired with given track parameters.
 
-        Current Magnet Mass Calculation very rough. Needs refinement.
-        Default parameters taken from Inductrack I.
-        Calculates minimum magnet mass needed at set breakpoint velocity desired with given track parameters.
-
-    Parameters
-    ----------
-
-        d : float
-            Thickness of Magnet. Default value is 0.15.
-        rhomag : float
-            Density of Magnet. Default value is 7500.
-        lpod : float
-            Length of the Hyperloop pod. Default value is 22.
-        gamma : float
-            Percent factor used in Area. Default value is 1.
-        w : float
-            Width of magnet array. Default value is 3.
-        costperkg : flost
-            Cost of the magnets per kilogram. Default value is 44.
-
+    Params
+    ------
+    d : float
+        Thickness of Magnet. Default value is 0.15.
+    rhomag : float
+        Density of Magnet. Default value is 7500.
+    lpod : float
+        Length of the Hyperloop pod. Default value is 22.
+    gamma : float
+        Percent factor used in Area. Default value is 1.
+    w : float
+        Width of magnet array. Default value is 3.
+    costperkg : flost
+        Cost of the magnets per kilogram. Default value is 44.
 
     Returns
     -------
-
-        A : float
-            Total area of the magnetic array. Default value is 0.0
-        mmag : float
-            Mass of the permanent magnets. Default value is 0.0.
-        cost : float
-            Total cost of the magnets. Default value is 0.0.
+    A : float
+        Total area of the magnetic array. Default value is 0.0
+    mmag : float
+        Mass of the permanent magnets. Default value is 0.0.
+    cost : float
+        Total cost of the magnets. Default value is 0.0.
 
     References
     ----------
-
-        ..[1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis. Bradley University, 2004. N.p.: n.p., n.d. Print.
-
+    [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis. Bradley University, 2004. N.p.: n.p., n.d. Print.
     """
 
     def __init__(self):
