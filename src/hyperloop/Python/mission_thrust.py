@@ -1,7 +1,4 @@
-"""
-Computes the total thrust force acting on the pod assuming 1g acceleration in booster section and constant value
-of compressor thrust in coasting sections.  Will be fed into Mission EOM component
-"""
+
 from __future__ import print_function
 
 from math import pi, sqrt, sin
@@ -9,6 +6,13 @@ from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 
 class MissionThrust(Component):
     """
+
+    Notes
+    -----
+
+        Computes the total thrust force acting on the pod assuming 1g acceleration in booster section and constant value
+        of compressor thrust in coasting sections.  Will be fed into Mission EOM component
+
     Params
     ------
     Drag coefficient : float
@@ -59,6 +63,43 @@ class MissionThrust(Component):
         self.add_output('Thrust', val = 0.0, units = 'N', desc = 'Thrust Force')
 
     def solve_nonlinear(self, params, unknowns, resids):
+        """
+        Notes
+        -----
+
+        Evaluates equation T = m*g*(1+sin(theta)) + .5*Cd*rho*(V**2)*S + D_magnetic
+
+
+        Params
+        ------
+        Drag coefficient : float
+            Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
+        Reference Area : float
+            Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
+        Tube Pressure : float
+            Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+        Ambient Temperature : float
+            Tunnel ambient temperature. Default value is 298 K.
+        Ideal Gas Constant : float
+            Ideal gas constant. Default valut is 287 J/(m*K).
+        Magnetic Drag : float
+            Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
+        Pod Thrust : float
+            Thrust produced by pod compressed air. Default value 3500 N. Will pull value from NPSS
+        Inclination angle : float
+            Incline angle of pod in NED frame. Default value is 0.0 rad.
+        Pod Speed : float
+            Speed of the pod.  Default value is 335 m/s.
+        Pod mass : float
+            total mass of pod. Default value is 3100 kg. Value will come from weight component
+        Gravity : float
+            Gravitational acceleration. Default value is 9.81 m/s**2
+
+        Returns
+        -------
+        Thrust : float
+            Total thrust force acting on pod. Default value is 0.0.
+        """
 
         m_pod = params['m_pod']
         g = params['g']
