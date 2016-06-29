@@ -1,7 +1,3 @@
-"""
-Computes the total drag force acting on the pod.  Will be fed into Mission EOM component
-"""
-
 from __future__ import print_function
 
 from math import pi, sqrt
@@ -9,27 +5,36 @@ from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 
 class MissionDrag(Component):
     """
-    Params
-    ------
-    Drag coefficient : float
-        Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
-    Reference Area: float
-        Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
-    Tube Pressure : float
-        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
-    Ambient Temperature : float
-        Tunnel ambient temperature. Default value is 298 K.
-    Ideal Gas Constant : float
-        Ideal gas constant. Default valut is 287 J/(m*K).
-    Magnetic Drag : float
-        Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
-    Pod Speed : float
-        Speed of the pod.  Default value is 335 m/s.
+
+    Notes
+    -----
+
+        Computes the total drag force acting on the pod.  Will be fed into Mission EOM component
+
+    Parameters
+    ----------
+
+        Drag coefficient : float
+            Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
+        Reference Area: float
+            Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
+        Tube Pressure : float
+            Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+        Ambient Temperature : float
+            Tunnel ambient temperature. Default value is 298 K.
+        Ideal Gas Constant: float
+            Ideal gas constant. Default valut is 287 J/(m*K).
+        Magnetic Drag: float
+            Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
+        Pod Speed : float
+            Speed of the pod.  Default value is 335 m/s.
 
     Returns
     -------
-    Drag : float
-        Total drag force acting on pod. Default value is 0.0.
+
+        Drag : float
+            Total drag force acting on pod. Default value is 0.0.
+
     """
 
     def __init__(self):
@@ -47,6 +52,39 @@ class MissionDrag(Component):
         self.add_output('D', val = 0.0, units = 'N', desc = 'Drag Force')
 
     def solve_nonlinear(self, params, unknowns, resids):
+        """
+
+        Notes
+        -----
+
+            Computes the total drag force acting on the pod.  Will be fed into Mission EOM component
+            Evaluates equation D = .5*Cd*rho*(V**2)*S + D_magnetic
+
+        Parameters
+        ----------
+
+            Drag coefficient : float
+                Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
+            Reference Area: float
+                Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
+            Tube Pressure : float
+                Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+            Ambient Temperature : float
+                Tunnel ambient temperature. Default value is 298 K.
+            Ideal Gas Constant: float
+                Ideal gas constant. Default valut is 287 J/(m*K).
+            Magnetic Drag: float
+                Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
+            Pod Speed : float
+                Speed of the pod.  Default value is 335 m/s.
+
+        Returns
+        -------
+
+            Drag : float
+                Total drag force acting on pod. Default value is 0.0.
+
+        """
 
         #Calculate air density and drag force
         rho = params['p_tube']/(params['R']*params['T_ambient'])
