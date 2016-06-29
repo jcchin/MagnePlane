@@ -3,8 +3,8 @@ Calculates parameters like Nparallel(number of cells in parallel), Nseries(Numbe
 The calculated parameters are then use to estimate battery weight in BatteryWeight.py
 """
 
-import math, numpy, scipy
-from openmdao.core.component import Component
+import numpy, scipy
+
 from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
 
 class BatteryP(Component):
@@ -202,8 +202,8 @@ class BatteryP(Component):
 
             if switchDes == "DESIGN":
                 PBattDesPower = VoltageBatt * CurrBatt
-                Ncells = math.ceil(DesPower / PBattDesPower)
-                Nseries = math.ceil(Ncells / Nparallel)
+                Ncells = numpy.ceil(DesPower / PBattDesPower)
+                Nseries = numpy.ceil(Ncells / Nparallel)
                 Ncells = Nseries * Nparallel
                 Voltage = Nseries * VoltageBatt
 
