@@ -41,7 +41,6 @@ before_install:
 install:
 - conda install --yes python=$PY numpy scipy=0.16.1 sphinx==1.3.1 matplotlib pytest
 - pip install git+http://github.com/OpenMDAO/OpenMDAO.git@master
-- pip install pylint
 - pip install -e .
 
 script: py.test --ignore=src/hyperloop/Python/tests/archive -s -src

@@ -1,11 +1,8 @@
-import math, scipy
 import numpy as np
-from openmdao.core.component import Component
-from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
+from openmdao.api import Component
+
 
 class Inverter(Component):
-
-
     def __init__(self):
         super(Inverter, self).__init__()
 
@@ -20,7 +17,7 @@ class Inverter(Component):
         self.add_output('OutputPower', 12000000, units='Watts')
 
     def solve_nonlinear(self, params, unknowns, resids):
-        output_power = params['OutputVoltage'] * params['OutputCurrent'] * 3.0 * np.sqrt(2.0/3.0)
+        output_power = params['OutputVoltage'] * params['OutputCurrent'] * 3.0 * np.sqrt(2.0 / 3.0)
         unknowns['OutputPower'] = output_power
 
         # TODO perform efficiency lookup
@@ -29,4 +26,3 @@ class Inverter(Component):
         # negative sign because drawing current from cable
         # needed to keep bus voltage higher than inverter rather than lower
         unknowns['InputCurrent'] = -input_power / params['InputVoltage']
-
