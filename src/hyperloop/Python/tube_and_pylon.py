@@ -1,9 +1,3 @@
-"""
-Estimates tube tunnel cost and pylon material cost
-Optimizes tunnel thickness, pylon radius, and pylon spacing
-
-Many parameters are currently taken from hyperloop alpha, will eventually pull from mission trajectory
-"""
 
 from __future__ import print_function
 
@@ -13,6 +7,13 @@ from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 class TubeandPylon(Component):
     """
+    Notes
+    ------
+    Estimates tube tunnel cost and pylon material cost
+    Optimizes tunnel thickness, pylon radius, and pylon spacing
+
+    Many parameters are currently taken from hyperloop alpha, will eventually pull from mission trajectory
+
     Params
     ------
     tube density : float
@@ -128,7 +129,77 @@ class TubeandPylon(Component):
         m_prime = mass of tunnel per unit length = rho_tube*pi*((r+t)^2-r^2)
         m_pylon = mass of single pylon = rho_pylon*pi*(r_pylon^2)*h
 
-        Constraint equations derived from yield on buckling conditions'''
+        Constraint equations derived from yield on buckling conditions
+
+        Params
+        ------
+        tube density : float
+            density of tube material. Default is 7820 kg/m**3
+        tube stiffness : float
+            Young's modulus of tube material. Default value is 200e9 Pa
+        Tube Poisson's ratio : float
+            Poisson's ratio of tube material.  Default value is .3
+        Tube strength : float
+            Ultimate strength of tube material. Default value is 152e6 Pa
+        safety factor : float
+            Tube safety factor. Default value is 1.5
+        Gravity : float
+            Gravitational acceleration. Default value is 9.81 m/s**2
+        Tube unit cost : float
+            Cost of tube material per unit mass. Default value is .33 USD/kg
+        Tube Pressure : float
+            Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+        Ambient Pressure : float
+            Pressure of atmosphere. Default value is 101.3e3 Pa.
+        Tube coefficient of thermal expansion : float
+            Coefficient of thermal expansion of tube material. Default value is 0.0
+        Change in tube Temperature : float
+            Difference in tunnel temperature as compared ot a reference temperature. Default value is 0.0
+        Pod mass : float
+            total mass of pod. Default value is 3100 kg. Value will come from weight component
+        Tube radius : float
+            Radius of tube. Default value is 1.1 m. Value will come from aero module
+        Tube thickness : float
+            Thickness of the tube. Default value is 50 mm. Value is optimized in problem driver.
+        Pylon density : float
+            Density of pylon material. Default value is 2400 kg/m**3
+        Pylon stiffness : float
+            Young's modulus of pylon material. Default value is 41e9 Pa
+        Pylon Poisson's ratio : float
+            Poisson's ratio of pylon material. Default value is .2
+        Pylon strength : float
+            Ultimate strength of pylon material. Default value is 40e6 Pa
+        Pylon material cost : float
+            Cost of pylon material per unit mass. Default value is .05 USD/kg
+        Pylon height : float
+            Height of each pylon. Default value is 10 m.
+        Pylon radius : float
+            Radius of each pylon. Default value is 1 m. Value will be optimized in problem driver
+
+        Returns
+        -------
+        pylon mass : float
+            mass of individual pylon in kg/pylon
+        Mass per unit length of tube: float
+            Calculates mass per unit length of tube in kg/m
+        Von Mises : float
+            Von Mises stress in the tube in Pa
+        Material Cost : float
+            returns total cost of tube and pylon materials per unit distance in USD/m
+        Pylon load : float
+            Returns vertical component of force on each pylon in N
+        Tube deflection : float
+            Maximum deflection of tube between pylons in m
+        Distance between pylons : float
+            outputs distance in between pylons in m
+        Critical thickness :
+            Minimum tube thickness to satisfy vacuum tube buckling condition in m
+
+        Notes
+        -----
+        [1] USA. NASA. Buckling of Thin-Walled Circular Cylinders. N.p.: n.p., n.d. Web. 13 June 2016.
+
+        '''
 
         rho_tube = params['rho_tube']
         E_tube = params['E_tube']
