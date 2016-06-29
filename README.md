@@ -35,6 +35,11 @@ Dev forks can be found here:
 [Nathan Sharifrazi](https://github.com/nathansharifrazi/MagnePlane.git)
 
 ========
+
+To install, run `pip install -e .` from the top folder
+
+========
+
 ### File Structure
 
 * Aero - Fun3D aerodynamic flow analysis I/O files

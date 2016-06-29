@@ -1,3 +1,9 @@
+"""
+Calculate Lift based on Magnet Parameters!
+inspired by: Jed Storey - http://mitrocketscience.blogspot.com/search/label/
+and: Paul R. Friend - http://cegt201.bradley.edu/projects/proj2004/maglevt1/reason.html
+"""
+
 import numpy as np
 from os import remove
 from mpl_toolkits.mplot3d import Axes3D
@@ -13,13 +19,7 @@ from openmdao.solvers.scipy_gmres import ScipyGMRES
 from openmdao.solvers.ln_gauss_seidel import LinearGaussSeidel
 from openmdao.solvers.ln_direct import DirectSolver
 
-
-
 class Lift(Component):
-    """Calculate Lift based on Magnet Parameters!
-        inspired by: Jed Storey - http://mitrocketscience.blogspot.com/search/label/
-        and: Paul R. Friend - http://cegt201.bradley.edu/projects/proj2004/maglevt1/reason.html"""
-
     def __init__(self):
         super(Lift, self).__init__()
         self.ln_solver = LinearGaussSeidel()

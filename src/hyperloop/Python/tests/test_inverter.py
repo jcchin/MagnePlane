@@ -1,6 +1,6 @@
 from __future__ import print_function
 import pytest
-from src.hyperloop.Python import Inverter
+from hyperloop.Python import Inverter
 import numpy as np
 from openmdao.api import Group, Problem
 

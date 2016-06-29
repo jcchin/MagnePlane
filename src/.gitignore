@@ -1,1 +1,3 @@
 /hyperloop.egg-info/
+*.pyc
+*.DS_Store

@@ -1,3 +1,9 @@
+"""
+Estimates tube diameter, inlet diameter, and compressor power
+Will optimize some sort of cost function based on pod mach number
+Many parameters are currently taken from hyperloop alpha, pod sizing analysis
+"""
+
 from __future__ import print_function
 
 from math import pi, sqrt
@@ -6,34 +12,52 @@ from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
 
 class PodMach(Component):
     """
-
-    Notes
-    -----
-
-        Estimates tube diameter, inlet diameter, and compressor power
-        Will optimize some sort of cost function based on pod mach number
-        Many parameters are currently taken from hyperloop alpha, pod sizing analysis
-
-    Parameters
-    ----------
-
-        pod mach : float
-            pod Mach number. Default value is .8
-        pod area : float
-            Assumes pod mass from alpha paper. Default value is 1.4 m**2  Will take pod area from geometry analysis
+    Params
+    ------
+    Ratio of specific heats : float
+        Ratio of specific heats. Default value is 1.4
+    Ideal Gas Constant : float
+        Ideal gas constant. Default valut is 287 J/(m*K).
+    Blockage factor : float
+        ratio of diffused area to pod area. Default value is .9. Value will be taken from pod geometry module
+    A pod : float
+        cross sectional area of the pod. Default value is 1.4 m**2. Value will be taken from pod geometry module
+    L : float
+        Pod length. Default value is 22 m. Value will be taken from pod geometry module
+    Compressor pressure ratio : float
+        Pressure ratio across compressor inlet and outlet.  Default value is 12.5.  Value will be taken from NPSS
+    Tube Pressure : float
+        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+    Ambient Temperature : float
+        Tunnel ambient temperature. Default value is 298 K.
+    Dynamic viscosity : float
+        Fluid dynamic viscosity. Default value is 1.846e-5 kg/(m*s)
+    Duct Mach number : float
+        Maximum Mach number allowed in the duct. Default value is .95
+    Diffuser Mach number : float
+        Maximum Mach number allowed at compressor inlet. Default valu is .6
+    Specific heat : float
+        Specific heat of fluid. Default value is 1009 J/(kg*K)
+    pod mach : float
+        pod Mach number. Default value is .8
 
 
     Returns
     -------
-
-        tunnel area : float
-            will return optimal tunnel area based on pod Mach number
-        compressor power : float
-            will return the power that needs to be delivered to the flow by the compressor.  Does not account for compressor efficiency
-        Bypass area : float
-            will return area of that the flow must go through to bypass pod
-        Inlet Area : float
-            returns area of the inlet necessary to slow the flow down to M_diffuser
+    tunnel area : float
+        will return optimal tunnel area based on pod Mach number
+    compressor power : float
+        will return the power that needs to be delivered to the flow by the compressor.  Does not account for compressor efficiency
+    Bypass area : float
+        will return area of that the flow must go through to bypass pod
+    Inlet Area : float
+        returns area of the inlet necessary to slow the flow down to M_diffuser
+    Effective duct area : float
+        returns effective duct area which accounts for displacement boundary layer thickness approximation
+    Diffuser area : float
+        returns area of diffuser outlet
+    Reynolds number : float
+        returns free stream Reynolds number
     """
 
     def __init__(self):
@@ -51,8 +75,6 @@ class PodMach(Component):
         self.add_param('M_duct', val = .95, desc = 'maximum pod mach number')
         self.add_param('M_diff', val = .6, desc = 'maximum pod mach number befor entering the compressor')
         self.add_param('cp', val = 1009.0, units='J/(kg*K)', desc = 'specific heat')
-        self.add_param('r_pod', val = .668, units = 'm', desc = 'pod radius')
-        self.add_param('r_tube', val = 1.11, units = 'm**2', desc = 'pod area')
         self.add_param('delta_star', val = .07, units = 'm', desc ='Boundary layer displacement thickness')
 
         self.add_param('M_pod', val = .8, desc = 'pod mach number')
@@ -78,7 +100,6 @@ class PodMach(Component):
         M_duct = params['M_duct']
         M_diff = params['M_diff']
         cp = params['cp']
-        r_pod = params['r_pod']
         delta_star = params['delta_star']
         M_pod = params['M_pod']
 
@@ -90,6 +111,7 @@ class PodMach(Component):
         #Define intermediate variables
         rho_inf = p_tube/(R*T_ambient)                              #Calculate density of free stream flow
         U_inf = M_pod * ((gam*R*T_ambient)**.5)                     #Calculate velocity of free stream flow
+        r_pod = (A_pod/pi)**.5                                      #Calculate pod radius
 
         Re = (rho_inf*U_inf*L)/mu                                   #Calculate length based Reynolds Number
 
