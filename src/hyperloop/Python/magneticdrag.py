@@ -13,15 +13,15 @@ class MagDrag(Component):
     Params
     ------
     v : float
-        Desired velocity of the pod. Default value is 350.
+        Desired velocity of the pod. Default value is 335.
     R : float
-        Resistance of the track. Default value is 0.0
+        Resistance of the track. Default value is 3.14e-4.
     L : float
-        Inductance of the track. Default value is 0.0.
+        Inductance of the track. Default value is 3.59e-6.
     Fyu : float
-        Levitation force. Default value is 0.0.
+        Levitation force. Default value is 29430.0.
     lam : float
-        Wavelength of the Halbach Array. Default value is 0.0.
+        Wavelength of the Halbach Array. Default value is 0.125658.
 
     Returns
     -------
@@ -43,8 +43,8 @@ class MagDrag(Component):
         super(MagDrag, self).__init__()
 
         # Inputs
-        self.add_param('v', val=23.0, units='m/s', desc='Desired Velocity')
-        self.add_param('R', val=0.019269, units='ohm', desc='Track Resistance')
+        self.add_param('v', val=350.0, units='m/s', desc='Desired Velocity')
+        self.add_param('R', val=3.14e-4, units='ohm', desc='Track Resistance')
         self.add_param('L', val=3.59023e-6, units='ohm*s', desc='Track Inductance')
         self.add_param('Fyu', val=29430.0, units='N', desc='Levitation Force')
         self.add_param('lam', val=0.125658, units='m', desc='Halbach wavelength')
