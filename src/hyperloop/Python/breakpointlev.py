@@ -276,7 +276,7 @@ if __name__ == "__main__":
     params = (
         ('d', .05, {'units': 'm'}),
         ('gamma', .05),
-        ('mpod', 300.0, {'units': 'kg'}),
+        ('mpod', 3000.0, {'units': 'kg'}),
         ('g', 9.81, {'units': 'm/s**2'})
     )
 
