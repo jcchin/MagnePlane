@@ -38,7 +38,7 @@ class TestMotor(object):
         prob['comp.I0_Des'] = 0.0
         prob['comp.nphase'] = 3.0
         prob['comp.CoreRadiusRatio'] = 0.7
-        prob['comp.B_p'] = 1.5
+
 
         prob.run()
 
@@ -73,7 +73,6 @@ class TestMotor(object):
         prob['comp.I0_Des'] = 0.0
         prob['comp.nphase'] = 3.0
         prob['comp.CoreRadiusRatio'] = 1.5
-        prob['comp.B_p'] = 2.2
 
         prob.run()
 
