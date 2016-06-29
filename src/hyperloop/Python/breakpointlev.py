@@ -5,6 +5,7 @@ Outputs Halbach array wavelength, track resistance, and inductance can be used t
 drag force at any velocity using given pod weight.
 """
 from math import pi, sin, e
+import numpy as np
 from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp
 from openmdao.api import ScipyOptimizer
 
@@ -90,11 +91,11 @@ class Drag(Component):
         self.add_param('d', val=0.15, units='m', desc='Thickness of magnet')
         self.add_param('lpod', val=22, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
-        self.add_param('w', val=3, units='m', desc='Width of magnet array')
+        self.add_param('w', val=3., units='m', desc='Width of magnet array')
         self.add_param('spacing', val=0.0, units='m', desc='Halbach Spacing Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('Pc', val=3, units='m', desc='Width of Track')
+        self.add_param('Pc', val=3., units='m', desc='Width of Track')
         self.add_param('Nt', val=0.005, units='m', desc='Width of Conductive Strip')
         self.add_param('Ns', val=1.0, desc='Number of Laminated Sheets')
         self.add_param('delta_c', val=0.0005334, units='m', desc='Single Layer Thickness')
@@ -146,7 +147,7 @@ class Drag(Component):
         R = rc*Pc/(delta_c*Nt*Ns)  # Track Resistance
 
         lam = M*d + spacing  # Compute Wavelength
-        B0 = Br*(1.-e**(-2.*pi*d/lam))*((sin(pi/M))/(pi/M))  # Compute Peak Field Strength
+        B0 = Br*(1.-np.exp(-2.*pi*d/lam))*((sin(pi/M))/(pi/M))  # Compute Peak Field Strength
         L = mu0*Pc/(4*pi*strip_c/lam)  # Compute Track Inductance
         A = w*lpod*gamma  # Compute Magnet Area
 
@@ -225,8 +226,8 @@ class Mass(Component):
         self.add_param('rhomag', val=7500, units='kg/m**3', desc='Density of Magnet')
         self.add_param('lpod', val=22, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
-        self.add_param('costperkg', val=44, units= 'USD/kg',desc='Cost of Magnet per Kilogram')
-        self.add_param('w', val=3, units='m', desc='Width of Magnet Array')
+        self.add_param('costperkg', val=44., units= 'USD/kg',desc='Cost of Magnet per Kilogram')
+        self.add_param('w', val=3., units='m', desc='Width of Magnet Array')
 
         # outputs
         self.add_output('A', val=0.0, units='m', desc='Total Area of Magnets')
