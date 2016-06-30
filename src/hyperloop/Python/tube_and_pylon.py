@@ -1,11 +1,11 @@
 from __future__ import print_function
 
-from math import pi, sqrt
+import numpy as np
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
-from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
+from openmdao.api import ScipyOptimizer
 
 
-class TubeandPylon(Component):
+class TubeAndPylon(Component):
     """
     Notes
     ------
@@ -84,7 +84,7 @@ class TubeandPylon(Component):
     """
 
     def __init__(self):
-        super(TubeandPylon, self).__init__()
+        super(TubeAndPylon, self).__init__()
 
         #Define material properties of tube
         self.add_param('rho_tube',
@@ -277,15 +277,15 @@ class TubeandPylon(Component):
         h = params['h']
 
         #Compute intermediate variable
-        q = rho_tube * pi * ((
+        q = rho_tube * np.pi * ((
             (r + t)**2) - (r**2)) * g  #Calculate distributed load
         dp = p_ambient - p_tunnel  #Calculate delta pressure
-        I_tube = (pi / 4.0) * ((
+        I_tube = (np.pi / 4.0) * ((
             (r + t)**4) - (r**4))  #Calculate moment of inertia of tube
 
-        m_prime = rho_tube * pi * ((
+        m_prime = rho_tube * np.pi * ((
             (r + t)**2) - (r**2))  #Calculate mass per unit length
-        dx = ((2 * (Su_pylon / sf) * pi *
+        dx = ((2 * (Su_pylon / sf) * np.pi *
                (r_pylon**2)) - m_pod * g) / (m_prime * g)  #Calculate dx
         M = (q * (
             (dx**2) / 8.0)) + (m_pod * g * (dx / 2.0))  #Calculate max moment
@@ -293,15 +293,15 @@ class TubeandPylon(Component):
         sig_axial = ((dp * r) / (2 * t)) + (
             (M * r) / I_tube
         ) + alpha_tube * E_tube * dT_tube  #Calculate axial stress
-        VonMises = (((sig_theta**2) + (sig_axial**2) + (
+        VonMises = np.sqrt((((sig_theta**2) + (sig_axial**2) + (
             (sig_axial - sig_theta)**2)) /
-                    2.0)**.5  #Calculate Von Mises stress
-        m_pylon = rho_pylon * pi * (r_pylon**
+                    2.0))  #Calculate Von Mises stress
+        m_pylon = rho_pylon * np.pi * (r_pylon**
                                     2) * h  #Calculate mass of single pylon
 
-        unknowns['total_material_cost'] = (unit_cost_tube * (rho_tube * pi * ((
+        unknowns['total_material_cost'] = (unit_cost_tube * (rho_tube * np.pi * ((
             (r + t)**2) - (r**2)))) + (unit_cost_pylon * m_pylon * (1 / (
-                ((2 * (Su_pylon / sf) * pi * (r_pylon**2)) - m_pod * g) /
+                ((2 * (Su_pylon / sf) * np.pi * (r_pylon**2)) - m_pod * g) /
                 (m_prime * g))))
         unknowns['m_prime'] = m_prime
         unknowns['VonMises'] = VonMises
@@ -330,7 +330,7 @@ if __name__ == '__main__':
               ('E_pylon', 41.0e9, {'units': 'Pa'}),
               ('h', 10.0, {'units': 'm'}), ('m_pod', 3100.0, {'units': 'kg'}))
     root.add('input_vars', IndepVarComp(params))
-    root.add('p', TubeandPylon())
+    root.add('p', TubeAndPylon())
 
     root.add('con1', ExecComp(
         'c1 = ((Su_tube/sf) - VonMises)'))  #Impose yield stress constraint for tube
@@ -365,13 +365,13 @@ if __name__ == '__main__':
 
     top.run()
 
-    R_buckle = ((pi**3) * top['p.E_tube'] *
+    R_buckle = ((np.pi**3) * top['p.E_tube'] *
                 (top['p.r_pylon']**4)) / (16 * (top['p.h']**2))
     if top['p.R'] < R_buckle:
         print('Pylon buckling constraint is satisfied')
     else:
         r_pylon_new = ((R_buckle * 16 * (top['p.h']**2)) / (
-            (pi**3) * top['p.E_tube']))**.25
+            (np.pi**3) * top['p.E_tube']))**.25
         print(
             'Optimizer value did not satisfy pylon buckling condition. Pylon radius set to minimum buckling value')
         print('new pylon radius is %f m' % r_pylon_new)
