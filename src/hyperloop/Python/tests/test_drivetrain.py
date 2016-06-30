@@ -5,14 +5,15 @@ from src.hyperloop.Python.drivetrain import Drivetrain
 import numpy as np
 from openmdao.api import Group, Problem
 
+
 def create_problem(comp):
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', comp)
     return prob
 
-class TestDrivetrain(object):
 
+class TestDrivetrain(object):
     def test_case1_vs_npss(self):
         prob = create_problem(Drivetrain())
         prob.setup()

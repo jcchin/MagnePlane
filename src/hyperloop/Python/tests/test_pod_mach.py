@@ -10,13 +10,11 @@ def create_problem(component):
     prob.root.add('comp', component)
     return prob
 
+
 class TestPodMach(object):
-
-
     def test_case1_vs_npss(self):
 
-
-        component  =  pod_mach.PodMach()
+        component = pod_mach.PodMach()
 
         prob = create_problem(component)
 
@@ -41,5 +39,3 @@ class TestPodMach(object):
 
         assert np.isclose(prob['comp.Re'], 3278799.304354, rtol=0.1)
         assert np.isclose(prob['comp.A_tube'], 18.600833, rtol=0.1)
-
-

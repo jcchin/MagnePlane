@@ -11,6 +11,7 @@ import math
 from collections import namedtuple
 from .tools import io_helper
 
+
 class DefaultsHandler(object):
     def __init__(self):
         pass
@@ -76,13 +77,21 @@ class TunnelCost(Component):
         if config is not None:
             defaults.get_config_from_file(config)
 
-
         # default inner diameter for passenger tube from Hyperloop Alpha
-        self.add_param(defaults.diam.name, defaults.diam.val, desc=defaults.diam.desc, units=defaults.diam.unit)
+        self.add_param(defaults.diam.name,
+                       defaults.diam.val,
+                       desc=defaults.diam.desc,
+                       units=defaults.diam.unit)
         # default tunnel length from SF to LA
-        self.add_param(defaults.len.name, defaults.len.val, desc=defaults.len.desc, units=defaults.len.unit)
+        self.add_param(defaults.len.name,
+                       defaults.len.val,
+                       desc=defaults.len.desc,
+                       units=defaults.len.unit)
 
-        self.add_output(defaults.cost.name, defaults.cost.val, desc=defaults.cost.desc, units=defaults.cost.unit)
+        self.add_output(defaults.cost.name,
+                        defaults.cost.val,
+                        desc=defaults.cost.desc,
+                        units=defaults.cost.unit)
 
     # formula taken from conventional subway excavation data
     def solve_nonlinear(self, params, unknowns, resids):
@@ -95,13 +104,18 @@ class TunnelCost(Component):
         # TODO for final publish store all citations in common document not inline
         # formula taken from conventional subway excavation data
         # https://www.researchgate.net/publication/233926915_Planning_level_tunnel_cost_estimation_based_on_statistical_analysis_of_historical_data
-        unknowns[defaults.cost.name] = 1000000 * math.pow(10, (1.10 + (0.933 * math.log10(params[defaults.len.name])) + (0.614 * math.log10(params[defaults.diam.name]))))
-
+        unknowns[defaults.cost.name] = 1000000 * math.pow(10, (
+            1.10 + (0.933 * math.log10(params[defaults.len.name])) +
+            (0.614 * math.log10(params[defaults.diam.name]))))
 
     def print_results(self):
-        print("{} ({}): {}".format(defaults.diam.name, defaults.diam.unit, defaults.diam.val))
-        print("{} ({}): {}".format(defaults.len.name, defaults.len.unit, defaults.len.val))
-        print("{} ({}): {}".format(defaults.cost.name, defaults.cost.unit, defaults.cost.val))
+        print("{} ({}): {}".format(defaults.diam.name, defaults.diam.unit,
+                                   defaults.diam.val))
+        print("{} ({}): {}".format(defaults.len.name, defaults.len.unit,
+                                   defaults.len.val))
+        print("{} ({}): {}".format(defaults.cost.name, defaults.cost.unit,
+                                   defaults.cost.val))
+
 
 if __name__ == '__main__':
     p = Problem(root=Group())

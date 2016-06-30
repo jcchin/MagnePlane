@@ -4,12 +4,12 @@ import numpy as np
 from openmdao.api import Group, Problem
 
 
-
 def create_problem(compressor):
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', compressor)
     return prob
+
 
 class TestCompressor(object):
     def test_case1(self):

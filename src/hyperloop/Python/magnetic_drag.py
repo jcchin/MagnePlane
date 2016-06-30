@@ -45,15 +45,30 @@ class MagDrag(Component):
         # Inputs
         self.add_param('v', val=350.0, units='m/s', desc='Desired Velocity')
         self.add_param('R', val=3.14e-4, units='ohm', desc='Track Resistance')
-        self.add_param('L', val=3.59023e-6, units='ohm*s', desc='Track Inductance')
+        self.add_param('L',
+                       val=3.59023e-6,
+                       units='ohm*s',
+                       desc='Track Inductance')
         self.add_param('Fyu', val=29430.0, units='N', desc='Levitation Force')
-        self.add_param('lam', val=0.125658, units='m', desc='Halbach wavelength')
+        self.add_param('lam',
+                       val=0.125658,
+                       units='m',
+                       desc='Halbach wavelength')
 
         # Outputs
         self.add_output('omega', val=0.0, units='rad/s', desc='Frequency')
-        self.add_output('magdraglev', val=0.0, units='N', desc='Magnetic Drag from Levitation')
-        self.add_output('magdragprop', val=0.0, units='N', desc='Magnetic Drag from Propulsion')
-        self.add_output('magdrag', val=0.0, units='N', desc='Total Magnetic Drag')
+        self.add_output('magdraglev',
+                        val=0.0,
+                        units='N',
+                        desc='Magnetic Drag from Levitation')
+        self.add_output('magdragprop',
+                        val=0.0,
+                        units='N',
+                        desc='Magnetic Drag from Propulsion')
+        self.add_output('magdrag',
+                        val=0.0,
+                        units='N',
+                        desc='Total Magnetic Drag')
 
     def solve_nonlinear(self, params, unknowns, resids):
 
@@ -63,8 +78,8 @@ class MagDrag(Component):
         Fyu = params['Fyu']  # Levitation Force Required
         lam = params['lam']  # Halbach Array Wavelength
 
-        omega = 2*pi*v/lam  # Frequency of Induced Current
-        magdraglev = R*Fyu/(omega*L)  # Magnetic Drag from Levitation
+        omega = 2 * pi * v / lam  # Frequency of Induced Current
+        magdraglev = R * Fyu / (omega * L)  # Magnetic Drag from Levitation
         magdragprop = 0  # Magnetic Drag from Propulsion (TBD)
         magdrag = magdraglev + magdragprop  # Total Magnetic Drag
 
@@ -72,6 +87,7 @@ class MagDrag(Component):
         unknowns['magdraglev'] = magdraglev
         unknowns['magdragprop'] = magdragprop
         unknowns['magdrag'] = magdrag
+
 
 if __name__ == "__main__":
 

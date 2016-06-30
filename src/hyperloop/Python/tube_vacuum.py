@@ -61,42 +61,80 @@ class Vacuum(Component):
     def __init__(self):
         super(Vacuum, self).__init__()
 
-    # Inputs
-        self.add_param('pinit', 760.2, desc='operating pressure of system evacuated', units='torr')
-        self.add_param('pfinal', 7.0, desc='desired pressure within the tube', units='torr')
+        # Inputs
+        self.add_param('pinit',
+                       760.2,
+                       desc='operating pressure of system evacuated',
+                       units='torr')
+        self.add_param('pfinal',
+                       7.0,
+                       desc='desired pressure within the tube',
+                       units='torr')
         self.add_param('speed', 163333.3, desc='Pumping speed', units='L/min')
         self.add_param('rad', 5.0, desc='radius of the tube', units='ft')
         self.add_param('len', 5000.0, desc='length of the tube', units='ft')
         self.add_param('pwr', 18.5, desc='motor rating', units='(W*1000)')
-        self.add_param('eprice', 0.13, desc='cost of electricity per kilowatt hour', units='USD/(W*1000*h)')
-        self.add_param('tdown', 300.0, desc='desired pump down time', units='min')
-        self.add_param('gamma', .8, desc='operational percentage of the pump per day')
-        self.add_param('pumpweight', 715.0, desc='weight of one pump', units='kg')
+        self.add_param('eprice',
+                       0.13,
+                       desc='cost of electricity per kilowatt hour',
+                       units='USD/(W*1000*h)')
+        self.add_param('tdown',
+                       300.0,
+                       desc='desired pump down time',
+                       units='min')
+        self.add_param('gamma',
+                       .8,
+                       desc='operational percentage of the pump per day')
+        self.add_param('pumpweight',
+                       715.0,
+                       desc='weight of one pump',
+                       units='kg')
         # self.add_param('opt',100000.0, desc= 'operating time of the motor', units='mins')
 
-    # Outputs
-        self.add_output('totpwr', 1.0, desc='total power consumption', units='kw')
+        # Outputs
+        self.add_output('totpwr',
+                        1.0,
+                        desc='total power consumption',
+                        units='kw')
         self.add_output('n', 1.0, desc='number of pumps')
-        self.add_output('volft', 2.0, desc='volume of the tube in feet cubed', units='ft**3')
-        self.add_output('vol', 2.0, desc='volume of the tube in Liters', units='L')
-        self.add_output('etot', 1.0, desc='total energy required to run the pumps', units='J*1000')
-        self.add_output('cost', 1.0, desc='total cost to run the vacuums per year', units='USD/yr')
-        self.add_output('weighttot', 1.0, desc='total weight of the pumps', units='kg')
+        self.add_output('volft',
+                        2.0,
+                        desc='volume of the tube in feet cubed',
+                        units='ft**3')
+        self.add_output('vol',
+                        2.0,
+                        desc='volume of the tube in Liters',
+                        units='L')
+        self.add_output('etot',
+                        1.0,
+                        desc='total energy required to run the pumps',
+                        units='J*1000')
+        self.add_output('cost',
+                        1.0,
+                        desc='total cost to run the vacuums per year',
+                        units='USD/yr')
+        self.add_output('weighttot',
+                        1.0,
+                        desc='total weight of the pumps',
+                        units='kg')
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        volft = pi * (params['rad']**2.) * params['len']  # Volume of the tube in cubic feet
+        volft = pi * (params['rad']**
+                      2.) * params['len']  # Volume of the tube in cubic feet
 
-        vol = volft*28.3168  # Volume of the tube in liters
+        vol = volft * 28.3168  # Volume of the tube in liters
 
         # Number of pumps needed
-        n = (vol/params['speed']) * np.log(params['pinit'] / params['pfinal']) * 2.0 * (1.0/params['tdown'])
+        n = (vol / params['speed']) * np.log(
+            params['pinit'] / params['pfinal']) * 2.0 * (1.0 / params['tdown'])
 
         # Energy Consumption of a Single Pump in one day
         etot = params['pwr'] * n * (params['gamma'] * 86400.0)
 
         # Cost to Run the Vacuum for One Year
-        unknowns['cost'] = etot * 365.0 * params['eprice'] / (1000.0 * 60.0 * 60.0 * (1.0/1000.0))
+        unknowns['cost'] = etot * 365.0 * params['eprice'] / (
+            1000.0 * 60.0 * 60.0 * (1.0 / 1000.0))
 
         # Total weight of all of the pumps.
         unknowns['weighttot'] = params['pumpweight'] * n
@@ -105,6 +143,7 @@ class Vacuum(Component):
         unknowns['volft'] = volft
         unknowns['etot'] = etot
         unknowns['n'] = n
+
 
 if __name__ == '__main__':
 
@@ -117,6 +156,8 @@ if __name__ == '__main__':
     # p.root.list_connections()
     p.run()
 
-    print('Total weight of the pumps (kg): %f' % (p['comp.weighttot']))  # Print total weight
+    print('Total weight of the pumps (kg): %f' %
+          (p['comp.weighttot']))  # Print total weight
     print('Total cost($): %f' % (p['comp.cost']))  # Print total cost
-    print('Total number of pumps (#): %f' % (p['comp.n']))  # Print total number of required pumps
+    print('Total number of pumps (#): %f' %
+          (p['comp.n']))  # Print total number of required pumps

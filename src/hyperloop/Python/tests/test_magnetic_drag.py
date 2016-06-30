@@ -12,7 +12,6 @@ def create_problem(magdrag):
 
 
 class TestVac(object):
-
     def test_case1_vs_breakpoint(self):
 
         magdrag = magnetic_drag.MagDrag()

@@ -4,7 +4,6 @@ Magneplane concept to be used by the pointer framework, and create an
 OpenMDAO problem to solve the optimal control problem using Pointer.
 """
 
-
 import numpy as np
 
 from openmdao.core.component import Component
@@ -76,14 +75,23 @@ class MagneplaneEOM(EOMComp):
 
         self.deriv_options['type'] = 'user'
 
-        self.add_param('x',desc='north component of position',units='m',eom_state=True)
-        self.add_param('y',desc='east component of position',units='m',eom_state=True)
-        self.add_param('z',desc='down component of position',units='m',eom_state=True)
-        self.add_param('v',desc='pod velocity',units='m/s',eom_state=True)
+        self.add_param('x',
+                       desc='north component of position',
+                       units='m',
+                       eom_state=True)
+        self.add_param('y',
+                       desc='east component of position',
+                       units='m',
+                       eom_state=True)
+        self.add_param('z',
+                       desc='down component of position',
+                       units='m',
+                       eom_state=True)
+        self.add_param('v', desc='pod velocity', units='m/s', eom_state=True)
 
-        self.add_param('g',desc='gravitational acceleration',units='m/s/s')
-        self.add_param('psi',desc='azimuth angle',units='rad')
-        self.add_param('theta',desc='elevation angle',units='rad')
+        self.add_param('g', desc='gravitational acceleration', units='m/s/s')
+        self.add_param('psi', desc='azimuth angle', units='rad')
+        self.add_param('theta', desc='elevation angle', units='rad')
         #self.add_param('phi',desc='roll angle',units='rad')
         self.add_param('T', desc='thrust force', units='N')
         self.add_param('D', desc='drag/friction force', units='N')
@@ -122,10 +130,10 @@ class MagneplaneEOM(EOMComp):
         D = params['D']
         mass = params['mass']
 
-        unknowns['dXdt:x'][:] =  v*np.cos(theta)*np.cos(psi)
-        unknowns['dXdt:y'][:] =  v*np.cos(theta)*np.sin(psi)
-        unknowns['dXdt:z'][:] = -v*np.sin(theta)
-        unknowns['dXdt:v'][:] = -g*np.sin(theta) + (T-D)/mass
+        unknowns['dXdt:x'][:] = v * np.cos(theta) * np.cos(psi)
+        unknowns['dXdt:y'][:] = v * np.cos(theta) * np.sin(psi)
+        unknowns['dXdt:z'][:] = -v * np.sin(theta)
+        unknowns['dXdt:v'][:] = -g * np.sin(theta) + (T - D) / mass
 
     def linearize(self, params, unknowns, resids):
         v = params['v']
@@ -136,25 +144,28 @@ class MagneplaneEOM(EOMComp):
         D = params['D']
         mass = params['mass']
 
-        np.fill_diagonal(self._J['dXdt:x','v'], np.cos(theta)*np.cos(psi))
-        np.fill_diagonal(self._J['dXdt:x','theta'], -v*np.sin(theta)*np.cos(psi))
-        np.fill_diagonal(self._J['dXdt:x','psi'], -v*np.cos(theta)*np.sin(psi))
+        np.fill_diagonal(self._J['dXdt:x', 'v'], np.cos(theta) * np.cos(psi))
+        np.fill_diagonal(self._J['dXdt:x', 'theta'], -v * np.sin(theta) *
+                         np.cos(psi))
+        np.fill_diagonal(self._J['dXdt:x', 'psi'], -v * np.cos(theta) *
+                         np.sin(psi))
 
-        np.fill_diagonal(self._J['dXdt:y','v'], np.cos(theta)*np.sin(psi))
-        np.fill_diagonal(self._J['dXdt:y','theta'], -v*np.sin(theta)*np.sin(psi))
-        np.fill_diagonal(self._J['dXdt:y','psi'], v*np.cos(theta)*np.cos(psi))
+        np.fill_diagonal(self._J['dXdt:y', 'v'], np.cos(theta) * np.sin(psi))
+        np.fill_diagonal(self._J['dXdt:y', 'theta'], -v * np.sin(theta) *
+                         np.sin(psi))
+        np.fill_diagonal(self._J['dXdt:y', 'psi'], v * np.cos(theta) *
+                         np.cos(psi))
 
-        np.fill_diagonal(self._J['dXdt:z','v'], -np.sin(theta))
-        np.fill_diagonal(self._J['dXdt:z','theta'], -v*np.cos(theta))
+        np.fill_diagonal(self._J['dXdt:z', 'v'], -np.sin(theta))
+        np.fill_diagonal(self._J['dXdt:z', 'theta'], -v * np.cos(theta))
 
         np.fill_diagonal(self._J['dXdt:v', 'g'], -np.sin(theta))
-        np.fill_diagonal(self._J['dXdt:v', 'T'], 1.0/mass)
-        np.fill_diagonal(self._J['dXdt:v', 'D'], -1.0/mass)
-        np.fill_diagonal(self._J['dXdt:v', 'mass'], (D-T)/mass**2)
-        np.fill_diagonal(self._J['dXdt:v', 'theta'], -g*np.cos(theta))
+        np.fill_diagonal(self._J['dXdt:v', 'T'], 1.0 / mass)
+        np.fill_diagonal(self._J['dXdt:v', 'D'], -1.0 / mass)
+        np.fill_diagonal(self._J['dXdt:v', 'mass'], (D - T) / mass**2)
+        np.fill_diagonal(self._J['dXdt:v', 'theta'], -g * np.cos(theta))
 
         return self._J
-
 
 
 class AngularVelocityComp(EOMComp):
@@ -165,23 +176,35 @@ class AngularVelocityComp(EOMComp):
     """
 
     def __init__(self, grid_data):
-        super(AngularVelocityComp, self).__init__(grid_data=grid_data, time_units='s')
+        super(AngularVelocityComp, self).__init__(grid_data=grid_data,
+                                                  time_units='s')
 
         self.deriv_options['type'] = 'fd'
 
-        self.add_param('psi',desc='azimuth angle',units='rad')
-        self.add_param('theta',desc='elevation angle',units='rad')
-        self.add_param('phi',desc='roll angle',units='rad')
+        self.add_param('psi', desc='azimuth angle', units='rad')
+        self.add_param('theta', desc='elevation angle', units='rad')
+        self.add_param('phi', desc='roll angle', units='rad')
 
-        self.add_param('dUdt:psi',desc='azimuth angle rate',units='rad/s')
-        self.add_param('dUdt:theta',desc='elevation angle rate',units='rad/s')
-        self.add_param('dUdt:phi',desc='roll angle rate',units='rad/s')
+        self.add_param('dUdt:psi', desc='azimuth angle rate', units='rad/s')
+        self.add_param('dUdt:theta',
+                       desc='elevation angle rate',
+                       units='rad/s')
+        self.add_param('dUdt:phi', desc='roll angle rate', units='rad/s')
 
         nn = grid_data['num_nodes']
 
-        self.add_output('omega_x',shape=(nn,), desc='omega about north',units='rad/s')
-        self.add_output('omega_y',shape=(nn,), desc='omega about east',units='rad/s')
-        self.add_output('omega_z',shape=(nn,), desc='omega about down',units='rad/s')
+        self.add_output('omega_x',
+                        shape=(nn, ),
+                        desc='omega about north',
+                        units='rad/s')
+        self.add_output('omega_y',
+                        shape=(nn, ),
+                        desc='omega about east',
+                        units='rad/s')
+        self.add_output('omega_z',
+                        shape=(nn, ),
+                        desc='omega about down',
+                        units='rad/s')
 
     def solve_nonlinear(self, params, unknowns, resids):
         psi = params['psi']
@@ -191,27 +214,24 @@ class AngularVelocityComp(EOMComp):
         theta_dot = params['dUdt:theta']
         phi_dot = params['dUdt:phi']
 
-        unknowns['omega_x'][:] = phi_dot - psi_dot*np.sin(theta)
-        unknowns['omega_y'][:] = theta_dot*np.cos(phi) + psi_dot*np.sin(phi)*np.cos(theta)
-        unknowns['omega_z'][:] = -theta_dot*np.sin(phi) + psi_dot*np.cos(phi)*np.cos(theta)
-
-
-
-
-
-
+        unknowns['omega_x'][:] = phi_dot - psi_dot * np.sin(theta)
+        unknowns['omega_y'][:] = theta_dot * np.cos(phi) + psi_dot * np.sin(
+            phi) * np.cos(theta)
+        unknowns['omega_z'][:] = -theta_dot * np.sin(phi) + psi_dot * np.cos(
+            phi) * np.cos(theta)
 
 
 class MagneplaneRHS(RHS):
+    def __init__(self, grid_data, dynamic_controls=None, static_controls=None):
+        super(MagneplaneRHS, self).__init__(grid_data, dynamic_controls,
+                                            static_controls)
 
-    def __init__(self,grid_data,dynamic_controls=None,static_controls=None):
-        super(MagneplaneRHS,self).__init__(grid_data,dynamic_controls,static_controls)
-
-        self.add(name='eom',system=MagneplaneEOM(grid_data),promotes=['*'])
-        self.add(name='omega',system=AngularVelocityComp(grid_data),promotes=['*'])
+        self.add(name='eom', system=MagneplaneEOM(grid_data), promotes=['*'])
+        self.add(name='omega',
+                 system=AngularVelocityComp(grid_data),
+                 promotes=['*'])
 
         self.complete_init()
-
 
 
 def magneplane_brachistochrone(solver='SLSQP', num_seg=3, seg_ncn=3):
@@ -221,8 +241,9 @@ def magneplane_brachistochrone(solver='SLSQP', num_seg=3, seg_ncn=3):
 
     if solver == 'SNOPT':
         if pyOptSparseDriver is None:
-            raise ValueError('Requested SNOPT but pyoptsparse is not available')
-        driver=pyOptSparseDriver()
+            raise ValueError(
+                'Requested SNOPT but pyoptsparse is not available')
+        driver = pyOptSparseDriver()
         driver.options['optimizer'] = solver
         driver.opt_settings['Major iterations limit'] = 1000
         driver.opt_settings['iSumm'] = 6
@@ -232,50 +253,107 @@ def magneplane_brachistochrone(solver='SLSQP', num_seg=3, seg_ncn=3):
         driver.opt_settings["Minor feasibility tolerance"] = 1.0E-4
         driver.opt_settings['Verify level'] = 3
     else:
-        driver=ScipyOptimizer()
+        driver = ScipyOptimizer()
         driver.options['tol'] = 1.0E-6
         driver.options['disp'] = True
         driver.options['maxiter'] = 500
 
     prob.driver = driver
 
-    dynamic_controls = [ {'name':'g','units':'m/s**2'},
-                        {'name':'T','units':'N'},
-                        {'name':'D','units':'N'},
-                        {'name':'mass','units':'kg'},
-                        {'name':'psi','units':'rad'},
-                        {'name':'theta', 'units':'rad'},
-                        {'name':'phi','units':'rad'} ]
+    dynamic_controls = [{'name': 'g',
+                         'units': 'm/s**2'}, {'name': 'T',
+                                              'units': 'N'}, {'name': 'D',
+                                                              'units': 'N'},
+                        {'name': 'mass',
+                         'units': 'kg'}, {'name': 'psi',
+                                          'units': 'rad'}, {'name': 'theta',
+                                                            'units': 'rad'},
+                        {'name': 'phi',
+                         'units': 'rad'}]
 
-    phase0 = CollocationPhase(name='phase0',rhs_class=MagneplaneRHS,num_seg=num_seg,seg_ncn=seg_ncn,rel_lengths="equal",
-                              dynamic_controls=dynamic_controls,static_controls=None)
+    phase0 = CollocationPhase(name='phase0',
+                              rhs_class=MagneplaneRHS,
+                              num_seg=num_seg,
+                              seg_ncn=seg_ncn,
+                              rel_lengths="equal",
+                              dynamic_controls=dynamic_controls,
+                              static_controls=None)
 
     traj.add_phase(phase0)
 
-    phase0.set_state_options('x', lower=0,upper=10,ic_val=0,ic_fix=True,fc_val=10,fc_fix=True,defect_scaler=0.1)
-    phase0.set_state_options('y', lower=0,upper=0,ic_val=0,ic_fix=True,fc_val=0,fc_fix=True,defect_scaler=0.1)
-    phase0.set_state_options('z', lower=-10,upper=0,ic_val=-10,ic_fix=True,fc_val=-5,fc_fix=True,defect_scaler=0.1)
-    phase0.set_state_options('v', lower=0, upper=np.inf,ic_val=0.0,ic_fix=True,fc_val=10.0,fc_fix=False,defect_scaler=0.1)
+    phase0.set_state_options('x',
+                             lower=0,
+                             upper=10,
+                             ic_val=0,
+                             ic_fix=True,
+                             fc_val=10,
+                             fc_fix=True,
+                             defect_scaler=0.1)
+    phase0.set_state_options('y',
+                             lower=0,
+                             upper=0,
+                             ic_val=0,
+                             ic_fix=True,
+                             fc_val=0,
+                             fc_fix=True,
+                             defect_scaler=0.1)
+    phase0.set_state_options('z',
+                             lower=-10,
+                             upper=0,
+                             ic_val=-10,
+                             ic_fix=True,
+                             fc_val=-5,
+                             fc_fix=True,
+                             defect_scaler=0.1)
+    phase0.set_state_options('v',
+                             lower=0,
+                             upper=np.inf,
+                             ic_val=0.0,
+                             ic_fix=True,
+                             fc_val=10.0,
+                             fc_fix=False,
+                             defect_scaler=0.1)
 
-    phase0.set_dynamic_control_options(name='psi', val=phase0.node_space(0.0, 0.0), opt=False)
-    phase0.set_dynamic_control_options(name='theta', val=phase0.node_space(-.46,-.46),opt=True,lower=-1.57,upper=1.57,scaler=1.0)
-    phase0.set_dynamic_control_options(name='phi', val=phase0.node_space(0.0, 0.0), opt=False)
+    phase0.set_dynamic_control_options(name='psi',
+                                       val=phase0.node_space(0.0, 0.0),
+                                       opt=False)
+    phase0.set_dynamic_control_options(name='theta',
+                                       val=phase0.node_space(-.46, -.46),
+                                       opt=True,
+                                       lower=-1.57,
+                                       upper=1.57,
+                                       scaler=1.0)
+    phase0.set_dynamic_control_options(name='phi',
+                                       val=phase0.node_space(0.0, 0.0),
+                                       opt=False)
 
-    phase0.set_dynamic_control_options(name='g', val=phase0.node_space(9.80665, 9.80665), opt=False)
-    phase0.set_dynamic_control_options(name='T', val=phase0.node_space(0.0, 0.0), opt=False)
-    phase0.set_dynamic_control_options(name='D', val=phase0.node_space(0.0, 0.0), opt=False)
-    phase0.set_dynamic_control_options(name='mass', val=phase0.node_space(1000.0, 1000.0), opt=False)
+    phase0.set_dynamic_control_options(name='g',
+                                       val=phase0.node_space(9.80665, 9.80665),
+                                       opt=False)
+    phase0.set_dynamic_control_options(name='T',
+                                       val=phase0.node_space(0.0, 0.0),
+                                       opt=False)
+    phase0.set_dynamic_control_options(name='D',
+                                       val=phase0.node_space(0.0, 0.0),
+                                       opt=False)
+    phase0.set_dynamic_control_options(name='mass',
+                                       val=phase0.node_space(1000.0, 1000.0),
+                                       opt=False)
 
-    phase0.set_time_options(t0_val=0,t0_lower=0,t0_upper=0,tp_val=2.0,tp_lower=0.5,tp_upper=10.0)
+    phase0.set_time_options(t0_val=0,
+                            t0_lower=0,
+                            t0_upper=0,
+                            tp_val=2.0,
+                            tp_lower=0.5,
+                            tp_upper=10.0)
 
-    traj.add_objective(name="t",phase="phase0",place="end",scaler=1.0)
+    traj.add_objective(name="t", phase="phase0", place="end", scaler=1.0)
 
     return prob
 
 
-
 if __name__ == "__main__":
-    prob = magneplane_brachistochrone('SNOPT',num_seg=10,seg_ncn=2)
+    prob = magneplane_brachistochrone('SNOPT', num_seg=10, seg_ncn=2)
 
     prob.setup()
 
@@ -290,16 +368,19 @@ if __name__ == "__main__":
     simout = prob.trajectories['traj0'].simulate(dt=0.01)
 
     import matplotlib.pyplot as plt
-    plt.plot(prob['traj0.phase0.rhs_c.x'],prob['traj0.phase0.rhs_c.z'],'ro')
-    plt.plot(simout['phase0']['x'],simout['phase0']['z'])
+    plt.plot(prob['traj0.phase0.rhs_c.x'], prob['traj0.phase0.rhs_c.z'], 'ro')
+    plt.plot(simout['phase0']['x'], simout['phase0']['z'])
     plt.gca().invert_yaxis()
     #plt.plot(simout['phase0']['t'],-simout['phase0']['z'])
 
     plt.figure()
 
-    plt.plot(prob['traj0.phase0.rhs_c.t'],prob['traj0.phase0.rhs_c.omega_x'],'ro')
-    plt.plot(prob['traj0.phase0.rhs_c.t'],prob['traj0.phase0.rhs_c.omega_y'],'bo')
-    plt.plot(prob['traj0.phase0.rhs_c.t'],prob['traj0.phase0.rhs_c.omega_z'],'go')
+    plt.plot(prob['traj0.phase0.rhs_c.t'], prob['traj0.phase0.rhs_c.omega_x'],
+             'ro')
+    plt.plot(prob['traj0.phase0.rhs_c.t'], prob['traj0.phase0.rhs_c.omega_y'],
+             'bo')
+    plt.plot(prob['traj0.phase0.rhs_c.t'], prob['traj0.phase0.rhs_c.omega_z'],
+             'go')
 
     #plt.plot(simout['phase0']['t'],simout['phase0']['omega_y'])
     #plt.plot(simout['phase0']['t'],simout['phase0']['omega_z'])
@@ -307,4 +388,3 @@ if __name__ == "__main__":
     plt.show()
 
     #
-

@@ -63,21 +63,54 @@ class Battery(Component):
         super(Battery, self).__init__()
 
         # setup inputs
-        self.add_param('des_time', val=1.0, desc='time until design power point', units='h')
-        self.add_param('time_of_flight', val=2.0, desc='total mission time', units='h')
+        self.add_param('des_time',
+                       val=1.0,
+                       desc='time until design power point',
+                       units='h')
+        self.add_param('time_of_flight',
+                       val=2.0,
+                       desc='total mission time',
+                       units='h')
         self.add_param('des_power', val=7, desc='design power', units='W')
         self.add_param('des_current', val=1, desc='design current', units='A')
-        self.add_param('q_l', val=0.1, desc='discharge limit', units='unitless')
-        self.add_param('e_full', val=1.4, desc='fully charged voltage', units='V')
-        self.add_param('e_nom', val=1.2, desc='voltage at  end of nominal zone', units='V')
-        self.add_param('e_exp', val=1.27, desc='voltage at end of exponential zone', units='V')
-        self.add_param('q_n', val=6.8, desc='Single cell capacity', units='A*h')
-        self.add_param('t_exp', val=1.0, desc='time to reach exponential zone', units='h')
-        self.add_param('t_nom', val=4.3, desc='time to reach nominal zone', units='h')
-        self.add_param('r', val=0.0046, desc='battery resistance', units='Ohms')
+        self.add_param('q_l',
+                       val=0.1,
+                       desc='discharge limit',
+                       units='unitless')
+        self.add_param('e_full',
+                       val=1.4,
+                       desc='fully charged voltage',
+                       units='V')
+        self.add_param('e_nom',
+                       val=1.2,
+                       desc='voltage at  end of nominal zone',
+                       units='V')
+        self.add_param('e_exp',
+                       val=1.27,
+                       desc='voltage at end of exponential zone',
+                       units='V')
+        self.add_param('q_n',
+                       val=6.8,
+                       desc='Single cell capacity',
+                       units='A*h')
+        self.add_param('t_exp',
+                       val=1.0,
+                       desc='time to reach exponential zone',
+                       units='h')
+        self.add_param('t_nom',
+                       val=4.3,
+                       desc='time to reach nominal zone',
+                       units='h')
+        self.add_param('r',
+                       val=0.0046,
+                       desc='battery resistance',
+                       units='Ohms')
 
         # setup outputs
-        self.add_output('n_cells', val=1.0, desc='total number of battery cells', units='unitless')
+        self.add_output('n_cells',
+                        val=1.0,
+                        desc='total number of battery cells',
+                        units='unitless')
 
     def solve_nonlinear(self, params, unknowns, resids):
         """Runs the `Battery` component and sets its respective outputs to their calculated results
@@ -98,10 +131,12 @@ class Battery(Component):
         # check representation invariant
         self._check_rep(params, unknowns, resids)
 
-        capDischarge = self._calculate_total_discharge(params['time_of_flight'], params['des_current'])
+        capDischarge = self._calculate_total_discharge(
+            params['time_of_flight'], params['des_current'])
         N_parallel = capDischarge / (params['q_n'] * (1 - params['q_l']))
         singleBatCurrent = params['des_current'] / N_parallel
-        singleBatDischarge = self._calculate_total_discharge(params['des_time'], params['des_current']) / N_parallel
+        singleBatDischarge = self._calculate_total_discharge(
+            params['des_time'], params['des_current']) / N_parallel
 
         # calculate general battery performance curve paramaters
 
@@ -109,12 +144,14 @@ class Battery(Component):
         # A = params['params['e_full']'] - params['e_exp']
         A = 0.144
         # discharge of single cell from full to end of exponential zone
-        Q_exp = self._calculate_total_discharge(params['t_exp'], params['des_current']) / N_parallel
+        Q_exp = self._calculate_total_discharge(
+            params['t_exp'], params['des_current']) / N_parallel
         # time constant of the exponential zone
         # B = 3 / Q_exp
         B = 2.3077
         # discharge over the nominal zone
-        Q_nom = self._calculate_total_discharge(params['t_nom'], params['des_current']) / N_parallel
+        Q_nom = self._calculate_total_discharge(
+            params['t_nom'], params['des_current']) / N_parallel
         # polarization voltage
         # K = (params['params['e_full']'] - params['e_nom'] + A * (np.exp(-B * Q_nom) - 1)) * (params['q_n'] - Q_nom)
         K = 0.01875
@@ -124,8 +161,9 @@ class Battery(Component):
         E_0 = 1.2848
 
         # general voltage performance curve
-        V_batt = E_0 - K * (params['q_n'] / (params['q_n'] - singleBatDischarge)) + A * np.exp(
-            -B * singleBatDischarge) - params['r'] * singleBatCurrent
+        V_batt = E_0 - K * (params['q_n'] / (
+            params['q_n'] - singleBatDischarge)) + A * np.exp(
+                -B * singleBatDischarge) - params['r'] * singleBatCurrent
 
         # single battery power at design power point
         P_bat = V_batt * singleBatCurrent
@@ -199,4 +237,4 @@ if __name__ == '__main__':
 
     # print following properties
 
-    print ('Ncells(cells) : %f' % p['comp.n_cells'])
+    print('Ncells(cells) : %f' % p['comp.n_cells'])

@@ -5,6 +5,7 @@ from hyperloop.Python.inverter import Inverter
 from hyperloop.Python.dc_transformer import DCTransformer
 from hyperloop.Python.battery import Battery
 
+
 class Drivetrain(Group):
     def __init__(self):
         super(Drivetrain, self).__init__()
@@ -33,6 +34,7 @@ class Drivetrain(Group):
         # self.nl_solver.options['atol'] = 1.0e-12
         #
         # self.ln_solver = ScipyGMRES()
+
 
 if __name__ == '__main__':
 

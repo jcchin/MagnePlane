@@ -4,14 +4,15 @@ from hyperloop.Python import inverter
 import numpy as np
 from openmdao.api import Group, Problem
 
+
 def create_problem(inverter):
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', inverter)
     return prob
 
-class TestInverter(object):
 
+class TestInverter(object):
     def test_case1_vs_npss(self):
 
         prob = create_problem(inverter.Inverter())
@@ -26,9 +27,10 @@ class TestInverter(object):
 
         prob.run()
 
-        assert np.isclose(prob['comp.OutputPower'], 275.085454767, rtol = 0.001)
-        assert np.isclose(prob['comp.InputCurrent'], -16.2581209067, rtol = 0.001)
-
+        assert np.isclose(prob['comp.OutputPower'], 275.085454767, rtol=0.001)
+        assert np.isclose(prob['comp.InputCurrent'],
+                          -16.2581209067,
+                          rtol=0.001)
 
     def test_case2_vs_npss(self):
         prob = create_problem(inverter.Inverter())

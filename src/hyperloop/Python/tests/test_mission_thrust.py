@@ -10,13 +10,11 @@ def create_problem(component):
     prob.root.add('comp', component)
     return prob
 
+
 class TestMissionThrust(object):
-
-
     def test_case1_vs_npss(self):
 
-
-        component  =  mission_thrust.MissionThrust()
+        component = mission_thrust.MissionThrust()
 
         prob = create_problem(component)
 
@@ -36,4 +34,4 @@ class TestMissionThrust(object):
 
         prob.run()
 
-        assert np.isclose(prob['comp.Thrust'], 30717.148715, rtol = 0.1)
+        assert np.isclose(prob['comp.Thrust'], 30717.148715, rtol=0.1)

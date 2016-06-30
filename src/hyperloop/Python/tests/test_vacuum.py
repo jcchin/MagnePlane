@@ -12,7 +12,6 @@ def create_problem(vac):
 
 
 class TestVac(object):
-
     def test_case1_vs_handcalc(self):
 
         vac = tube_vacuum.Vacuum()

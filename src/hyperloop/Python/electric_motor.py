@@ -92,40 +92,114 @@ class ElectricMotor(Component):
         super(ElectricMotor, self).__init__()
 
         # Inputs/Params
-        self.add_param('Resistance', val=0.0, desc='Resistance of Stator', units='ohm')
-        self.add_param('Inductance', val=0.0, desc='Motor inductance', units='H')
-        self.add_param('Speed', val=1900.0, desc='Output shaft mechanical speed', units='rpm')
-        self.add_param('Torque', val=310.35 * 0.737, desc='Output torque', units='N*m')
+        self.add_param('Resistance',
+                       val=0.0,
+                       desc='Resistance of Stator',
+                       units='ohm')
+        self.add_param('Inductance',
+                       val=0.0,
+                       desc='Motor inductance',
+                       units='H')
+        self.add_param('Speed',
+                       val=1900.0,
+                       desc='Output shaft mechanical speed',
+                       units='rpm')
+        self.add_param('Torque',
+                       val=310.35 * 0.737,
+                       desc='Output torque',
+                       units='N*m')
         self.add_param('Kv', val=0.1, desc='Speed/volt', units='rad/s/V')
         self.add_param('Kt', val=10.0, desc='Torque/amp', units='N*m/A')
-        self.add_param('PolePairs', val=6.0, desc='Number of pole pairs in motor', units='none')  # f=w*PP/2*pi
-        self.add_param('R0', val=0.004, desc='Motor Phase Internal Resistance at 0degC',units='ohm')  # ohms  # total internal resistance
+        self.add_param('PolePairs',
+                       val=6.0,
+                       desc='Number of pole pairs in motor',
+                       units='none')  # f=w*PP/2*pi
+        self.add_param('R0',
+                       val=0.004,
+                       desc='Motor Phase Internal Resistance at 0degC',
+                       units='ohm')  # ohms  # total internal resistance
         self.add_param('I0', val=0.0, desc='Motor No-load current', units='A')
-        self.add_param('I0_Des', val=0.0, desc='Motor No-load Current at Nbase', units='A')
-        self.add_param('imax', val=450.0, desc='Max motor phase current', units='A')
-        self.add_param('nphase', val=3.0, desc='Number of motor phases', units='none')
-        self.add_param('DesignPower', val=110000.0/746.0, desc='Design value of motor', units='hp')
-        self.add_param('Max_RPM', val=2500.0, desc='max rpm of motor', units='rpm')
-        self.add_param('kappa', val=0.5, desc='Base speed/max speed', units='none')
-        self.add_param('Dbase', val=0.48, desc='Base 8000hp diameter for scaling purposes', units='m')
-        self.add_param('Lbase', val=0.4, desc='Base 8000hp length for scaling purposes', units='m')
-        self.add_param('LDratio', val=0.83, desc='Length to diameter ratio of motor', units='none')
-        self.add_param('CoreRadiusRatio', val=0.7, desc='ratio of inner diameter of core to outer', units='none')
-        self.add_param('Rd',val=0.0,desc='D-axis resistance per motor phase at very high speed (short circuit)',units='ohm')
+        self.add_param('I0_Des',
+                       val=0.0,
+                       desc='Motor No-load Current at Nbase',
+                       units='A')
+        self.add_param('imax',
+                       val=450.0,
+                       desc='Max motor phase current',
+                       units='A')
+        self.add_param('nphase',
+                       val=3.0,
+                       desc='Number of motor phases',
+                       units='none')
+        self.add_param('DesignPower',
+                       val=110000.0 / 746.0,
+                       desc='Design value of motor',
+                       units='hp')
+        self.add_param('Max_RPM',
+                       val=2500.0,
+                       desc='max rpm of motor',
+                       units='rpm')
+        self.add_param('kappa',
+                       val=0.5,
+                       desc='Base speed/max speed',
+                       units='none')
+        self.add_param('Dbase',
+                       val=0.48,
+                       desc='Base 8000hp diameter for scaling purposes',
+                       units='m')
+        self.add_param('Lbase',
+                       val=0.4,
+                       desc='Base 8000hp length for scaling purposes',
+                       units='m')
+        self.add_param('LDratio',
+                       val=0.83,
+                       desc='Length to diameter ratio of motor',
+                       units='none')
+        self.add_param('CoreRadiusRatio',
+                       val=0.7,
+                       desc='ratio of inner diameter of core to outer',
+                       units='none')
+        self.add_param(
+            'Rd',
+            val=0.0,
+            desc='D-axis resistance per motor phase at very high speed (short circuit)',
+            units='ohm')
 
         # Desired outputs
-        self.add_output('Tmax',val=0.0,desc='MaxTorque',units='N*m')
-        self.add_output('phaseCurrent', val=0.0, desc='Phase current', units='A')
-        self.add_output('phaseVoltage', val=500.0, desc='AC voltage across motor', units='V')
-        self.add_output('Frequency', val=60.0, desc='Frequency of Electric output waveform', units='Hz')
-        self.add_output('Phase', val=0.0, desc='phase offset between Current and Voltage', units='rad')
+        self.add_output('Tmax', val=0.0, desc='MaxTorque', units='N*m')
+        self.add_output('phaseCurrent',
+                        val=0.0,
+                        desc='Phase current',
+                        units='A')
+        self.add_output('phaseVoltage',
+                        val=500.0,
+                        desc='AC voltage across motor',
+                        units='V')
+        self.add_output('Frequency',
+                        val=60.0,
+                        desc='Frequency of Electric output waveform',
+                        units='Hz')
+        self.add_output('Phase',
+                        val=0.0,
+                        desc='phase offset between Current and Voltage',
+                        units='rad')
         self.add_output('Weight', val=0.0, desc='Weight of motor', units='kg')
-        self.add_output('D2L', val=0.0, desc='D-squared*L parameter which is ~ to Torque', units='mm**3')
-        self.add_output('D2L_ft', val=0.0, desc='D-squared*L parameter converted to ft^3', units='ft**3')
-        self.add_output('Volume', val=0.0, desc='Volume of motor modeled as a cylinder', units='m**3')
-        self.add_output('Volume_ft', val=0.0, desc='Volume of motor modeled as a cylinder in ft', units='ft**3')
-
-
+        self.add_output('D2L',
+                        val=0.0,
+                        desc='D-squared*L parameter which is ~ to Torque',
+                        units='mm**3')
+        self.add_output('D2L_ft',
+                        val=0.0,
+                        desc='D-squared*L parameter converted to ft^3',
+                        units='ft**3')
+        self.add_output('Volume',
+                        val=0.0,
+                        desc='Volume of motor modeled as a cylinder',
+                        units='m**3')
+        self.add_output('Volume_ft',
+                        val=0.0,
+                        desc='Volume of motor modeled as a cylinder in ft',
+                        units='ft**3')
 
     def solve_nonlinear(self, params, unknowns, resids):
         Torque = params['Torque']
@@ -146,81 +220,86 @@ class ElectricMotor(Component):
         Rd = params['Rd']
         Resistance = params['Resistance']
 
-        unknowns['Tmax'] = self.Tmax_calc(DesignPower,Max_RPM,kappa)
+        unknowns['Tmax'] = self.Tmax_calc(DesignPower, Max_RPM, kappa)
         Tmax = unknowns['Tmax']
 
-        params['Kv'] = ((imax - I0_Des)/Tmax)* (30.0/numpy.pi) #A/(N*m)
+        params['Kv'] = ((imax - I0_Des) / Tmax) * (30.0 / numpy.pi)  #A/(N*m)
         Kv = params['Kv']
-        params['Kt'] = (1.0/Kv) *(30.0/numpy.pi)   #
+        params['Kt'] = (1.0 / Kv) * (30.0 / numpy.pi)  #
         Kt = params['Kt']
 
-        unknowns['D2L'] = 293722.0 * (Tmax ** 0.7592)  # mm^3
+        unknowns['D2L'] = 293722.0 * (Tmax**0.7592)  # mm^3
         D2L = unknowns['D2L']
-        unknowns['D2L_ft'] = D2L * 3.53147*(10**-8) #ft^3
+        unknowns['D2L_ft'] = D2L * 3.53147 * (10** -8)  #ft^3
         D2L_ft = unknowns['D2L_ft']
 
-        params['Dbase'] = ((D2L/LDratio)**(1.0/3.0)) / 1000.0 #m
+        params['Dbase'] = ((D2L / LDratio)**(1.0 / 3.0)) / 1000.0  #m
         Dbase = params['Dbase']
 
-        unknowns['Volume'] = numpy.pi*(LDratio*Dbase)*(Dbase/2-((Dbase/2)*CoreRadiusRatio))**2
+        unknowns['Volume'] = numpy.pi * (LDratio * Dbase) * (Dbase / 2 - (
+            (Dbase / 2) * CoreRadiusRatio))**2
         Volume = unknowns['Volume']
         #Volume = pi*length*(total radius-core radius)^2
-        unknowns['Volume_ft'] = Volume*35.3147
+        unknowns['Volume_ft'] = Volume * 35.3147
         Volume_ft = unknowns['Volume_ft']
 
-
-        unknowns['Weight'] = 0.0000070646 * (D2L ** 0.9386912061)
+        unknowns['Weight'] = 0.0000070646 * (D2L**0.9386912061)
         Weight = unknowns['Weight']
 
-        unknowns['phaseCurrent'] = self.phaseCurrent_calc(DesignPower, Max_RPM, nphase, Kt, I0)
+        unknowns['phaseCurrent'] = self.phaseCurrent_calc(DesignPower, Max_RPM,
+                                                          nphase, Kt, I0)
         phaseCurrent = unknowns['phaseCurrent']
-        unknowns['phaseVoltage'] = self.phaseVoltage_calc(Speed, kappa, Max_RPM, phaseCurrent, nphase, R0, Rd, Kv)
+        unknowns['phaseVoltage'] = self.phaseVoltage_calc(
+            Speed, kappa, Max_RPM, phaseCurrent, nphase, R0, Rd, Kv)
         phaseVoltage = unknowns['phaseVoltage']
 
-        unknowns['Frequency'] = Speed * PolePairs/60.0
+        unknowns['Frequency'] = Speed * PolePairs / 60.0
         Frequency = unknowns['Frequency']
-        unknowns['Phase'] = self.Phase_calc(Kv, Speed,PolePairs,Torque,Resistance,Inductance,Frequency)
+        unknowns['Phase'] = self.Phase_calc(Kv, Speed, PolePairs, Torque,
+                                            Resistance, Inductance, Frequency)
         Phase = unknowns['Phase']
 
-    def Tmax_calc(self,DesignPower,Max_RPM,kappa):
+    def Tmax_calc(self, DesignPower, Max_RPM, kappa):
         #Calculates max torque to later obtain D2L and Kt at max current
-        Pmax = DesignPower*746.0 #hp to Watts
-        wmax = Max_RPM * 2 * numpy.pi / 60.0 #rpm to rad/s
-        wbase = kappa*wmax #rad/s
-        Tmax=Pmax/wbase #W/(rad/s) = (N*m/s)/(rad/s) = N*m
+        Pmax = DesignPower * 746.0  #hp to Watts
+        wmax = Max_RPM * 2 * numpy.pi / 60.0  #rpm to rad/s
+        wbase = kappa * wmax  #rad/s
+        Tmax = Pmax / wbase  #W/(rad/s) = (N*m/s)/(rad/s) = N*m
         return Tmax
 
     def phaseCurrent_calc(self, DesignPower, Max_RPM, nphase, Kt, I0):
         # Calculates Current from equation 5 in paper and converts to phase current
-        Pmax = DesignPower * 746.0 #hp to W
-        wmax = Max_RPM*2*numpy.pi/60.0 #rpm to rad/s
-        Torque = Pmax/wmax #W/(rad/s) = (N*m/s)/(rad/s) = N*m
-        Current = I0 + Torque/Kt #A + (N*m)/(N*m/A)
-        phaseCurrent = Current / nphase #A
+        Pmax = DesignPower * 746.0  #hp to W
+        wmax = Max_RPM * 2 * numpy.pi / 60.0  #rpm to rad/s
+        Torque = Pmax / wmax  #W/(rad/s) = (N*m/s)/(rad/s) = N*m
+        Current = I0 + Torque / Kt  #A + (N*m)/(N*m/A)
+        phaseCurrent = Current / nphase  #A
         return phaseCurrent
 
-    def phaseVoltage_calc(self, Speed, kappa, Max_RPM,phaseCurrent,nphase, R0, Rd, Kv):
+    def phaseVoltage_calc(self, Speed, kappa, Max_RPM, phaseCurrent, nphase,
+                          R0, Rd, Kv):
         # Calculates Voltage from equation 6 in paper and converts to phase voltage
-        N = Speed#*2*numpy.pi/60.0 #RPM to rad/s
-        Nbase = kappa*Max_RPM#*2*numpy.pi/60.0 #rpm to rad/s
+        N = Speed  #*2*numpy.pi/60.0 #RPM to rad/s
+        Nbase = kappa * Max_RPM  #*2*numpy.pi/60.0 #rpm to rad/s
         if N > Nbase:
-            Voltage = (phaseCurrent*nphase)*(R0+ Rd*(1-N/Nbase)**2) + N/Kv
+            Voltage = (phaseCurrent * nphase) * (R0 + Rd *
+                                                 (1 - N / Nbase)**2) + N / Kv
         elif N < Nbase:
-            Voltage = (phaseCurrent*nphase)*R0 + N/Kv
+            Voltage = (phaseCurrent * nphase) * R0 + N / Kv
         phaseVoltage = Voltage * numpy.sqrt(3.0 / 2.0)
         return phaseVoltage
 
-
-    def Phase_calc(self,Kv, Speed,PolePairs,Torque,Resistance,Inductance,Frequency):
-        Kt = .73756214837/Kv
-        Freq = Speed*PolePairs/(2*numpy.pi)
-        Current = Torque/Kt
-        resistorVoltage = Current*Resistance
-        inductorImpedance = Frequency*Inductance
-        inductorVoltage = Current*inductorImpedance
-        speedVoltage = Kv*Speed
+    def Phase_calc(self, Kv, Speed, PolePairs, Torque, Resistance, Inductance,
+                   Frequency):
+        Kt = .73756214837 / Kv
+        Freq = Speed * PolePairs / (2 * numpy.pi)
+        Current = Torque / Kt
+        resistorVoltage = Current * Resistance
+        inductorImpedance = Frequency * Inductance
+        inductorVoltage = Current * inductorImpedance
+        speedVoltage = Kv * Speed
         realVoltage = speedVoltage + resistorVoltage
-        Phase = numpy.arctan2(inductorVoltage,realVoltage)
+        Phase = numpy.arctan2(inductorVoltage, realVoltage)
         return Phase
 
 
@@ -249,14 +328,11 @@ if __name__ == '__main__':
     print('Phase Voltage [V]: %f' % prob['comp.phaseVoltage'])
     print('Frequency [Hz]: %f ' % prob['comp.Frequency'])
     print('Phase: %f' % prob['comp.Phase'])
-    print('Tmax: %f' %prob['comp.Tmax'])
+    print('Tmax: %f' % prob['comp.Tmax'])
     print('Kv [rad/s/V]: %f' % prob['comp.Kv'])
-    print('Kt [N-m/A]: %f' %prob['comp.Kt'])
+    print('Kt [N-m/A]: %f' % prob['comp.Kt'])
     # print('Dbase: %f' %prob['comp.Dbase'])
     # print('Lbase: %f' % prob['comp.Lbase'])
     print('Motor Weight [kg]: %f ' % prob['comp.Weight'])
     print('Motor Size (D^2*L) [mm^3]: %f ' % prob['comp.D2L'])
     print('Motor Size (D^2*L) [ft^3]: %f ' % prob['comp.D2L_ft'])
-
-
-

@@ -5,6 +5,7 @@ Group containing the breakpointlev.py classes Drag and Mass
 from openmdao.api import Group, Problem, IndepVarComp
 from hyperloop.Python.breakpoint_levitation import Drag, Mass
 
+
 class LevGroup(Group):
     def __init__(self):
         super(LevGroup, self).__init__()
@@ -13,21 +14,17 @@ class LevGroup(Group):
         self.add('Drag', Drag())
         self.add('Mass', Mass())
 
+
 if __name__ == "__main__":
 
     top = Problem()
 
     root = top.root = Group()
 
-
     # Define Parameters
-    params = (
-        ('mpod', .375, {'units': 'kg'}),
-        ('lpod', 25.0, {'units': 'm'}),
-        ('Pc', 2.0, {'units': 'm'}),
-        ('vb', 23.0, {'units': 'm/2'}),
-        ('w', 2.0, {'units': 'm'})
-    )
+    params = (('mpod', .375, {'units': 'kg'}), ('lpod', 25.0, {'units': 'm'}),
+              ('Pc', 2.0, {'units': 'm'}), ('vb', 23.0, {'units': 'm/2'}),
+              ('w', 2.0, {'units': 'm'}))
 
     root.add('input_vars', IndepVarComp(params))
     root.add('lev', LevGroup())

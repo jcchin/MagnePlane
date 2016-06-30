@@ -13,13 +13,14 @@ from battery import Battery
 from tube_structure import TubeStructural
 from vacuum import Vacuum
 from tube_wall_temp import TubeWallTemp
+
 #from tube_limit_flow import TubeLimitFlow
 #from fun3D import Fun3D  # FIXME
 #from openCSM import OpenCSM
 
-class HyperloopSim(Group):
 
-     def __init__(self):
+class HyperloopSim(Group):
+    def __init__(self):
         super(HyperloopSim, self).__init__()
 
         # --------------------------------------------------------------------------- #
@@ -35,7 +36,7 @@ class HyperloopSim(Group):
         # --------------------------------------------------------------------------- #
         #    Thermo Cycle Component
         # --------------------------------------------------------------------------- #
-        self.add('cycle', CycleWrap()) # NPSS
+        self.add('cycle', CycleWrap())  # NPSS
         #self.add('cycle', CompressionCycle()) # Pycycle
 
         # --------------------------------------------------------------------------- #
@@ -67,7 +68,7 @@ class HyperloopSim(Group):
         # --------------------------------------------------------------------------- #
         #    Cost Component
         # --------------------------------------------------------------------------- #
-        self.add('cost', TubeCost()) # Tom Gregory Model
+        self.add('cost', TubeCost())  # Tom Gregory Model
 
         # --------------------------------------------------------------------------- #
         #    Mission Workflow
@@ -94,8 +95,6 @@ class HyperloopSim(Group):
         #    Tube Thermal Component
         # --------------------------------------------------------------------------- #
         self.add('thermal', TubeWallTemp())
-
-
 
         # --------------------------------------------------------------------------- #
         #   Create Main Group Workflow
@@ -148,25 +147,22 @@ class HyperloopSim(Group):
         #         copy_files('../ESP/Viscous/AxiSpike/*', '../ESP/')
         #     self.pointwise._filein = '../Pointwise/Load-AxiSpike.glf'
 
+
 if __name__ == '__main__':
 
     p1 = Problem()
     p1.root = Group()
     #p1.root.add("freestream",Freestream())
-    p1.root.add('sim',HyperloopSim())
-
+    p1.root.add('sim', HyperloopSim())
 
     # --------------------------------------------------------------------------- #
     #    Top Level Inputs
     # --------------------------------------------------------------------------- #
-    params = (
-        ('P', 0.5, {"units" : "psi"}),
-        ('T', 291.0, {"units" : "K"}),
-        ('MN', 0.8),
-    )
+    params = (('P', 0.5, {"units": "psi"}),
+              ('T', 291.0, {"units": "K"}),
+              ('MN', 0.8), )
     p1.root.add('des_vars', IndepVarComp(params))
     p1.root.connect('des_vars.P', 'sim.freestream.Ps')
 
     p1.setup(check=True)
     p1.run()
-

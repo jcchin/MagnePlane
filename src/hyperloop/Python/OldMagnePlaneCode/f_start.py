@@ -9,8 +9,6 @@ from pycycle import species_data
 from pycycle.constants import AIR_MIX
 from openmdao.components.indep_var_comp import IndepVarComp
 
-
-
 if __name__ == "__main__":
     # -------------------------
     # --- Default Test Case ---
@@ -18,13 +16,11 @@ if __name__ == "__main__":
     p1 = Problem()
     p1.root = Group()
     #p1.root.add("freestream",Freestream())
-    p1.root.add("fs",FlowStart())
+    p1.root.add("fs", FlowStart())
 
-    params = (
-        ('P', 0.5, {"units" : "psi"}),
-        ('T', 291.0, {"units" : "K"}),
-        ('MN', 0.8),
-    )
+    params = (('P', 0.5, {"units": "psi"}),
+              ('T', 291.0, {"units": "K"}),
+              ('MN', 0.8), )
     p1.root.add('des_vars', IndepVarComp(params))
     p1.root.connect('des_vars.P', 'fs.P')
     #p1.root.connect('des_vars.MN', 'fs.MN')
