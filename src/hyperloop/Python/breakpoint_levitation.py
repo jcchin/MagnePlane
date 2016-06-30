@@ -4,9 +4,9 @@ Outputs minimum mass and area of magnets needed for levitation at desired breakp
 Outputs Halbach array wavelength, track resistance, and inductance can be used to find
 drag force at any velocity using given pod weight.
 """
-from math import pi, sin, e
-from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp
-from openmdao.api import ScipyOptimizer
+from math import pi, sin
+from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp, ScipyOptimizer
+import numpy as np
 
 
 class Drag(Component):
@@ -176,7 +176,7 @@ class Drag(Component):
         R = rc * Pc / (delta_c * Nt * Ns)  # Track Resistance
 
         lam = M * d + spacing  # Compute Wavelength
-        B0 = Br * (1. - e**(-2. * pi * d / lam)) * (
+        B0 = Br * (1. - np.exp(-2. * pi * d / lam)) * (
             (sin(pi / M)) / (pi / M))  # Compute Peak Field Strength
         L = mu0 * Pc / (4 * pi * strip_c / lam)  # Compute Track Inductance
         A = w * lpod * gamma  # Compute Magnet Area
@@ -189,10 +189,10 @@ class Drag(Component):
         else:
             omegab = 2 * pi * vb / lam  # Compute Induced Frequency
             Fyu = (B0**2. * w / (4. * pi * L * strip_c / lam)) * (1. / (
-                1. + (R / (omegab * L))**2)) * e**(
+                1. + (R / (omegab * L))**2)) * np.exp(
                     -4. * pi * (y) / lam) * A  # Compute Lift Force
             Fxu = (B0**2. * w / (4. * pi * L * strip_c / lam)) * (
-                (R / (omegab * L)) / (1. + (R / (omegab * L))**2.)) * e**(
+                (R / (omegab * L)) / (1. + (R / (omegab * L))**2.)) * np.exp(
                     -4 * pi * (y) / lam) * A  #Compute Drag Force
             LDratio = Fyu / Fxu  # Compute Lift to Drag Ratio
 
@@ -358,7 +358,8 @@ if __name__ == "__main__":
     top.driver.add_constraint('con1.c1', lower=0.0)
 
     #Problem Objective
-    root.add('obj_cmp', ExecComp('obj = Fxu + mmag'))
+    alpha = .5
+    root.add('obj_cmp', ExecComp('obj = (alpha*Fxu)/1000 + ((1-alpha)*mmag)'))
     root.connect('p.Fxu', 'obj_cmp.Fxu')
     root.connect('q.mmag', 'obj_cmp.mmag')
 
@@ -371,7 +372,7 @@ if __name__ == "__main__":
     # from openmdao.devtools.partition_tree_n2 import view_tree
     # view_tree(top)
 
-    # Print Outputs
+    # Print Outputs for Debugging
     print('\n')
     print('Lift to Drag Ratio is %f' % top['p.LDratio'])
     print('Fyu is %f' % top['p.Fyu'])
