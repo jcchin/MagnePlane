@@ -80,8 +80,6 @@ class ElectricMotor(Component):
     Volume_ft : float
         Volume of motor modeled as a cylinder in ft^3. Default value is 0.0
 
-
-
     Notes
     -----
     [1] Main Source: Georgia Tech ASDL:
