@@ -13,7 +13,7 @@ def create_problem(compressor):
 
 class TestCompressor(object):
     def test_case1(self):
-        compressor = compressor_weight.Compressor_weight()
+        compressor = compressor_weight.CompressorWeight()
 
         prob = create_problem(compressor)
 
