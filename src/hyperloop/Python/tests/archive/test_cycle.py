@@ -21,21 +21,23 @@ pyc_comps = ["inlet", "comp", "duct", "nozz"]
 
 # flow variables to compare for each element name above
 #npss_flow_vars = ["Pt","Tt","ht","s","W", "MN","V","A"]
-pyc_flow_vars = ["Fl_O:tot:P", "Fl_O:tot:T",
-                 "Fl_O:tot:h", "Fl_O:tot:S", "Fl_O:stat:W", "Fl_O:stat:MN",
-                 "Fl_O:stat:V", "Fl_O:stat:area"]
+pyc_flow_vars = ["Fl_O:tot:P", "Fl_O:tot:T", "Fl_O:tot:h", "Fl_O:tot:S",
+                 "Fl_O:stat:W", "Fl_O:stat:MN", "Fl_O:stat:V",
+                 "Fl_O:stat:area"]
 
 # non-flow variables to check for each case
 #npss_names_nonflow = ['shaft.pwrIn', 'shaft.pwrOut', 'nozzle.Fg', 'inlet.Fram']
 pyc_names_nonflow = ['hyperloop.shaft.pwr_in', 'hyperloop.shaft.pwr_out',
-             'hyperloop.nozz.Fg', 'hyperloop.inlet.F_ram']
+                     'hyperloop.nozz.Fg', 'hyperloop.inlet.F_ram']
 
-def rel_err(a,b):
+
+def rel_err(a, b):
     if abs(a) > 0:
-        err = abs(a - b)/a
+        err = abs(a - b) / a
     else:
         err = abs(b)
     return err
+
 
 def make_model():
     """
@@ -43,16 +45,12 @@ def make_model():
     """
     prob = Problem()
     prob.root = Group()
-    prob.root.add('hyperloop', CompressionCycle()) # JP-7 or 'Jet-A(g)'
+    prob.root.add('hyperloop', CompressionCycle())  # JP-7 or 'Jet-A(g)'
 
-    params = (
-        ('P', 17., {'units':'psi'}),
-        ('T', 500.0, {'units':'degR'}),
-        ('W', 1.0, {'units':'lbm/s'}),
-        ('alt', 35000.0, {'units':'ft'}),
-        ('MN', 0.8, {'units':''}),
-        ('Ps_exhaust', 14.7, {'units':'lbf/inch**2'})
-    )
+    params = (('P', 17., {'units': 'psi'}), ('T', 500.0, {'units': 'degR'}),
+              ('W', 1.0, {'units': 'lbm/s'}),
+              ('alt', 35000.0, {'units': 'ft'}), ('MN', 0.8, {'units': ''}),
+              ('Ps_exhaust', 14.7, {'units': 'lbf/inch**2'}))
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.W', 'hyperloop.fc.fs.W')
     prob.root.connect('des_vars.MN', 'hyperloop.fc.MN_target')
@@ -62,6 +60,7 @@ def make_model():
 
     return prob
 
+
 def test_generator():
     """hyperloop unit tests"""
 
@@ -70,7 +69,8 @@ def test_generator():
 
         print("NPSS %s vs Pycycle %s\n" % (path1, path2))
         print("Relative error: %f, tolerance: %f" % (err, tol))
-        print("Preceding flow stations: (* indicates failed check against NPSS)\n")
+        print(
+            "Preceding flow stations: (* indicates failed check against NPSS)\n")
         print(flow_str)
         assert abs(err) < tol
 
@@ -99,7 +99,6 @@ def test_generator():
         # run the model instance to compute outputs
         prob.run()
 
-
         # flow variables at all exit flowstations
         # base_row = "{:<15}" + len(npss_flow_vars) * " {:<10.6}" + "\n"
         # vals = ["Element"] + npss_flow_vars
@@ -107,7 +106,7 @@ def test_generator():
         # flow_str += base_row.format(*vals)
 
         n_vars = len(npss_flow_vars)
-        flow_str += 100*"=" + "\n"
+        flow_str += 100 * "=" + "\n"
         for i in range(len(npss_comps)):
             v1 = []
             v2 = []
@@ -126,28 +125,31 @@ def test_generator():
                 v1.append(npss)
                 v2.append(pyc)
 
-
-                vals1 = [npss_comps[i] + "(NPSS)"] + v1 + (n_vars - k)*["-"]
-                vals2 = [npss_comps[i] + "(Pyc.)"] + v2 + (n_vars - k)*["-"]
-                flow_str = flow_str_old + base_row.format(*vals1) + base_row.format(*vals2)
+                vals1 = [npss_comps[i] + "(NPSS)"] + v1 + (n_vars - k) * ["-"]
+                vals2 = [npss_comps[i] + "(Pyc.)"] + v2 + (n_vars - k) * ["-"]
+                flow_str = flow_str_old + base_row.format(
+                    *vals1) + base_row.format(*vals2)
                 yield check_values, err, path1, path2
 
             vals1 = [npss_comps[i] + "(NPSS)"] + v1
             vals2 = [npss_comps[i] + "(Pyc.)"] + v2
-            flow_str = flow_str_old + base_row.format(*vals1) + base_row.format(*vals2)
-            flow_str += 100*"-" + "\n"
+            flow_str = flow_str_old + base_row.format(
+                *vals1) + base_row.format(*vals2)
+            flow_str += 100 * "-" + "\n"
 
         # some non flow variable checks too
 
         flow_str += "\n"
         flow_str += "Non-flow variable check:\n"
-        flow_str += "| {:<15} {:<15} {:<15} |\n".format("Variable", "NPSS", "Pyc.")
-        flow_str += 15*4*"-" + "\n"
+        flow_str += "| {:<15} {:<15} {:<15} |\n".format("Variable", "NPSS",
+                                                        "Pyc.")
+        flow_str += 15 * 4 * "-" + "\n"
         flow_str_old = flow_str
         for path1, path2 in zip(npss_names_nonflow, pyc_names_nonflow):
             npss = data[h_map[path1]]
             pyc = prob[path2]
-            flow_str = flow_str_old + "| {:<15} {:<15} {:<15} |\n".format(path1, npss, pyc)
+            flow_str = flow_str_old + "| {:<15} {:<15} {:<15} |\n".format(
+                path1, npss, pyc)
             err = rel_err(npss, pyc)
             yield check_values, err, path1, path2
 

@@ -9,8 +9,9 @@ b) XML is a pain to comprehend if one is unfamiliar with it
 c) JSON is easily and quickly parsed, and can be edited in a easy-to-use viewer
     that displays everything in a simple tree viewer
 """
-class InputHelper(object):
 
+
+class InputHelper(object):
     def __init__(self, file_name):
         self.data = None
         parent_dir = os.path.dirname(os.path.dirname(__file__))

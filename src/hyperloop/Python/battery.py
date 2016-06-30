@@ -131,50 +131,50 @@ class Battery(Component):
         # check representation invariant
         self._check_rep(params, unknowns, resids)
 
-        capDischarge = self._calculate_total_discharge(
+        cap_discharge = self._calculate_total_discharge(
             params['time_of_flight'], params['des_current'])
-        N_parallel = capDischarge / (params['q_n'] * (1 - params['q_l']))
-        singleBatCurrent = params['des_current'] / N_parallel
-        singleBatDischarge = self._calculate_total_discharge(
-            params['des_time'], params['des_current']) / N_parallel
+        n_parallel = cap_discharge / (params['q_n'] * (1 - params['q_l']))
+        single_bat_current = params['des_current'] / n_parallel
+        single_bat_discharge = self._calculate_total_discharge(
+            params['des_time'], params['des_current']) / n_parallel
 
         # calculate general battery performance curve paramaters
 
         # voltage drop over exponential zone
-        # A = params['params['e_full']'] - params['e_exp']
-        A = 0.144
+        # a = params['params['e_full']'] - params['e_exp']
+        a = 0.144
         # discharge of single cell from full to end of exponential zone
-        Q_exp = self._calculate_total_discharge(
-            params['t_exp'], params['des_current']) / N_parallel
+        q_exp = self._calculate_total_discharge(
+            params['t_exp'], params['des_current']) / n_parallel
         # time constant of the exponential zone
-        # B = 3 / Q_exp
-        B = 2.3077
+        # b = 3 / q_exp
+        b = 2.3077
         # discharge over the nominal zone
-        Q_nom = self._calculate_total_discharge(
-            params['t_nom'], params['des_current']) / N_parallel
+        q_nom = self._calculate_total_discharge(
+            params['t_nom'], params['des_current']) / n_parallel
         # polarization voltage
-        # K = (params['params['e_full']'] - params['e_nom'] + A * (np.exp(-B * Q_nom) - 1)) * (params['q_n'] - Q_nom)
-        K = 0.01875
+        # k = (params['params['e_full']'] - params['e_nom'] + a * (np.exp(-b * q_nom) - 1)) * (params['q_n'] - q_nom)
+        k = 0.01875
         # no load constant voltage of battery
-        # K = polarization voltage, params['r'] = resistance,
-        # E_0 = params['params['e_full']'] + K + params['r'] * singleBatCurrent - A
-        E_0 = 1.2848
+        # k = polarization voltage, params['r'] = resistance,
+        # e_0 = params['params['e_full']'] + k + params['r'] * single_bat_current - a
+        e_0 = 1.2848
 
         # general voltage performance curve
-        V_batt = E_0 - K * (params['q_n'] / (
-            params['q_n'] - singleBatDischarge)) + A * np.exp(
-                -B * singleBatDischarge) - params['r'] * singleBatCurrent
+        v_batt = e_0 - k * (params['q_n'] / (
+            params['q_n'] - single_bat_discharge)) + a * np.exp(
+                -b * single_bat_discharge) - params['r'] * single_bat_current
 
         # single battery power at design power point
-        P_bat = V_batt * singleBatCurrent
+        p_bat = v_batt * single_bat_current
 
         # total number of battery cells
-        n_cells = params['des_power'] / P_bat
+        n_cells = params['des_power'] / p_bat
 
         self.unknowns['n_cells'] = np.ceil(n_cells)
 
         # check representation invariant
-        assert n_cells >= N_parallel
+        assert n_cells >= n_parallel
         self._check_rep(params, unknowns, resids)
 
     def _calculate_total_discharge(self, time, current):
@@ -197,7 +197,7 @@ class Battery(Component):
         """
         return time * current
 
-    def _check_rep(params, unknowns, resids):
+    def _check_rep(self, params, unknowns, resids):
         """Checks that the representation invariant of the `Battery` class holds
 
         Args
