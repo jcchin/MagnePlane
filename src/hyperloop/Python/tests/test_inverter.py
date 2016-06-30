@@ -1,6 +1,6 @@
 from __future__ import print_function
 import pytest
-from hyperloop.Python import Inverter
+from hyperloop.Python import inverter
 import numpy as np
 from openmdao.api import Group, Problem
 
@@ -14,7 +14,7 @@ class TestInverter(object):
 
     def test_case1_vs_npss(self):
 
-        prob = create_problem(Inverter.Inverter())
+        prob = create_problem(inverter.Inverter())
         prob.setup()
 
         prob['comp.Efficiency'] = 0.704995
@@ -31,7 +31,7 @@ class TestInverter(object):
 
 
     def test_case2_vs_npss(self):
-        prob = create_problem(Inverter.Inverter())
+        prob = create_problem(inverter.Inverter())
         prob.setup()
 
         prob['comp.Efficiency'] = 0.85

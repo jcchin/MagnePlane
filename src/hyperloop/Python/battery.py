@@ -1,91 +1,202 @@
-"""
-Battery group of components BatteryP, BatteryPerf, and BatteryWeight.
-"""
+import numpy as np
+from openmdao.api import Component, Problem, Group
 
-from openmdao.core.component import Component
-from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer, ExecComp, SqliteRecorder
-from hyperloop.Python.BatteryP import BatteryP
-from hyperloop.Python.BatteryWeight import BatteryWeight
-from hyperloop.Python.BatteryPerf import Battery_perf
 
-class battery(Group):
-	"""
+class Battery(Component):
+    """The `Battery` class represents a battery component in an OpenMDAO model. 
+    
+    A `Battery` models battery performance by finding a general battery voltage 
+    performance curve ([1]_, [2]_) based on standard cell properties and can be used to
+    determine the number of cells and cell configuration needed to meet specification.
+
     Params
     ------
-    DesPower : float
-        Fully Charged Voltage in V. Default value is 2.0.
-    FlightTime : float
-        End of Nominal Zone Voltage in V. Default value is 2.0
-    StackDesignVoltage : float
-        Design stack voltage in V. Default value is 300.0
+    des_time : float
+        time until design power point (h)
+    time_of_flight : float
+        total mission time (h)
+    des_power : float
+        design power (W)
+    des_current : float
+        design current (A)
+    q_l : float
+        discharge limit (unitless)
+    e_full : float
+        fully charged voltage (V)
+    e_nom : float
+        voltage at end of nominal voltage (V)
+    e_exp : float
+        voltage at end of exponential zone (V)
+    q_n : float
+        single cell capacity (A*h)
+    t_exp : float
+        time to reach exponential zone (h)
+    t_nom : float
+        time to reach nominal zone (h)
+    r : float
+        resistance of individual battery cell (Ohms)
 
-    Components
-  	----------
-	batteryP : from BatteryP.py
-		Calculates parameters like Nparallel(number of cells in parallel), Nseries(Number of cells in series), Ncells(total no of cells) and C_Max(max rating)
-		The calculated parameters are then use to estimate battery weight in BatteryWeight.py
-	batteryPerf : from Battery_perf.py
-		Allows stand-alone batteries to be simulated without an electric circuit within NPSS for use in validating the procedure.
-	batteryWeight : from BatteryWeight.py
-		Allows sizing of battery based on design power load and necessary capacity
-
-    Returns
+    Outputs
     -------
-    StackWeight : float
-        Total Capacity required for design in A*h. Default value is 1.0.
-    StackVol : float
-        Number of cells in parallel in the battery stack in cells. Default value is 1.0.
-    Voltage: float
-        Voltage lost due to polarization in ohms. Default value is 0.0.
-    Ncells : float
-         Number of cells necessary to perform that mission in cells. Default value is 2.0
-    Current : float
-        Charge at end of Exponential Curve in A*h. Default value is 2.0
-   
-    Notes
+    n_cells : float
+        total number battery cells (unitless)
+
+    References
     -----
-    [1] Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications, published by Georgia Tech
-    Good explanation of capacity: http://www.powerstream.com/battery-capacity-calculations.htm
+    .. [1] Gladin, Ali, Collins, "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications"
+       Georgia Tech, 2015
+
+    .. [2] D. N. Mavris, "Subsonic Ultra Green Aircraft Research - Phase II," NASA Langley Research Center, 2014
+
     """
 
-	def __init__(self):
-		super(battery, self).__init__()
+    # TODO rematch battery performance data to 18650 or similar Li-Ion battery instead of
+    # outdated Ni-Mh battery
 
-		# creates components of group
-		self.add('batteryP', BatteryP())
-		self.add('batteryPerf', Battery_perf())
-		self.add('batteryWeight', BatteryWeight())
+    def __init__(self):
+        """Initializes a `Battery` object
 
-		self.connect('batteryP.Ncells', ['batteryPerf.Ncells', 'batteryWeight.Ncells'])
-		self.connect('batteryP.C_max', 'batteryWeight.C_max')
-		self.connect('batteryP.Nparallel', 'batteryPerf.Nparallel')
+        Sets up the given Params/Outputs of the OpenMDAO `Battery` component, initializes their shape, and
+        sets them to their default values.
+        """
+
+        super(Battery, self).__init__()
+
+        # setup inputs
+        self.add_param('des_time', val=1.0, desc='time until design power point', units='h')
+        self.add_param('time_of_flight', val=2.0, desc='total mission time', units='h')
+        self.add_param('des_power', val=7, desc='design power', units='W')
+        self.add_param('des_current', val=1, desc='design current', units='A')
+        self.add_param('q_l', val=0.1, desc='discharge limit', units='unitless')
+        self.add_param('e_full', val=1.4, desc='fully charged voltage', units='V')
+        self.add_param('e_nom', val=1.2, desc='voltage at  end of nominal zone', units='V')
+        self.add_param('e_exp', val=1.27, desc='voltage at end of exponential zone', units='V')
+        self.add_param('q_n', val=6.8, desc='Single cell capacity', units='A*h')
+        self.add_param('t_exp', val=1.0, desc='time to reach exponential zone', units='h')
+        self.add_param('t_nom', val=4.3, desc='time to reach nominal zone', units='h')
+        self.add_param('r', val=0.0046, desc='battery resistance', units='Ohms')
+
+        # setup outputs
+        self.add_output('n_cells', val=1.0, desc='total number of battery cells', units='unitless')
+
+    def solve_nonlinear(self, params, unknowns, resids):
+        """Runs the `Battery` component and sets its respective outputs to their calculated results
+        
+        Args
+        ----------
+        params : `VecWrapper`
+            `VecWrapper` containing parameters
+
+        unknowns : `VecWrapper`
+            `VecWrapper` containing outputs and states
+
+        resids : `VecWrapper`
+            `VecWrapper` containing residuals
+
+        """
+
+        # check representation invariant
+        self._check_rep(params, unknowns, resids)
+
+        capDischarge = self._calculate_total_discharge(params['time_of_flight'], params['des_current'])
+        N_parallel = capDischarge / (params['q_n'] * (1 - params['q_l']))
+        singleBatCurrent = params['des_current'] / N_parallel
+        singleBatDischarge = self._calculate_total_discharge(params['des_time'], params['des_current']) / N_parallel
+
+        # calculate general battery performance curve paramaters
+
+        # voltage drop over exponential zone
+        # A = params['params['e_full']'] - params['e_exp']
+        A = 0.144
+        # discharge of single cell from full to end of exponential zone
+        Q_exp = self._calculate_total_discharge(params['t_exp'], params['des_current']) / N_parallel
+        # time constant of the exponential zone
+        # B = 3 / Q_exp
+        B = 2.3077
+        # discharge over the nominal zone
+        Q_nom = self._calculate_total_discharge(params['t_nom'], params['des_current']) / N_parallel
+        # polarization voltage
+        # K = (params['params['e_full']'] - params['e_nom'] + A * (np.exp(-B * Q_nom) - 1)) * (params['q_n'] - Q_nom)
+        K = 0.01875
+        # no load constant voltage of battery
+        # K = polarization voltage, params['r'] = resistance,
+        # E_0 = params['params['e_full']'] + K + params['r'] * singleBatCurrent - A
+        E_0 = 1.2848
+
+        # general voltage performance curve
+        V_batt = E_0 - K * (params['q_n'] / (params['q_n'] - singleBatDischarge)) + A * np.exp(
+            -B * singleBatDischarge) - params['r'] * singleBatCurrent
+
+        # single battery power at design power point
+        P_bat = V_batt * singleBatCurrent
+
+        # total number of battery cells
+        n_cells = params['des_power'] / P_bat
+
+        self.unknowns['n_cells'] = np.ceil(n_cells)
+
+        # check representation invariant
+        assert n_cells >= N_parallel
+        self._check_rep(params, unknowns, resids)
+
+    def _calculate_total_discharge(self, time, current):
+        """Calculates the total discharge over a given load profile
+
+        Integrates the load profile from t = 0 to t = time
+
+        Args
+        ----------
+        time : float
+            the upper bound of the integration
+        current : float
+            the constant load profile
+
+        Returns
+        -------
+        float
+            the total discharge over the load profile
+
+        """
+        return time * current
+
+    def _check_rep(params, unknowns, resids):
+        """Checks that the representation invariant of the `Battery` class holds
+
+        Args
+        ----------
+        params : `VecWrapper`
+            `VecWrapper` containing parameters
+
+        unknowns : `VecWrapper`
+            `VecWrapper` containing outputs and states
+
+        resids : `VecWrapper`
+            `VecWrapper` containing residuals
+        """
+        assert params['q_l'] > 0
+        assert params['des_time'] > 0
+        assert params['time_of_flight'] > 0
+        assert params['des_power'] > 0
+        assert params['des_current'] > 0
+        assert params['e_full'] > 0
+        assert params['q_n'] > 0
+        assert params['e_exp'] > 0
+        assert params['e_nom'] > 0
+        assert params['t_nom'] > 0
+        assert params['t_exp'] > 0
+        assert params['r'] > 0
+        assert unknowns['n_cells'] > 0
+
 
 if __name__ == '__main__':
-	from openmdao.api import IndepVarComp, Newton, ScipyGMRES, NLGaussSeidel
+    # set up problem
+    root = Group()
+    p = Problem(root)
+    p.root.add('comp', Battery())
+    p.setup()
+    p.root.list_connections()
+    p.run()
 
-	p = Problem()
-	p.root = Group()
+    # print following properties
 
-	p.root.add('p1', IndepVarComp('Ncells', 10.0))
-	p.root.add('p2', IndepVarComp('C_max', 4.1))
-	p.root.add('p3', IndepVarComp('Nparallel', 2.0))
-	p.root.add('battery', battery())
-
-	p.root.deriv_options['type'] = 'fd'
-	p.root.nl_solver = Newton()
-	p.root.ln_solver = ScipyGMRES()
-
-	p.root.connect('p1.Ncells', 'battery.batteryP.NumCells')
-	p.root.connect('p2.C_max', 'battery.batteryP.C_max_in')
-	p.root.connect('p3.Nparallel', 'battery.batteryP.Nparallel')
-
-	p.setup()
-	p.root.list_connections()
-	p.run()
-
-    #print following properties
-	print ('StackWeight(kg) : %f' % p['battery.batteryWeight.StackWeight'])
-	print ('StackVol(m^3) : %f' % p['battery.batteryWeight.StackVol'])
-	print ('Ncells : %f' % p['battery.batteryWeight.Ncells'])
-	print ('Voltage Stack : %f' % p['battery.batteryP.Voltage'])
-	print ('Current Stack: %f' % p['battery.batteryP.Current'])
+    print ('Ncells(cells) : %f' % p['comp.n_cells'])

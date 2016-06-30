@@ -1,5 +1,5 @@
 import pytest
-from hyperloop.Python import magneticdrag
+from hyperloop.Python import magnetic_drag
 import numpy as np
 from openmdao.api import Group, Problem
 
@@ -15,7 +15,7 @@ class TestVac(object):
 
     def test_case1_vs_breakpoint(self):
 
-        magdrag = magneticdrag.MagDrag()
+        magdrag = magnetic_drag.MagDrag()
 
         prob = create_problem(magdrag)
 

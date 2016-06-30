@@ -11,7 +11,7 @@ class DCTransformer(Component):
         self.add_param('InputVoltage', 298, desc='DC input voltage', units='Volts')
         self.add_param('InputFreq', 60, desc='DC input frequency', units='Hz')
         self.add_param('OutputFreq', 60, desc='DC output frequency', units='Hz')
-        self.add_param('DesignPower', 12000000, 'design output power')
+        self.add_param('DesignPower', 12000000, units='design output power')
         self.add_param('InputCurrent', 2, desc='DC input current', units='Amps')
 
     def solve_nonlinear(self, params, unknowns, resids):

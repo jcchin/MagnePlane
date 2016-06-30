@@ -3,7 +3,7 @@ Test for breakpointlev.py. Uses test values and outputs given by
 the laminated sheet experiment in [1].
 """
 import pytest
-from hyperloop.Python import lev_group
+from hyperloop.Python import levitation_group
 from math import pi
 
 import numpy as np
@@ -76,7 +76,7 @@ class TestLev(object):
 
     def test_case1_vs_inductrack(self):
 
-        LevGroup = lev_group.LevGroup()
+        LevGroup = levitation_group.LevGroup()
 
         prob = create_problem(LevGroup)
 

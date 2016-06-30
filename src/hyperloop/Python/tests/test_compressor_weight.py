@@ -1,5 +1,5 @@
 import pytest
-from hyperloop.Python import Compressor_weight
+from hyperloop.Python import compressor_weight
 import numpy as np
 from openmdao.api import Group, Problem
 
@@ -13,7 +13,7 @@ def create_problem(compressor):
 
 class TestCompressor(object):
     def test_case1(self):
-        compressor = Compressor_weight.Compressor_weight()
+        compressor = compressor_weight.Compressor_weight()
 
         prob = create_problem(compressor)
 

@@ -1,11 +1,11 @@
 from openmdao.api import ExecComp, IndepVarComp, Group, NLGaussSeidel, \
     ScipyGMRES, Problem, ScipyOptimizer
-from hyperloop.Python.ElectricMotor import ElectricMotor
-from hyperloop.Python.Inverter import Inverter
+from hyperloop.Python.electric_motor import ElectricMotor
+from hyperloop.Python.inverter import Inverter
 from hyperloop.Python.dc_transformer import DCTransformer
 from hyperloop.Python.battery import Battery
 
-class PMAD(Group):
+class Drivetrain(Group):
     def __init__(self):
         super(Drivetrain, self).__init__()
 
@@ -16,18 +16,18 @@ class PMAD(Group):
         self.add('DCTransformer', DCTransformer())
         self.add('Battery', Battery())
 
-        # connect ElectricMotor outputs to Inverter inputs
-        self.connect('Motor.InputFrequency', 'Inverter.OutputFrequency')
-        self.connect('Motor.PhaseVoltage', 'Inverter.OutputVoltage')
-        self.connect('Motor.PhaseCurrent', 'Inverter.OutputCurrent')
-
-        # connect Inverter outputs to DCTransformer inputs
-        self.connect('Inverter.InputVoltage', 'DCTransformer.OutputVoltage')
-        self.connect('Inverter.InputCurrent', 'DCTransformer.OutputCurrent')
-
-        # connect Battery outputs to DCTransformer inputs
-        self.connect('Battery.Voltage', 'DCTransformer.InputVoltage')
-        self.connect('Battery.Current', 'DCTransformer.InputCurrent')
+        # # connect ElectricMotor outputs to Inverter inputs
+        # self.connect('Motor.InputFrequency', 'Inverter.OutputFrequency')
+        # self.connect('Motor.PhaseVoltage', 'Inverter.OutputVoltage')
+        # self.connect('Motor.PhaseCurrent', 'Inverter.OutputCurrent')
+        #
+        # # connect Inverter outputs to DCTransformer inputs
+        # self.connect('Inverter.InputVoltage', 'DCTransformer.OutputVoltage')
+        # self.connect('Inverter.InputCurrent', 'DCTransformer.OutputCurrent')
+        #
+        # # connect Battery outputs to DCTransformer inputs
+        # self.connect('Battery.Voltage', 'DCTransformer.InputVoltage')
+        # self.connect('Battery.Current', 'DCTransformer.InputCurrent')
 
         # self.nl_solver = NLGaussSeidel()
         # self.nl_solver.options['atol'] = 1.0e-12
@@ -36,18 +36,18 @@ class PMAD(Group):
 
 if __name__ == '__main__':
 
-top = Problem()
-top.root = Drivetrain()
+    top = Problem()
+    top.root = Drivetrain()
 
-top.driver = ScipyOptimizer()
-top.driver.options['optimizer'] = 'SLSQP'
-top.driver.options['tol'] = 1.0e-8
+    top.driver = ScipyOptimizer()
+    top.driver.options['optimizer'] = 'SLSQP'
+    top.driver.options['tol'] = 1.0e-8
 
-top.driver.add_desvar('InputVoltage.Voltage', lower=0.0, upper=1000.0)
+    top.driver.add_desvar('InputVoltage.Voltage', lower=0.0, upper=1000.0)
 
-top.setup()
+    top.setup()
 
-# Setting initial values for design variables
-top['InputVoltage.Voltage'] = 200.0
+    # Setting initial values for design variables
+    top['InputVoltage.Voltage'] = 200.0
 
-top.run()
+    top.run()
