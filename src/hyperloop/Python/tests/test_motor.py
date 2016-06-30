@@ -20,22 +20,21 @@ class TestMotor(object):
 
         prob.setup()
 
-        prob['comp.Torque'] = 310.35 * 0.737
-        prob['comp.Max_RPM'] = 2500.0
-        prob['comp.DesignPower'] = 110000.0 / 746.0
-        prob['comp.Resistance'] = 0.0
-        prob['comp.Inductance'] = 0.0
-        prob['comp.Kv'] = 0.1
-        prob['comp.Speed'] = 1900.0
+        prob['comp.torque'] = 310.35 * 0.737
+        prob['comp.max_rpm'] = 2500.0
+        prob['comp.design_power'] = 110000.0 / 746.0
+        prob['comp.speed'] = 1900.0
+        prob['comp.pole_pairs'] = 6.0
+        prob['comp.i0'] = 0.0
+        prob['comp.i0_des'] = 0.0
         prob['comp.imax'] = 450.0
-        prob['comp.PolePairs'] = 6.0
-        prob['comp.kappa'] = 0.5
-        prob['comp.LDratio'] = 0.83
-        prob['comp.R0'] = 0.004
-        prob['comp.I0'] = 0.0
-        prob['comp.I0_Des'] = 0.0
-        prob['comp.nphase'] = 3.0
-        prob['comp.CoreRadiusRatio'] = 0.7
+        prob['comp.NPHASE'] = 3.0
+        prob['comp.KAPPA'] = 0.5
+        prob['comp.LD_RATIO'] = 0.83
+        prob['comp.rd'] = 0.4
+        prob['comp.AS'] = 9500.0
+        prob['comp.resistance'] = 0.0
+        prob['comp.inductance'] = 0.0
 
         prob.run()
 
@@ -53,22 +52,22 @@ class TestMotor(object):
 
         prob.setup()
 
-        prob['comp.Torque'] = 400.0 * 0.737
-        prob['comp.Max_RPM'] = 4000.0
-        prob['comp.DesignPower'] = 150000.0 / 746.0
-        prob['comp.Resistance'] = 0.0
-        prob['comp.Inductance'] = 0.0
-        prob['comp.Kv'] = 0.1
-        prob['comp.Speed'] = 2500.0
+        prob['comp.torque'] = 310.35 * 0.737
+        prob['comp.max_rpm'] = 2500.0
+        prob['comp.design_power'] = 110000.0 / 746.0
+        prob['comp.speed'] = 1900.0
+        prob['comp.pole_pairs'] = 6.0
+        prob['comp.i0'] = 0.0
+        prob['comp.i0_des'] = 0.0
         prob['comp.imax'] = 450.0
-        prob['comp.PolePairs'] = 6.0
-        prob['comp.kappa'] = 0.5
-        prob['comp.LDratio'] = 1.2
-        prob['comp.R0'] = 0.007
-        prob['comp.I0'] = 0.0
-        prob['comp.I0_Des'] = 0.0
-        prob['comp.nphase'] = 3.0
-        prob['comp.CoreRadiusRatio'] = 1.5
+        prob['comp.NPHASE'] = 3.0
+        prob['comp.KAPPA'] = 0.5
+        prob['comp.LD_RATIO'] = 0.83
+        prob['comp.rd'] = 0.004
+        prob['comp.AS'] = 9500.0
+        prob['comp.resistance'] = 0.0
+        prob['comp.inductance'] = 0.0
+
 
         prob.run()
 
