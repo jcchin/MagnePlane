@@ -6,9 +6,9 @@ Many parameters are currently taken from hyperloop alpha, pod sizing analysis
 
 from __future__ import print_function
 
-from math import pi, sqrt
+import numpy as np
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
-from openmdao.api import ScipyOptimizer, NLGaussSeidel, Newton
+
 
 
 class PodMach(Component):
@@ -210,9 +210,8 @@ class PodMach(Component):
         #Define intermediate variables
         rho_inf = p_tube / (R *
                             T_ambient)  #Calculate density of free stream flow
-        U_inf = M_pod * ((gam * R * T_ambient)
-                         **.5)  #Calculate velocity of free stream flow
-        r_pod = (A_pod / pi)**.5  #Calculate pod radius
+        U_inf = M_pod * (np.sqrt((gam * R * T_ambient)))        #Calculate velocity of free stream flow
+        r_pod = np.sqrt((A_pod / np.pi))  #Calculate pod radius
 
         Re = (rho_inf * U_inf *
               L) / mu  #Calculate length based Reynolds Number
@@ -226,12 +225,12 @@ class PodMach(Component):
             A_inlet = A_diff
 
         eps = mach_to_area(M_pod, M_duct, gam)
-        A_tube = (A_pod + pi * (((r_pod + delta_star)**2.0) - (r_pod**2.0)) -
-                  (eps * A_inlet)) / ((1.0 + (eps**.5)) * (1.0 - (eps**.5)))
+        A_tube = (A_pod + np.pi * (((r_pod + delta_star)**2.0) - (r_pod**2.0)) -
+                  (eps * A_inlet)) / ((1.0 + (np.sqrt(eps))) * (1.0 - (np.sqrt(eps))))
         pwr_comp = (rho_inf * U_inf * A_inlet) * cp * T_ambient * (1.0 + (
             (gam - 1) / 2.0) * (M_pod**2)) * ((prc**((gam - 1) / gam)) - 1)
         A_bypass = A_tube - A_inlet
-        A_duct_eff = A_tube - A_pod - pi * ((
+        A_duct_eff = A_tube - A_pod - np.pi * ((
             (r_pod + delta_star)**2) - (r_pod**2))
 
         unknowns['pwr_comp'] = pwr_comp
