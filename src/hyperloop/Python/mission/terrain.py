@@ -1,26 +1,20 @@
 from __future__ import print_function, division
 
-
-__author__ = 'rfalck'
-
 import numpy as np
-
 try:
     from openmdao.api import pyOptSparseDriver
 except:
     pyOptSparseDriver = None
 
 from openmdao.api import ScipyOptimizer
-
-
 from pointer.components import Problem, Trajectory, RHS, EOMComp, CollocationPhase
+from scipy import interpolate
 
 class TerrainElevationComp(EOMComp):
     '''
     The terrain component uses the given latitude and longitude (x and y) to
     look up the elevation of the local terrain.
     '''
-
 
     def __init__(self, grid_data):
         super(TerrainElevationComp, self).__init__(grid_data, time_units='s')
