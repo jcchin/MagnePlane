@@ -135,7 +135,7 @@ include-naming-hint=yes
 function-rgx=[a-z_][a-z0-9_]{2,30}$
 
 # Naming hint for function names
-function-name-hint=[a-z_][a-z0-9_]{2,30}$
+function-name-hint=[a-z_][a-z0-9_]{1,30}$
 
 # Regular expression matching correct variable names
 variable-rgx=[a-z_][a-z0-9_]{2,30}$
@@ -311,7 +311,7 @@ max-args=5
 ignored-argument-names=_.*
 
 # Maximum number of locals for function / method body
-max-locals=15
+max-locals=25
 
 # Maximum number of return / yield for function / method body
 max-returns=6
