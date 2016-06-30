@@ -11,10 +11,10 @@ def create_problem(component):
     return prob
 
 
-class TestTubeandPylon(object):
+class TestTubeAndPylon(object):
     def test_case1_vs_npss(self):
 
-        component = tube_and_pylon.TubeandPylon()
+        component = tube_and_pylon.TubeAndPylon()
 
         prob = create_problem(component)
 
