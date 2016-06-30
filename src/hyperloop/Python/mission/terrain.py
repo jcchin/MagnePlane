@@ -33,7 +33,8 @@ class TerrainElevationComp(EOMComp):
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        unknowns['elev'] = self.interpolant(params['x'],params['y'])
+        #convert x/y to lat/lon, then feed into interpolant
+        unknowns['elev'] = self.interpolant(params['lat'],params['long'])
         unknowns['alt'] = -z - unknowns['elev']
     
 if __name__ == "__main__":
