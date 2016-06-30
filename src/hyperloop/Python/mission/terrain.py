@@ -29,11 +29,24 @@ class TerrainElevationComp(EOMComp):
         self.add_output('elev', desc='terrain elevation at the given point', units='m/s/s')
         self.add_output('alt', desc='ground-relative altitude of the track', units='m')
 
-    def solve_nonlinear(self, params, unknowns, resids):
-        '''
-        Do stuff here.
-        '''
+        self.interpolant = interpolate.interp2d(np.loadtxt('xx.txt'), np.loadtxt('yy.txt'), np.loadtxt('zz.txt'), kind = 'cubic')
 
-        #unknowns['elev'] = do stuff here
-        #unknowns['alt'] = -z - unknowns['elev']
-        pass
+    def solve_nonlinear(self, params, unknowns, resids):
+
+        unknowns['elev'] = self.interpolant(params['x'],params['y'])
+        unknowns['alt'] = -z - unknowns['elev']
+    
+if __name__ == "__main__":
+    from openmdao.core.problem import Problem
+
+    root = Group()
+    p = Problem(root)
+
+    p.root.add('EOMcomp', TerrainElevationComp())
+
+    p.setup()
+    p.root.list_connections()
+    p.run()
+
+    print('Elev : %f' % p['elev'])
+    print('Alt : %f' % p['alt'])
