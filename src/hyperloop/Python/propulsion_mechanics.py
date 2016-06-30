@@ -5,8 +5,7 @@ Can currently be used for LSM or LIM systems
 """
 
 from __future__ import print_function
-
-from math import pi, log
+import numpy as np
 from openmdao.api import IndepVarComp, Component, Group, Problem
 
 
@@ -99,7 +98,7 @@ class PropulsionMechanics(Component):
         self.add_output('m_dP', val=0.0)  #Define mass per unit power as output
 
     def solve_nonlinear(self, params, unknowns, resids):
-        """Evaluate function Preq = (1/eta)*(mg*(vf-vo)+(1/6)*(Cd*rho*S*(vf^3 - vo^3)))
+        """Evaluate function Preq = (1/eta)*(mg*(vf-vo)+(1/6)*(Cd*rho*S*(vf^3 - vo^3))+D_magnetic*(vf-v0))
         Can be optimized in the future.  Friction and magnetic drag are neglected for now.
 
         Params
