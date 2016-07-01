@@ -89,11 +89,11 @@ class ElectricMotor(Component):
                        desc='max rpm of motor',
                        units='rpm')
         self.add_param('design_power',
-                       val=100000.0 / 746.0,
+                       val=110000.0 / 746.0,
                        desc='Design value of motor',
                        units='hp')
         self.add_param('speed',
-                       val=2000.0,
+                       val=1900.0,
                        desc='Output shaft mechanical speed',
                        units='rpm')
         self.add_param('POLE_PAIRS',
@@ -106,7 +106,7 @@ class ElectricMotor(Component):
                        desc='Motor No-load Current at Nbase',
                        units='A')
         self.add_param('imax',
-                       val=500.0,
+                       val=450.0,
                        desc='Max motor phase current',
                        units='A')
         self.add_param('N_PHASE',
