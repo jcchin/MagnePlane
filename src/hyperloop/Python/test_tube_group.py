@@ -3,7 +3,6 @@ Test for tube_group.py.
 """
 import pytest
 from hyperloop.Python import tube_group
-from math import pi
 import numpy as np
 from openmdao.api import Group, Problem
 
@@ -11,7 +10,7 @@ from openmdao.api import Group, Problem
 def create_problem(GroupName):
     root = Group()
     prob = Problem(root)
-    prob.root.add('comp', GroupName)
+    prob.root.add('group', GroupName)
     return prob
 
 
@@ -26,15 +25,30 @@ class TestTube(object):
         # prob.root.list_connections()
 
         # Pod Inputs
-        prob['comp.
+        prob['group.CompressionCycle.'] =
+
+        prob['group.PodMach.'] =
+
+        prob['group.Geometry.'] =
+
+        prob['group.LevGroup.'] =
+
+        prob['group.Weight.'] =
+
 
         prob.run()
 
         # Print Statement for debugging
-        print('L is %12.12f' % prob['comp.Drag.L'])
+
+        print('Vacuum: %f' %prob['group.Vacuum.'])
+        print('Tube temperature: %f' % prob['group.Thermal.'])
+        print('Structural: %f' %prob['group.Struct.'])
+        print('Propulsion Mechanics: %f' %prob['group.PropMech.'])
+        print('Total Tube Power required: %f' % prob['group.TubePower.'])
 
         # Test Values
-        assert np.isclose(prob['comp.Drag.LDratio'], 0.21618, rtol=.01)
-        assert np.isclose(prob['comp.Drag.R'], 0.000707, rtol=.01)
-        assert np.isclose(prob['comp.Drag.L'], 5.7619e-8, rtol=.01)
-        assert np.isclose(prob['comp.Drag.B0'], 0.81281, rtol=.01)
+        assert np.isclose(prob['group.Vacuum.'], , rtol=.01)
+        assert np.isclose(prob['group.Thermal.'], , rtol=.01)
+        assert np.isclose(prob['group.Struct.'], , rtol=.01)
+        assert np.isclose(prob['group.PropMech.'], , rtol=.01)
+        assert np.isclose(prob['group.TubePower.'], , rtol=.01)
