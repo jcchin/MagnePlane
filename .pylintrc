@@ -93,7 +93,7 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 [MISCELLANEOUS]
 
 # List of note tags to take in consideration, separated by a comma.
-notes=FIXME,XXX,TODO
+notes=
 
 
 [SPELLING]
@@ -135,13 +135,13 @@ include-naming-hint=yes
 function-rgx=[a-z_][a-z0-9_]{2,30}$
 
 # Naming hint for function names
-function-name-hint=[a-z_][a-z0-9_]{1,30}$
+function-name-hint=[a-z_][a-z0-9_]{0,30}$
 
 # Regular expression matching correct variable names
-variable-rgx=[a-z_][a-z0-9_]{1,30}$
+variable-rgx=([A-Za-z_][A-Za-z0-9_]{0,30}$
 
 # Naming hint for variable names
-variable-name-hint=[a-z_][a-z0-9_]{1,30}$
+variable-name-hint=[a-z_][a-z0-9_]{0,30}$
 
 # Regular expression matching correct constant names
 const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
@@ -150,22 +150,22 @@ const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
 const-name-hint=(([A-Z_][A-Z0-9_]*)|(__.*__))$
 
 # Regular expression matching correct attribute names
-attr-rgx=[a-z_][a-z0-9_]{1,30}$
+attr-rgx=[a-z_][a-z0-9_]{0,30}$
 
 # Naming hint for attribute names
-attr-name-hint=[a-z_][a-z0-9_]{1,30}$
+attr-name-hint=[a-z_][a-z0-9_]{0,30}$
 
 # Regular expression matching correct argument names
-argument-rgx=[a-z_][a-z0-9_]{1,30}$
+argument-rgx=[a-z_][a-z0-9_]{0,30}$
 
 # Naming hint for argument names
-argument-name-hint=[a-z_][a-z0-9_]{1,30}$
+argument-name-hint=[a-z_][a-z0-9_]{0,30}$
 
 # Regular expression matching correct class attribute names
-class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{1,30}|(__.*__))$
+class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{0,30}|(__.*__))$
 
 # Naming hint for class attribute names
-class-attribute-name-hint=([A-Za-z_][A-Za-z0-9_]{1,30}|(__.*__))$
+class-attribute-name-hint=([A-Za-z_][A-Za-z0-9_]{0,30}|(__.*__))$
 
 # Regular expression matching correct inline iteration names
 inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
@@ -311,7 +311,7 @@ max-args=5
 ignored-argument-names=_.*
 
 # Maximum number of locals for function / method body
-max-locals=25
+max-locals=20
 
 # Maximum number of return / yield for function / method body
 max-returns=6
