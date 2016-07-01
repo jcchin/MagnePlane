@@ -47,7 +47,7 @@ if __name__ == "__main__":
     prob = Problem()
     root = prob.root = Group()
 
-
+    """
     root.add('Tube', TubeGroup())
     root.add('Cycle', CompressionCycle())
     root.add('Aero',PodMach())
@@ -56,10 +56,10 @@ if __name__ == "__main__":
     root.add('Weight',Weight())
 
     root.add('PodGroup',PodGroup())
-
+    """
 
     prob.setup()
     prob.root.list_connections()
     prob.run()
 
-    print('Tube Temperature: %f' % prob['Tube.Thermal.tubetemps'])
+    print('Tube Temperature: %f' % prob['Tube.Thermal.tubetemp'])
