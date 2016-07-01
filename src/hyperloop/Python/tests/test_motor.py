@@ -20,31 +20,30 @@ class TestMotor(object):
 
         prob.setup()
 
-        prob['comp.Torque'] = 310.35 * 0.737
-        prob['comp.Max_RPM'] = 2500.0
-        prob['comp.DesignPower'] = 110000.0 / 746.0
-        prob['comp.Resistance'] = 0.0
-        prob['comp.Inductance'] = 0.0
-        prob['comp.Kv'] = 0.1
-        prob['comp.Speed'] = 1900.0
+        prob['comp.torque'] = 310.35 * 0.737
+        prob['comp.max_rpm'] = 2500.0
+        prob['comp.design_power'] = 110000.0 / 746.0
+        prob['comp.speed'] = 1900.0
+        prob['comp.POLE_PAIRS'] = 6.0
+        prob['comp.i0'] = 0.0
+        prob['comp.i0_des'] = 0.0
         prob['comp.imax'] = 450.0
-        prob['comp.PolePairs'] = 6.0
-        prob['comp.kappa'] = 0.5
-        prob['comp.LDratio'] = 0.83
-        prob['comp.R0'] = 0.004
-        prob['comp.I0'] = 0.0
-        prob['comp.I0_Des'] = 0.0
-        prob['comp.nphase'] = 3.0
-        prob['comp.CoreRadiusRatio'] = 0.7
+        prob['comp.N_PHASE'] = 3.0
+        prob['comp.KAPPA'] = 0.5
+        prob['comp.L_D_RATIO'] = 0.83
+        prob['comp.r_d'] = 0.4
+        prob['comp.A_S'] = 95000.0
+        prob['comp.resistance'] = 0.0
+        prob['comp.inductance'] = 0.0
 
         prob.run()
 
-        # assert np.isclose(prob['comp.phaseCurrent'], 101.686, rtol = 0.001)
-        # assert np.isclose(prob['comp.phaseVoltage'], 456.555, rtol = 0.001)
-        # assert np.isclose(prob['comp.Frequency'], 190, rtol = 0.001)
-        # assert np.isclose(prob['comp.Phase'], 0, rtol = 0.001)
-        # assert np.isclose(prob['comp.Kv'], 5.11363, rtol = 0.001)
-        # assert np.isclose(prob['comp.Mass'], 116.39, rtol = 0.001)
+        assert np.isclose(prob['comp.phase_current'], 75.000, rtol = 0.001)
+        assert np.isclose(prob['comp.phase_voltage'], 79.01827, rtol = 0.001)
+        assert np.isclose(prob['comp.frequency'], 190.000, rtol = 0.001)
+        assert np.isclose(prob['comp.phase'], 0.000, rtol = 0.001)
+        assert np.isclose(prob['comp.k_v'], 5.11363, rtol = 0.001)
+        assert np.isclose(prob['comp.weight'], 116.3902, rtol = 0.001)
 
     def test_case2_vs_npss(self):
         motor = electric_motor.ElectricMotor()
@@ -53,28 +52,27 @@ class TestMotor(object):
 
         prob.setup()
 
-        prob['comp.Torque'] = 400.0 * 0.737
-        prob['comp.Max_RPM'] = 4000.0
-        prob['comp.DesignPower'] = 150000.0 / 746.0
-        prob['comp.Resistance'] = 0.0
-        prob['comp.Inductance'] = 0.0
-        prob['comp.Kv'] = 0.1
-        prob['comp.Speed'] = 2500.0
-        prob['comp.imax'] = 450.0
-        prob['comp.PolePairs'] = 6.0
-        prob['comp.kappa'] = 0.5
-        prob['comp.LDratio'] = 1.2
-        prob['comp.R0'] = 0.007
-        prob['comp.I0'] = 0.0
-        prob['comp.I0_Des'] = 0.0
-        prob['comp.nphase'] = 3.0
-        prob['comp.CoreRadiusRatio'] = 1.5
+        prob['comp.torque'] = 310.35 * 0.737
+        prob['comp.max_rpm'] = 2500.0
+        prob['comp.design_power'] = 100000.0 / 746.0
+        prob['comp.speed'] = 2000.0
+        prob['comp.POLE_PAIRS'] = 6.0
+        prob['comp.i0'] = 0.0
+        prob['comp.i0_des'] = 0.0
+        prob['comp.imax'] = 500.0
+        prob['comp.N_PHASE'] = 3.0
+        prob['comp.KAPPA'] = 0.5
+        prob['comp.L_D_RATIO'] = 0.83
+        prob['comp.r_d'] = 0.4
+        prob['comp.A_S'] = 95000.0
+        prob['comp.resistance'] = 0.0
+        prob['comp.inductance'] = 0.0
 
         prob.run()
 
-        # assert np.isclose(prob['comp.phaseCurrent'], 101.686, rtol = 0.001)
-        # assert np.isclose(prob['comp.phaseVoltage'], 512.926, rtol = 0.001)
-        # assert np.isclose(prob['comp.Frequency'], 250, rtol = 0.001)
-        # assert np.isclose(prob['comp.Phase'], 0, rtol = 0.001)
-        # assert np.isclose(prob['comp.Kv'], 5.99999, rtol = 0.001)
-        # assert np.isclose(prob['comp.Mass'], 103.859, rtol = 0.001)
+        assert np.isclose(prob['comp.phase_current'], 83.3333, rtol=0.001)
+        assert np.isclose(prob['comp.phase_voltage'], 86.46929, rtol=0.001)
+        assert np.isclose(prob['comp.frequency'], 200.000, rtol=0.001)
+        assert np.isclose(prob['comp.phase'], 0.000, rtol=0.001)
+        assert np.isclose(prob['comp.k_v'], 6.2500, rtol=0.001)
+        assert np.isclose(prob['comp.weight'], 108.7471, rtol=0.001)
