@@ -1,13 +1,15 @@
 import numpy as np
-from openmdao.api import IndepVarComp, Component, Problem, Group
+from openmdao.api import Component, Problem, Group
 
 
 class CompressorWeight(Component):
-    """The CompressorWeight class represents a compressor weight component in an OpenMDAO model.
+    """The CompressorWeight class represents a compressor weight component
+        in an OpenMDAO model.
 
-        A `CompressorWeight` models weight of a compressor that uses NPSS data to obtain enthalpy data,and mass_flow
-        for a particular pressure ratio.
-        It also uses a correlation derived by Miceal Tong at NASA Glenn Center to obtain Compressor Weight.
+        A `CompressorWeight` models weight of a compressor that uses NPSS data
+        to obtain enthalpy data,and mass_flow for a particular pressure ratio.
+        It also uses a correlation derived by Miceal Tong at NASA Glenn Center
+        to obtain Compressor Weight.
     Params
         ----
         comp_eff: float
@@ -18,7 +20,7 @@ class CompressorWeight(Component):
             Heat in. (kJ/kg)
         h_out: float
             Heat out. (kJ/kg)
-        comp_inlet_R: float
+        comp_inletR: float
             Compressor Inlet Radius. (m)
     Outputs
     -------
@@ -36,7 +38,8 @@ class CompressorWeight(Component):
     def __init__(self):
         """Initializes a `CompressorWeight` object
 
-        Sets up the given Params/Outputs of the OpenMDAO `CompressorWeight` component, initializes their shape, and
+        Sets up the given Params/Outputs of the OpenMDAO `CompressorWeight`
+        component,initializes their shape, and
         sets them to their default values.
         """
         super(CompressorWeight, self).__init__()
@@ -52,7 +55,7 @@ class CompressorWeight(Component):
                        units='kg/s')
         self.add_param('h_in', val=0., desc='Heat-in', units='kJ/kg')
         self.add_param('h_out', val=486.13, desc='Heat-out', units='kJ/kg')
-        self.add_param('comp_inlet_R',
+        self.add_param('comp_inletR',
                        val=0.64,
                        desc='Compressor Inlet Radius',
                        units='m')
@@ -64,7 +67,7 @@ class CompressorWeight(Component):
                         units='kg')
 
     def solve_nonlinear(self, params, unknowns, resids):
-        """Runs the `Battery` component and sets its respective outputs to their calculated results
+        """Runs the `CompressorWeight` component and sets its respective outputs to their calculated results
 
         Args
         ----------
@@ -83,10 +86,10 @@ class CompressorWeight(Component):
         mass_flow = params['mass_flow']
         h_in = params['h_in']
         h_out = params['h_out']
-        comp_inlet_R = params['comp_inlet_R']
+        comp_inletR = params['comp_inletR']
 
         # uses correlation to obtain compressor weight
-        unknowns['comp_weight'] = 299.2167 * (np.square(comp_inlet_R)) + 0.007418 * (
+        unknowns['comp_weight'] = 299.2167 * (np.power(comp_inletR,2)) + 0.007418 * (
             (mass_flow * (h_out - h_in)) / (comp_eff / 100)) + 37.15
 
 
