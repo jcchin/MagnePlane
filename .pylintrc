@@ -138,7 +138,7 @@ function-rgx=[a-z_][a-z0-9_]{2,30}$
 function-name-hint=[a-z_][a-z0-9_]{0,30}$
 
 # Regular expression matching correct variable names
-variable-rgx=([A-Za-z_][A-Za-z0-9_]{0,30}$
+variable-rgx=[A-Za-z_][A-Za-z0-9_]{0,30}$
 
 # Naming hint for variable names
 variable-name-hint=[a-z_][a-z0-9_]{0,30}$
@@ -275,7 +275,7 @@ ignore-imports=no
 max-line-length=100
 
 # Regexp for a line that is allowed to be longer than the limit.
-ignore-long-lines=((# )?<?https?>?:\/\/\S+>?)|(\.\. \[[1-9]{1,2}\] .*)
+ignore-long-lines=^((# )?<?https?>?:\/\/\S+>?)$|^(\.\. \[[1-9]{1,2}\] .*)$
 
 # Allow the body of an if to be on the same line as the test if there is no
 # else.
