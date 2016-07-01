@@ -73,7 +73,7 @@ class TestLev(object):
     Notes
     -----
     [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis.
-        Bradley University, 2004. N.p.: n.p., n.d. Print.
+    Bradley University, 2004. N.p.: n.p., n.d. Print.
     """
 
     def test_case1_vs_inductrack(self):
