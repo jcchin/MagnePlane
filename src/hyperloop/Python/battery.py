@@ -35,11 +35,23 @@ class Battery(Component):
         time to reach nominal zone (h)
     r : float
         resistance of individual battery cell (Ohms)
+    cell_mass : float
+        mass of a single cell (g)
+    cell_height : float
+        height of a single cylindrical cell (mm)
+    cell_diameter : float
+        diamter of a single cylindrical cell (mm)
 
     Outputs
     -------
     n_cells : float
         total number battery cells (unitless)
+    output_voltage : float
+        output voltage of battery configuration (V)
+    battery_mass : float
+        total mass of cells in battery configuration (kg)
+    battery_volume : float
+        total volume of cells in battery configuration (cm^3)
 
     References
     -----
@@ -52,6 +64,8 @@ class Battery(Component):
 
     # TODO rematch battery performance data to 18650 or similar Li-Ion battery instead of
     # outdated Ni-Mh battery
+    # TODO account for additional battery containment hardware
+    # TODO fix voltage to certain range?
 
     def __init__(self):
         """Initializes a `Battery` object
@@ -62,7 +76,7 @@ class Battery(Component):
 
         super(Battery, self).__init__()
 
-        # setup inputs
+        # setup mission characteristics
         self.add_param('des_time',
                        val=1.0,
                        desc='time until design power point',
@@ -71,12 +85,13 @@ class Battery(Component):
                        val=2.0,
                        desc='total mission time',
                        units='h')
-        self.add_param('des_power', val=7, desc='design power', units='W')
-        self.add_param('des_current', val=1, desc='design current', units='A')
+        self.add_param('des_power', val=7.0, desc='design power', units='W')
+        self.add_param('des_current', val=1.0, desc='design current', units='A')
         self.add_param('q_l',
                        val=0.1,
                        desc='discharge limit',
                        units='unitless')
+        # setup battery characteristics
         self.add_param('e_full',
                        val=1.4,
                        desc='fully charged voltage',
@@ -105,12 +120,44 @@ class Battery(Component):
                        val=0.0046,
                        desc='battery resistance',
                        units='Ohms')
+        self.add_param('cell_mass',
+                       val=170,
+                       desc='mass of a single cell',
+                       units='g')
+        self.add_param('cell_height',
+                       val=61.0,
+                       desc='height a single cylindrical cell',
+                       units='mm')
+        self.add_param('cell_diameter',
+                        val=33.0,
+                        desc='diamter of a single  cylindrical cell',
+                        units='mm')
+        # self.add_param('cell_mass_factor',
+        #                val=1.0,
+        #                desc='fudge factor for cell mass to account for additional hardware',
+        #                units='unitless')
+        # self.add_param('cell_volume_factor',
+        #                val=1.0,
+        #                desc='fudge factor for cell volume to account for additional hardware',
+        #                units='unitless')
 
         # setup outputs
         self.add_output('n_cells',
                         val=1.0,
                         desc='total number of battery cells',
                         units='unitless')
+        self.add_output('output_voltage',
+                        val=1.0,
+                        desc='output voltage of battery configuration',
+                        units='V')
+        self.add_output('battery_mass',
+                        val=1.0,
+                        desc='total mass of cells in battery configuration',
+                        units='kg')
+        self.add_output('battery_volume',
+                        val=1.0,
+                        desc='total volume of cells in battery configuration',
+                        units = 'cm**3')
 
     def solve_nonlinear(self, params, unknowns, resids):
         """Runs the `Battery` component and sets its respective outputs to their calculated results
@@ -135,8 +182,7 @@ class Battery(Component):
             params['time_of_flight'], params['des_current'])
         n_parallel = cap_discharge / (params['q_n'] * (1 - params['q_l']))
         single_bat_current = params['des_current'] / n_parallel
-        single_bat_discharge = self._calculate_total_discharge(
-            params['des_time'], params['des_current']) / n_parallel
+        single_bat_discharge = self._calculate_total_discharge(params['des_time'], params['des_current']) / n_parallel
 
         # calculate general battery performance curve paramaters
 
@@ -170,11 +216,20 @@ class Battery(Component):
 
         # total number of battery cells
         n_cells = params['des_power'] / p_bat
-
-        self.unknowns['n_cells'] = np.ceil(n_cells)
-
+        n_cells = np.ceil(n_cells)
+        n_parallel = np.ceil(n_parallel)
         # check representation invariant
         assert n_cells >= n_parallel
+
+        unknowns['n_cells'] = n_cells
+
+        # calculate volume of cells accounting for hexagonal packing efficiency of 0.9069 and convert from mm^3 to cm^3
+        unknowns['battery_volume'] = n_cells * (params['cell_height'] * np.pi * np.power(params['cell_diameter'] / 2, 2)) / 0.9069 / 1000
+
+        # calculate mass of cells and convert to kg
+        unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000
+
+        unknowns['output_voltage'] = (n_cells / n_parallel) * params['e_nom']
         self._check_rep(params, unknowns, resids)
 
     def _calculate_total_discharge(self, time, current):
@@ -225,7 +280,6 @@ class Battery(Component):
         assert params['r'] > 0
         assert unknowns['n_cells'] > 0
 
-
 if __name__ == '__main__':
     # set up problem
     root = Group()
@@ -238,3 +292,6 @@ if __name__ == '__main__':
     # print following properties
 
     print('Ncells(cells) : %f' % p['comp.n_cells'])
+    print('mass: %f' % p['comp.battery_mass'])
+    print('volume: %f' % p['comp.battery_volume'])
+    print('voltage: %f' % p['comp.output_voltage'])
