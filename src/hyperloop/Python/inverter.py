@@ -6,42 +6,36 @@ class Inverter(Component):
     def __init__(self):
         super(Inverter, self).__init__()
 
-        self.add_param('Efficiency', 1.0, desc='power out / power in')
-        self.add_param('OutputVoltage',
+        self.add_param('efficiency', 1.0, desc='power out / power in')
+        self.add_param('output_voltage',
                        120.0,
                        desc='Amplitude of AC output voltage',
-                       units='Volts')
-        self.add_param('OutputCurrent',
-                       2,
+                       units='V')
+        self.add_param('output_current',
+                       2.0,
                        desc='Amplitude of AC output current',
-                       units='Amps')
-        self.add_param('OutputFrequency',
-                       60,
+                       units='A')
+        self.add_param('output_frequency',
+                       60.0,
                        desc='Frequency of AC output',
                        units='Hz')
-        self.add_param('DesignPower',
-                       8000,
-                       desc='Design output power',
-                       units='hp')
-        self.add_param('InputVoltage',
-                       500,
-                       desc='Amplitude of AC input voltage',
-                       units='Volts')
+        self.add_param('input_voltage',
+                       20.0,
+                       desc='Amplitude of DC input voltage',
+                       units='V')
 
-        self.add_output('InputCurrent',
+
+        self.add_output('input_current',
                         0.48,
-                        desc='Amplitude of AC input current',
-                        units='Amps')
-        self.add_output('OutputPower', 12000000, units='Watts')
+                        desc='Amplitude of DC input current',
+                        units='A')
+        self.add_output('input_power', 10.0, units='W')
 
     def solve_nonlinear(self, params, unknowns, resids):
-        output_power = params['OutputVoltage'] * params[
-            'OutputCurrent'] * 3.0 * np.sqrt(2.0 / 3.0)
-        unknowns['OutputPower'] = output_power
+        output_power = params['output_voltage'] * params[
+            'output_current'] * 3.0 * np.sqrt(2.0 / 3.0)
 
         # TODO perform efficiency lookup
-        input_power = output_power / params['Efficiency']
+        unknowns['input_power'] = output_power / params['efficiency']
 
-        # negative sign because drawing current from cable
-        # needed to keep bus voltage higher than inverter rather than lower
-        unknowns['InputCurrent'] = -input_power / params['InputVoltage']
+        unknowns['input_current'] = unknowns['input_power'] / params['input_voltage']

@@ -121,7 +121,7 @@ class Battery(Component):
                        desc='battery resistance',
                        units='Ohms')
         self.add_param('cell_mass',
-                       val=170,
+                       val=170.0,
                        desc='mass of a single cell',
                        units='g')
         self.add_param('cell_height',
@@ -219,8 +219,9 @@ class Battery(Component):
         n_cells = np.ceil(n_cells)
         n_parallel = np.ceil(n_parallel)
         # check representation invariant
-        assert n_cells >= n_parallel
-
+        # assert n_cells >= n_parallel
+        # print('n_parallel: %f' % n_parallel)
+        # print('n_cells: %f' % n_cells)
         unknowns['n_cells'] = n_cells
 
         # calculate volume of cells accounting for hexagonal packing efficiency of 0.9069 and convert from mm^3 to cm^3
