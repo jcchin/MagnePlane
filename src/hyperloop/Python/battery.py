@@ -215,13 +215,14 @@ class Battery(Component):
         p_bat = v_batt * single_bat_current
 
         # total number of battery cells
-        n_cells = params['des_power'] / p_bat
-        n_cells = np.ceil(n_cells)
+        n_cells = np.ceil(params['des_power'] / p_bat)
+        # n_cells = np.ceil(n_cells)
+        # n_cells = np.max(n_cells, n_parallel)
         n_parallel = np.ceil(n_parallel)
         # check representation invariant
         # assert n_cells >= n_parallel
-        # print('n_parallel: %f' % n_parallel)
-        # print('n_cells: %f' % n_cells)
+        print('n_parallel: %f' % n_parallel)
+        print('n_cells: %f' % n_cells)
         unknowns['n_cells'] = n_cells
 
         # calculate volume of cells accounting for hexagonal packing efficiency of 0.9069 and convert from mm^3 to cm^3
@@ -231,6 +232,7 @@ class Battery(Component):
         unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000
 
         unknowns['output_voltage'] = (n_cells / n_parallel) * params['e_nom']
+        print(unknowns['output_voltage'])
         self._check_rep(params, unknowns, resids)
 
     def _calculate_total_discharge(self, time, current):

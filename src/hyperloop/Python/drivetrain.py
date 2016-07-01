@@ -26,7 +26,7 @@ class Drivetrain(Group):
         self.connect('Inverter.input_power', 'Battery.des_power')
 
         # connect Battery outputs to Inverter inputs
-        self.connect('Battery.output_voltage', 'Inverter.input_voltage')
+        # self.connect('Battery.output_voltage', 'Inverter.input_voltage')
 
         self.nl_solver = NLGaussSeidel()
         self.nl_solver.options['atol'] = 1.0e-12
@@ -59,7 +59,6 @@ if __name__ == '__main__':
 
     db = sqlitedict.SqliteDict('drivetraindb', 'openmdao')
     data = db['rank0:Driver/1']
-
 
     pprint(data['Parameters'])
     print

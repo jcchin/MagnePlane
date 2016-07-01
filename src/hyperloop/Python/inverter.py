@@ -20,7 +20,7 @@ class Inverter(Component):
                        desc='Frequency of AC output',
                        units='Hz')
         self.add_param('input_voltage',
-                       20.0,
+                       28.46,
                        desc='Amplitude of DC input voltage',
                        units='V')
 
@@ -37,5 +37,6 @@ class Inverter(Component):
 
         # TODO perform efficiency lookup
         unknowns['input_power'] = output_power / params['efficiency']
-
         unknowns['input_current'] = unknowns['input_power'] / params['input_voltage']
+        print unknowns['input_current']
+        print params['input_voltage']
