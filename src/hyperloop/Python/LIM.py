@@ -12,7 +12,7 @@ from openmdao.api import IndepVarComp, Component, Problem, Group, ScipyOptimizer
 
 class Thrust(Component):
     def __init__(self):
-        """Establishes input parameters.All of input parameters can be obtained from experimental data. X_m was derived using a regression model 
+        """Establishes input parameters.All of input parameters can be obtained from experimental data. X_m was derived using a regression model
 	to conform the data from the Thrust Force vs Slip graph in the Coreless Linear Induction Motor (CLIM) paper published by NASA Armstrong."""
         """This model also conforms to the order of amount of thrust given by propulsion_mechanics component."""
         super(Thrust, self).__init__()
@@ -143,11 +143,11 @@ if __name__ == '__main__':
     p.run()
 
     #print following properties
-    print 'phase angle : %f' % p['comp.omega']
-    print 'slip ratio : %f' % p['comp.slip_ratio']
-    print 'reactance of inductor : %f' % p['comp.reactance_of_inductor']
-    print 'omega : %f' % p['comp.omega']
-    print 'thrust : %f' % p['comp.thrust']
-    print 'V1: %f' % p['comp.V1']
+    print ('phase angle : %f' % p['comp.omega'])
+    print ('slip ratio : %f' % p['comp.slip_ratio'])
+    print ('reactance of inductor : %f' % p['comp.reactance_of_inductor'])
+    print ('omega : %f' % p['comp.omega'])
+    print ('thrust : %f' % p['comp.thrust'])
+    print ('V1: %f' % p['comp.V1'])
 
     #print 'acceleration : %f' %p['comp.a']
