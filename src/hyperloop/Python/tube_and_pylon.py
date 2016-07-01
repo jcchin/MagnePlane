@@ -157,7 +157,7 @@ class TubeAndPylon(Component):
                         val=100.0,
                         units='kg/m',
                         desc='total mass of the tube per unit length')
-        self.add_output('VonMises',
+        self.add_output('von_mises',
                         val=0.0,
                         units='Pa',
                         desc='max Von Mises Stress')
@@ -293,7 +293,7 @@ class TubeAndPylon(Component):
         sig_axial = ((dp * r) / (2 * t)) + (
             (M * r) / I_tube
         ) + alpha_tube * E_tube * dT_tube  #Calculate axial stress
-        VonMises = np.sqrt((((sig_theta**2) + (sig_axial**2) + (
+        von_mises = np.sqrt((((sig_theta**2) + (sig_axial**2) + (
             (sig_axial - sig_theta)**2)) /
                     2.0))  #Calculate Von Mises stress
         m_pylon = rho_pylon * np.pi * (r_pylon**
@@ -304,7 +304,7 @@ class TubeAndPylon(Component):
                 ((2 * (Su_pylon / sf) * np.pi * (r_pylon**2)) - m_pod * g) /
                 (m_prime * g))))
         unknowns['m_prime'] = m_prime
-        unknowns['VonMises'] = VonMises
+        unknowns['von_mises'] = von_mises
         unknowns['delta'] = (5.0 * q * (dx**4)) / (384.0 * E_tube * I_tube)
         unknowns['m_pylon'] = m_pylon
         unknowns['R'] = .5 * m_prime * dx * g + .5 * m_pod * g
@@ -323,7 +323,6 @@ if __name__ == '__main__':
               ('Su_tube', 152.0e6, {'units': 'Pa'}), ('sf', 1.5),
               ('p_ambient', 100.0, {'units': 'Pa'}),
               ('p_tunnel', 101300.0, {'units': 'Pa'}), ('v_tube', .3),
-              ('E_tube', 210.0e9, {'units': 'Pa'}),
               ('rho_tube', 7820.0, {'units': 'kg/m^3'}),
               ('rho_pylon', 2400.0, {'units': 'Pa'}),
               ('Su_pylon', 40.0e6, {'units': 'Pa'}),
@@ -333,7 +332,7 @@ if __name__ == '__main__':
     root.add('p', TubeAndPylon())
 
     root.add('con1', ExecComp(
-        'c1 = ((Su_tube/sf) - VonMises)'))  #Impose yield stress constraint for tube
+        'c1 = ((Su_tube/sf) - von_mises)'))  #Impose yield stress constraint for tube
     root.add('con2', ExecComp(
         'c2 = t - t_crit'))  #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
 
@@ -343,7 +342,7 @@ if __name__ == '__main__':
 
     root.connect('input_vars.Su_tube', 'con1.Su_tube')
     root.connect('input_vars.sf', 'con1.sf')
-    root.connect('p.VonMises', 'con1.VonMises')
+    root.connect('p.von_mises', 'con1.von_mises')
 
     root.connect('input_vars.t', 'con2.t')
     root.connect('p.t_crit', 'con2.t_crit')
@@ -383,7 +382,7 @@ if __name__ == '__main__':
     print('tube thicknes is %6.4f mm' % (top['p.t'] * (1.0e3)))
     print('mass per unit length is %6.2f kg/m' % top['p.m_prime'])
     print('vertical force on each pylon is %6.2f kN' % (top['p.R'] / (1.0e3)))
-    print('Von Mises stress is %6.3f MPa' % (top['p.VonMises'] / (1.0e6)))
+    print('Von Mises stress is %6.3f MPa' % (top['p.von_mises'] / (1.0e6)))
     print('distance between pylons is %6.2f m' % top['p.dx'])
     print('max deflection is %6.4f mm' % (top['p.delta'] * (1.0e3)))
     print('\n')
