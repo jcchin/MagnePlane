@@ -71,9 +71,12 @@ class ElectricMotor(Component):
 
     Notes
     -----
-    [1] Main Source: Georgia Tech ASDL:
-    "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications"
-    (Gladin, Ali, Collins)
+
+    References
+    ----------
+    [1] "J. Gladin, K. Ali, K. Collins, "Conceptual Modeling of Electric and Hybrid-Electric
+    Propulsion for UAS Applications," Georgia Tech, 2015.
+
     """
 
     def __init__(self):
