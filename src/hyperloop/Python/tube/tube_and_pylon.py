@@ -58,6 +58,8 @@ class TubeAndPylon(Component):
         Height of each pylon. Default value is 10 m.
     Pylon radius : float
         Radius of each pylon. Default value is 1 m. Value will be optimized in problem driver
+    Vacuum weight : float
+        Total weight of vacuums. Default value is 0 kg. Value will come from vacuum component
 
     Returns
     -------
@@ -148,6 +150,8 @@ class TubeAndPylon(Component):
 
         self.add_param('r_pylon', val=1.1, units='m', desc='inner tube radius')
 
+        self.add_param('vac_weight', val=0.0, units='kg', desc='vacuum weight')
+
         #Define outputs
         self.add_output('m_pylon',
                         val=0.0,
@@ -230,6 +234,8 @@ class TubeAndPylon(Component):
             Height of each pylon. Default value is 10 m.
         Pylon radius : float
             Radius of each pylon. Default value is 1 m. Value will be optimized in problem driver
+        Vacuum weight : float
+            Total weight of vacuums. Default value is 0 kg. Value will come from vacuum component
 
         Returns
         -------
@@ -275,6 +281,7 @@ class TubeAndPylon(Component):
         r_pylon = params['r_pylon']
         unit_cost_pylon = params['unit_cost_pylon']
         h = params['h']
+        vac_weight = params['vac_weight']
 
         #Compute intermediate variable
         q = rho_tube * np.pi * ((
