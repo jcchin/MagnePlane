@@ -1,7 +1,7 @@
-import pytest
-from hyperloop.Python import electric_motor
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod.drivetrain import electric_motor
 
 
 def create_problem(motor):

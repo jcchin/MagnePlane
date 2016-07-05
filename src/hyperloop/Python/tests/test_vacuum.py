@@ -1,7 +1,7 @@
-import pytest
-from hyperloop.Python import tube_vacuum
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.tube import tube_vacuum
 
 
 def create_problem(vac):

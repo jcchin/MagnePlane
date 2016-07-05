@@ -1,10 +1,11 @@
-from openmdao.api import ExecComp, IndepVarComp, Group, NLGaussSeidel, \
-    ScipyGMRES, Problem, ScipyOptimizer
-from hyperloop.Python.electric_motor import ElectricMotor
-from hyperloop.Python.inverter import Inverter
-from hyperloop.Python.dc_transformer import DCTransformer
-from hyperloop.Python.battery import Battery
 import numpy as np
+from hyperloop.Python.pod.drivetrain.battery import Battery
+from hyperloop.Python.pod.drivetrain.inverter import Inverter
+from openmdao.api import Group, NLGaussSeidel, \
+    ScipyGMRES, Problem
+
+from Python.pod.drivetrain.electric_motor import ElectricMotor
+
 
 # from openmdao.api.PP import PetscKSP.
 
@@ -64,10 +65,7 @@ class Drivetrain(Group):
 
 
 if __name__ == '__main__':
-    from os import remove
-    import sqlitedict
     from openmdao.api import SqliteRecorder
-    from pprint import pprint
 
     top = Problem()
     top.root = Drivetrain()

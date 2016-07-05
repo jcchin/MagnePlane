@@ -1,8 +1,9 @@
 from __future__ import print_function
-import pytest
-from hyperloop.Python import inverter
+
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod.drivetrain import inverter
 
 
 def create_problem(inverter):
