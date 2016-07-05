@@ -1,7 +1,7 @@
-import pytest
-from src.hyperloop.Python import pod_mach
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod import pod_mach
 
 
 def create_problem(component):

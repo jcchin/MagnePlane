@@ -1,9 +1,8 @@
 from __future__ import print_function
-import pytest
-from src.hyperloop.Python.drivetrain import Drivetrain
 
-import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod.drivetrain.drivetrain import Drivetrain
 
 
 def create_problem(comp):

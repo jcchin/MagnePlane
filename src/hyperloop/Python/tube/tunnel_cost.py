@@ -9,7 +9,7 @@ from openmdao.core.group import Group
 from openmdao.core.component import Component
 import math
 from collections import namedtuple
-from .tools import io_helper
+from Python.tools import io_helper
 
 
 class DefaultsHandler(object):

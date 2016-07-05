@@ -1,8 +1,9 @@
 from __future__ import print_function
-import pytest
-from hyperloop.Python import inverter
+
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod.drivetrain import inverter
 
 
 def create_problem(inverter):
@@ -18,34 +19,32 @@ class TestInverter(object):
         prob = create_problem(inverter.Inverter())
         prob.setup()
 
-        prob['comp.Efficiency'] = 0.704995
-        prob['comp.DesignPower'] = 8000
-        prob['comp.OutputVoltage'] = 10.1528
-        prob['comp.OutputCurrent'] = 11.0613
-        prob['comp.InputVoltage'] = 24
-        prob['comp.OutputFrequency'] = 200
+        prob['comp.efficiency'] = 0.704995
+        prob['comp.output_voltage'] = 10.1528
+        prob['comp.output_current'] = 11.0613
+        prob['comp.input_voltage'] = 24
+        prob['comp.output_frequency'] = 200
 
         prob.run()
 
-        assert np.isclose(prob['comp.OutputPower'], 275.085454767, rtol=0.001)
-        assert np.isclose(prob['comp.InputCurrent'],
-                          -16.2581209067,
+        assert np.isclose(prob['comp.input_power'], 390.1949, rtol=0.001)
+        assert np.isclose(prob['comp.input_current'],
+                          16.2581209067,
                           rtol=0.001)
 
     def test_case2_vs_npss(self):
         prob = create_problem(inverter.Inverter())
         prob.setup()
 
-        prob['comp.Efficiency'] = 0.85
-        prob['comp.DesignPower'] = 8000
+        prob['comp.efficiency'] = 0.85
 
-        prob['comp.OutputVoltage'] = 15
-        prob['comp.OutputCurrent'] = 30
-        prob['comp.InputVoltage'] = 60
+        prob['comp.output_voltage'] = 15
+        prob['comp.output_current'] = 30
+        prob['comp.input_voltage'] = 60
 
-        prob['comp.OutputFrequency'] = 200
+        prob['comp.output_frequency'] = 200
 
         prob.run()
 
-        assert np.isclose(prob['comp.OutputPower'], 1102.27, rtol=0.001)
-        assert np.isclose(prob['comp.InputCurrent'], -21.6131, rtol=0.001)
+        assert np.isclose(prob['comp.input_power'], 1296.78, rtol=0.001)
+        assert np.isclose(prob['comp.input_current'], 21.6131, rtol=0.001)

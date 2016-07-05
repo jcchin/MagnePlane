@@ -2,6 +2,7 @@ import numpy as np
 from openmdao.api import Component, Problem, Group
 
 
+
 class CompressorWeight(Component):
     """The CompressorWeight class represents a compressor weight component
         in an OpenMDAO model.
@@ -53,8 +54,14 @@ class CompressorWeight(Component):
                        val=317.52,
                        desc='Mass Flow Rate',
                        units='kg/s')
-        self.add_param('h_in', val=0., desc='Heat-in', units='kJ/kg')
-        self.add_param('h_out', val=486.13, desc='Heat-out', units='kJ/kg')
+        self.add_param('h_in',
+                       val=0.,
+                       desc='Heat-in',
+                       units='kJ/kg')
+        self.add_param('h_out',
+                       val=486.13,
+                       desc='Heat-out',
+                       units='kJ/kg')
         self.add_param('comp_inletR',
                        val=0.64,
                        desc='Compressor Inlet Radius',
@@ -93,14 +100,61 @@ class CompressorWeight(Component):
             (mass_flow * (h_out - h_in)) / (comp_eff / 100)) + 37.15
 
 
+
+class PodWeight(Component):
+    def __init__(self):
+        super(PodWeight, self).__init__()
+        self.add_param('mag_weight',
+                        val=1.,
+                        desc='Mass of permanent magnets',
+                        units='kg')
+        self.add_param('podgeo_weight',
+                       val=1.,
+                       desc='Mass of permanent magnets',
+                       units='kg')
+        self.add_param('motor_weight',
+                       val=1.,
+                       desc='Mass of motor',
+                       units='kg')
+        self.add_param('battery_weight',
+                       val=1.,
+                       desc='Mass of battery',
+                       units='kg')
+        self.add_param('comp_weight',
+                       val=1.,
+                       desc='Compressor Weight',
+                       units='kg')
+
+        self.add_output('pod_weight',
+                       val=1.,
+                       desc='Pod Mass',
+                       units='kg')
+
+
+    def solve_nonlinear(self, params, unknowns, resids):
+        mag_weight = params['mag_weight']
+        podgeo_weight = params['podgeo_weight']
+        motor_weight = params['motor_weight']
+        battery_weight = params['battery_weight']
+        comp_weight = params['comp_weight']
+
+
+        unknowns['pod_weight'] = mag_weight + podgeo_weight + motor_weight + battery_weight + comp_weight
+
+
+
+
 if __name__ == '__main__':
     # set up problem.
     root = Group()
     prob = Problem(root)
-    prob.root.add('comp', CompressorWeight())
+    prob.root.add('comp1', CompressorWeight())
+    prob.root.add('comp2', PodWeight())
+    prob.root.connect('comp1.comp_weight', 'comp2.comp_weight')
     prob.setup()
     prob.root.list_connections()
     prob.run()
 
     # prints the following results.
-    print('Compressor Weight(kg) : %f' % prob['comp.comp_weight'])
+    print('Compressor Weight(kg) : %f' % prob['comp1.comp_weight'])
+    print('Pod Weight(kg) : %f' % prob['comp2.pod_weight'])

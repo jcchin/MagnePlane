@@ -1,7 +1,7 @@
-import pytest
-from src.hyperloop.Python import mission_drag
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.mission import mission_drag
 
 
 def create_problem(component):
