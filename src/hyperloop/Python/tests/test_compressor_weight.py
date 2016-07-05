@@ -1,7 +1,7 @@
-import pytest
-from hyperloop.Python import compressor_weight
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod import compressor_weight
 
 
 def create_problem(compressor, pod):

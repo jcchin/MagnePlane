@@ -2,12 +2,12 @@
 Test for breakpointlev.py. Uses test values and outputs given by
 the laminated sheet experiment in [1].
 """
-import pytest
-from hyperloop.Python import levitation_group
 from math import pi
 
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod.magnetic_levitation import levitation_group
 
 
 def create_problem(GroupName):

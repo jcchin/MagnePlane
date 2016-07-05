@@ -3,7 +3,8 @@ Group containing the breakpointlev.py classes Drag and Mass
 """
 
 from openmdao.api import Group, Problem, IndepVarComp
-from hyperloop.Python.breakpoint_levitation import BreakPointDrag, MagMass
+
+from Python.pod.magnetic_levitation.breakpoint_levitation import BreakPointDrag, MagMass
 
 
 class LevGroup(Group):

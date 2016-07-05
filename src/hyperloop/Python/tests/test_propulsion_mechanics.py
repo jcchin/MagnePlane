@@ -1,7 +1,7 @@
-import pytest
-from src.hyperloop.Python import propulsion_mechanics
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod import propulsion_mechanics
 
 
 def create_problem(component):
