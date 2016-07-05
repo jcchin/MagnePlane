@@ -71,9 +71,12 @@ class ElectricMotor(Component):
 
     Notes
     -----
-    [1] Main Source: Georgia Tech ASDL:
-    "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications"
-    (Gladin, Ali, Collins)
+
+    References
+    ----------
+    [1] "J. Gladin, K. Ali, K. Collins, "Conceptual Modeling of Electric and Hybrid-Electric
+    Propulsion for UAS Applications," Georgia Tech, 2015.
+
     """
 
     def __init__(self):
@@ -89,7 +92,7 @@ class ElectricMotor(Component):
                        desc='max rpm of motor',
                        units='rpm')
         self.add_param('design_power',
-                       val=110000.0 / 746.0,
+                       val=0.00938 / 746.0,
                        desc='Design value of motor',
                        units='hp')
         self.add_param('speed',
