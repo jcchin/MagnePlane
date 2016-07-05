@@ -20,13 +20,13 @@ class TestVac(object):
 
         prob.setup()
 
-        prob['comp.v'] = 23
-        prob['comp.R'] = 0.019269
-        prob['comp.L'] = 3.59023e-6
-        prob['comp.Fyu'] = 29430.0
+        prob['comp.vel'] = 23
+        prob['comp.track_res'] = 0.019269
+        prob['comp.track_ind'] = 3.59023e-6
+        prob['comp.fyu'] = 29430.0
         prob['comp.lam'] = 0.125658
 
         prob.run()
 
-        print('magdrag is %f' % prob['comp.magdraglev'])
-        assert np.isclose(prob['comp.magdraglev'], 137342.0, rtol=.001)
+        print('magdrag is %f' % prob['comp.mag_drag'])
+        assert np.isclose(prob['comp.mag_drag'], 137342.0, rtol=.001)
