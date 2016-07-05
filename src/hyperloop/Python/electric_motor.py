@@ -92,7 +92,7 @@ class ElectricMotor(Component):
                        desc='max rpm of motor',
                        units='rpm')
         self.add_param('design_power',
-                       val=110000.0 / 746.0,
+                       val=0.00938 / 746.0,
                        desc='Design value of motor',
                        units='hp')
         self.add_param('speed',
