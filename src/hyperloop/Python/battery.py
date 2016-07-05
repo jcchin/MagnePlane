@@ -53,12 +53,20 @@ class Battery(Component):
     battery_volume : float
         total volume of cells in battery configuration (cm^3)
 
-    References
+    Notes
     -----
+
+    Battery cost based on purchase of 1000 bateries from ecia ([3]_) price listing
+
+    References
+    ----------
+
     .. [1] Gladin, Ali, Collins, "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications"
        Georgia Tech, 2015
 
     .. [2] D. N. Mavris, "Subsonic Ultra Green Aircraft Research - Phase II," NASA Langley Research Center, 2014
+
+    .. [3] eciaauthorized.com/search/HHR650D
 
     """
 
@@ -86,7 +94,10 @@ class Battery(Component):
                        desc='total mission time',
                        units='h')
         self.add_param('des_power', val=7.0, desc='design power', units='W')
-        self.add_param('des_current', val=1.0, desc='design current', units='A')
+        self.add_param('des_current',
+                       val=1.0,
+                       desc='design current',
+                       units='A')
         self.add_param('q_l',
                        val=0.1,
                        desc='discharge limit',
@@ -121,7 +132,7 @@ class Battery(Component):
                        desc='battery resistance',
                        units='Ohms')
         self.add_param('cell_mass',
-                       val=170,
+                       val=170.0,
                        desc='mass of a single cell',
                        units='g')
         self.add_param('cell_height',
@@ -129,9 +140,9 @@ class Battery(Component):
                        desc='height a single cylindrical cell',
                        units='mm')
         self.add_param('cell_diameter',
-                        val=33.0,
-                        desc='diamter of a single  cylindrical cell',
-                        units='mm')
+                       val=33.0,
+                       desc='diamter of a single  cylindrical cell',
+                       units='mm')
         # self.add_param('cell_mass_factor',
         #                val=1.0,
         #                desc='fudge factor for cell mass to account for additional hardware',
@@ -147,7 +158,7 @@ class Battery(Component):
                         desc='total number of battery cells',
                         units='unitless')
         self.add_output('output_voltage',
-                        val=1.0,
+                        val=1000.0,
                         desc='output voltage of battery configuration',
                         units='V')
         self.add_output('battery_mass',
@@ -157,7 +168,11 @@ class Battery(Component):
         self.add_output('battery_volume',
                         val=1.0,
                         desc='total volume of cells in battery configuration',
-                        units = 'cm**3')
+                        units='cm**3')
+        self.add_output('battery_cost',
+                        val=1.0,
+                        desc='total materials cost of battery configuration',
+                        units='$')
 
     def solve_nonlinear(self, params, unknowns, resids):
         """Runs the `Battery` component and sets its respective outputs to their calculated results
@@ -178,13 +193,21 @@ class Battery(Component):
         # check representation invariant
         self._check_rep(params, unknowns, resids)
 
+        # FIXME using ceiling for cell calculations, despite advice against
+        # need to change to proper way of constraining to integer values as
+        # battery falls apart for n_paralell < 0 (i.e. if n_paralell = 0.01 and
+        # not 1.0, then we get absurd output voltage levels
+
         cap_discharge = self._calculate_total_discharge(
             params['time_of_flight'], params['des_current'])
         n_parallel = cap_discharge / (params['q_n'] * (1 - params['q_l']))
         single_bat_current = params['des_current'] / n_parallel
-        single_bat_discharge = self._calculate_total_discharge(params['des_time'], params['des_current']) / n_parallel
+        single_bat_discharge = self._calculate_total_discharge(
+            params['des_time'], params['des_current']) / n_parallel
 
         # calculate general battery performance curve paramaters
+        # TODO calculate performance curve parameters from Panasonic 18650
+        # battery, currently using parameters from SUGAR paper
 
         # voltage drop over exponential zone
         # a = params['params['e_full']'] - params['e_exp']
@@ -192,15 +215,19 @@ class Battery(Component):
         # discharge of single cell from full to end of exponential zone
         q_exp = self._calculate_total_discharge(
             params['t_exp'], params['des_current']) / n_parallel
+
         # time constant of the exponential zone
         # b = 3 / q_exp
         b = 2.3077
+
         # discharge over the nominal zone
         q_nom = self._calculate_total_discharge(
             params['t_nom'], params['des_current']) / n_parallel
+
         # polarization voltage
         # k = (params['params['e_full']'] - params['e_nom'] + a * (np.exp(-b * q_nom) - 1)) * (params['q_n'] - q_nom)
         k = 0.01875
+
         # no load constant voltage of battery
         # k = polarization voltage, params['r'] = resistance,
         # e_0 = params['params['e_full']'] + k + params['r'] * single_bat_current - a
@@ -218,18 +245,26 @@ class Battery(Component):
         n_cells = params['des_power'] / p_bat
         n_cells = np.ceil(n_cells)
         n_parallel = np.ceil(n_parallel)
-        # check representation invariant
+        n_series = np.ceil(n_cells / n_parallel)
+
         assert n_cells >= n_parallel
 
         unknowns['n_cells'] = n_cells
 
         # calculate volume of cells accounting for hexagonal packing efficiency of 0.9069 and convert from mm^3 to cm^3
-        unknowns['battery_volume'] = n_cells * (params['cell_height'] * np.pi * np.power(params['cell_diameter'] / 2, 2)) / 0.9069 / 1000
+        unknowns['battery_volume'] = n_cells * (
+            params['cell_height'] * np.pi * np.power(params['cell_diameter'] /
+                                                     2, 2)) / 0.9069 / 1000
 
         # calculate mass of cells and convert to kg
         unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000
 
-        unknowns['output_voltage'] = (n_cells / n_parallel) * params['e_nom']
+        # calculate output voltage of battery in the nominal zone
+        unknowns['output_voltage'] = n_series * params['e_nom']
+
+        unknowns['battery_cost'] = n_cells * 12.95
+
+        # check representation invariant
         self._check_rep(params, unknowns, resids)
 
     def _calculate_total_discharge(self, time, current):
@@ -280,6 +315,7 @@ class Battery(Component):
         assert params['r'] > 0
         assert unknowns['n_cells'] > 0
 
+
 if __name__ == '__main__':
     # set up problem
     root = Group()
@@ -295,3 +331,4 @@ if __name__ == '__main__':
     print('mass: %f' % p['comp.battery_mass'])
     print('volume: %f' % p['comp.battery_volume'])
     print('voltage: %f' % p['comp.output_voltage'])
+    print('cost : %f' % p['comp.battery_cost'])
