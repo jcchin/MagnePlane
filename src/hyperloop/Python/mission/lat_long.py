@@ -47,7 +47,3 @@ if __name__ == '__main__':
 
 	print('\n')
 	print('Point is at %f degrees N and %f degrees E' % (top['p.lat'], top['p.long']))
-
-
-
-
