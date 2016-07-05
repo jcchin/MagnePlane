@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import lat_long
+from src.hyperloop.Python.mission import lat_long
 import numpy as np
 from openmdao.api import Group, Problem
 
