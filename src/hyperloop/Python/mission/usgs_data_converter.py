@@ -37,7 +37,9 @@ for i, (lon, lat, z) in enumerate(data):
     Latitude[i_lat, i_lon] = lat
     Elevation[i_lat, i_lon] = z
 
-np.savez('usgs_data', xx=Longitude, yy=Latitude, zz=Elevation)
+unique_long = Longitude[0, :]
+unique_lat = Latitude[:, 0]
+np.savez('usgs_data', Longitude = unique_long, Latitude = unique_lat, Elevation = Elevation)
 
 fig, ax = plt.subplots()
 contour_data = ax.contourf(Longitude, Latitude, Elevation)

@@ -26,10 +26,12 @@ class TerrainElevationComp(EOMComp):
         #usgs_file.files['xx', 'yy', 'zz']
         usgs_file = np.load('usgs_data.npz')
 
+        print(usgs_file['Longitude'])
+
         self.add_output('elev', shape=(nn,), desc='terrain elevation at the given point', units='m/s/s')
         self.add_output('alt', shape=(nn,), desc='ground-relative altitude of the track', units='m')
 
-        self.interpolant = interpolate.RectBivariateSpline(usgs_file['xx'], usgs_file['yy'], usgs_file['zz'])
+        self.interpolant = interpolate.RectBivariateSpline(usgs_file['Longitude'], usgs_file['Latitude'], usgs_file['Elevation'])
     
     def solve_nonlinear(self, params, unknowns, resids):
         #convert x/y to lat/lon, then feed into interpolant
