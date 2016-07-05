@@ -3,7 +3,7 @@ Group for Tube components containing the following components:
 Vacuum, Tube Temperature, Tube and Pylon (structural), Propulsion Mechanics, Tube Power
 """
 
-from openmdao.api import Component, Problem, Group
+from openmdao.api import IndepVarComp,Component, Problem, Group
 
 from hyperloop.Python.tube_vacuum import Vacuum
 from hyperloop.Python.OldMagnePlaneCode.tube_wall_temp import TubeTemp
@@ -11,20 +11,12 @@ from hyperloop.Python.tube_and_pylon import TubeAndPylon
 from hyperloop.Python.propulsion_mechanics import PropulsionMechanics
 from hyperloop.Python.tube_power import TubePower
 
-"""imports from Pod group
----------
-
-Geometry: (to Therm), cross sectional area, planform area, length(to Propulsion)
-Mag Group: Dmag (to Propulsion)
-Weight: total weight(to Structure/to Propulsion)
-
-"""
 
 class TubeGroup(Group):
     def __init__(self):
         super(TubeGroup, self).__init__()
 
-        self.add('User_in',IndepVarComp())
+        #self.add('User_in',IndepVarComp())
 
         self.add('Tube', TubeGroup())
         self.add('Vacuum', Vacuum())
@@ -47,19 +39,15 @@ if __name__ == "__main__":
     prob = Problem()
     root = prob.root = Group()
 
-    """
-    root.add('Tube', TubeGroup())
-    root.add('Cycle', CompressionCycle())
-    root.add('Aero',PodMach())
-    root.add('Geom',Geometry())
-    root.add('LevGroup',LevGroup())
-    root.add('Weight',Weight())
-
-    root.add('PodGroup',PodGroup())
-    """
-
     prob.setup()
     prob.root.list_connections()
     prob.run()
 
+    """
     print('Tube Temperature: %f' % prob['Tube.Thermal.tubetemp'])
+    print(':%f' % prob['Cycle.'])
+    print(':%f' % prob['Aero.'])
+    print('%f' % prob['Geometry.'])
+    print('%f' % prob['LevGroup.'])
+    print('%f' % prob['Weight.'])
+    """
