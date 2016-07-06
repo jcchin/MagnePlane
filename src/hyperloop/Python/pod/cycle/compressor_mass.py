@@ -1,6 +1,6 @@
 from __future__ import print_function
 import numpy as np
-from openmdao.api import Component
+from openmdao.api import Component, Problem, Group
 
 class CompressorMass(Component):
     """The CompressorMass class represents a compressor mass component
@@ -98,5 +98,14 @@ class CompressorMass(Component):
         unknowns['comp_mass'] = 299.2167 * comp_inletArea + 0.007418 * (
             (mass_flow * (h_out - h_in)) / (comp_eff / 100)) + 37.15
 
+if __name__ == "__main__":
+    top = Problem()
+    root = top.root = Group()
 
+    root.add('CompressorMass', CompressorMass())
+
+    top.setup()
+    top.run()
+
+    print('Comp_Mass %f' % top['CompressorMass.comp_mass'])
 
