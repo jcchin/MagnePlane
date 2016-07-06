@@ -9,7 +9,7 @@ from hyperloop.Python.pod.propulsion_mechanics import PropulsionMechanics
 from hyperloop.Python.tube.tube_and_pylon import TubeAndPylon
 from hyperloop.Python.tube.tube_power import TubePower
 from hyperloop.Python.tube.tube_vacuum import Vacuum
-from hyperloop.Python.tube_wall_temp import TempBalance, TubeWallTemp
+from hyperloop.Python.tube.tube_wall_temp import TempBalance, TubeWallTemp
 
 class TubeGroup(Group):
     def __init__(self):
@@ -27,7 +27,7 @@ class TubeGroup(Group):
 
         self.connect('TubeWallTemp.ss_temp_residual', 'Struct.dT_tube')
         self.connect('TempBalance.temp_boundary', 'PropMech.T_ambient')
-        self.connect('TempBalance.temp_boundary', 'TubePower.tube_temp')
+        #self.connect('TempBalance.temp_boundary', 'TubePower.tube_temp')
 
         self.connect('PropMech.pwr_req', 'TubePower.prop_power')
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     top.root.list_connections()
     top.run()
 
-    """
+
     print('Vacuum.weighttot:%f' % top['Vacuum.weighttot'])
     print('Struct.vac_weight: %f' % top['Struct.vac_weight'])
     print('Vacuum.totpwr %f' % top['Vacuum.totpwr'])
@@ -52,4 +52,4 @@ if __name__ == "__main__":
     print('TubePower.prop_power: %f' %top['TubePower.prop_power'])
 
     print('Total Power: %f' % top['TubePower.tot_power'])
-    """
+
