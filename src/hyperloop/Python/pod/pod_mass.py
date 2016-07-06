@@ -14,7 +14,7 @@ class PodMass(Component):
                        units='kg')
         self.add_param('motor_mass',
                        val=1.,
-                       desc='Mass of motor',
+                       desc='Mass of motor',-
                        units='kg')
         self.add_param('battery_mass',
                        val=1.,
