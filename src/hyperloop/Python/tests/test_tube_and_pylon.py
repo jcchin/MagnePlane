@@ -1,7 +1,7 @@
-import pytest
-from src.hyperloop.Python import tube_and_pylon
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.tube import tube_and_pylon
 
 
 def create_problem(component):

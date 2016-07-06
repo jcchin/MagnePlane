@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 """
 Test for magnetic_drag.py. Uses test values and outputs given by
 the laminated sheet experiment in [1].
 """
 import pytest
 from hyperloop.Python import magnetic_drag
+=======
+>>>>>>> NASA_MARTI/master
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod.magnetic_levitation import magnetic_drag
 
 
 def create_problem(magdrag):
