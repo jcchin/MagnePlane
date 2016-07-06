@@ -98,9 +98,6 @@ class FlowPath(Group):
         self.connect('comp.trq', 'shaft.trq_0')
         self.connect('shaft.Nmech', 'comp.Nmech')
 
-
-
-
 if __name__ == "__main__":
 
     prob = Problem()

@@ -62,7 +62,7 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.vehicleMach', 'Cycle.FlowPath.fl_start.MN_target')
     prob.root.connect('des_vars.inlet_MN', 'Cycle.FlowPath.inlet.MN_target')
 
-    prob.setup(check=True)
+    prob.setup()
     prob.root.list_connections()
     prob.run()
 

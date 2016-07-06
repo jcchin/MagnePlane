@@ -1,5 +1,5 @@
 from openmdao.api import Component, Group, Problem
-from hyperloop.Python.pod.compressor_mass import CompressorMass
+from hyperloop.Python.pod.cycle.compressor_mass import CompressorMass
 
 class PodMass(Component):
     def __init__(self):
@@ -14,7 +14,7 @@ class PodMass(Component):
                        units='kg')
         self.add_param('motor_mass',
                        val=1.,
-                       desc='Mass of motor',-
+                       desc='Mass of motor',
                        units='kg')
         self.add_param('battery_mass',
                        val=1.,
