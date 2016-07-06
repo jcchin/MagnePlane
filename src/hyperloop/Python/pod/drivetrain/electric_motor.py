@@ -10,29 +10,52 @@ from openmdao.api import Component, Problem, Group, ScipyOptimizer, IndepVarComp
 # from openmdao.api import pyOptSparseDriver
 # from openmdao.drivers.pyoptsparse_driver import pyOptSparseDriver
 
+class MotorSolver(Component):
+
+    def __init__(self):
+        super(MotorSolver, self).__init__()
+
+        self.add_state('I0',
+                       val=0.0,
+                       desc='motor no load current',
+                       units='A')
+        self.add_param('power_input',
+                        0.0,
+                        desc='total power input into motor',
+                        units='W')
+        self.add_param('current', val=2.0, desc='total current through motor', units='A')
+        self.add_param('voltage', val=500.0, desc='total voltage through motor', units='V')
+
+
+    def solve_nonlinear(self, params, unknowns, resids):
+        pass
+
+    def apply_nonlinear(self, params, unknowns, resids):
+        resids['I0'] = params['current'] * params['voltage'] - params['power_input']
+
 class MotorGroup(Group):
     def __init__(self):
         super(MotorGroup, self).__init__()
 
-        self.add('Indep_R0', IndepVarComp('R0', 0.004), promotes=['R0'])
         self.add('Indep_I0', IndepVarComp('I0', 0.0), promotes=['I0'])
 
         self.add('MotorLoss', MotorLoss(), promotes=['*'])
         self.add('Motor', Motor(), promotes=['*'])
         self.add('MotorSize', MotorSize(), promotes=['*'])
+        self.add('MotorSolvebr', MotorSolver(), promotes=['*'])
         self.add('init_vars', IndepVarComp('imax', 500.0), promotes=['imax'])
 
         # Finite Difference
         self.deriv_options['type'] = 'fd'
-        self.deriv_options['form'] = 'forward'
-        self.deriv_options['step_size'] = 1.0e-12
+        # self.deriv_options['form'] = 'forward'
+        self.deriv_options['step_size'] = 1.0e-3
 
-        self.add('obj_1', ExecComp('obj = alpha * (R0 - R_calc) + (1-alpha) * (current * voltage - power_input)', alpha = 1.0), promotes=['*'])
-
-        # self.add('obj_2', ExecComp('obj = current * voltage - power_input'))
-
-        self.add('con_1', ExecComp('con1 = current * voltage'), promotes=['*'])
-        self.add('con_2', ExecComp('con2 = power_input'), promotes=['*'])
+        # self.add('obj_1', ExecComp('obj = alpha * (R0 - R_calc) + (1-alpha) * (current * voltage - power_input)', alpha = 1.0), promotes=['*'])
+        #
+        # # self.add('obj_2', ExecComp('obj = current * voltage - power_input'))
+        #
+        # self.add('con_1', ExecComp('con1 = current * voltage'), promotes=['*'])
+        # self.add('con_2', ExecComp('con2 = power_input'), promotes=['*'])
         # self.add('con_3', ExecComp('con1 = R0'), promotes=['*'])
         # self.add('con_4', ExecComp('con1 = R_calc'), promotes=['*'])
 
@@ -305,7 +328,7 @@ class Motor(Component):
                        val=0.0,
                        desc='motor no load current',
                        units='A')
-        self.add_param('R0',
+        self.add_param(R_calc,
                        val=0.004,
                        desc='motor resistance',
                        units='A')
@@ -339,7 +362,7 @@ class Motor(Component):
         # print(unknowns['voltage'])
         # print(unknowns['frequency'])
         print(params['I0'])
-        print(params['R0'])
+        print(params[R_calc])
         print()
 
 
@@ -349,7 +372,7 @@ class Motor(Component):
         #Calculating phase current, phase voltage, frequency, and phase
         unknowns['current'] = params['I0'] + params['torque'] / k_t
         unknowns['phase_current'] = unknowns['current'] / params['n_phases']
-        voltage = unknowns['current']*params['R0'] + params['woperating'] / k_v
+        voltage = unknowns['current']*params[R_calc] + params['woperating'] / k_v
         unknowns['phase_voltage'] = voltage * np.sqrt(3.0/2.0)
         unknowns['frequency'] = params['woperating'] / np.pi * params['pole_pairs'] / 60.0
 
@@ -377,20 +400,20 @@ if __name__ == '__main__':
 
     prob = Problem()
     prob.root = MotorGroup()
-    prob.driver = ScipyOptimizer()
-    prob.driver.options['optimizer'] = 'SLSQP'
-    prob.driver.options['tol'] = 1.0e-5
+    # prob.driver = ScipyOptimizer()
+    # prob.driver.options['optimizer'] = 'SLSQP'
+    # prob.driver.options['tol'] = 1.0e-5
 
 
-    prob.driver.add_desvar('I0', lower=0.0)
-    prob.driver.add_desvar('R0', lower=0.0)
+    # prob.driver.add_desvar('I0', lower=0.0)
+    # prob.driver.add_desvar(R_calc, lower=0.0)
 
-    prob.driver.add_objective('obj')
-    # print(pr)
-    # prob.driver.add_objective('obj_2')
-
-    prob.driver.add_constraint('con1', lower=0.0)
-    prob.driver.add_constraint('con2', lower=0.0)
+    # prob.driver.add_objective('obj')
+    # # print(pr)
+    # # prob.driver.add_objective('obj_2')
+    #
+    # prob.driver.add_constraint('con1', lower=0.0)
+    # prob.driver.add_constraint('con2', lower=0.0)
 
 
 
@@ -407,22 +430,22 @@ if __name__ == '__main__':
     print(prob['obj'])
     print(prob['alpha'])
     print(prob['I0'])
-    print(prob['R0'])
+    # print(prob[R_calc])
     print(prob['current'])
     print(prob['voltage'])
     print(prob['power_input'])
 
 
-    # view_tree(prob)
+    view_tree(prob)
     prob.run()
 
     db = SqliteDict('drivetraindb', 'openmdao')
     pprint(db.keys())
-    data = db['rank0:SLSQP/1']
+    data = db['rank0:Driver/1']
     pprint(data['Parameters'])
     pprint(data['Unknowns'])
 
-    data = db['rank0:SLSQP/2'].keys()
+    data = db['rank0:SLSQP/2']
 
     # pprint(db)
     pprint(data['Parameters'])
@@ -433,33 +456,5 @@ if __name__ == '__main__':
     prob.cleanup()
     remove('drivetraindb')
 
-
-    # print(prob['comp.imax'])
-
-    # # Printing various input parameters
-    # print('kappa: %f' % prob['comp.KAPPA'])
-    # print('imax [A]: %f' % prob['comp.imax'])
-    # print('Max RPM: %f' % prob['comp.max_rpm'])
-    # print('Design Power [hp]: %f' % prob['comp.design_power'])
-    # print('LD Ratio:%f' % prob['comp.L_D_RATIO'])
-    # print('I0 [A]: %f' % prob['comp.i0'])
-    # print('Torque [N*m]: %f' % prob['comp.torque'])
-    #
-    # print('-----------------------------')
-    #
-    # # Outputs
-    # print('Max Torque [N*m]: %f' % prob['comp.tmax'])
-    # print('Kv [rad/s/V]: %f' % prob['comp.k_v'])
-    # print('Kt [N-m/A]: %f' % prob['comp.k_t'])
-    # print('Motor Size (D^2*L) [mm^3]: %f ' % prob['comp.d2l'])
-    # print('Motor Size (D^2*L) [ft^3]: %f ' % prob['comp.d2l_ft'])
-    # #print('Diameter [m]: %f ' %prob['comp.d_base'])
-    # #print('Lengt
-    # # h [m]: %f ' %prob['comp.l_base'])
-    # print('Motor Weight [kg]: %f ' % prob['comp.weight'])
-    # print('Phase Current [A]: %f' % prob['comp.phase_current'])
-    # print('Phase Voltage [V]: %f' % prob['comp.phase_voltage'])
-    # print('Frequency [Hz]: %f ' % prob['comp.frequency'])
-    # print('Phase: %f' % prob['comp.phase'])
 
 
