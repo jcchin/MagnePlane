@@ -160,7 +160,6 @@ if __name__ == "__main__":
     prob['FlowPath.shaft.Nmech'] = 10000.
 
     #prob.print_all_convergence()
-if __name__ == "__main__":
     import time
     t = time.time()
     prob.run()
@@ -289,3 +288,4 @@ if __name__ == "__main__":
     #pprint(u) # print all outputs
     prob.cleanup()
     remove('./FlowPathdb')
+    quit()
