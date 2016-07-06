@@ -95,7 +95,7 @@ class Vacuum(Component):
         self.add_output('totpwr',
                         1.0,
                         desc='total power consumption',
-                        units='kw')
+                        units='kW')
         self.add_output('n', 1.0, desc='number of pumps')
         self.add_output('volft',
                         2.0,
