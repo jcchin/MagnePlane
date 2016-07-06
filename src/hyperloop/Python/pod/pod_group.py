@@ -1,6 +1,6 @@
 """
 Group for Pod components containing the following components:
-Vehicle Cycle, Pod Mach (Aero), DriveTrain group, Geometry, Levitation group, and Weight
+Cycle Group, Pod Mach (Aero), DriveTrain group, Geometry, Levitation group, and Pod Mass
 """
 from openmdao.api import Group
 from hyperloop.Python.pod.pod_mass import PodMass
