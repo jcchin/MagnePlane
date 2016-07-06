@@ -1,31 +1,44 @@
-import pytest
-from hyperloop.Python import battery
-import numpy as np
-from openmdao.api import Group, Problem, Newton, ScipyGMRES, NLGaussSeidel
+from __future__ import print_function
 
-def create_problem(batt):
+import numpy as np
+from openmdao.api import Group, Problem
+
+from Python.pod.drivetrain import battery
+
+
+def create_problem(battery):
     root = Group()
     prob = Problem(root)
-    prob.root.add('Group', batt)
-    prob.root.deriv_options['type'] = 'fd'
-    prob.root.nl_solver = Newton()
-    prob.root.ln_solver = ScipyGMRES()
+    prob.root.add('comp', battery)
     return prob
 
+
 class TestBattery(object):
+    def test_case1_vs_hand_calc(self):
 
-    def test_case1(self):
-
-        batt = battery.battery()
-
-        prob = create_problem(batt)
+        prob = create_problem(battery.Battery())
         prob.setup()
 
-        prob['Group.batteryP.DesPower'] = 65000.0
-        prob['Group.batteryP.FlightTime'] = 750.0
-        prob['Group.batteryP.StackDesignVoltage'] = 300.0
+        prob['comp.des_time'] = 1.0
+        prob['comp.time_of_flight'] = 2.0
+        prob['comp.des_power'] = 7.0
+        prob['comp.des_current'] =1.0
+        prob['comp.q_l'] =0.1
+        prob['comp.e_full'] =1.4
+        prob['comp.e_nom'] = 1.2
+        prob['comp.e_exp'] =1.27
+        prob['comp.q_n'] =6.8
+        prob['comp.t_exp'] =1.0
+        prob['comp.t_nom'] =4.3
+        prob['comp.r'] =0.0046
+        prob['comp.cell_mass'] =170
+        prob['comp.cell_height'] =61.0
+        prob['comp.cell_diameter'] =33.0
 
         prob.run()
 
-        assert np.isclose(prob['Group.batteryWeight.StackWeight'], 168.600, rtol=0.001)
-        assert np.isclose(prob['Group.batteryWeight.StackVol'], 32247.1375, rtol=0.001)
+        assert np.isclose(prob['comp.n_cells'], 2.0, rtol=0.001)
+        assert np.isclose(prob['comp.output_voltage'], 2.4, rtol=0.001)
+        assert np.isclose(prob['comp.battery_mass'], 0.34, rtol=0.001)
+        assert np.isclose(prob['comp.battery_volume'], 115.0583, rtol=0.001)
+

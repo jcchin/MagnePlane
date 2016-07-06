@@ -1,7 +1,7 @@
-import pytest
-from src.hyperloop.Python import propulsion_mechanics
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.pod import propulsion_mechanics
 
 
 def create_problem(component):
@@ -10,13 +10,11 @@ def create_problem(component):
     prob.root.add('comp', component)
     return prob
 
+
 class TestPropulsionMechanics(object):
-
-
     def test_case1_vs_npss(self):
 
-
-        component  =  propulsion_mechanics.PropulsionMechanics()
+        component = propulsion_mechanics.PropulsionMechanics()
 
         prob = create_problem(component)
 
@@ -40,5 +38,4 @@ class TestPropulsionMechanics(object):
 
         prob.run()
 
-        assert np.isclose(prob['comp.pwr_req'], 373460.335731, rtol = 0.1)
-
+        assert np.isclose(prob['comp.pwr_req'], 373460.335731, rtol=0.1)

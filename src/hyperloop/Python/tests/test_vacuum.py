@@ -1,7 +1,7 @@
-import pytest
-from hyperloop.Python import vacuum
 import numpy as np
 from openmdao.api import Group, Problem
+
+from Python.tube import tube_vacuum
 
 
 def create_problem(vac):
@@ -12,10 +12,9 @@ def create_problem(vac):
 
 
 class TestVac(object):
-
     def test_case1_vs_handcalc(self):
 
-        vac = vacuum.Vacuum()
+        vac = tube_vacuum.Vacuum()
 
         prob = create_problem(vac)
 
