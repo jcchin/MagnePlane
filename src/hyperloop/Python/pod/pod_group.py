@@ -1,4 +1,7 @@
-
+"""
+Group for Pod components containing the following components:
+Vehicle Cycle, Pod Mach (Aero), DriveTrain group, Geometry, Levitation group, and Weight
+"""
 from openmdao.api import Group
 from hyperloop.Python.pod.pod_mass import PodMass
 from hyperloop.Python.pod.drivetrain.Drivetrain import Drivetrain
@@ -22,6 +25,18 @@ class PodGroup(Group):
 
         self.connect('compression_cycle.shaft.Nmech', 'drivetrain.motor.speed')
 
+if __name__ == "__main__":
 
+    prob = Problem()
+    root = prob.root = Group()
 
+    prob.setup()
+    prob.root.list_connections()
+    prob.run()
 
+    print('Tube Temperature: %f' % prob['Tube.Thermal.tubetemp'])
+    print(':%f' % prob['Cycle.'])
+    print(':%f' % prob['Aero.'])
+    print('%f' % prob['Geometry.'])
+    print('%f' % prob['LevGroup.'])
+    print('%f' % prob['Weight.'])
