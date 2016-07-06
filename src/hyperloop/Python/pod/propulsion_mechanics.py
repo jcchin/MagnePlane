@@ -8,7 +8,6 @@ from __future__ import print_function
 import numpy as np
 from openmdao.api import IndepVarComp, Component, Group, Problem
 
-
 class PropulsionMechanics(Component):
     """
     Params
