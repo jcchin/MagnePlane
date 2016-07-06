@@ -1,7 +1,8 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.pod import compressor_weight
+from Python.pod.compressor_mass import CompressorMass
+from Python.pod.pod_mass import PodMass
 
 
 def create_problem(compressor, pod):
@@ -9,14 +10,14 @@ def create_problem(compressor, pod):
     prob = Problem(root)
     prob.root.add('comp2', compressor)
     prob.root.add('comp1', pod)
-    #prob.root.connect('comp1.comp_weight', 'comp2.comp_weight')
+    #prob.root.connect('comp1.comp_mass', 'comp2.comp_mass')
     return prob
 
 
 class TestCompressorWeight(object):
     def test_case1(self):
-        compressor = compressor_weight.CompressorWeight()
-        pod = compressor_weight.PodWeight()
+        compressor = CompressorMass()
+        pod = PodMass()
 
         prob = create_problem(pod, compressor)
 
@@ -27,17 +28,17 @@ class TestCompressorWeight(object):
         prob['comp1.mass_flow'] = 317.52
         prob['comp1.h_in'] = 0.
         prob['comp1.h_out'] = 486.13
-        #prob.root.connect('comp1.comp_weight', 'comp2.comp_weight')
-        prob['comp2.mag_weight'] = 1.0
-        prob['comp2.podgeo_weight'] = 1.0
-        prob['comp2.motor_weight'] = 1.0
-        prob['comp2.battery_weight'] = 1.0
+        #prob.root.connect('comp1.comp_mass', 'comp2.comp_mass')
+        prob['comp2.mag_mass'] = 1.0
+        prob['comp2.podgeo_mass'] = 1.0
+        prob['comp2.motor_mass'] = 1.0
+        prob['comp2.battery_mass'] = 1.0
 
         prob.run()
 
 
 
-        assert np.isclose(prob['comp1.comp_weight'], 1417.00, rtol=1.00)
-        assert np.isclose(prob['comp2.pod_weight'], 1421.00, rtol=1.00)
-        #assert np.isclose(prob['comp2.pod_weight'], 1421.00, rtol=1.00)
+        assert np.isclose(prob['comp1.comp_mass'], 1417.00, rtol=1.00)
+        assert np.isclose(prob['comp2.pod_mass'], 1421.00, rtol=1.00)
+        #assert np.isclose(prob['comp2.pod_mass'], 1421.00, rtol=1.00)
 
