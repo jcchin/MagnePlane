@@ -15,7 +15,6 @@ class LevGroup(Group):
         self.add('Drag', BreakPointDrag())
         self.add('Mass', MagMass())
 
-
 if __name__ == "__main__":
 
     top = Problem()
