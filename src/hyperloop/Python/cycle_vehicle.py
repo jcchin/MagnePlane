@@ -206,7 +206,7 @@ if __name__ == "__main__":
     print ("Compressor Power Reqd: %.6f hp" % (prob['cycle.comp.power']))
     print ("")
 
-    # print ("--- Compressor Exit Conditions ---")
+    print ("--- Compressor Exit Conditions ---")
     # print ("Compressor Mach No.:   %.6f " % (prob['cycle.comp.Fl_O:stat:MN']))
     # print ("Compressor Area:       %.6f in^2" % (prob['cycle.comp.Fl_O:stat:area']))
     # print ("Compressor Radius:     %.6f m" % (np.sqrt((cu(prob['cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2'))/np.pi)))
@@ -214,6 +214,8 @@ if __name__ == "__main__":
     # print ("Compressor Ts:         %.6f degR" % (prob['cycle.comp.Fl_O:stat:T']))
     # print ("Compressor Pt:         %.6f psi" % (prob['cycle.comp.Fl_O:tot:P']))
     # print ("Compressor Tt:         %.6f degR" % (prob['cycle.comp.Fl_O:tot:T']))
+    print ("Compressor inlet ht:         %.6f " % (prob['cycle.inlet.Fl_O:tot:h']))
+    print ("Compressor exit ht:         %.6f " % (prob['cycle.comp.Fl_O:tot:h']))
     # print ("")
 
     print ("--- Nozzle Plenum Conditions ---")
