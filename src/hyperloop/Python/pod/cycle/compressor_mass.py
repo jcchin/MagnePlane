@@ -1,5 +1,6 @@
+from __future__ import print_function
 import numpy as np
-from openmdao.api import Component
+from openmdao.api import Component, Problem, Group
 
 class CompressorMass(Component):
     """The CompressorMass class represents a compressor mass component
@@ -11,15 +12,15 @@ class CompressorMass(Component):
         to obtain Compressor Mass.
     Params
         ----
-        comp_eff: float
+        comp_eff : float
             Compressor Efficiency. (unitless)
-        mass_flow: float
-            Mass Flow for Compressor. (kJ/kg)
-        h_in: float
+        mass_flow : float
+            Mass Flow for Compressor. (kg/s)
+        h_in : float
             Heat in. (kJ/kg)
-        h_out: float
+        h_out : float
             Hea    self.t out. (kJ/kg)
-        comp_inletR: float
+        comp_inletR : float
             Compressor Inlet Radius. (m)
     Outputs
     -------
@@ -60,10 +61,10 @@ class CompressorMass(Component):
                        val=486.13,
                        desc='Heat-out',
                        units='kJ/kg')
-        self.add_param('comp_inletR',
-                       val=0.64,
-                       desc='Compressor Inlet Radius',
-                       units='m')
+        self.add_param('comp_inletArea',
+                       val=1.287,
+                       desc='Compressor Inlet Area',
+                       units='m**2')
 
         # set output
         self.add_output('comp_mass',
@@ -91,11 +92,20 @@ class CompressorMass(Component):
         mass_flow = params['mass_flow']
         h_in = params['h_in']
         h_out = params['h_out']
-        comp_inletR = params['comp_inletR']
+        comp_inletArea = params['comp_inletArea']
 
         # uses correlation to obtain compressor mass
-        unknowns['comp_mass'] = 299.2167 * (np.power(comp_inletR,2)) + 0.007418 * (
+        unknowns['comp_mass'] = 299.2167 * comp_inletArea + 0.007418 * (
             (mass_flow * (h_out - h_in)) / (comp_eff / 100)) + 37.15
 
+if __name__ == "__main__":
+    top = Problem()
+    root = top.root = Group()
 
+    root.add('CompressorMass', CompressorMass())
+
+    top.setup()
+    top.run()
+
+    print('Comp_Mass %f' % top['CompressorMass.comp_mass'])
 
