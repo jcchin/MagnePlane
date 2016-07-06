@@ -38,31 +38,31 @@ class Drivetrain(Group):
     def __init__(self):
         super(Drivetrain, self).__init__()
 
-        # # self.add('motor', Motor(), promotes=['speed', 'design_power', 'max_rpm'])
-        # self.add('inverter', Inverter())
-        # self.add('battery', Battery(), promotes=['des_time', 'time_of_flight'])
-        #
-        # # connect ElectricMotor outputs to Inverter inputs
-        # self.connect('motor.frequency', 'inverter.output_frequency')
-        # self.connect('motor.phase_voltage', 'inverter.output_voltage')
-        # self.connect('motor.phase_voltage', 'inverter.input_voltage')
-        # # TODO VERIFY THIS, does this make sense to force inverter to have
-        # # equal input/output  import pprintvoltage?
-        # self.connect('motor.phase_current', 'inverter.output_current')
-        #
-        # # connect Inverter outputs to Battery inputs
-        # self.connect('inverter.input_current', 'battery.des_current')
-        # self.connect('inverter.input_power', 'battery.des_power')
-        #
-        # # TODO remove this, represented previous non-converging cycle
-        # # connect Battery outputs to Inverter inputs
-        # # self.connect('battery.output_voltage', 'inverter.input_voltage')
-        #
-        # self.nl_solver = NLGaussSeidel()
-        # self.nl_solver.options['atol'] = 0.1
-        # self.nl_solver.options['maxiter'] = 200
-        # self.ln_solver = ScipyGMRES()
-        # # self.ln_solver = PetscKSP()
+        self.add('motor', Motor(), promotes=['speed', 'design_power', 'max_rpm'])
+        self.add('inverter', Inverter())
+        self.add('battery', Battery(), promotes=['des_time', 'time_of_flight'])
+
+        # connect ElectricMotor outputs to Inverter inputs
+        self.connect('motor.frequency', 'inverter.output_frequency')
+        self.connect('motor.phase_voltage', 'inverter.output_voltage')
+        self.connect('motor.phase_voltage', 'inverter.input_voltage')
+        # TODO VERIFY THIS, does this make sense to force inverter to have
+        # equal input/output  import pprintvoltage?
+        self.connect('motor.phase_current', 'inverter.output_current')
+
+        # connect Inverter outputs to Battery inputs
+        self.connect('inverter.input_current', 'battery.des_current')
+        self.connect('inverter.input_power', 'battery.des_power')
+
+        # TODO remove this, represented previous non-converging cycle
+        # connect Battery outputs to Inverter inputs
+        # self.connect('battery.output_voltage', 'inverter.input_voltage')
+
+        self.nl_solver = NLGaussSeidel()
+        self.nl_solver.options['atol'] = 0.1
+        self.nl_solver.options['maxiter'] = 200
+        self.ln_solver = ScipyGMRES()
+        # self.ln_solver = PetscKSP()
 
 
 if __name__ == '__main__':
