@@ -25,10 +25,10 @@ class MotorGroup(Group):
         # Finite Difference
         self.deriv_options['type'] = 'fd'
         self.deriv_options['form'] = 'forward'
-        self.deriv_options['step_size'] = 1.0e-6
+        self.deriv_options['step_size'] = 1.0e-12
 
-        alpha = 0.4
-        self.add('obj_1', ExecComp('obj = alpha * (R0 - R_calc) + (1-alpha) * (current * voltage - power_input)'), promotes=['*'])
+        self.add('obj_1', ExecComp('obj = alpha * (R0 - R_calc) + (1-alpha) * (current * voltage - power_input)', alpha = 1.0), promotes=['*'])
+
         # self.add('obj_2', ExecComp('obj = current * voltage - power_input'))
 
         self.add('con_1', ExecComp('con1 = current * voltage'), promotes=['*'])
@@ -69,7 +69,7 @@ class MotorSize(Component):
                        desc='max rpm of motor',
                        units='rpm')
         self.add_param('design_power',
-                       val=110000,
+                       val=110000.0,
                        desc='Design value of motor',
                        units='W')
         self.add_param('n_phases',
@@ -333,11 +333,11 @@ class Motor(Component):
 
 
     def solve_nonlinear(self, params, unknowns, resids):
-        print('Entered!')
-        print()
-        print(unknowns['current'])
-        print(unknowns['voltage'])
-        print(unknowns['frequency'])
+        # print('Entered!')
+        # print()
+        # print(unknowns['current'])
+        # print(unknowns['voltage'])
+        # print(unknowns['frequency'])
         print(params['I0'])
         print(params['R0'])
         print()
@@ -370,6 +370,10 @@ class Motor(Component):
 
 
 if __name__ == '__main__':
+    from openmdao.api import SqliteRecorder
+    from pprint import pprint
+    from os import remove
+    from sqlitedict import SqliteDict
 
     prob = Problem()
     prob.root = MotorGroup()
@@ -382,6 +386,7 @@ if __name__ == '__main__':
     prob.driver.add_desvar('R0', lower=0.0)
 
     prob.driver.add_objective('obj')
+    # print(pr)
     # prob.driver.add_objective('obj_2')
 
     prob.driver.add_constraint('con1', lower=0.0)
@@ -392,9 +397,41 @@ if __name__ == '__main__':
     # prob.root.add('init_vars', IndepVarComp('imax', 500.0), promotes=['imax'])
     # prob.root.connect('imax', 'imax')
 
+    rec = SqliteRecorder('drivetraindb')
+    rec.options['record_params'] = True
+    rec.options['record_metadata'] = True
+    prob.driver.add_recorder(rec)
+
     prob.setup(check=True)
+    print('here')
+    print(prob['obj'])
+    print(prob['alpha'])
+    print(prob['I0'])
+    print(prob['R0'])
+    print(prob['current'])
+    print(prob['voltage'])
+    print(prob['power_input'])
+
+
     # view_tree(prob)
     prob.run()
+
+    db = SqliteDict('drivetraindb', 'openmdao')
+    pprint(db.keys())
+    data = db['rank0:SLSQP/1']
+    pprint(data['Parameters'])
+    pprint(data['Unknowns'])
+
+    data = db['rank0:SLSQP/2'].keys()
+
+    # pprint(db)
+    pprint(data['Parameters'])
+    pprint(data['Unknowns'])
+
+    print
+    print
+    prob.cleanup()
+    remove('drivetraindb')
 
 
     # print(prob['comp.imax'])
