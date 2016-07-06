@@ -3,7 +3,7 @@ Group for Tube components containing the following components:
 Vacuum, Tube Temperature, Tube and Pylon (structural), Propulsion Mechanics, Tube Power
 """
 
-from openmdao.api import Group, Problem, ScipyGMRES
+from openmdao.api import Group, Problem, IndepVarComp, ScipyGMRES
 
 from hyperloop.Python.pod.propulsion_mechanics import PropulsionMechanics
 from hyperloop.Python.tube.tube_and_pylon import TubeAndPylon
@@ -15,9 +15,22 @@ class TubeGroup(Group):
     def __init__(self):
         super(TubeGroup, self).__init__()
 
+        """
+        params = (('pinit',760.2,{'units': 'torr'})
+                  ('pfinal',7.0,{'units': 'torr'})
+                  ('pwr',18.5,{'units': 'W*1000'})
+                  ('speed',163333.3,{'units': 'L/min'})
+                  ('eprice',0.13,{'units': 'USD/(W*1000*h)'})
+                  ('tdown',300.0,{'units': 'min'})
+                  ('gamma',0.8,{'units': 'none'})
+                  ('pumpweight',715.0,{'units': 'kg'})
+        )
+        self.add('UserIn',IndepVarComp(params))
+        """
+
         self.add('Vacuum', Vacuum())
         self.add('TempBalance', TempBalance())
-        self.add('TubeWallTemp', TubeWallTemp())
+        self.add('TubeWallTemp', TubeWallTemp(),promotes=['temp_boundary'])
         self.add('Struct', TubeAndPylon())
         self.add('PropMech', PropulsionMechanics())
         self.add('TubePower', TubePower())
@@ -31,12 +44,29 @@ class TubeGroup(Group):
 
         self.connect('PropMech.pwr_req', 'TubePower.prop_power')
 
+        self.ln_solver = ScipyGMRES()
+
 if __name__ == "__main__":
 
     top = Problem()
     root = top.root = TubeGroup()
 
-    root.ln_solver = ScipyGMRES()
+    """
+    root.add('tube',TubeGroup())
+    params = (
+        ()
+    )
+    top.root.add('PodVar',IndepVarComp(params))
+
+    top.root.connect('Cycle',)
+    top.root.connect('PodMach',)
+    top.root.connect('DriveTrain',)
+    top.root.connect('Geom',)
+    top.root.connect('MagLev',)
+    top.root.connect('Weight',)
+    """
+
+    #root.ln_solver = ScipyGMRES()
     top.setup()
     top.root.list_connections()
     top.run()
