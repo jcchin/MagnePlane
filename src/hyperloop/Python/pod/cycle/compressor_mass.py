@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 from openmdao.api import Component
 
@@ -11,15 +12,15 @@ class CompressorMass(Component):
         to obtain Compressor Mass.
     Params
         ----
-        comp_eff: float
+        comp_eff : float
             Compressor Efficiency. (unitless)
-        mass_flow: float
+        mass_flow : float
             Mass Flow for Compressor. (kJ/kg)
-        h_in: float
+        h_in : float
             Heat in. (kJ/kg)
-        h_out: float
+        h_out : float
             Hea    self.t out. (kJ/kg)
-        comp_inletR: float
+        comp_inletR : float
             Compressor Inlet Radius. (m)
     Outputs
     -------
