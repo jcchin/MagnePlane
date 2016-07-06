@@ -32,19 +32,17 @@ class MotorSolver(Component):
 
     def apply_nonlinear(self, params, unknowns, resids):
         resids['I0'] = params['current'] * params['voltage'] - params['power_input']
-
+        print(resids['I0'])
 class MotorGroup(Group):
     def __init__(self):
         super(MotorGroup, self).__init__()
 
-        self.add('Indep_I0', IndepVarComp('I0', 0.0), promotes=['I0'])
-
         self.add('MotorLoss', MotorLoss(), promotes=['*'])
         self.add('Motor', Motor(), promotes=['*'])
         self.add('MotorSize', MotorSize(), promotes=['*'])
-        self.add('MotorSolvebr', MotorSolver(), promotes=['*'])
-        self.add('init_vars', IndepVarComp('imax', 500.0), promotes=['imax'])
+        self.add('MotorSolver', MotorSolver(), promotes=['power_input', 'current', 'voltage'])
 
+        self.connect('Indep_I0.I0_input', 'I0')
         # Finite Difference
         self.deriv_options['type'] = 'fd'
         # self.deriv_options['form'] = 'forward'
@@ -178,7 +176,7 @@ class MotorLoss(Component):
         self.add_output('R_calc',
                         0.0,
                         desc='total copper resistance of motor winding',
-                        units='R')
+                        units='ohm')
         self.add_output('power_input',
                         0.0,
                         desc='total power input into motor',
@@ -278,7 +276,7 @@ class Motor(Component):
     r_d : float
         D-axis resistance per motor phase at very high speed (short circuit). Default value is 0.4
     resistance : float
-        Resistance of Stator in Ohms. Default value is 0.0
+        Resistance of Stator in ohm. Default value is 0.0
     inductance : float
         Motor inductance in Henrys. Default value is 0.0
 
@@ -328,10 +326,10 @@ class Motor(Component):
                        val=0.0,
                        desc='motor no load current',
                        units='A')
-        self.add_param(R_calc,
+        self.add_param('R_calc',
                        val=0.004,
                        desc='motor resistance',
-                       units='A')
+                       units='ohm')
         self.add_param('n_phases',
                        val=3.0,
                        desc='number of motor power phases',
@@ -362,7 +360,7 @@ class Motor(Component):
         # print(unknowns['voltage'])
         # print(unknowns['frequency'])
         print(params['I0'])
-        print(params[R_calc])
+        # print(params[R_calc])
         print()
 
 
@@ -372,7 +370,7 @@ class Motor(Component):
         #Calculating phase current, phase voltage, frequency, and phase
         unknowns['current'] = params['I0'] + params['torque'] / k_t
         unknowns['phase_current'] = unknowns['current'] / params['n_phases']
-        voltage = unknowns['current']*params[R_calc] + params['woperating'] / k_v
+        voltage = unknowns['current']*params['R_calc'] + params['woperating'] / k_v
         unknowns['phase_voltage'] = voltage * np.sqrt(3.0/2.0)
         unknowns['frequency'] = params['woperating'] / np.pi * params['pole_pairs'] / 60.0
 
@@ -400,6 +398,9 @@ if __name__ == '__main__':
 
     prob = Problem()
     prob.root = MotorGroup()
+    prob.root.add('Indep_I0', IndepVarComp('I0_input', 0.0))
+    prob.root.add('init_vars', IndepVarComp('imax', 500.0), promotes=['imax'])
+
     # prob.driver = ScipyOptimizer()
     # prob.driver.options['optimizer'] = 'SLSQP'
     # prob.driver.options['tol'] = 1.0e-5
@@ -426,17 +427,17 @@ if __name__ == '__main__':
     prob.driver.add_recorder(rec)
 
     prob.setup(check=True)
-    print('here')
-    print(prob['obj'])
-    print(prob['alpha'])
-    print(prob['I0'])
-    # print(prob[R_calc])
-    print(prob['current'])
-    print(prob['voltage'])
-    print(prob['power_input'])
+    # print('here')
+    # print(prob['obj'])
+    # print(prob['alpha'])
+    # print(prob['I0'])
+    # # print(prob[R_calc])
+    # print(prob['current'])
+    # print(prob['voltage'])
+    # print(prob['power_input'])
 
 
-    view_tree(prob)
+    # view_tree(prob)
     prob.run()
 
     db = SqliteDict('drivetraindb', 'openmdao')
@@ -445,7 +446,7 @@ if __name__ == '__main__':
     pprint(data['Parameters'])
     pprint(data['Unknowns'])
 
-    data = db['rank0:SLSQP/2']
+    # data = db['rank0:SLSQP/2']
 
     # pprint(db)
     pprint(data['Parameters'])
