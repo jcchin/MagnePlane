@@ -17,8 +17,14 @@ class PodGroup(Group):
         self.add('pod_mass', PodMass())
         self.add('drivetrain', Drivetrain())
         self.add('levitation_group', LevGroup(), promotes=['w_track', 'mag_drag', 'cost', 'w_track', 'mag_drag'])
-        self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube'])
-        self.add('cycle', Cycle())
+        self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube', 'prc'])
+        self.add('cycle', Cycle(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
+                                              'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W', 'fl_start.Fl_O:stat:P',
+                                              'fl_start.Fl_O:stat:T', 'fl_start.Fl_O:tot:P', 'fl_start.Fl_O:tot:T',
+                                              'fl_start.Fl_O:stat:rho', 'fl_start.Fl_O:stat:V', 'inlet.Fl_O:stat:MN',
+                                              'inlet.Fl_O:stat:P', 'inlet.Fl_O:stat:T', 'inlet.Fl_O:tot:P', 'inlet.Fl_O:tot:T',
+                                              'inlet.Fl_O:stat:W', 'comp.Fl_O:stat:MN', 'comp.Fl_O:stat:area',
+                                              'comp.Fl_O:stat:P', 'comp.Fl_O:stat:T'])
         self.add('pod_geometry', PodGeometry(), promotes=['BF', 'A_payload', 'p_tunnel', 'M_diff', 'M_duct', 'T_tunnel', 'S'])
 
         self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
@@ -35,6 +41,12 @@ class PodGroup(Group):
         self.connect('pod_mass.BF', ['pod_mach.BF', 'pod_geometry.BF'])
         self.connect('pod_mass.comp_inletArea', 'cycle.comp_inletArea')
 
+        #npss cycle connections
+        self.connect('cycle.comp.Nmech', 'drivetrain.operating_rpm')
+        self.connect('cycle.comp.power', 'drivetrain.design_power')
+        self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
+        self.connect('cycle.comp.Fl_O:stat:area', 'pod_geometry.??')
+
 if __name__ == "__main__":
 
     prob = Problem()
@@ -48,7 +60,8 @@ if __name__ == "__main__":
              ('M_diff', ??),
              ('M_duct', ??),
              ('T_tunnel', ??),
-             ('w_track', ??))
+             ('w_track', ??),
+             ('prc', ??))
 
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.p_tube', 'Pod.pod_mach.p_tube')
