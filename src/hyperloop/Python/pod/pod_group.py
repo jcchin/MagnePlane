@@ -32,6 +32,8 @@ class PodGroup(Group):
         self.connect('levitation_group.mag_drag', 'pod_mass.mag_drag')
         self.connect('pod_geometry.D_pod', 'pod_mass.podgeo_d')
         self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
+        self.connect('pod_mass.BF', ['pod_mach.BF', 'pod_geometry.BF'])
+        self.connect('pod_mass.comp_inletArea', 'cycle.comp_inletArea')
 
 if __name__ == "__main__":
 
@@ -41,7 +43,6 @@ if __name__ == "__main__":
 
     params = (('p_tube', ??),
              ('M_pod', ??),
-             ('BF', ??),
              ('A_payload', ??),
              ('p_tunnel', ??),
              ('M_diff', ??),
@@ -52,7 +53,6 @@ if __name__ == "__main__":
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.p_tube', 'Pod.pod_mach.p_tube')
     prob.root.connect('des_vars.M_pod', ['Pod.pod_mach.M_pod', 'Pod.pod_geometry.M_pod'])
-    prob.root.connect('des_vars.BF', 'Pod.pod_geometry.BF')
     prob.root.connect('des_vars.A_payload', 'Pod.pod_geometry.A_payload')
     prob.root.connect('des_vars.p_tunnel', 'Pod.pod_geometry.p_tunnel')
     prob.root.connect('des_vars.M_diff', 'Pod.pod_geometry.M_diff')

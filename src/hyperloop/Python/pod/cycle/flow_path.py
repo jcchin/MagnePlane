@@ -130,8 +130,8 @@ if __name__ == "__main__":
 
     # Make sure balance runs before FlowPath
     #prob.root.set_order(['des_vars', 'balance', 'FlowPath'])
-    prob.setup(check=False)
-    #prob.root.list_connections()
+    prob.setup(check=True)
+    prob.root.list_connections()
 
     # Flight Conditions
 
