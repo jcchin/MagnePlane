@@ -366,7 +366,7 @@ if __name__ == "__main__":
 
     top.driver.add_objective('obj_cmp.obj')
 
-    top.setup(check=True)
+    top.setup()
 
     top.run()
 

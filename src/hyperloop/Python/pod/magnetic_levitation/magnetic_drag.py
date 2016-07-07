@@ -87,7 +87,6 @@ class MagDrag(Component):
         unknowns['mag_drag_prop'] = mag_drag_prop
         unknowns['mag_drag'] = mag_drag
 
-
 if __name__ == "__main__":
 
     top = Problem()
@@ -96,7 +95,6 @@ if __name__ == "__main__":
     root.add('p', MagDrag())
 
     top.setup()
-
     top.run()
 
     print('Magnetic Drag from Levitation is %2.2fN' % top['p.mag_drag_lev'])
