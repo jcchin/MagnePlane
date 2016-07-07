@@ -1,8 +1,7 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.tube import tube_and_pylon
-
+from hyperloop.Python.tube import tube_and_pylon
 
 def create_problem(component):
     root = Group()

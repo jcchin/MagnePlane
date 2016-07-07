@@ -1,8 +1,7 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.pod import propulsion_mechanics
-
+from hyperloop.Python.tube import propulsion_mechanics
 
 def create_problem(component):
     root = Group()

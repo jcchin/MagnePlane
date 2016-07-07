@@ -1,6 +1,6 @@
 import numpy as np
 from openmdao.api import Group, Problem
-from src.hyperloop.Python.pod import pod_mass
+from hyperloop.Python.pod.pod_mass import PodMass
 
 def create_problem(component):
     root = Group()
@@ -11,15 +11,13 @@ def create_problem(component):
 class Test1(object):
     def test_case1(self):
 
-
-        component = pod_mass.PodMass()
-
+        component = PodMass()
         prob = create_problem(component)
 
         prob.setup()
 
         prob['comp.mag_mass'] = 1.0
-        prob['comp.podgeo_r'] = 1.0
+        prob['comp.podgeo_d'] = 1.0
         prob['comp.al_rho'] = 2800.00
         prob['comp.motor_mass'] = 1.0
         prob['comp.battery_mass'] = 1.0

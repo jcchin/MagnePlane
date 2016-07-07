@@ -3,15 +3,13 @@ from __future__ import print_function
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.pod.drivetrain import inverter
-
+from hyperloop.Python.pod.drivetrain import inverter
 
 def create_problem(inverter):
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', inverter)
     return prob
-
 
 class TestInverter(object):
     def test_case1_vs_npss(self):

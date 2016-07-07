@@ -7,7 +7,6 @@ from __future__ import print_function
 import numpy as np
 from openmdao.api import Component, Problem, Group, Newton, LinearGaussSeidel, IndepVarComp, ScipyGMRES, NLGaussSeidel
 
-
 class MotorSolver(Component):
     def __init__(self):
         super(MotorSolver, self).__init__()

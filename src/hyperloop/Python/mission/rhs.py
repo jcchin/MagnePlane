@@ -1,10 +1,9 @@
 from pointer.components import RHS
 
 from .eom import MagneplaneEOM
-from pod_thrust_and_drag import PodThrustAndDrag
-from lat_long import LatLong
-from terrain import TerrainElevationComp
-
+from hyperloop.Python.mission.pod_thrust_and_drag import PodThrustAndDrag
+from hyperloop.Python.mission.lat_long import LatLong
+from hyperloop.Python.mission.terrain import TerrainElevationComp
 
 class MagnePlaneRHS(RHS):
 
