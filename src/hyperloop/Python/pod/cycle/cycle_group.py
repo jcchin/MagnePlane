@@ -31,8 +31,8 @@ class Cycle(Group):
 	def __init__(self):
 		super(Cycle, self).__init__()
 
-		self.add('FlowPath', FlowPath())
-		self.add('CompressorMass', CompressorMass())
+		self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power'])
+		self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
 
 		self.connect('FlowPath.inlet.Fl_O:tot:h', 'CompressorMass.h_in')
 		self.connect('FlowPath.comp.Fl_O:tot:h', 'CompressorMass.h_out')
@@ -50,8 +50,7 @@ if __name__ == "__main__":
               ('P', 0.1885057735, {'units': 'psi'}),
               ('T', 591.0961831, {'units': 'degR'}),
               ('W', 4.53592, {'units': 'kg/s'}),
-              ('PsE', 0.59344451, {'units': 'psi'}),
-              ('cmpMach', 0.65), )
+              ('PsE', 0.59344451, {'units': 'psi'}))
 
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.PsE', 'Cycle.FlowPath.nozzle.Ps_exhaust')
@@ -62,8 +61,8 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.vehicleMach', 'Cycle.FlowPath.fl_start.MN_target')
     prob.root.connect('des_vars.inlet_MN', 'Cycle.FlowPath.inlet.MN_target')
 
-    prob.setup(check=True)
+    prob.setup()
     prob.root.list_connections()
     prob.run()
 
-    print('Comp_Mass %f' % prob['Cycle.CompressorMass.comp_mass'])
+    print('Comp_Mass %f' % prob['Cycle.comp_mass'])

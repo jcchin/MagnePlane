@@ -8,7 +8,6 @@ from math import pi, sin
 from openmdao.api import Group, Component, IndepVarComp, Problem, ExecComp, ScipyOptimizer
 import numpy as np
 
-
 class BreakPointDrag(Component):
     """
     Current Break Point Drag Calculation very rough. Needs refinement.
@@ -94,16 +93,16 @@ class BreakPointDrag(Component):
                        val=4.0,
                        desc='Number of Magnets per Halbach Array')
         self.add_param('mag_thk', val=0.15, units='m', desc='Thickness of magnet')
-        self.add_param('l_pod', val=22, units='m', desc='Length of Pod')
+        self.add_param('l_pod', val=22.0, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
-        self.add_param('w_mag', val=3, units='m', desc='Width of magnet array')
+        self.add_param('w_mag', val=3.0, units='m', desc='Width of magnet array')
         self.add_param('spacing',
                        val=0.0,
                        units='m',
                        desc='Halbach Spacing Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('w_track', val=3, units='m', desc='Width of Track')
+        self.add_param('w_track', val=3.0, units='m', desc='Width of Track')
         self.add_param('w_strip',
                        val=0.005,
                        units='m',
@@ -122,7 +121,7 @@ class BreakPointDrag(Component):
                        units='ohm-m',
                        desc='Electric Resistivity')
         self.add_param('MU0',
-                       val=4. * pi * 10 ** -7,
+                       val=4.0 * pi * 10 ** -7,
                        units='ohm*s/m',
                        desc='Permeability of Free Space')
 
@@ -260,16 +259,16 @@ class MagMass(Component):
         # Pod Inputs
         self.add_param('mag_thk', val=0.15, units='m', desc='Thickness of Magnet')
         self.add_param('rho_mag',
-                       val=7500,
+                       val=7500.0,
                        units='kg/m**3',
                        desc='Density of Magnet')
-        self.add_param('l_pod', val=22, units='m', desc='Length of Pod')
+        self.add_param('l_pod', val=22.0, units='m', desc='Length of Pod')
         self.add_param('gamma', val=1.0, desc='Percent Factor')
         self.add_param('cost_per_kg',
-                       val=44,
+                       val=44.0,
                        units='USD/kg',
                        desc='Cost of Magnet per Kilogram')
-        self.add_param('w_mag', val=3, units='m', desc='Width of Magnet Array')
+        self.add_param('w_mag', val=3.0, units='m', desc='Width of Magnet Array')
 
         # Outputs
         self.add_output('mag_area', val=0.0, units='m', desc='Total Area of Magnets')
@@ -367,7 +366,7 @@ if __name__ == "__main__":
 
     top.driver.add_objective('obj_cmp.obj')
 
-    top.setup(check=True)
+    top.setup()
 
     top.run()
 

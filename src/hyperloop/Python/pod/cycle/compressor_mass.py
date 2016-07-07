@@ -108,4 +108,3 @@ if __name__ == "__main__":
     top.run()
 
     print('Comp_Mass %f' % top['CompressorMass.comp_mass'])
-

@@ -9,8 +9,6 @@ from __future__ import print_function
 import numpy as np
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 
-
-
 class PodMach(Component):
     """
     Params
