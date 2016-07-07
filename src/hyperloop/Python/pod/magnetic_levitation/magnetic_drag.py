@@ -3,10 +3,8 @@ Magnetic Drag Calculation.
 Default track and magnet parameters taken from breakpointlev.py.
 Calculates Magnetic Drag at set velocity desired with given parameters.
 """
-
 from math import pi
 from openmdao.api import Group, Component, Problem
-
 
 class MagDrag(Component):
     """
@@ -89,7 +87,6 @@ class MagDrag(Component):
         unknowns['mag_drag_prop'] = mag_drag_prop
         unknowns['mag_drag'] = mag_drag
 
-
 if __name__ == "__main__":
 
     top = Problem()
@@ -97,11 +94,10 @@ if __name__ == "__main__":
 
     root.add('p', MagDrag())
 
-    top.setup(check=True)
-
+    top.setup()
     top.run()
 
-    # print('Magnetic Drag from Levitation is %2.2fN' % top['p.mag_drag_lev'])
-    # print('Magnetic Drag from Propulsion is %2.2fN' % top['p.mag_drag_prop'])
+    print('Magnetic Drag from Levitation is %2.2fN' % top['p.mag_drag_lev'])
+    print('Magnetic Drag from Propulsion is %2.2fN' % top['p.mag_drag_prop'])
     # print('\n')
-    # print('Total Magnetic Drag is %2.2fN' % top['p.mag_drag'])
+    print('Total Magnetic Drag is %2.2fN' % top['p.mag_drag'])
