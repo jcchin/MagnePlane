@@ -7,8 +7,8 @@ class PodMass(Component):
         ----
         mag_mass : float
             Mass of permanent magnets. (kg)
-        podgeo_r : float
-            Radius of pod. (m)
+        podgeo_d : float
+            Diameter of pod. (m)
         al_rho : float
             Density of the aluminium (kg/m**3)
         motor_mass : float
@@ -31,8 +31,8 @@ class PodMass(Component):
                        val=1.,
                        desc='Mass of permanent magnets',
                        units='kg')
-        self.add_param('podgeo_r',
-                       val=1.,
+        self.add_param('podgeo_d',
+                       val=2.,
                        desc='Pod Geometry Radius',
                        units='m')
         self.add_param('al_rho',
@@ -62,7 +62,7 @@ class PodMass(Component):
 
     def solve_nonlinear(self, params, unknowns, resids):
         mag_mass = params['mag_mass']
-        podgeo_r = params['podgeo_r']
+        podgeo_d = params['podgeo_d']
         al_rho = params['al_rho']
         motor_mass = params['motor_mass']
         battery_mass = params['battery_mass']
@@ -70,7 +70,7 @@ class PodMass(Component):
         pod_len = params['pod_len']
 
         #adds up the mass.
-        unknowns['pod_mass'] = mag_mass + np.pi*podgeo_r**2*pod_len*al_rho + motor_mass + battery_mass + comp_mass
+        unknowns['pod_mass'] = mag_mass + np.pi*(podgeo_d/2)**2*pod_len*al_rho + motor_mass + battery_mass + comp_mass
 
 if __name__== '__main__':
     # set up problem.
