@@ -1,8 +1,7 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.pod.magnetic_levitation import magnetic_drag
-
+from hyperloop.Python.pod.magnetic_levitation.magnetic_drag import MagDrag
 
 def create_problem(magdrag):
     root = Group()
@@ -10,12 +9,10 @@ def create_problem(magdrag):
     prob.root.add('comp', magdrag)
     return prob
 
-
 class TestVac(object):
     def test_case1_vs_breakpoint(self):
 
-        magdrag = magnetic_drag.MagDrag()
-
+        magdrag = MagDrag()
         prob = create_problem(magdrag)
 
         prob.setup()

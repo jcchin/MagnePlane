@@ -1,8 +1,7 @@
 import pytest
-from src.hyperloop.Python.mission import lat_long
+from hyperloop.Python.mission import lat_long
 import numpy as np
 from openmdao.api import Group, Problem
-
 
 def create_problem(component):
     root = Group()
@@ -12,14 +11,11 @@ def create_problem(component):
 
 class TestMissionDrag(object):
 
-
     def test_case1_vs_npss(self):
-
 
         component  =  lat_long.LatLong()
 
         prob = create_problem(component)
-
         prob.setup()
 
         prob['comp.x'] = 100.0

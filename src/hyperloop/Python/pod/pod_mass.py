@@ -19,10 +19,14 @@ class PodMass(Component):
             Mass of Compressor. (kg)
         pod_len : float
             Length of pod. (m)
+        comp_inletArea : float
+            Area of compressor (m**2)
     Outputs
     -------
         pod_mass : float
             Pod Mass (kg)
+        BF : float
+            Blockage factor (unitless)
     """
 
     def __init__(self):
@@ -55,10 +59,18 @@ class PodMass(Component):
                        val=1.,
                        desc='Length of pod',
                        units='m')
+        self.add_param('comp_inletArea',
+                       val=1.,
+                       desc='Area of compressor',
+                       units='m**2')
         self.add_output('pod_mass',
                         val=1.,
                         desc='Pod Mass',
                         units='kg')
+        self.add_output('BF',
+                        val=1.,
+                        desc='blockage factor of pod',
+                        units='unitless')
 
     def solve_nonlinear(self, params, unknowns, resids):
         mag_mass = params['mag_mass']
@@ -68,7 +80,10 @@ class PodMass(Component):
         battery_mass = params['battery_mass']
         comp_mass = params['comp_mass']
         pod_len = params['pod_len']
+        comp_inletArea = params['comp_inletArea']
 
+        #computes blockage factor using Compressor Area / Area of Pod
+        unknowns['BF'] = comp_inletArea/((podgeo_d/2)**2)
         #adds up the mass.
         unknowns['pod_mass'] = mag_mass + np.pi*(podgeo_d/2)**2*pod_len*al_rho + motor_mass + battery_mass + comp_mass
 
@@ -76,13 +91,14 @@ if __name__== '__main__':
     # set up problem.
     root = Group()
     prob = Problem(root)
-    prob.root.add('comp1', PodMass())
-    prob.root.add('comp2', CompressorMass())
-    prob.root.connect('comp2.comp_mass', 'comp1.comp_mass')
+    prob.root.add('PodMass', PodMass())
+    prob.root.add('CompressorMass', CompressorMass())
+    prob.root.connect('CompressorMass.comp_mass', 'PodMass.comp_mass')
     prob.setup()
     prob.root.list_connections()
     prob.run()
 
     # prints the following results.
-    print('Compressor Mass(kg) : %f' % prob['comp2.comp_mass'])
-    print('Pod Mass(kg) : %f' % prob['comp1.pod_mass'])
+    print('Compressor Mass(kg) : %f' % prob['CompressorMass.comp_mass'])
+    print('Pod Mass(kg) : %f' % prob['PodMass.pod_mass'])
+    print('Blockage Factr(unitless) : %f' % prob['PodMass.BF'])
