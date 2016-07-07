@@ -20,7 +20,7 @@ class Test1(object):
 
         prob['comp.mag_mass'] = 1.0
         prob['comp.podgeo_r'] = 1.0
-        prob['comp.al_rho'] = 2800.0
+        prob['comp.al_rho'] = 2800.00
         prob['comp.motor_mass'] = 1.0
         prob['comp.battery_mass'] = 1.0
         prob['comp.comp_mass'] = 1.0

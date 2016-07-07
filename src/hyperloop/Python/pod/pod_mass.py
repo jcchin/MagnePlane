@@ -69,6 +69,7 @@ class PodMass(Component):
         comp_mass = params['comp_mass']
         pod_len = params['pod_len']
 
+        #adds up the mass.
         unknowns['pod_mass'] = mag_mass + np.pi*podgeo_r**2*pod_len*al_rho + motor_mass + battery_mass + comp_mass
 
 if __name__== '__main__':
