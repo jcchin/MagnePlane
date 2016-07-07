@@ -43,4 +43,4 @@ install:
 - pip install git+http://github.com/OpenMDAO/OpenMDAO.git@master
 - pip install -e .
 
-script: py.test --ignore=src/hyperloop/Python/tests/archive --ignore=src/hyperloop/Python/tests/PrivateDependencies --ignore=src/hyperloop/Python/mission/tests/PrivateDependencies -s -src
+script: py.test
