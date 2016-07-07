@@ -2,15 +2,13 @@ from __future__ import print_function
 
 from openmdao.api import Group, Problem
 
-from Python.pod.drivetrain.drivetrain import Drivetrain
-
+from hyperloop.Python.pod.drivetrain.drivetrain import Drivetrain
 
 def create_problem(comp):
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', comp)
     return prob
-
 
 class TestDrivetrain(object):
     def test_case1_vs_npss(self):
