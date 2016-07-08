@@ -1,8 +1,7 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.tube import tube_vacuum
-
+from hyperloop.Python.tube import tube_vacuum
 
 def create_problem(vac):
     root = Group()
@@ -10,12 +9,10 @@ def create_problem(vac):
     prob.root.add('comp', vac)
     return prob
 
-
 class TestVac(object):
     def test_case1_vs_handcalc(self):
 
         vac = tube_vacuum.Vacuum()
-
         prob = create_problem(vac)
 
         prob.setup()

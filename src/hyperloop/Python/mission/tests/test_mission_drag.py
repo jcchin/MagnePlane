@@ -1,8 +1,7 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.mission import mission_thrust
-
+from hyperloop.Python.mission import mission_drag
 
 def create_problem(component):
     root = Group()
@@ -10,14 +9,12 @@ def create_problem(component):
     prob.root.add('comp', component)
     return prob
 
-
-class TestMissionThrust(object):
+class TestMissionDrag(object):
     def test_case1_vs_npss(self):
 
-        component = mission_thrust.MissionThrust()
+        component = mission_drag.MissionDrag()
 
         prob = create_problem(component)
-
         prob.setup()
 
         prob['comp.Cd'] = .2
@@ -26,12 +23,8 @@ class TestMissionThrust(object):
         prob['comp.T_ambient'] = 298.0
         prob['comp.R'] = 287.0
         prob['comp.D_magnetic'] = 150.0
-        prob['comp.Thrust_pod'] = 3500.0
         prob['comp.V'] = 335.0
-        prob['comp.theta'] = 0.0
-        prob['comp.g'] = 9.81
-        prob['comp.m_pod'] = 3100.0
 
         prob.run()
 
-        assert np.isclose(prob['comp.Thrust'], 30717.148715, rtol=0.1)
+        assert np.isclose(prob['comp.D'], 930.743575, rtol=0.01)
