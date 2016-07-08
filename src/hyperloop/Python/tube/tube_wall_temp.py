@@ -1,13 +1,111 @@
-"""
-    tube_wall_temp.py -
-        Determines the steady state temperature of the hyperloop tube.
-        Calculates Q released/absorbed by hyperloop tube due to:
-        Internal Convection, Tube Conduction, Ambient Natural Convection, Solar Flux In, Radiation Out
+"""The `TubeTemp` group represents a cycle of explicit and implicit
+    calculations to determine the steady state temperature of the
+    hyperloop tube.
 
-    -original calculations from Jeff Berton, ported and extended by Jeff Chin
+    The `TubeWallTemp` calculates Q released/absorbed by hyperloop tube due to:
+    Internal Convection, Tube Conduction, Ambient Natural Convection,
+    Solar Flux In, Radiation Out
 
-    Compatible with OpenMDAO v1.5
-"""
+    The `TempBalance` implicit component varies the boundary temp between the
+    inside and outside of the tube, until Q released matches Q absorbed.
+
+    Params
+    ------
+    radius_outer_tube : float
+        tube outer radius (m)
+    length_tube : float
+        Length of the entire Hyperloop tube (m)
+    num_pods : int
+        Number of Pods in the Tube at a given time
+    temp_boundary : float
+        Average Temperature of the tube wall (K). This state variable is varied
+    temp_outside_ambient : float
+        Average Temperature of the outside air (K)
+    nozzle_air_W : float
+        mass flow rate of the air exiting the pod nozzle (kg/s)
+    nozzle_air_Cp : float
+        specific heat of the air exiting the pod nozzle
+    nozzle_air_T : float
+        temp of the air exiting the pod nozzle (K)
+    solar_insolation : float
+        solar irradiation at sea level on a clear day
+    nn_incidence_factor : float
+        Non-normal incidence factor
+    surface_reflectance : float
+        Solar Reflectance Index
+    emissivity_tube : float
+        Emmissivity of the Tube
+    sb_constant : float
+        Stefan-Boltzmann Constant (W/((m**2)*(K**4)))
+    Nu_multiplier : float
+        optional fudge factor on Nusslet number to account for
+        a small breeze on tube, 1 assumes no breeze
+
+    Outputs
+    -------
+    diameter_outer_tube : float
+        outer diameter of the tube
+    nozzle_q : float
+        heat released from the nozzle (W)
+    q_per_area_solar : float
+        Solar Heat Rate Absorbed per Area (W/m**2)
+    q_total_solar : float
+        Solar Heat Absorbed by Tube (W)
+    area_rad : float
+        Tube Radiating Area (m**2)
+    GrDelTL3 : float
+        see [_1], Natural Convection Term (1/((ft**3)*F)))
+    Pr : float
+        Prandtl #
+    Gr : float
+        Grashof #
+    Ra : float
+        Rayleigh #
+    Nu : float
+        Nusselt #
+    k : float
+        Thermal conductivity (W/(m*K))
+    h : float
+        Heat Rate Radiated to the outside (W/((m**2)*K))
+    area_convection : float
+        Convection Area (m**2)
+    q_per_area_nat_conv : float
+        Heat Radiated per Area to the outside (W/(m**2))
+    total_q_nat_conv : float
+        Total Heat Radiated to the outside via Natural Convection (W)
+    heat_rate_pod : float
+        Heating Due to a Single Pods (W)
+    total_heat_rate_pods : float
+        Heating Due to All Pods (W)
+    q_rad_per_area : float
+        Heat Radiated to the outside per area (W/(m**2))
+    q_rad_tot : float
+        Heat Radiated to the outside (W)
+    viewing_angle : float
+        Effective Area hit by Sun (m**2)
+    q_total_out : float
+        Total Heat Released via Radiation and Natural Convection (W)
+    q_total_in : float
+        Total Heat Absorbed/Added via Pods and Solar Absorption (W)
+    ss_temp_residual : float
+        Energy balance to be driven to zero (K)
+
+    Notes
+    -----
+
+    Some of the original calculations from Jeff Berton, ported and extended by
+    Jeff Chin. Compatible with OpenMDAO v1.5, python 2 and 3
+
+    References
+    ----------
+
+    .. [1] https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51
+
+    .. [2] 3rd Ed. of Introduction to Heat Transfer by Incropera and DeWitt,
+    equations (9.33) and (9.34) on page 465
+
+    """
+
 from math import log, pi, sqrt, e
 
 from openmdao.core.group import Group, Component, IndepVarComp
@@ -82,18 +180,20 @@ class TubeWallTemp(Component):
                        desc='Average Temperature of the outside air')  #
         #nozzle_air = FlowIn(iotype="in", desc="air exiting the pod nozzle")
         #bearing_air = FlowIn(iotype="in", desc="air exiting the air bearings")
-        self.add_param('nozzle_air_W', 34., desc='air exiting the pod nozzle')
-        self.add_param('nozzle_air_Cp', 34., desc='air exiting the pod nozzle')
-        self.add_param('nozzle_air_Tt', 34., desc='air exiting the pod nozzle')
-        self.add_param('bearing_air_W',
-                       34.,
-                       desc='air exiting the air bearings')
-        self.add_param('bearing_air_Cp',
-                       34.,
-                       desc='air exiting the air bearings')
-        self.add_param('bearing_air_Tt',
-                       34.,
-                       desc='air exiting the air bearings')
+        self.add_param('nozzle_air_W',
+                        34.,
+                        units = 'kg/s',
+                        desc='mass flow rate of the air exiting the pod nozzle')
+        self.add_param('nozzle_air_Cp',
+                        34.,
+                        desc='specific heat of air exiting the pod nozzle')
+        self.add_param('nozzle_air_Tt',
+                        34.,
+                        units = 'K',
+                        desc='temp of the air exiting the pod nozzle')
+        self.add_param('bearing_air_W', 34., desc='air exiting the air bearings')
+        self.add_param('bearing_air_Cp', 34., desc='air exiting the air bearings')
+        self.add_param('bearing_air_Tt', 34., desc='air exiting the air bearings')
 
         #constants
         self.add_param('solar_insolation',
@@ -155,7 +255,7 @@ class TubeWallTemp(Component):
                         desc='Heat Radiated to the outside')  #
         self.add_output('area_convection',
                         3374876.115,
-                        units='W',
+                        units='m**2',
                         desc='Convection Area')  #
         #Natural Convection
         self.add_output('q_per_area_nat_conv',
@@ -302,7 +402,7 @@ class TubeWallTemp(Component):
 
 
 class TubeTemp(Group):
-    """An Assembly that computes SS temp"""
+    """An Assembly that computes Steady State temp"""
 
     def __init__(self):
         super(TubeTemp, self).__init__()
