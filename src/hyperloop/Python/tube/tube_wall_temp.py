@@ -214,10 +214,9 @@ class TubeWallTemp(Component):
                        0.00000005670373,
                        units='W/((m**2)*(K**4))',
                        desc='Stefan-Boltzmann Constant')  #
-        self.add_param(
-            'Nu_multiplier',
-            1,
-            desc="fudge factor on nusslet number to account for small breeze on tube")
+        self.add_param('Nu_multiplier',
+                        1.,
+                        desc="fudge factor on nusslet number to account for small breeze on tube")
 
         #--Outputs--
         self.add_output('diameter_outer_tube', shape=1)
@@ -263,10 +262,10 @@ class TubeWallTemp(Component):
                         units='W/(m**2)',
                         desc='Heat Radiated per Area to the outside')  #
         self.add_output(
-            'total_q_nat_conv',
-            286900419.,
-            units='W',
-            desc='Total Heat Radiated to the outside via Natural Convection')  #
+                        'total_q_nat_conv',
+                        286900419.,
+                        units='W',
+                        desc='Total Heat Radiated to the outside via Natural Convection')  #
         #Exhausted from Pods
         self.add_output('heat_rate_pod',
                         519763,
@@ -291,16 +290,14 @@ class TubeWallTemp(Component):
                         units='m**2',
                         desc='Effective Area hit by Sun')  #
         #Total Heating
-        self.add_output(
-            'q_total_out',
-            286900419.,
-            units='W',
-            desc='Total Heat Released via Radiation and Natural Convection')  #
-        self.add_output(
-            'q_total_in',
-            286900419.,
-            units='W',
-            desc='Total Heat Absorbed/Added via Pods and Solar Absorption')  #
+        self.add_output('q_total_out',
+                        286900419.,
+                        units='W',
+                        desc='Total Heat Released via Radiation and Natural Convection')  #
+        self.add_output('q_total_in',
+                        286900419.,
+                        units='W',
+                        desc='Total Heat Absorbed/Added via Pods and Solar Absorption')  #
         #Residual (for solver)
         self.add_output('ss_temp_residual',
                         shape=1,
@@ -397,8 +394,8 @@ class TubeWallTemp(Component):
         u['q_total_in'] = u['q_total_solar'] + u['total_heat_rate_pods']
 
         u['ss_temp_residual'] = (u['q_total_out'] - u['q_total_in']) / 1e6
-        print("u['ss_temp_residual'] ", u['ss_temp_residual'])
-        print("temp boundary", p['temp_boundary'])
+        # print("u['ss_temp_residual'] ", u['ss_temp_residual'])
+        # print("temp boundary", p['temp_boundary'])
 
 
 class TubeTemp(Group):
