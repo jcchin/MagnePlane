@@ -1,4 +1,5 @@
 from __future__ import print_function
+import numpy as np
 
 from openmdao.api import Problem, Group
 from openmdao.components.indep_var_comp import IndepVarComp
@@ -25,9 +26,6 @@ class TestTubeWall(object):
 
         prob.setup(check=True)
 
-        # test = set_as_top(TubeHeatBalance())
-        #set input values
-
         #tm.nozzle_air.setTotalTP(1710, 0.304434211)
 
         prob['tt.nozzle_air.W'] = 1.08
@@ -44,7 +42,7 @@ class TestTubeWall(object):
 
         prob.run()
 
-        tol = 2.1e-2  # seems a little generous
+        rtol = 2.1e-2  # seems a little generous
 
         npss = 353244.
         pyc = prob['tt.tm.heat_rate_pod']
@@ -61,14 +59,14 @@ class TestTubeWall(object):
         npss = 123775609.
         pyc = prob['tt.tm.GrDelTL3']
         rel_err = abs(npss - pyc) / npss
-        print('GrDelTL3:', npss, pyc, rel_err)
-        assertLessEqual(rel_err, tol)
+        #print('GrDelTL3:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 0.707
         pyc = prob['tt.tm.Pr']
         rel_err = abs(npss - pyc) / npss
-        print('Pr:', npss, pyc, rel_err)
-        self.assertLessEqual(rel_err, tol)
+        #print('Pr:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 23163846280.
         pyc = prob['tt.tm.Gr']
@@ -82,31 +80,31 @@ class TestTubeWall(object):
         print('Ra:', npss, pyc, rel_err)
         #self.assertLessEqual(rel_err, tol)
 
-        assert(False)
-
         npss = 281.6714
         pyc = prob['tt.tm.Nu']
         rel_err = abs(npss - pyc) / npss
-        print('Nu:', npss, pyc, rel_err)
-        self.assertLessEqual(rel_err, tol)
+        #print('Nu:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
+
+        #self.assertLessEqual(rel_err, tol)
         #http://www.egr.msu.edu/~somerton/Nusselt/ii/ii_a/ii_a_3/ii_a_3_a.html
         npss = 0.02655
         pyc = prob['tt.tm.k']
         rel_err = abs(npss - pyc) / npss
-        print('k:', npss, pyc, rel_err)
-        self.assertLessEqual(rel_err, tol)
+        #print('k:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 3.3611
         pyc = prob['tt.tm.h']
         rel_err = abs(npss - pyc) / npss
-        print('h:', npss, pyc, rel_err)
-        self.assertLessEqual(rel_err, tol)
+        #print('h:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 3374876.
         pyc = prob['tt.tm.area_convection']
         rel_err = abs(npss - pyc) / npss
-        print('area_convection:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        #print('area_convection:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 57.10
         pyc = prob['tt.tm.q_per_area_nat_conv']
@@ -123,26 +121,26 @@ class TestTubeWall(object):
         npss = 1074256.
         pyc = prob['tt.tm.area_viewing']
         rel_err = abs(npss - pyc) / npss
-        print('area_viewing:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        #print('area_viewing:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 350.
         pyc = prob['tt.tm.q_per_area_solar']
         rel_err = abs(npss - pyc) / npss
-        print('q_per_area_solar:', npss, pyc, rel_err)
-        self.assertLessEqual(rel_err, tol)
+        #print('q_per_area_solar:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 375989751.
         pyc = prob['tt.tm.q_total_solar']
         rel_err = abs(npss - pyc) / npss
-        print('q_total_solar:', npss, pyc, rel_err)
-        self.assertLessEqual(rel_err, tol)
+        #print('q_total_solar:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 3374876.115
         pyc = prob['tt.tm.area_rad']
         rel_err = abs(npss - pyc) / npss
-        print('area_rad:', npss, pyc, rel_err)
-        self.assertLessEqual(rel_err, tol)
+        #print('area_rad:', npss, pyc, rel_err)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 59.7
         pyc = prob['tt.tm.q_rad_per_area']
