@@ -160,15 +160,3 @@ if __name__ == '__main__':
     print('Pod Diameter = %f m' % top['p.D_pod'])
     print('Pod Length = %f m' % top['p.L_pod'])
     print('Pod planform area = %f m^2' % top['p.S'])
-
-
-
-
-
-
-
-
-
-        
-
-
