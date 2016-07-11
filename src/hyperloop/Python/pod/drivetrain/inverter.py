@@ -1,6 +1,7 @@
 import numpy as np
 from openmdao.api import Component
 
+
 class Inverter(Component):
     """The `Inverter` class represents a BLDC inverter in an OpenMDAO model
 
