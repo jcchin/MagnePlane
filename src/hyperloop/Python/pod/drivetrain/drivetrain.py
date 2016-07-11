@@ -32,28 +32,32 @@ class Drivetrain(Group):
         desired design value for motor power (W)
     max_current : float
         max motor phase current (A)
-    n_phases : float
-        number of motor phases (unitless)
     speed : float
         desired output shaft mechanical speed (RPM)
+    inverter.efficiency : float
+        power out / power in (W)
+    des_time : float
+        time until design power point (h)
+    time_of_flight : float
+        total mission time (h)
 
     Outputs
     -------
-    battery_mass : float
+    battery.battery_mass : float
         total mass of cells in battery configuration (kg)
-    battery_volume : float
+    battery.battery_volume : float
         total volume of cells in battery configuration (cm^3)
-    battery_cost : float
+    battery.battery_cost : float
         total cost of battery cells in (USD)
-    power_input : float
+    motor.power_input : float
         total required power input into motor
-    D2L : float
+    motor.motor_size.D2L : float
         D^2*L parameter which is proportional to Torque (mm^3)
-    d_base : float
+    motor.motor_size.d_base : float
         base 8000hp diameter for scaling purposes (m)
-    mass : float
+    motor.mass : float
         mass of motor (kg)
-    l_base : float
+    motor.motor_size.l_base : float
         motor length (m)
 
     References
