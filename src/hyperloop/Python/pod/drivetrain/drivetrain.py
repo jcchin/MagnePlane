@@ -26,13 +26,12 @@ class Drivetrain(Group):
 
     Params
     ------
-    max_rpm : float
-        maximum rotational speed of motor (RPM)
-    design_power : float
+    motor.design_torque : float
+    motor.design_power : float
         desired design value for motor power (W)
-    max_current : float
+    motor.max_current : float
         max motor phase current (A)
-    speed : float
+    motor.speed : float
         desired output shaft mechanical speed (RPM)
     inverter.efficiency : float
         power out / power in (W)
@@ -43,22 +42,24 @@ class Drivetrain(Group):
 
     Outputs
     -------
-    battery.battery_mass : float
+    battery.mass : float
         total mass of cells in battery configuration (kg)
-    battery.battery_volume : float
+    battery.volume : float
         total volume of cells in battery configuration (cm^3)
-    battery.battery_cost : float
+    battery.cost : float
         total cost of battery cells in (USD)
     motor.power_input : float
         total required power input into motor
-    motor.motor_size.D2L : float
+    motor.volume : float
         D^2*L parameter which is proportional to Torque (mm^3)
-    motor.motor_size.d_base : float
-        base 8000hp diameter for scaling purposes (m)
+    motor.diameter : float
+        motor diameter (m)
     motor.mass : float
         mass of motor (kg)
-    motor.motor_size.l_base : float
+    motor.length : float
         motor length (m)
+    motor.power_input : float
+        total required power input into motor (W)
 
     References
     ----------
@@ -72,9 +73,7 @@ class Drivetrain(Group):
 
         self.deriv_options['type'] = 'fd'
 
-        self.add('motor',
-                 MotorGroup(),
-                 promotes=['speed', 'design_power', 'max_rpm', 'max_current'])
+        self.add('motor', MotorGroup())
         self.add('inverter', Inverter())
         self.add('battery', Battery(), promotes=['des_time', 'time_of_flight'])
 
