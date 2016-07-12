@@ -59,10 +59,6 @@ class PodMass(Component):
                        val=1.,
                        desc='Length of pod',
                        units='m')
-        self.add_param('comp_inletArea',
-                       val=1.,
-                       desc='Area of compressor',
-                       units='m**2')
         self.add_output('pod_mass',
                         val=1.,
                         desc='Pod Mass',
@@ -80,10 +76,7 @@ class PodMass(Component):
         battery_mass = params['battery_mass']
         comp_mass = params['comp_mass']
         pod_len = params['pod_len']
-        comp_inletArea = params['comp_inletArea']
 
-        #computes blockage factor using Compressor Area / Area of Pod
-        unknowns['BF'] = comp_inletArea/((podgeo_d/2)**2)
         #adds up the mass.
         unknowns['pod_mass'] = mag_mass + np.pi*(podgeo_d/2)**2*pod_len*al_rho + motor_mass + battery_mass + comp_mass
 

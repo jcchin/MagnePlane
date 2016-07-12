@@ -40,7 +40,7 @@ class Cycle(Group):
                                               'inlet.Fl_O:stat:W', 'comp.Fl_O:stat:MN', 'comp.Fl_O:stat:area',
                                               'comp.Fl_O:stat:P', 'comp.Fl_O:stat:T'])
     self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
-    self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'm_pod', 'T_tunnel', 'p_tunnel', 'comp_len'])
+    self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'M_pod', 'T_tunnel', 'p_tunnel', 'comp_len'])
     
     self.connect('FlowPath.inlet.Fl_O:tot:h', ['CompressorMass.h_in', 'CompressorLen.h_in'])
     self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])

@@ -25,7 +25,7 @@ class CompressorLen(Component):
             Inlet area of pod. (m**2)
         comp_mach : float
             Compressor Mach at Inlet. (m/s)
-        m_pod : float
+        M_pod : float
             Pod Mach Number. (unitless)
         T_tunnel : float
             Tunnel temperature. (K)
@@ -75,7 +75,7 @@ class CompressorLen(Component):
                        val=0.6,
                        desc='Compressor Mach at Inlet',
                        units='m/s')
-        self.add_param('m_pod',
+        self.add_param('M_pod',
                        val=.8,
                        desc='Pod Mach Number',
                        units='unitless')
