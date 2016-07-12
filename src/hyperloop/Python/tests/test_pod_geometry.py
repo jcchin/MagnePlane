@@ -29,25 +29,27 @@ class TestMissionDrag(object):
         prob['comp.L_p'] = 11.2
         prob['comp.L_conv'] = .3
         prob['comp.L_div'] = 1.5
-        prob['comp.D_dif'] = 1.28
-        prob['comp.BF'] = .9
-        prob['comp.prc'] = 12.5
-        prob['comp.A_inlet'] = 1.1
-        prob['comp.gam'] = 1.4
+        prob['comp.L_inlet'] = 2.5
         prob['comp.p_tunnel'] = 850.0
-        prob['comp.R'] = 287.0
-        prob['comp.T_tunnel'] = 298.0
-        prob['comp.beta'] = .1
-        prob['comp.M_dif'] = .6
-        prob['comp.M_duct'] = .3
-        prob['comp.A_payload'] = 1.4
-        prob['comp.M_pod'] = .8
-
+        prob['comp.p_duct'] = 6800.0
+        prob['comp.p_passenger'] = 101.0e3
+        prob['comp.rho_pod'] = 2700.0
+        prob['comp.n_passengers'] = 28.0
+        prob['comp.dm_passenger'] = 166.0
+        prob['comp.SF'] = 1.5
+        prob['comp.Su'] = 50.0e6
+        prob['comp.A_duct'] = .3
+        prob['comp.dl_passenger'] = .8
+        prob['comp.g'] = 9.81
 
         prob.run()
 
-        assert np.isclose(prob['comp.A_pod'], 2.032157, rtol = 0.01)
-        assert np.isclose(prob['comp.D_pod'], 1.608547, rtol = 0.01)
-        assert np.isclose(prob['comp.L_pod'], 18.921240, rtol = 0.01)
-        assert np.isclose(prob['comp.S'], 30.435701, rtol = 0.01)
+        assert np.isclose(prob['comp.A_pod'], 3.053648, rtol = 0.01)
+        assert np.isclose(prob['comp.D_pod'], 1.971808, rtol = 0.01)
+        assert np.isclose(prob['comp.L_pod'], 20.500000, rtol = 0.01)
+        assert np.isclose(prob['comp.S'], 40.422060, rtol = 0.01)
+        assert np.isclose(prob['comp.t_passenger'], 0.002630, rtol = 0.01)
+        assert np.isclose(prob['comp.t_pod'], 0.002946, rtol = 0.01)
+        assert np.isclose(prob['comp.BF'], 0.994033, rtol = 0.01)
+        assert np.isclose(prob['comp.beta'], 0.005672, rtol = 0.01)
 

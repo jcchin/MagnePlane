@@ -75,82 +75,71 @@ class PodGeometry(Component):
         self.add_param('L_p', val=11.2, desc='Payload Length', units='m')
         self.add_param('L_conv', val=.3, desc='Converging Lenth', units='m')
         self.add_param('L_div', val=1.5, desc='Diverging Length', units='m')
-        self.add_param('D_dif', val=1.28, desc='Compressor Inlet Radius', units='m')
-        self.add_param('BF', val=.9, desc='Blockage Factor', units='unitless')
-        self.add_param('prc', val=12.5, desc='Pressure ratio across compressor', units='unitless')
-        self.add_param('A_inlet', val=1.1, desc='Inlet area', units='m**2')
-        self.add_param('gam', val=1.4, desc='Ratio of specific heats', units='unitless')
+        self.add_param('L_inlet', 2.5, desc = 'Inlet length', units = 'm')
         self.add_param('p_tunnel', val=850.0, desc='tunnel pressure', units='Pa')
-        self.add_param('R', val=287.0, desc='Ideal gas constant', units='J/(kg*K)')
-        self.add_param('T_tunnel', val=298.0, desc='Tunnel temperature', units='K')
-        self.add_param('beta', val=.1, desc='Duct blockage coefficient', units='unitless')
-        self.add_param('M_dif', val=.6, desc='Mach number at compressor inlet', units='unitless')
-        self.add_param('M_duct', val=.3, desc='Mach number of flow exitting compressor', units='unitless')
-        self.add_param('A_payload', val=1.4, desc='Cross sectional area of passenger compartment')
-
-        self.add_param('M_pod', val=.8, desc='Pod Mach Number', units='unitless')
+        self.add_param('A_payload', val=2.72, desc='Cross sectional area of passenger compartment')
+        self.add_param('p_duct', 6800.0, desc = 'duct pressure', units = 'Pa')
+        self.add_param('p_passenger', 101.0e3, desc = 'Passenger compartment pressure', units = 'Pa')
+        self.add_param('rho_pod', 2700.0, desc = 'material density', units = 'kg/m**3')
+        self.add_param('n_passengers', 28, desc = 'number of passengers', units = 'unitless')
+        self.add_param('dm_passenger', 166.0, desc = 'mass per passenger', units = 'kg')
+        self.add_param('SF', 1.5, desc = 'safety factor for pressure cylinder', units = 'unitless')
+        self.add_param('Su', 50.0e6, desc = 'ultimate strength', units = 'Pa')
+        self.add_param('A_duct', .3, desc = 'tunnel pressure', units = 'm**2')
+        self.add_param('dl_passenger', .8, desc = 'passenger compartment length per person', units = 'm')
+        self.add_param('g', 9.81, desc = 'gravity', units = 'm/s**2')
 
         self.add_output('A_pod', val = 0.0, desc = 'Cross sectional area of pod', units = 'm**2')
         self.add_output('D_pod', val=0.0, desc='Pod diametes', units='m')
         self.add_output('S', val=0.0, desc='Planform area of pod', units='m**2')
         self.add_output('L_pod', val=0.0, desc='Length of pod', units='m')
+        self.add_output('t_passenger', 0.0, desc = 'passenger compartment thickness', units = 'm')
+        self.add_output('t_pod', 0.0, desc = 'outer pod thickness', units = 'm')
+        self.add_output('BF', 0.0, desc = 'Tunnel blockage Factor', units = 'unitless')
+        self.add_output('beta', 0.0, desc = 'duct blockage factor', units = 'unitless')
     
     def solve_nonlinear(self, p, u, r):
 
-        A_inlet = p['A_inlet']
-        R = p['R']
-        T_tunnel = p['T_tunnel']
-        D_dif = p['D_dif']
-        gam = p['gam']
-        prc = p['prc']
-        M_pod = p['M_pod']
+        dp_passenger = p['p_passenger'] - p['p_duct']                   #Calculate pressure differential across passenger section wall
+        r_passenger = np.sqrt(p['A_payload']/np.pi)                     #Calculate radius of the passenger section
+        t_passenger = (dp_passenger*r_passenger)/(p['Su']/p['SF'])      #Calculate pod thickness based on pressurized cylinder equations
 
-        D_inlet = np.sqrt((4*A_inlet)/np.pi)                #Calculate inlet diameter from area
-        c = ((D_dif/2)-(D_inlet/2))/.0524                   #Calculate length of inlet assuming conical frustrum with 3 degree half angle
-        rho_tunnel = p['p_tunnel']/(R*T_tunnel)             #Calculate air density in tunnel from ideal gas law
+        L_passenger = (p['n_passengers']*p['dl_passenger'])/2.0         #Calculate length of passenger section
+        r_pod = np.sqrt((p['A_duct']+p['A_payload'])/np.pi)             #Calculate pod radius initial value for sizing
 
-        T_ratio_dif = (1+((gam-1.0)/2.0)*(M_pod**2))/(1+((gam-1.0)/2.0)*(p['M_dif']**2))        #Calculate temperature ratio across diffuser from isentropic relations
-        p_ratio_dif = T_ratio_dif**(gam/(gam-1.0))                                              #Calculate pressure ratio across diffuser from isentropic relations
-        rho_ratio_dif = p_ratio_dif**(1.0/gam)                                                  #Calculate density ratio across inlet from isentropic relations
-        T_dif = T_ratio_dif*T_tunnel
-        p_dif = p_ratio_dif*p['p_tunnel']
-        rho_dif = rho_tunnel*rho_ratio_dif
+        #Calculate mass of passenger section. Factor of 1.5 is to account for structure, luggage, etc.
+        m_passenger = (p['n_passengers']*p['dm_passenger']*1.5) + p['rho_pod']*np.pi*(((r_passenger+t_passenger)**2)-(r_passenger**2))*L_passenger     
+        
+        dx = (m_passenger*p['g'])/((p['Su']/5.0)*L_passenger)           #Calculate thickness of structure supporting passenger section according to yield condition with safety factor = 5
+        A_cross = dx*(r_pod-r_passenger)                                #Calculate cross sectional area of passenger compartment support structure
+        
+        beta = (A_cross + np.pi*(((r_passenger+t_passenger)**2) - (r_passenger**2)))/p['A_payload']     #Calculate duct blockage factor
 
-        T_ratio_comp = prc**((gam-1.0)/gam)                 #Calculate Temperature ratio across compressor assuming isentropic compression
-        rho_ratio_comp = prc**(1.0/gam)                     #Calculate density ratio across compressor assuming isentropic compression
+        dp_pod = p['p_passenger'] - p['p_tunnel']                       #Calculate pressure differntial assuming atomospheric internal pressure
+        t_pod = (dp_pod*r_pod)/(p['Su']/p['SF'])                        #Calculate pod thickness based on pressurized cylinder equations
+        r_pod = np.sqrt((p['A_duct']+(1.0+beta)*p['A_payload'])/np.pi)  #Calculate corrected value of pod radius to account for beta
 
-        T_prime = T_dif*T_ratio_comp
-        rho_prime = rho_dif*rho_ratio_comp                  #Calculate desnsity of flow exiting compressor
-        U_prime = p['M_duct']*np.sqrt(gam*R*T_prime)        #Calculate sped of air exiting compressor
-
-        m_dot = rho_tunnel*A_inlet*M_pod*np.sqrt(gam*R*T_tunnel)        #Calculate mass flow into the diffuser
-        A_duct = m_dot/(rho_prime*U_prime)                              #Calculate duct area using conservation of mass
-        A_pod = (A_duct + (1+p['beta'])*p['A_payload'])/p['BF']         #Calculate cross sectional area of the pod
+        BF = (p['A_payload']*(1.0+beta) + p['A_duct'])/(np.pi*((r_pod+t_pod)**2.0))                     #Calculate pod blockage factor
+        A_pod = (p['A_duct'] + (1+beta)*p['A_payload'])/BF              #Calculate cross sectional area of the pod
         D_pod = np.sqrt((4*A_pod)/np.pi)                                #Calculate pod diameter
 
-        L_pod = c + p['L_comp'] + p['L_bat'] + p['L_motor'] + p['L_inverter'] + p['L_trans'] + p['L_p'] + p['L_conv'] + p['L_div']
-        S = D_pod*L_pod
+        L_pod = p['L_inlet'] + p['L_comp'] + p['L_bat'] + p['L_motor'] + p['L_inverter'] + p['L_trans'] + p['L_p'] + p['L_conv'] + p['L_div']  #Calculate pod length
+        S = D_pod*L_pod                                                 #Calculate pod planform area
 
         u['A_pod'] = A_pod
         u['D_pod'] = D_pod
         u['L_pod'] = L_pod
         u['S'] = S
+        u['t_passenger'] = t_passenger
+        u['t_pod'] = t_pod
+        u['BF'] = BF
+        u['beta'] = beta
 
 if __name__ == '__main__':
     top = Problem()
     root = top.root = Group()
 
-    params = (
-            ('BF', .9, {'units' : 'unitless'}),
-            ('prc', 12.5, {'units' : 'unitless'}),
-            ('A_inlet', 1.1, {'units' : 'm**2'}),
-            ('p_tunnel', 850.0, {'units' : 'Pa'}),
-            ('M_pod', .8, {'units' : 'unitless'}),
-            ('D_dif', 1.28, {'units' : 'm'})
-        )
-
-    root.add('input_vars', IndepVarComp(params), promotes = ['BF', 'prc', 'A_inlet', 'p_tunnel', 'M_pod', 'D_dif'])
-    root.add('p', PodGeometry(), promotes = ['BF', 'prc', 'A_inlet', 'p_tunnel', 'M_pod', 'D_dif'])
+    root.add('p', PodGeometry())
 
     top.setup()
     top.run()
@@ -160,3 +149,8 @@ if __name__ == '__main__':
     print('Pod Diameter = %f m' % top['p.D_pod'])
     print('Pod Length = %f m' % top['p.L_pod'])
     print('Pod planform area = %f m^2' % top['p.S'])
+    print('Passenger compartment thickness = %f m' % top['p.t_passenger'])
+    print('Pod thickness is = %f m' % top['p.t_pod'])
+    print('Pod blockage factor = %f' % top['p.BF'])
+    print('Duct blockage factor is = %f' % top['p.beta'])
+
