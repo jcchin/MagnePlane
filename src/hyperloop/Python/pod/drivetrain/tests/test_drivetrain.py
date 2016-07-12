@@ -18,11 +18,12 @@ class TestDrivetrain(object):
         prob.setup()
 
         # setup ElectricMotor
-        prob['max_current'] = 42.0
-        prob['speed'] = 1900.0
+        prob['motor.max_current'] = 42.0
+        prob['motor.speed'] = 1900.0
         prob['motor.motor_size.L_D_ratio'] = 0.83
-        prob['max_rpm'] = 3500.0
-        prob['design_power'] = 0.394 * 746
+        # prob['max_rpm'] = 3500.0
+        prob['motor.design_torque'] = 0.801933
+        prob['motor.design_power'] = 0.394 * 746
         prob['motor.n_phases'] = 3.0
         prob['motor.motor_size.kappa'] = 1 / 1.75
         prob['motor.pole_pairs'] = 6.0
@@ -48,11 +49,12 @@ class TestDrivetrain(object):
         prob.root.list_connections()
         prob.run()
 
-        assert np.isclose(prob['battery.battery_mass'], 8.84, rtol=0.001)
-        assert np.isclose(prob['battery.battery_volume'], 2991.51743192, rtol=0.001)
-        assert np.isclose(prob['battery.battery_cost'], 673.4, rtol=0.001)
+
+        assert np.isclose(prob['battery.mass'], 8.84, rtol=0.001)
+        assert np.isclose(prob['battery.volume'], 2991.51743192, rtol=0.001)
+        assert np.isclose(prob['battery.cost'], 673.4, rtol=0.001)
         assert np.isclose(prob['motor.power_input'], 194.63856993, rtol=0.001)
-        assert np.isclose(prob['motor.motor_size.D2L'], 379903.090621, rtol=0.001)
-        assert np.isclose(prob['motor.motor_size.d_base'], 0.0770663714581, rtol=0.001)
-        assert np.isclose(prob['motor.motor_size.l_base'], 0.0639650883103, rtol=0.001)
+        assert np.isclose(prob['motor.volume'], 379903.090621, rtol=0.001)
+        assert np.isclose(prob['motor.diameter'], 0.0770663714581, rtol=0.001)
+        assert np.isclose(prob['motor.length'], 0.0639650883103, rtol=0.001)
         assert np.isclose(prob['motor.mass'], 1.22089240568, rtol=0.001)
