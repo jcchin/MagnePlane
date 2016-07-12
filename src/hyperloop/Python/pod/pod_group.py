@@ -15,7 +15,7 @@ class PodGroup(Group):
         super(PodGroup, self).__init__()
 
         self.add('pod_mass', PodMass())
-        self.add('drivetrain', Drivetrain())
+        self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor.max_current', 'inverter.efficiency'])
         self.add('levitation_group', LevGroup(), promotes=['w_track', 'cost', 'w_track', 'mag_drag'])
         self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube', 'prc'])
         self.add('cycle', Cycle(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
@@ -30,9 +30,8 @@ class PodGroup(Group):
         self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
         self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len'])
         self.connect('drivetrain.motor.mass', 'pod_mass.motor_mass')
-        self.connect('drivetrain.battery.battery_mass', 'pod_mass.battery_mass')
-        #self.connect('drivetrain.??', 'pod_geometry.L_bat')
-        self.connect('drivetrain.motor.motor_size.l_base', 'pod_geometry.L_motor')
+        self.connect('drivetrain.battery.mass', 'pod_mass.battery_mass')
+        self.connect('drivetrain.motor.length', 'pod_geometry.L_motor')
         self.connect('pod_mass.pod_mass', 'levitation_group.m_pod')
         self.connect('pod_geometry.L_pod', 'levitation_group.l_pod')
         self.connect('pod_geometry.D_pod', 'pod_mass.podgeo_d')
@@ -40,8 +39,8 @@ class PodGroup(Group):
 
         #npss cycle connections
         #self.connect('cycle.comp.Nmech', 'drivetrain.operating_rpm')
-        self.connect('comp.power', 'drivetrain.design_power')
-        self.connect('comp.trq', 'drivetrain.design_torque')
+        self.connect('comp.power', 'drivetrain.motor.design_power')
+        self.connect('comp.trq', 'drivetrain.motor.design_torque')
         self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
         self.connect('comp.Fl_O:stat:area', 'pod_geometry.A_duct')
@@ -81,9 +80,9 @@ if __name__ == "__main__":
     prob.root.list_connections()
     prob.run()
 
-    print('Tube Temperature: %f' % prob['Tube.Thermal.tubetemp'])
-    print(':%f' % prob['Cycle.'])
-    print(':%f' % prob['Aero.'])
-    print('%f' % prob['Geometry.'])
-    print('%f' % prob['LevGroup.'])
-    print('%f' % prob['Weight.'])
+    print('A Tube: %f' % prob['Pod.A_tube'])
+    print('Mag Drag :%f' % prob['Pod.mag_drag'])
+    print('S :%f' % prob['Pod.S'])
+    print('nozzle.Fl_O:tot:T %f' % prob['Pod.nozzle.Fl_O:tot:T'])
+    print('nozzle.Fl_O:stat:W %f' % prob['Pod.nozzle.Fl_O:stat:W'])
+    print('nozzle.Fg %f' % prob['Pod.nozzle.Fg'])
