@@ -43,4 +43,4 @@ install:
 - pip install git+http://github.com/OpenMDAO/OpenMDAO.git@master
 - pip install -e .
 
-script: py.test
+script: py.test -c setup.cfg

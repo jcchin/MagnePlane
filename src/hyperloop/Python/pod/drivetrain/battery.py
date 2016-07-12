@@ -1,6 +1,7 @@
 import numpy as np
 from openmdao.api import Component, Problem, Group
 
+
 class Battery(Component):
     """The `Battery` class represents a battery component in an OpenMDAO model. 
     
@@ -51,6 +52,8 @@ class Battery(Component):
         total mass of cells in battery configuration (kg)
     battery_volume : float
         total volume of cells in battery configuration (cm^3)
+    battery_cost : float
+        total cost of battery cells in (USD)
 
     Notes
     -----
