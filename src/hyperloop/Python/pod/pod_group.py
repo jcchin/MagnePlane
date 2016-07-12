@@ -41,6 +41,7 @@ class PodGroup(Group):
         #npss cycle connections
         #self.connect('cycle.comp.Nmech', 'drivetrain.operating_rpm')
         self.connect('comp.power', 'drivetrain.design_power')
+        self.connect('comp.trq', 'drivetrain.design_torque')
         self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
         self.connect('comp.Fl_O:stat:area', 'pod_geometry.A_duct')
