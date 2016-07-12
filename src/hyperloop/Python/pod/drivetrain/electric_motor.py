@@ -50,19 +50,17 @@ class MotorGroup(Group):
 
         Components
         ----------
-        motor : motor
+        motor : Motor
             Calculates the electrical characteristics of the motor
-        motor_size : motor_size
+        motor_size : MotorSize
             Calculates the size, mass, and performance characteristics of the motor
-        motor_balance : motor_balance
+        motor_balance : MotorBalance
             Calculates the residual in the conservation of energy equation between input
             power and total power used by the motor from mechanical output and additional
             losses
 
         Params
         ------
-        max_rpm : float
-            maximum rotational speed of motor (RPM)
         design_power : float
             desired design value for motor power (W)
         max_current : float
@@ -86,19 +84,29 @@ class MotorGroup(Group):
         frequency : float
             Frequency of electric output waveform (Hz)
         power_input : float
-            total required power input into motor
+            total required power input into motor (W)
+        volume : float
+            D^2*L parameter which is proportional to Torque (mm^3)
+        diameter : float
+            motor diameter (m)
+        mass : float
+            mass of motor (kg)
+        length : float
+            motor length (m)
+        power_input : float
+            total required power input into motor (W)
         """
         super(MotorGroup, self).__init__()
 
         self.add('motor',
                  Motor(),
-                 promotes=['max_torque', 'torque', 'max_current',
+                 promotes=['max_torque', 'design_torque', 'max_current',
                            'phase_current', 'phase_voltage', 'current',
                            'voltage', 'frequency', 'power_input'])
         self.add('motor_size',
                  MotorSize(),
-                 promotes=['mass', 'max_torque', 'torque', 'design_power',
-                           'max_rpm', 'speed', 'max_current'])
+                 promotes=['mass', 'max_torque', 'design_torque', 'design_power',
+                            'speed', 'max_current', 'length', 'diameter', 'volume'])
         self.add('motor_balance',
                  MotorBalance(),
                  promotes=['current', 'voltage', 'power_input'])
@@ -146,8 +154,6 @@ class MotorSize(Component):
 
     Parameters
     ----------
-    max_rpm : float
-        maximum rotational speed of motor (RPM)
     design_power : float
         desired design value for motor power (W)
     max_current : float
@@ -167,13 +173,13 @@ class MotorSize(Component):
 
     Outputs
     -------
-    D2L : float
+    volume : float
         D^2*L parameter which is proportional to Torque (mm^3)
-    d_base : float
+    diameter : float
         base 8000hp diameter for scaling purposes (m)
-    mass : float
+    motor_mass :float
         mass of motor (kg)
-    l_base : float
+    length : float
         motor length (m)
     w_base : float
         base speed of motor (rad/s)
@@ -187,7 +193,7 @@ class MotorSize(Component):
         friction loss from motor operation (W)
     winding_resistance : float
         total resistance of copper winding (ohm)
-    torque : float
+    design_torque : float
         torque at max rpm (N*m)
     w_operating : float
         operating speed of motor (rad/s)
@@ -220,10 +226,10 @@ class MotorSize(Component):
                        0.0,
                        desc='ratio of inner diamter to outer diameter of core',
                        units='unitless')
-        self.add_param('max_rpm',
-                       val=3500.0,
-                       desc='maximum rotational speed of motor',
-                       units='RPM')
+        # self.add_param('max_rpm',
+        #                val=3500.0,
+        #                desc='maximum rotational speed of motor',
+        #                units='RPM')
         self.add_param('pole_pairs',
                        val=6.0,
                        desc='number of motor pole_pairs',
@@ -232,6 +238,10 @@ class MotorSize(Component):
                        val=0.394 * 746,
                        desc='desired design value for motor power',
                        units='W')
+        self.add_param('design_torque',
+                        val=1.0,
+                        desc='torque at max rpm',
+                        units='N*m')
         self.add_param('n_phases',
                        val=3.0,
                        desc='number of motor power phases',
@@ -240,26 +250,26 @@ class MotorSize(Component):
                        val=1 / 1.75,
                        desc='ratio of base speed to max speed',
                        units='unitless')
-        self.add_output('d_base',
+        self.add_output('diameter',
                         val=0.48,
                         desc='base 8000hp diameter for scaling purposes in m',
                         units='m')
-        self.add_output('l_base', val=0.4, desc='motor length', units='m')
+        self.add_output('length', val=0.4, desc='motor length', units='m')
         self.add_output('mass', val=0.0, desc='mass of motor', units='kg')
         self.add_output('max_torque',
                         val=0.0,
                         desc='maximum possible torque for motor',
                         units='N*m')
-        self.add_output('torque',
-                        val=1000.0,
-                        desc='torque at max rpm',
-                        units='N*m')
+        # self.add_output('design_torque',
+        #                 val=1000.0,
+        #                 desc='torque at max rpm',
+        #                 units='N*m')
         self.add_output('w_base',
                         val=3000.0,
                         desc=' base speed of motor ',
                         units='rad/s')
         self.add_output(
-            'D2L',
+            'volume',
             val=1.0,
             desc='D-squared*L parameter which is proportional to Torque',
             units='mm^3')
@@ -302,44 +312,45 @@ class MotorSize(Component):
         """
 
         # calc max torque, rotational velocity, power
-        w_max = params['max_rpm'] * 2.0 * np.pi / 60.0  # rad/sec
+        # w_max = params['max_rpm'] * 2.0 * np.pi / 60.0  # rad/sec
+        w_max = params['design_power'] / params['design_torque']
         unknowns['w_base'] = params['kappa'] * w_max
         unknowns['max_torque'] = params['design_power'] / unknowns['w_base']
-        unknowns['torque'] = params['design_power'] / w_max
-        unknowns['power_mech'] = unknowns['w_operating'] * unknowns['torque']
+        # params['design_torque'] = params['design_power'] / w_max
+        unknowns['power_mech'] = unknowns['w_operating'] * params['design_torque']
         unknowns['w_operating'] = params['speed'] * 2 * np.pi / 60.0
 
         # calc loss parameters
         unknowns['power_iron_loss'] = self.calculate_iron_loss(
-            unknowns['d_base'], params['speed'], unknowns['l_base'],
+            unknowns['diameter'], params['speed'], unknowns['length'],
             params['core_radius_ratio'], params['pole_pairs'])
         unknowns['winding_resistance'] = self.calculate_copper_loss(
-            unknowns['d_base'], params['max_current'], params['n_phases'])
+            unknowns['diameter'], params['max_current'], params['n_phases'])
         unknowns['power_windage_loss'] = self.calculate_windage_loss(
-            unknowns['w_operating'], unknowns['d_base'], unknowns['l_base'])
+            unknowns['w_operating'], unknowns['diameter'], unknowns['length'])
 
         # calc size
-        unknowns['D2L'] = 293722.0 * np.power(unknowns['max_torque'],
+        unknowns['volume'] = 293722.0 * np.power(unknowns['max_torque'],
                                               0.7592)  # mm^3
-        unknowns['d_base'] = np.power(unknowns['D2L'] / params['L_D_ratio'],
+        unknowns['diameter'] = np.power(unknowns['volume'] / params['L_D_ratio'],
                                       1.0 / 3.0) / 1000.0  # m
-        unknowns['l_base'] = unknowns['d_base'] * params['L_D_ratio']  # m
+        unknowns['length'] = unknowns['diameter'] * params['L_D_ratio']  # m
 
         unknowns['mass'] = 0.0000070646 * np.power(
-            unknowns['D2L'],
+            unknowns['volume'],
             0.9386912061)  # kg, relation in GT paper (Figure 6)
 
-    def calculate_windage_loss(self, w_operating, d_base, l_base):
+    def calculate_windage_loss(self, w_operating, diameter, length):
         """Calculates the windage or frictional losses of a BLDC motor with
-        dimensions given by `l_base` and `d_base` operating at speed `w_operating`.
+        dimensions given by `length` and `diameter` operating at speed `w_operating`.
 
         Args
         ----
         w_operating : float
             operating speed of motor (rad/s)
-        d_base : float
+        diameter : float
             base 8000hp diameter for scaling purposes (m)
-        l_base : float
+        length : float
             motor length (m)
 
         Returns
@@ -350,7 +361,7 @@ class MotorSize(Component):
         return 0
 
     #      # calc Reynolds number losses
-    #      Re = np.power(d_base, 2.0) / 4.0 * w_operating / 2.075e-5 * 0.05
+    #      Re = np.power(diameter, 2.0) / 4.0 * w_operating / 2.075e-5 * 0.05
     #      c_friction = 0.01
     #      
     #      # TODO no nested loop
@@ -361,24 +372,24 @@ class MotorSize(Component):
     #     
     #      # calculate cylinder loss
     #      P_windage_cylinder_loss = c_friction * np.pi * np.power(w_operating, 3.0) * np.power(
-    #          d_base / 2.0, 4.0) * l_base * 1.2041
+    #          diameter / 2.0, 4.0) * length * 1.2041
     #      # calculate cylinder face loss
-    #      Re_r = np.power(d_base, 2.0) / 4.0 * w_operating / 2.075e-5
+    #      Re_r = np.power(diameter, 2.0) / 4.0 * w_operating / 2.075e-5
     #      c_disk_friction = 0.08 / np.power(0.05, 0.167) / np.power(Re, 0.25)
     #      P_windage_face_loss = 0.5 * c_friction * 1.2041 * np.power(w_operating, 3.0) * np.power(
-    #          d_base / 2.0, 5.0) * (1.0 - np.power(core_radius_ratio, 5.0))
+    #          diameter / 2.0, 5.0) * (1.0 - np.power(core_radius_ratio, 5.0))
     #      # P_windage_total_loss = P_windage_face_loss + P_windage_face_loss
     #      P_windage_total_loss = 0
 
-    def calculate_copper_loss(self, d_base, max_current, n_phases):
+    def calculate_copper_loss(self, diameter, max_current, n_phases):
         """Calculates the resistive losses in the copper winding of a BLDC motor
         operating at `max_current` and `n_phases` with dimension specified by
-        `d_base`.
+        `diameter`.
 
         Parameters
         ----------
         self
-        d_base : float
+        diameter : float
             base 8000hp diameter for scaling purposes (m)
         max_current : float
             max motor phase current (A)
@@ -398,25 +409,25 @@ class MotorSize(Component):
         As = 688.7 * max_current
 
         # calc total resistance in winding
-        n_coil_turns = As * np.pi * d_base / max_current / n_phases / 2.0
+        n_coil_turns = As * np.pi * diameter / max_current / n_phases / 2.0
         resistance_per_km_per_turn = 48.8387296964863 * np.power(
             max_current, -1.00112597971171)
-        winding_len = d_base * 3.14159
+        winding_len = diameter * 3.14159
         resistance_per_turn = resistance_per_km_per_turn * winding_len / 1000.
         return resistance_per_turn * n_coil_turns * n_phases
 
-    def calculate_iron_loss(self, d_base, speed, l_base, core_radius_ratio,
+    def calculate_iron_loss(self, diameter, speed, length, core_radius_ratio,
                             pole_pairs):
         """Calculates the iron core magnetic losses of a BLDC motor with
-        dimensions given by `l_base` and `d_base` operating at speed `speed`.
+        dimensions given by `length` and `diameter` operating at speed `speed`.
 
         Args
         ----
-        d_base : float
+        diameter : float
             base 8000hp diameter for scaling purposes (m)
         speed : float
             desired output shaft mechanical speed (RPM)
-        l_base : float
+        length : float
             motor length (m)
         core_radius_ratio : float
             ratio of inner diamter to outer diameter of core (unitless)
@@ -439,7 +450,7 @@ class MotorSize(Component):
         # Bp = 1.5
         # iron losses
         freq = speed * pole_pairs / 60.0
-        volume_iron = np.pi * l_base * np.power(d_base / 2.0, 2.0) * (
+        volume_iron = np.pi * length * np.power(diameter / 2.0, 2.0) * (
             1.0 - np.power(core_radius_ratio, 2.0))
         iron_core_mass = stator_core_density * volume_iron
         power_iron_loss = (Kh * np.power(Bp, 2.0) * freq + Kc * np.power(
@@ -458,8 +469,8 @@ class Motor(Component):
     ------
     w_operating : float
         operating speed of motor (rad/s)
-    torque : float
-        output Torque from motor (N*m)
+    design_torque : float
+        torque at max rpm (N*m)
     pole_pairs : float
         Number of pole pairs in motor
     I0 : float
@@ -476,8 +487,6 @@ class Motor(Component):
         friction loss from motor operation (W)
     winding_resistance : float
         total resistance of copper winding (ohm)
-    torque : float
-        torque at max_rpm (N*m)
     pole_pairs : float
         number of motor pole pairs (unitless)
     Outputs
@@ -524,7 +533,7 @@ class Motor(Component):
                        val=6.0,
                        desc='number of motor pole_pairs',
                        units='unitless')
-        self.add_param('torque',
+        self.add_param('design_torque',
                        val=1.0,
                        desc='torque at max_rpm',
                        units='N*m')
@@ -592,14 +601,14 @@ class Motor(Component):
         # print('kt: %f' % k_t)
 
         # Calculating phase current, phase voltage, frequency, and phase
-        unknowns['current'] = params['I0'] + params['torque'] / k_t
+        unknowns['current'] = params['I0'] + params['design_torque'] / k_t
         power_copper_loss = np.power(unknowns['current'],
                                      2.0) * params['winding_resistance']
         unknowns['power_input'] = params['power_mech'] + params[
             'power_windage_loss'] + params[
                 'power_iron_loss'] + power_copper_loss
 
-        unknowns['current'] = params['I0'] + params['torque'] / k_t
+        unknowns['current'] = params['I0'] + params['design_torque'] / k_t
         unknowns['phase_current'] = unknowns['current'] / params['n_phases']
 
         unknowns['voltage'] = unknowns['current'] * params[
@@ -639,8 +648,10 @@ if __name__ == '__main__':
     prob['max_current'] = 450.0
     prob['speed'] = 1900.0
     prob['motor_size.L_D_ratio'] = 0.83
-    prob['max_rpm'] = 2500.0
+    # prob['max_rpm'] = 2500.0
     prob['design_power'] = 110000
+    prob['design_torque'] = 420.169
+
     prob['n_phases'] = 3.0
     prob['motor_size.kappa'] = 0.5
     prob['pole_pairs'] = 6.0

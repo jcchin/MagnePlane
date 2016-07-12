@@ -5,7 +5,7 @@ Vacuum, Tube Temperature, Tube and Pylon (structural), Propulsion Mechanics, Tub
 
 from openmdao.api import Group, Problem, IndepVarComp, ScipyGMRES
 
-from hyperloop.Python.pod.propulsion_mechanics import PropulsionMechanics
+from hyperloop.Python.tube.propulsion_mechanics import PropulsionMechanics
 from hyperloop.Python.tube.tube_and_pylon import TubeAndPylon
 from hyperloop.Python.tube.tube_power import TubePower
 from hyperloop.Python.tube.tube_vacuum import Vacuum
@@ -15,21 +15,8 @@ class TubeGroup(Group):
     def __init__(self):
         super(TubeGroup, self).__init__()
 
-        """
-        params = (('pinit',760.2,{'units': 'torr'})
-                  ('pfinal',7.0,{'units': 'torr'})
-                  ('pwr',18.5,{'units': 'W*1000'})
-                  ('speed',163333.3,{'units': 'L/min'})
-                  ('eprice',0.13,{'units': 'USD/(W*1000*h)'})
-                  ('tdown',300.0,{'units': 'min'})
-                  ('gamma',0.8,{'units': 'none'})
-                  ('pumpweight',715.0,{'units': 'kg'})
-        )
-        self.add('UserIn',IndepVarComp(params))
-        """
-
-        self.add('Vacuum', Vacuum())
-        self.add('TempBalance', TempBalance())
+        self.add('Vacuum', Vacuum(), promotes=['tube_radius', 'tube_length'])
+        self.add('TempBalance', TempBalance(), promotes=['tube_length'])
         self.add('TubeWallTemp', TubeWallTemp(),promotes=['temp_boundary'])
         self.add('Struct', TubeAndPylon())
         self.add('PropMech', PropulsionMechanics())

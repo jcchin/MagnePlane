@@ -20,7 +20,8 @@ class TestMotor(object):
         prob['max_current'] = 42.0
         prob['speed'] = 1900.0
         prob['motor_size.L_D_ratio'] = 0.83
-        prob['max_rpm'] = 3500.0
+        # prob['max_rpm'] = 3500.0
+        prob['design_torque'] = 0.801933
         prob['design_power'] = 0.394*746
         prob['n_phases'] = 3.0
         prob['motor_size.kappa'] = 1/1.75
@@ -43,8 +44,9 @@ class TestMotor(object):
         prob['max_current'] = 450.0
         prob['speed'] = 1900.0
         prob['motor_size.L_D_ratio'] = 0.83
-        prob['max_rpm'] = 2500.0
+        # prob['max_rpm'] = 2500.0
         prob['design_power'] = 110000
+        prob['design_torque'] = 420.169
         prob['n_phases'] = 3.0
         prob['motor_size.kappa'] = 0.5
         prob['pole_pairs'] = 6.0
