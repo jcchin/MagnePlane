@@ -3,15 +3,13 @@ from __future__ import print_function
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.pod.drivetrain import battery
-
+from hyperloop.Python.pod.drivetrain import battery
 
 def create_problem(battery):
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', battery)
     return prob
-
 
 class TestBattery(object):
     def test_case1_vs_hand_calc(self):

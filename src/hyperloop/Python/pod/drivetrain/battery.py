@@ -48,10 +48,12 @@ class Battery(Component):
         total number battery cells (unitless)
     output_voltage : float
         output voltage of battery configuration (V)
-    battery_mass : float
+    mass : float
         total mass of cells in battery configuration (kg)
-    battery_volume : float
+    volume : float
         total volume of cells in battery configuration (cm^3)
+    cost : float
+        total cost of battery cells in (USD)
 
     Notes
     -----
@@ -161,15 +163,15 @@ class Battery(Component):
                         val=1000.0,
                         desc='output voltage of battery configuration',
                         units='V')
-        self.add_output('battery_mass',
+        self.add_output('mass',
                         val=1.0,
                         desc='total mass of cells in battery configuration',
                         units='kg')
-        self.add_output('battery_volume',
+        self.add_output('volume',
                         val=1.0,
                         desc='total volume of cells in battery configuration',
                         units='cm**3')
-        self.add_output('battery_cost',
+        self.add_output('cost',
                         val=1.0,
                         desc='total materials cost of battery configuration',
                         units='$')
@@ -252,17 +254,17 @@ class Battery(Component):
         unknowns['n_cells'] = n_cells
 
         # calculate volume of cells accounting for hexagonal packing efficiency of 0.9069 and convert from mm^3 to cm^3
-        unknowns['battery_volume'] = n_cells * (
+        unknowns['volume'] = n_cells * (
             params['cell_height'] * np.pi * np.power(params['cell_diameter'] /
                                                      2, 2)) / 0.9069 / 1000
 
         # calculate mass of cells and convert to kg
-        unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000
+        unknowns['mass'] = params['cell_mass'] * n_cells / 1000
 
         # calculate output voltage of battery in the nominal zone
         unknowns['output_voltage'] = n_series * params['e_nom']
 
-        unknowns['battery_cost'] = n_cells * 12.95
+        unknowns['cost'] = n_cells * 12.95
 
         # check representation invariant
         self._check_rep(params, unknowns, resids)
@@ -328,7 +330,7 @@ if __name__ == '__main__':
     # print following properties
 
     print('Ncells(cells) : %f' % p['comp.n_cells'])
-    print('mass: %f' % p['comp.battery_mass'])
-    print('volume: %f' % p['comp.battery_volume'])
+    print('mass: %f' % p['comp.mass'])
+    print('volume: %f' % p['comp.volume'])
     print('voltage: %f' % p['comp.output_voltage'])
-    print('cost : %f' % p['comp.battery_cost'])
+    print('cost : %f' % p['comp.cost'])
