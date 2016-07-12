@@ -1,8 +1,7 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.pod import pod_mach
-
+from hyperloop.Python.pod import pod_mach
 
 def create_problem(component):
     root = Group()

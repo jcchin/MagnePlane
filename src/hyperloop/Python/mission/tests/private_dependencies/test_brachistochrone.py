@@ -15,7 +15,6 @@ from pointer.components import Problem, Trajectory, CollocationPhase
 
 from hyperloop.Python.mission.rhs import MagnePlaneRHS
 
-
 class test_magneplane_brachistochrone(unittest.TestCase):
 
     def setUp(self):

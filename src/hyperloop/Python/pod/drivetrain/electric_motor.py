@@ -8,14 +8,18 @@ import numpy as np
 from openmdao.api import Component, Problem, Group, Newton, LinearGaussSeidel, IndepVarComp, ScipyGMRES, NLGaussSeidel
 
 
-class MotorSolver(Component):
+class MotorBalance(Component):
+    """Creates an implicit connection between the
+    """
     def __init__(self):
-        super(MotorSolver, self).__init__()
-
+        super(MotorBalance, self).__init__()
+        self.deriv_options['type'] = 'fd'
         self.add_state('I0',
-                       val=124.124,
+                       val=40.0,
                        desc='motor no load current',
-                       units='A')
+                       units='A',
+                       lower=0.0,
+                       upper=1000.0)
         self.add_param('power_input',
                        0.0,
                        desc='total power input into motor',
@@ -34,7 +38,7 @@ class MotorSolver(Component):
         resids['I0'] = (params['current'] * params['voltage'] - params['power_input']) / 1000
         # print('current %f' % params['current'])
         # print('voltage %f' % params['voltage'])
-        # print('I0: %f' % unknowns['I0'])
+        print('I0: %f' % unknowns['I0'])
         # print('resid: %f' % resids['I0'])
         # print('power_input: %f' % params['power_input'])
 
@@ -45,38 +49,31 @@ class MotorGroup(Group):
 
         self.add('Motor', Motor(), promotes=['*'])
         self.add('MotorSize', MotorSize(), promotes=['*'])
-        self.add('MotorSolver', MotorSolver(), promotes=['power_input', 'current', 'voltage'])
-
-        # self.connect('Indep_I0.I0_input', 'MotorSolver.I0')
+        self.add('MotorSolver', MotorBalance(), promotes=['power_input', 'current', 'voltage'])
         self.connect('MotorSolver.I0', 'I0')
-        # Finite Difference
-        self.deriv_options['type'] = 'fd'
-        self.deriv_options['form'] = 'central'
-        self.deriv_options['step_size'] = 1.0e-12
 
         self.nl_solver = Newton()
-        self.nl_solver.options['iprint'] = 1
         self.nl_solver.options['maxiter'] = 1000
-        self.nl_solver.options['atol'] = 1.0e-5
+        self.nl_solver.options['atol'] = 5.0e-5
 
-        # self.ln_solver = LinearGaussSeidel()
         self.ln_solver = ScipyGMRES()
-        self.ln_solver.options['maxiter'] = 1000
-        # self.ln_solver.options['atol'] = 1.0e-10
+        self.ln_solver.options['maxiter'] = 100
 
 
 class MotorSize(Component):
     def __init__(self):
         super(MotorSize, self).__init__()
+        self.deriv_options['type'] = 'fd'
+
         self.add_param('speed', val=2000.0, desc='operating speed', units='RPM')
         self.add_param('L_D_RATIO',
                        val=0.822727,
                        desc='Length to diameter ratio of motor',
-                       units='none')
+                       units='unitless')
         self.add_param('max_rpm',
                        val=3500.0,
                        desc='max rpm of motor',
-                       units='rpm')
+                       units='RPM')
         self.add_param('design_power',
                        val=0.394 * 746,
                        desc='Design value of motor',
@@ -88,7 +85,7 @@ class MotorSize(Component):
         self.add_param('KAPPA',
                        val=1 / 1.75,
                        desc='Base speed/max speed',
-                       units='none')
+                       units='unitless')
         self.add_param('efficiency',
                        val=1.0,
                        desc='P input / p output',
@@ -104,12 +101,14 @@ class MotorSize(Component):
                         units='m')
         self.add_output('mass', val=0.0, desc='Weight of motor', units='kg')
         self.add_output('tmax', val=0.0, desc='MaxTorque', units='N*m')
-        self.add_output('torque', val=1000.0, desc='torque at max_rpm')
+        self.add_output('torque', val=1000.0, desc='torque at max_rpm', units='N*m')
         self.add_output('wbase', val=3000.0, desc='base speed', units='rad/s')
         self.add_output('D2L', val=1.0, desc='motor volume', units='mm^3')
         self.add_output('power_mech', 0.0, units='W')
         self.add_output('w_operating', 0.0, units='rad/s')
         self.add_output('P_iron_loss', 0.0, units='W')
+        self.add_output('R_calc', 0.0, units='ohm')
+
 
     def solve_nonlinear(self, params, unknowns, resids):
         # calc max torque, rotational velocity
@@ -128,18 +127,20 @@ class MotorSize(Component):
         unknowns['w_operating'] = params['speed'] * 2 * np.pi / 60.0
         unknowns['power_mech'] = unknowns['w_operating'] * unknowns['torque']
         unknowns['P_iron_loss'] = self.calculate_iron_loss(unknowns['d_base'], params['speed'], unknowns['l_base'])
-        # print('iron_loss %f' % unknowns['P_iron_loss'])
-        # print('wbase %f' % unknowns['wbase'])
-        # print('d_base %f ' % unknowns['d_base'])
-        # print('lbase %f' % unknowns['l_base'])
-        # print('mass %f' % unknowns['mass'])
-        # print('tmax %f' % unknowns['tmax'])
-        # print('torque %f' % unknowns['torque'])
-        # print('d2l %f' % unknowns['D2L'])
-        # print('P_iron_loss %f' % unknowns['P_iron_loss'])
-        # print('power_mech %f' % unknowns['power_mech'])
-        # print('woperating %f ' % unknowns['w_operating'])
+        unknowns['R_calc'] = self.calculate_copper_loss(unknowns['d_base'], params['imax'], params['n_phases'])
 
+    def calculate_copper_loss(self, d_base, imax, n_phase):
+        # D-axis resistance per motor phase at very high-speed (short-cruit)
+        Rd = 0.0
+        # calc static loading factor from GT paper
+        As = 688.7 * imax
+
+        # number of coil turns for 3 phase motor
+        n_coil_turns = As * np.pi * d_base / imax / n_phase / 2.0
+        resistance_per_km_per_turn = 48.8387296964863 * np.power(imax, -1.00112597971171)
+        winding_len = d_base * 3.14159
+        resistance_per_turn = resistance_per_km_per_turn * winding_len / 1000.
+        return resistance_per_turn * n_coil_turns * n_phase
 
     def calculate_iron_loss(self, d_base, speed, l_base):
         pole_pairs = 6.0
@@ -233,13 +234,13 @@ class Motor(Component):
 
     def __init__(self):
         super(Motor, self).__init__()
-
+        self.deriv_options['type'] = 'fd'
         self.add_param('imax',
                        val=42.0,
                        desc='max operating current',
                        units='A')
         self.add_param('I0',
-                       val=124.124,
+                       val=40.0,
                        desc='motor no load current',
                        units='A')
         self.add_param('n_phases',
@@ -258,11 +259,13 @@ class Motor(Component):
                        val=6.0,
                        desc='number of motor pole_pairs',
                        units='unitless')
-        self.add_param('torque', val=1.0, desc='torque at max_rpm')
+        self.add_param('torque', val=1.0, desc='torque at max_rpm', units='N*m')
         self.add_param('w_operating',
                        1.0,
                        desc='operating speed of motor',
                        units='rad/s')
+        self.add_param('R_calc', 0.0, units='ohm')
+
         self.add_param('power_mech', 0.0, units='W')
         self.add_param('P_iron_loss', 0.0, units='W')
         self.add_param('tmax', val=0.0, desc='MaxTorque', units='N*m')
@@ -272,25 +275,6 @@ class Motor(Component):
         self.add_output('phase_voltage', val=1.0, desc='total phase voltage through motor', units='V')
         self.add_output('frequency', val=60.0, desc='frequency of motor controller', units='Hz')
         self.add_output('power_input', 1.0, desc='total power input into motor', units='W')
-
-    def calculate_copper_loss(self, d_base, imax, current, n_phase):
-        # D-axis resistance per motor phase at very high-speed (short-cruit)
-        Rd = 0.0
-        # calc static loading factor from GT paper
-        As = 688.7 * imax
-
-        # number of coil turns for 3 phase motor
-        n_coil_turns = As * np.pi * d_base / imax / n_phase / 2.0
-        resistance_per_km_per_turn = 48.8387296964863 * np.power(imax, -1.00112597971171)
-        winding_len = d_base * 3.14159
-        resistance_per_turn = resistance_per_km_per_turn * winding_len / 1000.
-        R_calc = resistance_per_turn * n_coil_turns * n_phase
-
-
-        # if (params['speed'] > params['wbase']):
-        #     total_resistance += Rd*(1.0-params['wbase']/params['speed'])
-        P_copper_loss = np.power(current, 2.0) * R_calc
-        return R_calc, P_copper_loss
 
     def calculate_windage_loss(self, params):
         # # calculate windage losses
@@ -327,13 +311,12 @@ class Motor(Component):
 
         # Calculating phase current, phase voltage, frequency, and phase
         unknowns['current'] = params['I0'] + params['torque'] / k_t
-        R_calc, P_copper_loss = self.calculate_copper_loss(params['d_base'], params['imax'], unknowns['current'],
-                                                           params['n_phases'])
+        P_copper_loss = np.power(unknowns['current'], 2.0) * params['R_calc']
         unknowns['power_input'] = params['power_mech'] + P_windage_loss + params['P_iron_loss'] + P_copper_loss
         unknowns['current'] = params['I0'] + params['torque'] / k_t
 
         unknowns['phase_current'] = unknowns['current'] / params['n_phases']
-        unknowns['voltage'] = unknowns['current']*R_calc + params['w_operating'] / (k_v * np.pi / 30.0)
+        unknowns['voltage'] = unknowns['current']*params['R_calc'] + params['w_operating'] / (k_v * np.pi / 30.0)
 
         # print('voltage % f' % unknowns['voltage'])
         # print()
@@ -353,12 +336,14 @@ if __name__ == '__main__':
     from openmdao.api import SqliteRecorder
     from os import remove
     from sqlitedict import SqliteDict
+    from openmdao.api import view_tree
+
     from pprint import pprint
 
     prob = Problem()
     prob.root = MotorGroup()
     # prob.root.add('Indep_I0', IndepVarComp('I0_input', 0.0))
-    prob.root.add('init_vars', IndepVarComp('imax', 42.0), promotes=['imax'])
+    prob.root.add('init_vars', IndepVarComp('imax', 42.0, units='A'), promotes=['imax'])
 
     rec = SqliteRecorder('drivetraindb')
     rec.options['record_params'] = True
@@ -366,6 +351,8 @@ if __name__ == '__main__':
     prob.driver.add_recorder(rec)
 
     prob.setup()
+    prob.root.list_connections()
+    prob.print_all_convergence()
 
     # view_tree(prob)
     prob.run()

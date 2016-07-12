@@ -4,9 +4,8 @@ from hyperloop.Python.pod.drivetrain.inverter import Inverter
 from openmdao.api import Group, NLGaussSeidel, \
     ScipyGMRES, Problem, SqliteRecorder
 
-from Python.pod.drivetrain.electric_motor import Motor
+from hyperloop.Python.pod.drivetrain.electric_motor import Motor
 from sqlitedict import SqliteDict
-
 
 # from openmdao.api.PP import PetscKSP.
 

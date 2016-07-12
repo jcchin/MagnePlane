@@ -1,7 +1,6 @@
 import numpy as np
 from openmdao.api import Component, Problem, Group
 
-
 class Battery(Component):
     """The `Battery` class represents a battery component in an OpenMDAO model. 
     

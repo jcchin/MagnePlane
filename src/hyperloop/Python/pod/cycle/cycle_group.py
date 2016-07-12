@@ -31,13 +31,19 @@ class Cycle(Group):
 	def __init__(self):
 		super(Cycle, self).__init__()
 
-		self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power'])
-		self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
+		self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
+                                              'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W', 'fl_start.Fl_O:stat:P',
+                                              'fl_start.Fl_O:stat:T', 'fl_start.Fl_O:tot:P', 'fl_start.Fl_O:tot:T',
+                                              'fl_start.Fl_O:stat:rho', 'fl_start.Fl_O:stat:V', 'inlet.Fl_O:stat:MN',
+                                              'inlet.Fl_O:stat:P', 'inlet.Fl_O:stat:T', 'inlet.Fl_O:tot:P', 'inlet.Fl_O:tot:T',
+                                              'inlet.Fl_O:stat:W', 'comp.Fl_O:stat:MN', 'comp.Fl_O:stat:area',
+                                              'comp.Fl_O:stat:P', 'comp.Fl_O:stat:T'])
+		self.add('CompressorMass', CompressorMass(), promotes=['comp_mass', 'comp_inletArea'])
 
 		self.connect('FlowPath.inlet.Fl_O:tot:h', 'CompressorMass.h_in')
 		self.connect('FlowPath.comp.Fl_O:tot:h', 'CompressorMass.h_out')
-		self.connect('FlowPath.inlet.Fl_O:stat:area', 'CompressorMass.comp_inletArea')
-		self.connect('FlowPath.inlet.Fl_O:stat:W', 'CompressorMass.mass_flow')
+		self.connect('comp.Fl_O:stat:area', 'comp_inletArea')
+		self.connect('inlet.Fl_O:stat:W', 'CompressorMass.mass_flow')
 
 if __name__ == "__main__":
     prob = Problem()

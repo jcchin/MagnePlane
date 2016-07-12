@@ -20,8 +20,8 @@ class CompressorMass(Component):
             Heat in. (kJ/kg)
         h_out : float
             Hea    self.t out. (kJ/kg)
-        comp_inletR : float
-            Compressor Inlet Radius. (m)
+        comp_inletArea : float
+            Compressor Inlet Area. (m**2)
     Outputs
     -------
     comp_mass : float

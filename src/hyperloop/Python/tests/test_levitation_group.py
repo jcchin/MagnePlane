@@ -7,15 +7,13 @@ from math import pi
 import numpy as np
 from openmdao.api import Group, Problem
 
-from Python.pod.magnetic_levitation import levitation_group
-
+from hyperloop.Python.pod.magnetic_levitation import levitation_group
 
 def create_problem(GroupName):
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', GroupName)
     return prob
-
 
 class TestLev(object):
     """
@@ -86,22 +84,22 @@ class TestLev(object):
         # prob.root.list_connections()
 
         # Pod Inputs
-        prob['comp.Drag.m_pod'] = .375
+        prob['comp.m_pod'] = .375
         prob['comp.Drag.b_res'] = 1.21
         prob['comp.Drag.num_mag_hal'] = 4.0
-        prob['comp.Drag.w_mag'] = .06
-        prob['comp.Drag.l_pod'] = .06
+        prob['comp.w_mag'] = .06
+        prob['comp.l_pod'] = .06
         prob['comp.Drag.mag_thk'] = .012
         prob['comp.Drag.gamma'] = 1.0
         prob['comp.Drag.spacing'] = 0.007
 
-        prob['comp.Mass.w_mag'] = .06
-        prob['comp.Mass.l_pod'] = .06
+        prob['comp.w_mag'] = .06
+        prob['comp.l_pod'] = .06
         prob['comp.Mass.mag_thk'] = .012
         prob['comp.Mass.gamma'] = 1.0
 
         # Track Inputs
-        prob['comp.Drag.w_track'] = .11
+        prob['comp.w_track'] = .11
         prob['comp.Drag.num_sheets'] = 1.0
         prob['comp.Drag.w_strip'] = .005
         prob['comp.Drag.delta_c'] = .0005334
