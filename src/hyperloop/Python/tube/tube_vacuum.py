@@ -18,9 +18,9 @@ class Vacuum(Component):
         Desired pressure within tube. Default value is 7.0.
     speed : float
         Pumping speed. Default value is 163333.3.
-    rad : float
+    tube_radius : float
         Radius of the tube. Default value is 5.0.
-    len : float
+    tube_length : float
         Length of the tube. Default value is 5000.0.
     pwr : float
         Motor rating. Default value is 18.5.
@@ -71,8 +71,8 @@ class Vacuum(Component):
                        desc='desired pressure within the tube',
                        units='torr')
         self.add_param('speed', 163333.3, desc='Pumping speed', units='L/min')
-        self.add_param('rad', 5.0, desc='radius of the tube', units='ft')
-        self.add_param('len', 5000.0, desc='length of the tube', units='ft')
+        self.add_param('tube_radius', 5.0, desc='radius of the tube', units='ft')
+        self.add_param('tube_length', 5000.0, desc='length of the tube', units='ft')
         self.add_param('pwr', 18.5, desc='motor rating', units='(W*1000)')
         self.add_param('eprice',
                        0.13,
@@ -120,8 +120,8 @@ class Vacuum(Component):
 
     def solve_nonlinear(self, params, unknowns, resids):
 
-        volft = pi * (params['rad']**
-                      2.) * params['len']  # Volume of the tube in cubic feet
+        volft = pi * (params['tube_radius']**
+                      2.) * params['tube_length']  # Volume of the tube in cubic feet
 
         vol = volft * 28.3168  # Volume of the tube in liters
 
