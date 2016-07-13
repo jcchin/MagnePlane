@@ -11,7 +11,7 @@ class LevGroup(Group):
         super(LevGroup, self).__init__()
 
         # Creates components of the group.
-        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'w_track', 'l_pod', 'w_mag', 'fyu'])
+        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'w_track', 'l_pod', 'w_mag', 'fyu', 'mag_area'])
         self.add('Mass', MagMass(), promotes=['l_pod', 'w_mag', 'm_mag', 'cost'])
         self.add('MDrag', MagDrag(), promotes=['mag_drag', 'fyu'])
 
