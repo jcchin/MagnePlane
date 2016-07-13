@@ -48,13 +48,13 @@ class TestTubeWall(object):
         pyc = prob['tt.tm.heat_rate_pod']
         rel_err = abs(npss - pyc) / npss
         print('heat_rate_pod:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 12010290.
         pyc = prob['tt.tm.total_heat_rate_pods']
         rel_err = abs(npss - pyc) / npss
         print('total_heat_rate_pods:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 123775609.
         pyc = prob['tt.tm.GrDelTL3']
@@ -72,13 +72,13 @@ class TestTubeWall(object):
         pyc = prob['tt.tm.Gr']
         rel_err = abs(npss - pyc) / npss
         print('Gr:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 16369476896.
         pyc = prob['tt.tm.Ra']
         rel_err = abs(npss - pyc) / npss
         print('Ra:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 281.6714
         pyc = prob['tt.tm.Nu']
@@ -110,13 +110,13 @@ class TestTubeWall(object):
         pyc = prob['tt.tm.q_per_area_nat_conv']
         rel_err = abs(npss - pyc) / npss
         print('q_per_area_nat_conv:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 192710349.
         pyc = prob['tt.tm.total_q_nat_conv']
         rel_err = abs(npss - pyc) / npss
         print('total_q_nat_conv:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 1074256.
         pyc = prob['tt.tm.area_viewing']
@@ -152,13 +152,13 @@ class TestTubeWall(object):
         pyc = prob['tt.tm.q_rad_tot']
         rel_err = abs(npss - pyc) / npss
         print('q_rad_tot:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
         npss = 394673364.
         pyc = prob['tt.tm.q_total_out']
         rel_err = abs(npss - pyc) / npss
         print('q_total_out:', npss, pyc, rel_err)
-        #self.assertLessEqual(rel_err, tol)
+        assert np.isclose(pyc, npss, rtol=rtol)
 
 
 if __name__ == "__main__":

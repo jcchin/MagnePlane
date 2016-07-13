@@ -182,14 +182,14 @@ class TubeWallTemp(Component):
         #bearing_air = FlowIn(iotype="in", desc="air exiting the air bearings")
         self.add_param('nozzle_air_W',
                         34.,
-                        units = 'kg/s',
+                        #units = 'kg/s',
                         desc='mass flow rate of the air exiting the pod nozzle')
         self.add_param('nozzle_air_Cp',
                         34.,
                         desc='specific heat of air exiting the pod nozzle')
         self.add_param('nozzle_air_Tt',
                         34.,
-                        units = 'K',
+                        #units = 'K',
                         desc='temp of the air exiting the pod nozzle')
         self.add_param('bearing_air_W', 34., desc='air exiting the air bearings')
         self.add_param('bearing_air_Cp', 34., desc='air exiting the air bearings')
