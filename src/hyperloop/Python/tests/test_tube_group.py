@@ -1,53 +1,71 @@
 """
 Test for tube_group.py.
-
+"""
 import pytest
+from openmdao.api import Group, Problem
+
 from hyperloop.Python.tube import tube_group
 import numpy as np
-from openmdao.api import Group, Problem
 
 def create_problem(GroupName):
     root = Group()
     prob = Problem(root)
-    prob.root.add('group', GroupName)
+    prob.root.add('comp', GroupName)
     return prob
+
 
 class TestTube(object):
     def test_case1(self):
 
         TubeGroup = tube_group.TubeGroup()
-
         prob = create_problem(TubeGroup)
-
         prob.setup()
         # prob.root.list_connections()
 
-        # Pod Inputs
-        #prob['group.CompressionCycle.'] =
 
-        prob['group.PodMach.'] =
+        #Tube Inputs
+        #Vacuum
+        prob['comp.rad'] = 5.0
 
-        prob['group.Geometry.'] =
+        """
+        #Temp Balance
+        prob['comp.temp_boundary'] = 322.0
 
-        prob['group.LevGroup.'] =
+        #Tube Wall Temp
+        prob['comp.radius_outer_tube'] = 1.115
+        prob['comp.length_tube'] = 482803.0
 
-        prob['group.Weight.'] =
+        """
+        #Tube and Pylon
+        prob['comp.m_pod'] = 3100.0
+        prob['comp.r'] = 1.1
+        prob['comp.h'] = 10.0
 
+        #Propulsion Mechanics
+        prob['comp.Cd'] = .2
+        prob['comp.S'] = 1.4
+        prob['comp.D_magnetic'] = 150.0
+        prob['comp.Thrust_pod'] = 3500.0
+        prob['comp.A'] = .0225
+        prob['comp.t'] = .05
 
         prob.run()
 
         # Print Statement for debugging
+        """
+        print('Vacuum.weighttot:%f' % prob['comp.Vacuum.weighttot'])
+        print('Struct.vac_weight: %f' % prob['comp.Struct.vac_weight'])
+        print('Vacuum.totpwr %f' % prob['comp.Vacuum.totpwr'])
+        print('TubePower.vac_power: %f' % prob['comp.TubePower.vac_power'])
+        print('PropMech.pwr_req: %f' % prob['comp.PropMech.pwr_req'])
+        print('Total Tube Power: %f' % prob['comp.TubePower.tot_power'])
+        """
 
-        print('Vacuum: %f' %prob['group.Vacuum.'])
-        print('Tube temperature: %f' % prob['group.Thermal.'])
-        print('Structural: %f' %prob['group.Struct.'])
-        print('Propulsion Mechanics: %f' %prob['group.PropMech.'])
-        print('Total Tube Power required: %f' % prob['group.TubePower.'])
 
         # Test Values
-        assert np.isclose(prob['group.Vacuum.'], , rtol=.01)
-        assert np.isclose(prob['group.Thermal.'], , rtol=.01)
-        assert np.isclose(prob['group.Struct.'], , rtol=.01)
-        assert np.isclose(prob['group.PropMech.'], , rtol=.01)
-        assert np.isclose(prob['group.TubePower.'], , rtol=.01)
-"""
+        assert np.isclose(prob['comp.Vacuum.weighttot'], 1521.2524 , rtol=.01)
+        assert np.isclose(prob['comp.Struct.vac_weight'], 1521.2524 , rtol=.01)
+        assert np.isclose(prob['comp.Vacuum.totpwr'], 1.000, rtol=.01)
+        assert np.isclose(prob['comp.TubePower.vac_power'], 1000.000, rtol=.01)
+        assert np.isclose(prob['comp.PropMech.pwr_req'], 373437.942, rtol=.01)
+        assert np.isclose(prob['comp.TubePower.tot_power'], 374437.941, rtol=.01)
