@@ -87,7 +87,8 @@ class TubeGroup(Group):
                                                               'D_magnetic',
                                                               'Thrust_pod', #need to calculate nozzle.Fg - inlet.F_ram to get thrust
                                                               'A',
-                                                              't'])
+                                                              't',
+                                                              'T_ambient'])
         self.add('TubePower', TubePower())
 
         #Connects vacuum outputs to downstream components
