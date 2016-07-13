@@ -45,6 +45,7 @@ class LevGroup(Group):
        Bradley University, 2004. N.p.: n.p., n.d. Print.
 
     """
+    
     def __init__(self):
         super(LevGroup, self).__init__()
 
