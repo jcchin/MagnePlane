@@ -216,8 +216,8 @@ if __name__ == "__main__":
     print("Compressor SPR:        %.6f " % (
         prob['FlowPath.inlet.Fl_O:stat:P'] / prob['FlowPath.fl_start.Fl_O:stat:P']))
     print("Compressor Power Reqd: %.6f hp" % (prob['FlowPath.comp.power']))
-    print ("Compressor inlet ht:         %.6f degR" % (prob['FlowPath.inlet.Fl_O:tot:h']))
-    print ("Compressor exit ht:         %.6f degR" % (prob['FlowPath.comp.Fl_O:tot:h']))
+    print ("Compressor inlet ht:         %.6f Btu/lbm" % (prob['FlowPath.inlet.Fl_O:tot:h']))
+    print ("Compressor exit ht:         %.6f Btu/lbm" % (prob['FlowPath.comp.Fl_O:tot:h']))
     print("")
 
     print ("--- Compressor Exit Conditions ---")
