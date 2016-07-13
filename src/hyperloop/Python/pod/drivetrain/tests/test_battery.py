@@ -32,11 +32,12 @@ class TestBattery(object):
         prob['comp.cell_mass'] =170
         prob['comp.cell_height'] =61.0
         prob['comp.cell_diameter'] =33.0
+        prob['comp.battery_cross_section_area'] = 2.0
 
         prob.run()
 
         assert np.isclose(prob['comp.n_cells'], 2.0, rtol=0.001)
         assert np.isclose(prob['comp.output_voltage'], 2.4, rtol=0.001)
         assert np.isclose(prob['comp.battery_mass'], 0.34, rtol=0.001)
-        assert np.isclose(prob['comp.battery_volume'], 115.0583, rtol=0.001)
+        assert np.isclose(prob['comp.battery_length'], prob['comp.battery_volume'] / 2.0, rtol=0.001)
 

@@ -15,6 +15,8 @@ class Battery(Component):
         time until design power point (h)
     time_of_flight : float
         total mission time (h)
+    battery_cross_section_area : float
+        cross_sectional area of battery used to compute length (cm^2)
     des_power : float
         design power (W)
     des_current : float
@@ -46,13 +48,15 @@ class Battery(Component):
     -------
     n_cells : float
         total number battery cells (unitless)
+    battery_length : float
+        length of battery (cm)
     output_voltage : float
         output voltage of battery configuration (V)
-    mass : float
+    battery_mass : float
         total mass of cells in battery configuration (kg)
-    volume : float
+    battery_volume : float
         total volume of cells in battery configuration (cm^3)
-    cost : float
+    battery_cost : float
         total cost of battery cells in (USD)
 
     Notes
@@ -133,6 +137,10 @@ class Battery(Component):
                        val=0.0046,
                        desc='battery resistance',
                        units='Ohms')
+        self.add_param('battery_cross_section_area',
+                       1.0,
+                       desc='cross_sectional area of battery used to compute length',
+                       units='cm^2')
         self.add_param('cell_mass',
                        val=170.0,
                        desc='mass of a single cell',
@@ -145,14 +153,6 @@ class Battery(Component):
                        val=33.0,
                        desc='diamter of a single  cylindrical cell',
                        units='mm')
-        # self.add_param('cell_mass_factor',
-        #                val=1.0,
-        #                desc='fudge factor for cell mass to account for additional hardware',
-        #                units='unitless')
-        # self.add_param('cell_volume_factor',
-        #                val=1.0,
-        #                desc='fudge factor for cell volume to account for additional hardware',
-        #                units='unitless')
 
         # setup outputs
         self.add_output('n_cells',
@@ -163,22 +163,26 @@ class Battery(Component):
                         val=1000.0,
                         desc='output voltage of battery configuration',
                         units='V')
-        self.add_output('mass',
+        self.add_output('battery_mass',
                         val=1.0,
                         desc='total mass of cells in battery configuration',
                         units='kg')
-        self.add_output('volume',
+        self.add_output('battery_volume',
                         val=1.0,
                         desc='total volume of cells in battery configuration',
                         units='cm**3')
-        self.add_output('cost',
+        self.add_output('battery_cost',
                         val=1.0,
                         desc='total materials cost of battery configuration',
                         units='$')
+        self.add_output('battery_length',
+                        val=1.0,
+                        desc='length of battery',
+                        units='cm')
 
     def solve_nonlinear(self, params, unknowns, resids):
         """Runs the `Battery` component and sets its respective outputs to their calculated results
-        
+
         Args
         ----------
         params : `VecWrapper`
@@ -254,17 +258,19 @@ class Battery(Component):
         unknowns['n_cells'] = n_cells
 
         # calculate volume of cells accounting for hexagonal packing efficiency of 0.9069 and convert from mm^3 to cm^3
-        unknowns['volume'] = n_cells * (
+        unknowns['battery_volume'] = n_cells * (
             params['cell_height'] * np.pi * np.power(params['cell_diameter'] /
                                                      2, 2)) / 0.9069 / 1000
 
         # calculate mass of cells and convert to kg
-        unknowns['mass'] = params['cell_mass'] * n_cells / 1000
+        unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000
 
         # calculate output voltage of battery in the nominal zone
         unknowns['output_voltage'] = n_series * params['e_nom']
 
-        unknowns['cost'] = n_cells * 12.95
+        unknowns['battery_cost'] = n_cells * 12.95
+
+        unknowns['battery_length'] = unknowns['battery_volume'] / params['battery_cross_section_area']
 
         # check representation invariant
         self._check_rep(params, unknowns, resids)
@@ -330,7 +336,8 @@ if __name__ == '__main__':
     # print following properties
 
     print('Ncells(cells) : %f' % p['comp.n_cells'])
-    print('mass: %f' % p['comp.mass'])
-    print('volume: %f' % p['comp.volume'])
+    print('mass: %f' % p['comp.battery_mass'])
+    print('volume: %f' % p['comp.battery_volume'])
     print('voltage: %f' % p['comp.output_voltage'])
-    print('cost : %f' % p['comp.cost'])
+    print('cost : %f' % p['comp.battery_cost'])
+    print(p['comp.battery_length'])
