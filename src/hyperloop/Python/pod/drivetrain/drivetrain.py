@@ -140,5 +140,3 @@ if __name__ == '__main__':
 
     prob.root.list_connections()
     prob.run()
-
-

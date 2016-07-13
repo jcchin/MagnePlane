@@ -13,8 +13,9 @@ class TubeAndPod(Group):
 
 		self.add('pod', PodGroup(), promotes=['p_tube', 'M_pod', 'A_payload', 'M_duct',
 											  'w_track', 'prc', 'n_passengers', 'T_tunnel',
-											  'p_tunnel', 'max_current', 'inverter.efficiency',
-											  'des_power', 'time_of_flight', 'S'])
+											  'p_tunnel', 'motor_max_current', 'inverter_efficiency',
+											  'des_time', 'time_of_flight', 'S', 'nozzle.Fl_O:tot:T',
+											  'nozzle.Fl_O:stat:W', 'nozzle.Fg', 'inlet.F_ram'])
 		self.add('tube', TubeGroup(), promotes=['length_tube', 'h'])
 
 		self.connect('tube.T_ambient', 'pod.T_ambient')
@@ -42,7 +43,7 @@ if __name__ == '__main__':
     		 ('p_tunnel', 0),
     		 ('max_current', 0),
     		 ('inverter.efficiency', 0),
-    		 ('des_power', 0),
+    		 ('des_time', 0),
     		 ('time_of_flight', 0),
     		 ('length_tube', 0),
     		 ('h', 0))
@@ -58,7 +59,7 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.p_tunnel', 'TubeAndPod.p_tunnel')
     prob.root.connect('des_vars.max_current', 'TubeAndPod.max_current')
     prob.root.connect('des_vars.inverter.efficiency', 'TubeAndPod.inverter.efficiency')
-    prob.root.connect('des_vars.des_power', 'TubeAndPod.des_power')
+    prob.root.connect('des_vars.des_time', 'TubeAndPod.des_time')
     prob.root.connect('des_vars.time_of_flight', 'TubeAndPod.time_of_flight')
     prob.root.connect('des_vars.length_tube', 'TubeAndPod.length_tube')
     prob.root.connect('des_vars.h', 'TubeAndPod.h')
