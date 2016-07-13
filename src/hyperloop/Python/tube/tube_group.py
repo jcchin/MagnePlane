@@ -58,8 +58,8 @@ class TubeGroup(Group):
         super(TubeGroup, self).__init__()
 
         #Adding in components to Tube Group
-        self.add('Vacuum', Vacuum(), promotes=['rad',
-                                               'len',
+        self.add('Vacuum', Vacuum(), promotes=['tube_radius',
+                                               'tube_length',
                                                'pinit',
                                                'pfinal',
                                                'pwr',
@@ -158,4 +158,5 @@ if __name__ == "__main__":
     print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
 
     print('Total Power: %f' % top['TubeGroup.TubePower.tot_power'])
+    print('mpod: %f' %top['TubeGroup.m_pod'])
 
