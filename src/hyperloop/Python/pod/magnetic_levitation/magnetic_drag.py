@@ -16,8 +16,8 @@ class MagDrag(Component):
         Resistance of the track. Default value is 3.14e-4.
     track_ind : float
         Inductance of the track. Default value is 3.59e-6.
-    fyu : float
-        Levitation force. Default value is 29430.0.
+    pod_weight : float
+        Weight of the Pod. Default value is 29430.0.
     lam : float
         Wavelength of the Halbach Array. Default value is 0.125658.
 
@@ -48,7 +48,7 @@ class MagDrag(Component):
                        val=3.59023e-6,
                        units='ohm*s',
                        desc='Track Inductance')
-        self.add_param('fyu', val=29430.0, units='N', desc='Levitation Force')
+        self.add_param('pod_weight', val=29430.0, units='N', desc='Weight of the Pod')
         self.add_param('lam',
                        val=0.125658,
                        units='m',
@@ -74,11 +74,11 @@ class MagDrag(Component):
         vel = params['vel']  # Desired Velocity for Drag Value
         track_res = params['track_res']  # Track Resistance
         track_ind = params['track_ind']  # Track Inductance
-        fyu = params['fyu']  # Levitation Force Required
+        pod_weight = params['pod_weight']  # Levitation Force Required
         lam = params['lam']  # Halbach Array Wavelength
 
         omega = 2 * pi * vel / lam  # Frequency of Induced Current
-        mag_drag_lev = track_res * fyu / (omega * track_ind)  # Magnetic Drag from Levitation
+        mag_drag_lev = track_res * pod_weight / (omega * track_ind)  # Magnetic Drag from Levitation
         mag_drag_prop = 0  # Magnetic Drag from Propulsion (TBD)
         mag_drag = mag_drag_lev + mag_drag_prop  # Total Magnetic Drag
 

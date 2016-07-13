@@ -17,7 +17,7 @@ class LevGroup(Group):
 
         self.connect('Drag.track_res', 'MDrag.track_res')
         self.connect('Drag.track_ind', 'MDrag.track_ind')
-        self.connect('Drag.lam', 'MDrag.lam')    
+        self.connect('Drag.lam', 'MDrag.lam')
 
 if __name__ == "__main__":
 
