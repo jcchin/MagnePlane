@@ -10,7 +10,7 @@ class Inverter(Component):
 
     Params
     ------
-    efficiency : float
+    inverter_efficiency : float
         power out / power in (W)
     output_voltage : float
         amplitude of AC output voltage (A)
@@ -42,7 +42,7 @@ class Inverter(Component):
         """
         super(Inverter, self).__init__()
 
-        self.add_param('efficiency', 1.0, desc='power out / power in')
+        self.add_param('inverter_efficiency', 1.0, desc='power out / power in')
         self.add_param('output_voltage',
                        120.0,
                        desc='amplitude of AC output voltage',
@@ -87,6 +87,6 @@ class Inverter(Component):
             'output_current'] * 3.0 * np.sqrt(2.0 / 3.0)
 
         # TODO perform efficiency lookup
-        unknowns['input_power'] = output_power / params['efficiency']
+        unknowns['input_power'] = output_power / params['inverter_efficiency']
         unknowns['input_current'] = unknowns['input_power'] / params[
             'input_voltage']

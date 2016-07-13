@@ -97,14 +97,14 @@ class Vacuum(Component):
                         desc='total power consumption',
                         units='kW')
         self.add_output('n', 1.0, desc='number of pumps')
-        self.add_output('volft',
-                        2.0,
-                        desc='volume of the tube in feet cubed',
-                        units='ft**3')
-        self.add_output('vol',
-                        2.0,
-                        desc='volume of the tube in Liters',
-                        units='L')
+        # self.add_output('volft',
+        #                 2.0,
+        #                 desc='volume of the tube in feet cubed',
+        #                 units='ft**3')
+        # self.add_output('vol',
+        #                 2.0,
+        #                 desc='volume of the tube in Liters',
+        #                 units='L')
         self.add_output('etot',
                         1.0,
                         desc='total energy required to run the pumps',
@@ -139,8 +139,8 @@ class Vacuum(Component):
         # Total weight of all of the pumps.
         unknowns['weighttot'] = params['pumpweight'] * n
 
-        unknowns['vol'] = vol
-        unknowns['volft'] = volft
+        # unknowns['vol'] = vol
+        # unknowns['volft'] = volft
         unknowns['etot'] = etot
         unknowns['n'] = n
 

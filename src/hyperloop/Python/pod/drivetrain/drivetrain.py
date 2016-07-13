@@ -26,39 +26,46 @@ class Drivetrain(Group):
 
     Params
     ------
-    motor.design_torque : float
-    motor.design_power : float
+    design_torque : float
+    design_power : float
         desired design value for motor power (W)
-    motor.max_current : float
+    motor_max_current : float
         max motor phase current (A)
-    motor.speed : float
-        desired output shaft mechanical speed (RPM)
-    inverter.efficiency : float
+    motor_LD_ratio : float
+        length to diameter ratio of motor (unitless)
+    motor_oversize_factor : float
+        scales peak motor power by this figure
+    inverter_efficiency : float
         power out / power in (W)
     des_time : float
         time until design power point (h)
     time_of_flight : float
         total mission time (h)
+    battery_cross_section_area : float
+        cross_sectional area of battery used to compute length (cm^2)
+
 
     Outputs
     -------
-    battery.mass : float
+    battery_mass : float
         total mass of cells in battery configuration (kg)
-    battery.volume : float
+    battery_volume : float
         total volume of cells in battery configuration (cm^3)
-    battery.cost : float
+    battery_cost : float
         total cost of battery cells in (USD)
-    motor.power_input : float
+    battery_length : float
+        length of battery (cm)
+    motor_power_input : float
         total required power input into motor
-    motor.volume : float
+    motor_volume : float
         D^2*L parameter which is proportional to Torque (mm^3)
-    motor.diameter : float
+    motor_diameter : float
         motor diameter (m)
-    motor.mass : float
+    motor_mass : float
         mass of motor (kg)
-    motor.length : float
+    motor_length : float
         motor length (m)
-    motor.power_input : float
+    motor_power_input : float
         total required power input into motor (W)
 
     References
@@ -73,27 +80,25 @@ class Drivetrain(Group):
 
         self.deriv_options['type'] = 'fd'
 
-        self.add('motor', MotorGroup())
-        self.add('inverter', Inverter())
-        self.add('battery', Battery(), promotes=['des_time', 'time_of_flight'])
+        self.add('motor', MotorGroup(), promotes=['motor_power_input', 'motor_volume',
+                                                  'motor_diameter', 'motor_mass', 'motor_length',
+                                                  'design_torque', 'design_power',
+                                                  'motor_max_current', 'motor_LD_ratio', 'motor_oversize_factor'])
+        self.add('inverter', Inverter(), promotes=['inverter_efficiency'])
+        self.add('battery', Battery(), promotes=['des_time', 'time_of_flight', 'battery_volume', 'battery_mass',
+                                                 'battery_cost', 'battery_cross_section_area', 'battery_length'])
 
         # connect motor outputs to inverter inputs
         self.connect('motor.frequency', 'inverter.output_frequency')
         self.connect('motor.phase_voltage', 'inverter.output_voltage')
         self.connect('motor.phase_voltage', 'inverter.input_voltage')
         # TODO VERIFY THIS, does this make sense to force inverter to have
-        # equal input/output  import pprintvoltage?
+        # equal input/output
         self.connect('motor.phase_current', 'inverter.output_current')
 
         # connect inverter outputs to Battery inputs
         self.connect('inverter.input_current', 'battery.des_current')
         self.connect('inverter.input_power', 'battery.des_power')
-
-        # self.nl_solver = NLGaussSeidel()
-        # self.nl_solver.options['atol'] = 0.1
-        # self.nl_solver.options['maxiter'] = 200
-        # self.ln_solver = ScipyGMRES()
-        # self.ln_solver = PetscKSP()
 
 
 if __name__ == '__main__':
@@ -103,37 +108,26 @@ if __name__ == '__main__':
 
     prob = Problem()
     prob.root = Drivetrain()
-    rec = SqliteRecorder('drivetraindb')
-    rec.options['record_params'] = True
-    rec.options['record_metadata'] = True
-    prob.driver.add_recorder(rec)
-
-    rec = SqliteRecorder('drivetraindb')
-    rec.options['record_params'] = True
-    rec.options['record_metadata'] = True
-    prob.driver.add_recorder(rec)
 
     prob.setup()
 
     # setup ElectricMotor
-    prob['max_current'] = 42.0
-    prob['speed'] = 1900.0
-    prob['motor.motor_size.L_D_ratio'] = 0.83
-    prob['max_rpm'] = 3500.0
+    prob['motor_max_current'] = 42.0
+    prob['motor_LD_ratio'] = 0.83
     prob['design_power'] = 0.394 * 746
-    prob['motor.n_phases'] = 3.0
+    prob['design_torque'] = 420.169
+    prob['motor_oversize_factor'] = 1.0
+    prob['motor.idp1.n_phases'] = 3.0
     prob['motor.motor_size.kappa'] = 1 / 1.75
-    prob['motor.pole_pairs'] = 6.0
+    prob['motor.idp2.pole_pairs'] = 6.0
     prob['motor.motor_size.core_radius_ratio'] = 0.0
 
     # setup inverter
-    prob['inverter.efficiency'] = 1.0
+    prob['inverter_efficiency'] = 1.0
 
     # setup battery
     prob['des_time'] = 1.0
     prob['time_of_flight'] = 2.0
-    # prob['des_power'] = 7.0
-    # prob['des_current'] =1.0
     prob['battery.q_l'] = 0.1
     prob['battery.e_full'] = 1.4
     prob['battery.e_nom'] = 1.2
@@ -149,14 +143,4 @@ if __name__ == '__main__':
     prob.root.list_connections()
     prob.run()
 
-    print('ncells %f' % top['Battery'])
 
-    db = SqliteDict('drivetraindb', 'openmdao')
-    pprint(db.keys())
-    data = db['rank0:Driver/1']
-    pprint(data['Parameters'])
-    print
-    print
-    pprint(data['Unknowns'])
-    prob.cleanup()
-    remove('drivetraindb')
