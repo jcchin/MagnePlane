@@ -11,6 +11,65 @@ from hyperloop.Python.pod.pod_geometry import PodGeometry
 from hyperloop.Python.pod.magnetic_levitation.levitation_group import LevGroup
 
 class PodGroup(Group):
+    """TODO
+
+    Params
+    ------
+    p_tube : float
+        pressure of the tube (kg)
+    M_pod : float
+        Mach number of the pod
+    A_payload : float
+    	cross sectional area of passenger compartment
+    M_duct : float
+    	Mach number of the duct
+    w_track : float
+        width of the track (m)
+    prc : float
+    	pressure ratio of the compressor
+    n_passengers : float
+    	number of passengers
+    T_tunnel : float
+    	tunnel temperature (K)
+	p_tunnel : float
+    	tunnel pressure (Pa)
+    T_ambient : float
+    	ambient temperature (K)
+    des_time : float
+        time until design power point (h)
+    time_of_flight : float
+        total mission time (h)
+    motor_max_current : float
+        max motor phase current (A)
+    motor_oversize_factor : float
+        scales peak motor power by this figure
+    inverter_efficiency : float
+        power out / power in (W)
+    battery_cross_section_area : float
+        cross_sectional area of battery used to compute length (cm**2)
+
+    Returns
+    -------
+    mag_drag : float
+        magnetic drag from levitation system (N)
+    nozzle.Fl_O:stat:W : float
+        Pod exit flow rate from Cycle (kg/s)
+    nozzle.Fl_O:tot:T : float
+        Pod exit temperature from Cycle (K)
+    nozzle.Fg : float
+        Nozzle thrust from Cycle (N)
+    inlet.F_ram : float
+        Inlet ram drag from Cycle (N)
+    A_tube : float
+    	Area of the tube (m**2)
+    S : float
+    	platform area of pod (m**2)
+
+    References
+    ----------
+    .. [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis.
+       Bradley University, 2004. N.p.: n.p., n.d. Print.
+    """
     def __init__(self):
         super(PodGroup, self).__init__()
 
@@ -20,7 +79,7 @@ class PodGroup(Group):
         self.add('levitation_group', LevGroup(), promotes=['w_track', 'mag_drag'])
         self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube', 'prc', 'T_ambient'])
         self.add('cycle', Cycle(), promotes=['nozzle.Fg', 'inlet.F_ram','M_pod', 'p_tunnel', 'nozzle.Fl_O:stat:W',
-        									 'nozzle.Fl_O:tot:T'])
+        									 'nozzle.Fl_O:tot:T', 'T_tunnel', 'p_tunnel', 'M_pod'])
         self.add('pod_geometry', PodGeometry(), promotes=['A_payload', 'S', 'n_passengers'])
 
         self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
