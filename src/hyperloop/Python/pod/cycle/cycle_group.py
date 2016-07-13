@@ -113,5 +113,5 @@ if __name__ == "__main__":
     print('H_out %f' % prob['Cycle.FlowPath.comp.Fl_O:tot:h'])
     print("Compressor Area:       %.6f m^2" %
           (cu(prob['Cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2')))
-    print("Compressor Tt:         %.6f degR" %
+    print("Compressor Tt:         %.6f Btu/lbm" %
           (prob['Cycle.inlet.Fl_O:tot:T']))
