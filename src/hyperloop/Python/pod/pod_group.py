@@ -14,10 +14,10 @@ class PodGroup(Group):
     def __init__(self):
         super(PodGroup, self).__init__()
 
-        self.add('pod_mass', PodMass())
+        self.add('pod_mass', PodMass(), promotes=['pod_mass'])
         self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor.max_current', 'inverter.efficiency'])
-        self.add('levitation_group', LevGroup(), promotes=['w_track', 'cost', 'w_track', 'mag_drag'])
-        self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube', 'prc'])
+        self.add('levitation_group', LevGroup(), promotes=['w_track', 'cost', 'w_track', 'mag_drag', 'mag_area'])
+        self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube', 'prc', 'T_ambient'])
         self.add('cycle', Cycle(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
                                               'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W', 'fl_start.Fl_O:stat:P',
                                               'fl_start.Fl_O:stat:T', 'fl_start.Fl_O:tot:P', 'fl_start.Fl_O:tot:T',
