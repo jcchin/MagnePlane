@@ -25,9 +25,9 @@ class TestTube(object):
 
         #Tube Inputs
         #Vacuum
-        prob['comp.rad'] = 5.0
+        prob['comp.tube_radius'] = 5.0
 
-        """
+
         #Temp Balance
         prob['comp.temp_boundary'] = 322.0
 
@@ -35,7 +35,7 @@ class TestTube(object):
         prob['comp.radius_outer_tube'] = 1.115
         prob['comp.length_tube'] = 482803.0
 
-        """
+
         #Tube and Pylon
         prob['comp.m_pod'] = 3100.0
         prob['comp.r'] = 1.1
@@ -53,9 +53,9 @@ class TestTube(object):
 
         # Print Statement for debugging
         """
-        print('Vacuum.weighttot:%f' % prob['comp.Vacuum.weighttot'])
+        print('Vacuum.weight_tot:%f' % prob['comp.Vacuum.weight_tot'])
         print('Struct.vac_weight: %f' % prob['comp.Struct.vac_weight'])
-        print('Vacuum.totpwr %f' % prob['comp.Vacuum.totpwr'])
+        print('Vacuum.tot_pwr %f' % prob['comp.Vacuum.tot_pwr'])
         print('TubePower.vac_power: %f' % prob['comp.TubePower.vac_power'])
         print('PropMech.pwr_req: %f' % prob['comp.PropMech.pwr_req'])
         print('Total Tube Power: %f' % prob['comp.TubePower.tot_power'])
@@ -63,9 +63,9 @@ class TestTube(object):
 
 
         # Test Values
-        assert np.isclose(prob['comp.Vacuum.weighttot'], 1521.2524 , rtol=.01)
+        assert np.isclose(prob['comp.Vacuum.weight_tot'], 1521.2524 , rtol=.01)
         assert np.isclose(prob['comp.Struct.vac_weight'], 1521.2524 , rtol=.01)
-        assert np.isclose(prob['comp.Vacuum.totpwr'], 1.000, rtol=.01)
+        assert np.isclose(prob['comp.Vacuum.tot_pwr'], 1.000, rtol=.01)
         assert np.isclose(prob['comp.TubePower.vac_power'], 1000.000, rtol=.01)
         assert np.isclose(prob['comp.PropMech.pwr_req'], 373437.942, rtol=.01)
         assert np.isclose(prob['comp.TubePower.tot_power'], 374437.941, rtol=.01)
