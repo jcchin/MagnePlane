@@ -3,7 +3,6 @@ from hyperloop.Python.pod.magnetic_levitation.breakpoint_levitation import Break
 from hyperloop.Python.pod.magnetic_levitation.magnetic_drag import MagDrag
 
 class LevGroup(Group):
-
     """The Levitation group represents a `Group` of the size of magnets required for levitation at breakpoint velocity,
     and the magnetic drag resulting from this levitation at a given speed. These values are computed
     in an OpenMDAO model.
