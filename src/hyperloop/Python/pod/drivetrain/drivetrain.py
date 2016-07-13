@@ -1,16 +1,13 @@
-import numpy as np
-from hyperloop.Python.pod.drivetrain.battery import Battery
-from hyperloop.Python.pod.drivetrain.inverter import Inverter
-from openmdao.api import Group, NLGaussSeidel, \
-    ScipyGMRES, Problem, SqliteRecorder
-
-from hyperloop.Python.pod.drivetrain.electric_motor import Motor
+from openmdao.api import Group, Problem
 from sqlitedict import SqliteDict
 
-# from openmdao.api.PP import PetscKSP.
+from hyperloop.Python.pod.drivetrain.battery import Battery
+from hyperloop.Python.pod.drivetrain.electric_motor import MotorGroup
+from hyperloop.Python.pod.drivetrain.inverter import Inverter
 
 
 class Drivetrain(Group):
+
     # TODO improve these comments...
     """The `Drivetrain` group represents a `Group` of an electric motor, inverter and battery
     in an OpenMDAO model.
@@ -27,6 +24,48 @@ class Drivetrain(Group):
     Battery : Battery
         Represents a Battery
 
+    Params
+    ------
+    design_torque : float
+    design_power : float
+        desired design value for motor power (W)
+    motor_max_current : float
+        max motor phase current (A)
+    motor_LD_ratio : float
+        length to diameter ratio of motor (unitless)
+    motor_oversize_factor : float
+        scales peak motor power by this figure
+    inverter_efficiency : float
+        power out / power in (W)
+    des_time : float
+        time until design power point (h)
+    time_of_flight : float
+        total mission time (h)
+    battery_cross_section_area : float
+        cross_sectional area of battery used to compute length (cm^2)
+
+
+    Outputs
+    -------
+    battery_mass : float
+        total mass of cells in battery configuration (kg)
+    battery_volume : float
+        total volume of cells in battery configuration (cm^3)
+    battery_cost : float
+        total cost of battery cells in (USD)
+    battery_length : float
+        length of battery (cm)
+    motor_volume : float
+        D^2*L parameter which is proportional to Torque (mm^3)
+    motor_diameter : float
+        motor diameter (m)
+    motor_mass : float
+        mass of motor (kg)
+    motor_length : float
+        motor length (m)
+    motor_power_input : float
+        total required power input into motor (W)
+
     References
     ----------
     .. [1] Gladin, Ali, Collins, "Conceptual Modeling of Electric and Hybrid-Electric Propulsion for UAS Applications"
@@ -37,31 +76,27 @@ class Drivetrain(Group):
     def __init__(self):
         super(Drivetrain, self).__init__()
 
-        self.add('motor', Motor(), promotes=['speed', 'design_power', 'max_rpm'])
-        self.add('inverter', Inverter())
-        self.add('battery', Battery(), promotes=['des_time', 'time_of_flight'])
+        self.deriv_options['type'] = 'fd'
 
-        # connect ElectricMotor outputs to Inverter inputs
+        self.add('motor', MotorGroup(), promotes=['motor_power_input', 'motor_volume',
+                                                  'motor_diameter', 'motor_mass', 'motor_length',
+                                                  'design_torque', 'design_power',
+                                                  'motor_max_current', 'motor_LD_ratio', 'motor_oversize_factor'])
+        self.add('inverter', Inverter(), promotes=['inverter_efficiency'])
+        self.add('battery', Battery(), promotes=['des_time', 'time_of_flight', 'battery_volume', 'battery_mass',
+                                                 'battery_cost', 'battery_cross_section_area', 'battery_length'])
+
+        # connect motor outputs to inverter inputs
         self.connect('motor.frequency', 'inverter.output_frequency')
         self.connect('motor.phase_voltage', 'inverter.output_voltage')
         self.connect('motor.phase_voltage', 'inverter.input_voltage')
         # TODO VERIFY THIS, does this make sense to force inverter to have
-        # equal input/output  import pprintvoltage?
+        # equal input/output
         self.connect('motor.phase_current', 'inverter.output_current')
 
-        # connect Inverter outputs to Battery inputs
+        # connect inverter outputs to Battery inputs
         self.connect('inverter.input_current', 'battery.des_current')
         self.connect('inverter.input_power', 'battery.des_power')
-
-        # TODO remove this, represented previous non-converging cycle
-        # connect Battery outputs to Inverter inputs
-        # self.connect('battery.output_voltage', 'inverter.input_voltage')
-
-        self.nl_solver = NLGaussSeidel()
-        self.nl_solver.options['atol'] = 0.1
-        self.nl_solver.options['maxiter'] = 200
-        self.ln_solver = ScipyGMRES()
-        # self.ln_solver = PetscKSP()
 
 
 if __name__ == '__main__':
@@ -69,48 +104,41 @@ if __name__ == '__main__':
     from pprint import pprint
     from os import remove
 
-    top = Problem()
-    top.root = Drivetrain()
+    prob = Problem()
+    prob.root = Drivetrain()
 
-    rec = SqliteRecorder('drivetraindb')
-    rec.options['record_params'] = True
-    rec.options['record_metadata'] = True
-    top.driver.add_recorder(rec)
+    prob.setup()
 
-    top.setup()
+    # setup ElectricMotor
+    prob['motor_max_current'] = 42.0
+    prob['motor_LD_ratio'] = 0.83
+    prob['design_power'] = 0.394 * 746
+    prob['design_torque'] = 420.169
+    prob['motor_oversize_factor'] = 1.0
+    prob['motor.idp1.n_phases'] = 3.0
+    prob['motor.motor_size.kappa'] = 1 / 1.75
+    prob['motor.idp2.pole_pairs'] = 6.0
+    prob['motor.motor_size.core_radius_ratio'] = 0.0
 
-    # top['battery.n_parallel'] = 0
-    # # Setting initial values for design variables
-    # top['InputVoltage.Voltage'] = 200.0
+    # setup inverter
+    prob['inverter_efficiency'] = 1.0
 
-    top.run()
-    print
-    print('bat out v: %f ' % top['battery.output_voltage'])
-    print('invert in v: %f' % top['inverter.input_voltage'])
-    print('mot in volt: %f' % top['motor.phase_voltage'])
-    print('invert out volt: %f' % top['inverter.output_voltage'])
-    print
-    print('invert in pow %f' % top['inverter.input_power'])
-    in_pow = top['inverter.input_voltage'] * top['inverter.input_current']
-    print('calc inverter in pow %f' % in_pow)
-    output_power = top['inverter.output_voltage'] * top[
-        'inverter.output_current'] * 3.0 * np.sqrt(2.0 / 3.0)
-    print('calc output pow %f' % output_power)
-    print('bat des pow: %f' % top['battery.des_power'])
-    print
-    print('Inv in cur %f' % top['inverter.input_current'])
-    print('mot des pow %f' % top['design_power'])
-    print('mot input cur %f' % top['motor.phase_current'])
-    print('mot input volt %f' % top['motor.phase_voltage'])
+    # setup battery
+    prob['des_time'] = 1.0
+    prob['time_of_flight'] = 2.0
+    prob['battery.q_l'] = 0.1
+    prob['battery.e_full'] = 1.4
+    prob['battery.e_nom'] = 1.2
+    prob['battery.e_exp'] = 1.27
+    prob['battery.q_n'] = 6.8
+    prob['battery.t_exp'] = 1.0
+    prob['battery.t_nom'] = 4.3
+    prob['battery.r'] = 0.0046
+    prob['battery.cell_mass'] = 170
+    prob['battery.cell_height'] = 61.0
+    prob['battery.cell_diameter'] = 33.0
 
-    # print('ncells %f' % top['Battery'])
+    prob.root.list_connections()
+    prob.run()
 
-    db = SqliteDict('drivetraindb', 'openmdao')
-    pprint(db.keys())
-    data = db['rank0:Driver/1']
-    pprint(data['Parameters'])
-    print
-    print
-    pprint(data['Unknowns'])
-    top.cleanup()
-    remove('drivetraindb')
+

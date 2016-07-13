@@ -73,9 +73,11 @@ class BreakPointDrag(Component):
         Break point drag force. Default value is 0.0.
     ld_ratio : float
         Lift to drag ratio. Default value is 0.0.
+    pod_weight : float
+        Weight of the Pod. Default value is 0.0.
 
-    Notes
-    -----
+    References
+    -------------
     [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis.
     Bradley University, 2004. N.p.: n.p., n.d. Print.
     """
@@ -149,6 +151,7 @@ class BreakPointDrag(Component):
         self.add_output('fxu', val=0.0, units='N', desc='Break Point Drag Force')
         self.add_output('ld_ratio', val=0.0, desc='Lift to Drag Ratio')
         self.add_output('track_res', val=0.0, units='ohm', desc='Resistance')
+        self.add_output('pod_weight', val=0.0, units='N', desc='Weight of Pod')
 
     def solve_nonlinear(self, params, unknowns, resids):
 
@@ -161,7 +164,8 @@ class BreakPointDrag(Component):
         gamma = params['gamma']  # Area Scalar
         l_pod = params['l_pod']  # Length of the Pod
         w_mag = params['w_mag']  # Width of Magnetic Array
-        spacing = params['spacing']
+        m_pod = params['m_pod']  # Mass of Pod
+        spacing = params['spacing'] # Spacing between each magnet.
 
         # Track Parameters
         w_track = params['w_track']  # Width of Track
@@ -170,7 +174,10 @@ class BreakPointDrag(Component):
         delta_c = params['delta_c']  # Single Layer Thickness
         strip_c = params['strip_c']  # Center Strip Spacing
         rc = params['rc']  # Electrical Resistivity of Material
+
+        #Constants
         MU0 = params['MU0']  # Permeability of Free Space
+        g = params['g']
 
         # Compute Intermediate Variables
         track_res = rc * w_track / (delta_c * w_strip * num_sheets)  # Track Resistance
@@ -180,6 +187,7 @@ class BreakPointDrag(Component):
             (sin(pi / num_mag_hal)) / (pi / num_mag_hal))  # Compute Peak Field Strength
         track_ind = MU0 * w_track / (4 * pi * strip_c / lam)  # Compute Track Inductance
         mag_area = w_mag * l_pod * gamma  # Compute Magnet Area
+        pod_weight = m_pod * g
 
         if vel_b == 0:
             omegab = 0
@@ -205,16 +213,7 @@ class BreakPointDrag(Component):
         unknowns['fxu'] = fxu
         unknowns['ld_ratio'] = ld_ratio
         unknowns['track_res'] = track_res
-
-    # def linearize(self, params, unknowns, resids):
-    #
-    #     # Define Parameters
-    #
-    #     J = {}
-    #     J['fxu','mag_thk'] =
-    #     J['fxu', 'gamma'] =
-    #
-    #     return J
+        unknowns['pod_weight'] = pod_weight
 
 
 class MagMass(Component):
@@ -295,21 +294,6 @@ class MagMass(Component):
         unknowns['m_mag'] = m_mag
         unknowns['cost'] = cost
 
-    # def linearize(self, params, unknowns, resids):
-    #
-    #     # Define Parameters
-    #     rho_mag = params['rho_mag']
-    #     w_track = params['w_track']
-    #     l_pod = params['l_pod']
-    #     mag_thk = params['mag_thk']
-    #
-    #
-    #     J = {}
-    #     J['m_mag', 'mag_thk'] = rho_mag*mag_thk
-    #     J['m_mag', 'gamma'] = rho_mag*w_track*l_pod*mag_thk
-    #
-    #     return J
-
 
 if __name__ == "__main__":
 
@@ -369,9 +353,6 @@ if __name__ == "__main__":
     top.setup()
 
     top.run()
-
-    # from openmdao.devtools.partition_tree_n2 import view_tree
-    # view_tree(top)
 
     # Print Outputs for Debugging
     # print('\n')
