@@ -60,20 +60,20 @@ class TubeGroup(Group):
         #Adding in components to Tube Group
         self.add('Vacuum', Vacuum(), promotes=['tube_radius',
                                                'tube_length',
-                                               'pinit',
-                                               'pfinal',
+                                               'pressure_initial',
+                                               'pressure_final',
                                                'pwr',
                                                'speed',
-                                               'eprice',
-                                               'tdown',
+                                               'electricity_price',
+                                               'time_down',
                                                'gamma',
-                                               'pumpweight']) #need to add A_tube and calculate radius and length in vacuum
+                                               'pump_weight']) #need to add A_tube and calculate radius and length in vacuum
         self.add('TempBalance', TempBalance(), promotes=['temp_boundary'])
         self.add('TubeWallTemp',TubeWallTemp(), promotes=['radius_outer_tube',
-                                                          'length_tube',
-                                                          'nozzle_air_W',
-                                                          'nozzle_air_Tt',
-                                                          'nozzle_air_Cp'])
+                                                           'length_tube',
+                                                           'nozzle_air_W',
+                                                           'nozzle_air_Tt',
+                                                           'nozzle_air_Cp'])
         self.add('Struct', TubeAndPylon(), promotes=['p_tunnel',
                                                      'm_pod',
                                                      'r',
@@ -92,11 +92,11 @@ class TubeGroup(Group):
         self.add('TubePower', TubePower())
 
         #Connects vacuum outputs to downstream components
-        self.connect('Vacuum.weighttot', 'Struct.vac_weight')
-        self.connect('Vacuum.totpwr', 'TubePower.vac_power')
+        self.connect('Vacuum.weight_tot', 'Struct.vac_weight')
+        self.connect('Vacuum.tot_pwr', 'TubePower.vac_power')
 
         #Connects tube_wall_temp outputs to downstream components
-        self.connect('temp_boundary', 'PropMech.T_ambient')
+        self.connect('temp_boundary', 'T_ambient')
         self.connect('temp_boundary', 'TubePower.tube_temp')
 
         #Connects propulsion_mechanics outputs to downstream components
@@ -145,14 +145,14 @@ if __name__ == "__main__":
 
     print('\n')
 
-    print('Vacuum.weighttot:%f' % top['TubeGroup.Vacuum.weighttot'])
+    print('Vacuum.weight_tot:%f' % top['TubeGroup.Vacuum.weight_tot'])
     print('Struct.vac_weight: %f' % top['TubeGroup.Struct.vac_weight'])
 
     print('temp_boundary: %f' %top['TubeGroup.temp_boundary'])
-    print('PropMech.T_ambient: %f' % top['TubeGroup.PropMech.T_ambient'])
+    print('PropMech.T_ambient: %f' % top['TubeGroup.T_ambient'])
     print('TubePower.tube_temp: %f' % top['TubeGroup.TubePower.tube_temp'])
 
-    print('Vacuum.totpwr %f' % top['TubeGroup.Vacuum.totpwr'])
+    print('Vacuum.tot_pwr %f' % top['TubeGroup.Vacuum.tot_pwr'])
     print('TubePower.vac_power: %f' % top['TubeGroup.TubePower.vac_power'])
     print('PropMech.pwr_req: %f' % top['TubeGroup.PropMech.pwr_req'])
     print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
