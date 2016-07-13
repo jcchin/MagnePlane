@@ -55,8 +55,6 @@ class Drivetrain(Group):
         total cost of battery cells in (USD)
     battery_length : float
         length of battery (cm)
-    motor_power_input : float
-        total required power input into motor
     motor_volume : float
         D^2*L parameter which is proportional to Torque (mm^3)
     motor_diameter : float
