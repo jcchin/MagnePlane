@@ -15,35 +15,27 @@ class PodGroup(Group):
         super(PodGroup, self).__init__()
 
         self.add('pod_mass', PodMass(), promotes=['pod_mass'])
-        self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor.max_current', 'inverter.efficiency'])
-        self.add('levitation_group', LevGroup(), promotes=['w_track', 'cost', 'w_track', 'mag_drag', 'mag_area'])
+        self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor_max_current', 'inverter_efficiency',
+        											   'motor_oversize_factor', 'battery_cross_section_area'])
+        self.add('levitation_group', LevGroup(), promotes=['w_track', 'mag_drag'])
         self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube', 'prc', 'T_ambient'])
-        self.add('cycle', Cycle(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
-                                              'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W', 'fl_start.Fl_O:stat:P',
-                                              'fl_start.Fl_O:stat:T', 'fl_start.Fl_O:tot:P', 'fl_start.Fl_O:tot:T',
-                                              'fl_start.Fl_O:stat:rho', 'fl_start.Fl_O:stat:V', 'inlet.Fl_O:stat:MN',
-                                              'inlet.Fl_O:stat:P', 'inlet.Fl_O:stat:T', 'inlet.Fl_O:tot:P', 'inlet.Fl_O:tot:T',
-                                              'inlet.Fl_O:stat:W', 'comp.Fl_O:stat:MN', 'comp.Fl_O:stat:area',
-                                              'comp.Fl_O:stat:P', 'comp.Fl_O:stat:T', 'M_pod', 'p_tunnel'])
+        self.add('cycle', Cycle(), promotes=['nozzle.Fg', 'inlet.F_ram','M_pod', 'p_tunnel', 'nozzle.Fl_O:stat:W',
+        									 'nozzle.Fl_O:tot:T'])
         self.add('pod_geometry', PodGeometry(), promotes=['A_payload', 'S', 'n_passengers'])
 
         self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
-        self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len'])
-        self.connect('drivetrain.motor.mass', 'pod_mass.motor_mass')
-        self.connect('drivetrain.battery.mass', 'pod_mass.battery_mass')
-        self.connect('drivetrain.motor.length', 'pod_geometry.L_motor')
-        self.connect('pod_mass.pod_mass', 'levitation_group.m_pod')
-        self.connect('pod_geometry.L_pod', 'levitation_group.l_pod')
+        self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
+        self.connect('drivetrain.motor_mass', 'pod_mass.motor_mass')
+        self.connect('drivetrain.battery_mass', 'pod_mass.battery_mass')
+        self.connect('drivetrain.motor_length', 'pod_geometry.L_motor')
+        self.connect('pod_mass', 'levitation_group.m_pod')
+        self.connect('levitation_group.m_mag', 'pod_mass.mag_mass')
         self.connect('pod_geometry.D_pod', 'pod_mass.podgeo_d')
         self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
-
-        #npss cycle connections
-        #self.connect('cycle.comp.Nmech', 'drivetrain.operating_rpm')
-        self.connect('comp.power', 'drivetrain.motor.design_power')
-        self.connect('comp.trq', 'drivetrain.motor.design_torque')
-        self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
+        self.connect('cycle.comp.power', 'drivetrain.design_power')
+        self.connect('cycle.comp.trq', 'drivetrain.design_torque')
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
-        self.connect('comp.Fl_O:stat:area', 'pod_geometry.A_duct')
+        self.connect('cycle.comp.Fl_O:stat:area', 'pod_geometry.A_duct')
 
 if __name__ == "__main__":
 
