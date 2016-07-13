@@ -58,8 +58,8 @@ class TubeGroup(Group):
         super(TubeGroup, self).__init__()
 
         #Adding in components to Tube Group
-        self.add('Vacuum', Vacuum(), promotes=['rad',
-                                               'len',
+        self.add('Vacuum', Vacuum(), promotes=['tube_radius',
+                                               'tube_length',
                                                'pinit',
                                                'pfinal',
                                                'pwr',
@@ -87,7 +87,8 @@ class TubeGroup(Group):
                                                               'D_magnetic',
                                                               'Thrust_pod', #need to calculate nozzle.Fg - inlet.F_ram to get thrust
                                                               'A',
-                                                              't'])
+                                                              't',
+                                                              'T_ambient'])
         self.add('TubePower', TubePower())
 
         #Connects vacuum outputs to downstream components
@@ -157,4 +158,5 @@ if __name__ == "__main__":
     print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
 
     print('Total Power: %f' % top['TubeGroup.TubePower.tot_power'])
+    print('mpod: %f' %top['TubeGroup.m_pod'])
 
