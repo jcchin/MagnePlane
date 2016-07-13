@@ -1,23 +1,68 @@
-"""
-Group containing the breakpointlev.py classes Drag and Mass
-"""
-
 from openmdao.api import Group, Problem, IndepVarComp, ExecComp, ScipyOptimizer
 from hyperloop.Python.pod.magnetic_levitation.breakpoint_levitation import BreakPointDrag, MagMass
 from hyperloop.Python.pod.magnetic_levitation.magnetic_drag import MagDrag
 
 class LevGroup(Group):
+
+    """The Levitation group represents a `Group` of the size of magnets required for levitation at breakpoint velocity,
+    and the magnetic drag resulting from this levitation at a given speed. These values are computed
+    in an OpenMDAO model.
+
+    Models the levitation parameters following previous work from [1]_
+
+    Components
+    ----------
+    Drag : BreakPointDrag
+        Represents the drag and magnetic parameters need for levitation at breakpoint speed.
+    Mass : MagMass
+        Represents the mass of magnets needed for levitation at breakpoint speed.
+    MDrag : MagDrag
+        Represents the magnetic drag acquired from levitation at a given speed.
+
+    Params
+    ------
+    m_pod : float
+        mass of the pod (kg)
+    l_pod : float
+        length of the pod (m)
+    w_track : float
+        width of the track (m)
+    vel_b : float
+        desired breakpoint levitation speed (m/s)
+
+    Outputs
+    -------
+    mag_drag : float
+        magnetic drag from levitation system (N)
+    m_mag : float
+        mass of the magnets needed for levitation (kg)
+    cost : float
+        total material cost for the magnets (USD)
+
+    References
+    ----------
+    .. [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis.
+       Bradley University, 2004. N.p.: n.p., n.d. Print.
+
+    """
+    
     def __init__(self):
         super(LevGroup, self).__init__()
 
         # Creates components of the group.
-        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'w_track', 'l_pod', 'w_mag', 'fyu', 'mag_area'])
-        self.add('Mass', MagMass(), promotes=['l_pod', 'w_mag', 'm_mag', 'cost'])
-        self.add('MDrag', MagDrag(), promotes=['mag_drag', 'fyu'])
+        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'w_track', 'l_pod', 'vel_b'])
+        self.add('Mass', MagMass(), promotes=['l_pod', 'cost', 'm_mag'])
+        self.add('MDrag', MagDrag(), promotes=['mag_drag'])
 
+        # Connect Drag outputs to MDrag inputs
         self.connect('Drag.track_res', 'MDrag.track_res')
         self.connect('Drag.track_ind', 'MDrag.track_ind')
-        self.connect('Drag.lam', 'MDrag.lam')    
+        self.connect('Drag.pod_weight', 'MDrag.pod_weight')
+        self.connect('Drag.lam', 'MDrag.lam')
+        self.connect('Drag.pod_weight', 'MDrag.pod_weight')
+
+        # Connect w_track to w_mag to assume magnet array width = width of track
+        self.connect('w_track', ['Drag.w_mag', 'Mass.w_mag'])
 
 if __name__ == "__main__":
 
@@ -27,7 +72,7 @@ if __name__ == "__main__":
     # Define Parameters
     params = (('m_pod', 3000.0, {'units': 'kg'}),
     		  ('l_pod', 25.0, {'units': 'm'}),
-              ('w_track', 2.0, {'units': 'm'}), 
+              ('w_track', 2.0, {'units': 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
               ('w_mag', 2.0, {'units': 'm'}),
               ('mag_thk', .05, {'units': 'm'}),
@@ -41,7 +86,7 @@ if __name__ == "__main__":
     root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
 
     # Connect
-    root.connect('lev.fyu', 'con1.fyu')
+    root.connect('lev.Drag.fyu', 'con1.fyu')
     root.connect('input_vars.g', 'lev.Drag.g')
     root.connect('lev.Drag.g', 'con1.g')
 
@@ -54,8 +99,8 @@ if __name__ == "__main__":
     root.connect('input_vars.m_pod', 'lev.m_pod')
     root.connect('lev.m_pod', 'con1.m_pod')
     root.connect('input_vars.l_pod', 'lev.l_pod')
-    root.connect('input_vars.w_mag', 'lev.w_mag')
-    root.connect('input_vars.vel_b', 'lev.Drag.vel_b')
+    root.connect('input_vars.w_mag', 'lev.Drag.w_mag')
+    root.connect('input_vars.vel_b', 'lev.vel_b')
 
     # Finite Difference
     root.deriv_options['type'] = 'fd'
