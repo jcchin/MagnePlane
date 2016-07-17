@@ -64,11 +64,11 @@ class TubeAndPylon(Component):
     -------
     m_pylon : float
         mass of individual pylon in kg/pylon
-    m_prime : float
+    m_prime: float
         Calculates mass per unit length of tube in kg/m
-    von_mises : float
+    VonMises : float
         Von Mises stress in the tube in Pa
-    total_material_cost : float
+    total material cost : float
         returns total cost of tube and pylon materials per unit distance in USD/m
     R : float
         Returns vertical component of force on each pylon in N
@@ -76,7 +76,7 @@ class TubeAndPylon(Component):
         Maximum deflection of tube between pylons in m
     dx : float
         outputs distance in between pylons in m
-    t_crit : float
+    t_crit :
         Minimum tube thickness to satisfy vacuum tube buckling condition in m
 
     Notes
@@ -181,11 +181,13 @@ class TubeAndPylon(Component):
                         desc='Minimum tunnel thickness for buckling')
 
     def solve_nonlinear(self, params, unknowns, resids):
-        """
-        total material cost = ($/kg_tunnel)*m_prime + ($/kg_pylon)*m_pylon*(1/dx)
+        '''total material cost = ($/kg_tunnel)*m_prime + ($/kg_pylon)*m_pylon*(1/dx)
         m_prime = mass of tunnel per unit length = rho_tube*pi*((r+t)^2-r^2)
         m_pylon = mass of single pylon = rho_pylon*pi*(r_pylon^2)*h
-        """
+
+        Constraint equations derived from yield on buckling conditions
+
+        '''
 
         rho_tube = params['rho_tube']
         E_tube = params['E_tube']
