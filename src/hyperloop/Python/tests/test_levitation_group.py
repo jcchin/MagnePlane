@@ -87,13 +87,13 @@ class TestLev(object):
         prob['comp.m_pod'] = .375
         prob['comp.Drag.b_res'] = 1.21
         prob['comp.Drag.num_mag_hal'] = 4.0
-        prob['comp.w_mag'] = .06
+        prob['comp.Drag.w_mag'] = .06
         prob['comp.l_pod'] = .06
         prob['comp.Drag.mag_thk'] = .012
         prob['comp.Drag.gamma'] = 1.0
         prob['comp.Drag.spacing'] = 0.007
 
-        prob['comp.w_mag'] = .06
+        prob['comp.Drag.w_mag'] = .06
         prob['comp.l_pod'] = .06
         prob['comp.Mass.mag_thk'] = .012
         prob['comp.Mass.gamma'] = 1.0
@@ -109,7 +109,7 @@ class TestLev(object):
 
         # Pod/Track Relations
         prob['comp.Drag.h_lev'] = .01
-        prob['comp.Drag.vel_b'] = 23.2038
+        prob['comp.vel_b'] = 23.2038
 
         prob.run()
 
