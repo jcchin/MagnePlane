@@ -1,6 +1,3 @@
-"""
-Test for tube_group.py.
-"""
 import pytest
 from openmdao.api import Group, Problem
 
@@ -13,7 +10,6 @@ def create_problem(GroupName):
     prob.root.add('comp', GroupName)
     return prob
 
-
 class TestTube(object):
     def test_case1(self):
 
@@ -22,11 +18,9 @@ class TestTube(object):
         prob.setup()
         # prob.root.list_connections()
 
-
         #Tube Inputs
         #Vacuum
         prob['comp.tube_radius'] = 5.0
-
 
         #Temp Balance
         prob['comp.temp_boundary'] = 322.0
@@ -34,7 +28,6 @@ class TestTube(object):
         #Tube Wall Temp
         prob['comp.radius_outer_tube'] = 1.115
         prob['comp.length_tube'] = 482803.0
-
 
         #Tube and Pylon
         prob['comp.m_pod'] = 3100.0
@@ -44,8 +37,8 @@ class TestTube(object):
         #Propulsion Mechanics
         prob['comp.Cd'] = .2
         prob['comp.S'] = 1.4
-        prob['comp.D_magnetic'] = 150.0
-        prob['comp.Thrust_pod'] = 3500.0
+        prob['comp.mag_drag'] = 150.0
+        prob['comp.pod_thrust'] = 3500.0
         prob['comp.A'] = .0225
         prob['comp.t'] = .05
 
@@ -60,7 +53,6 @@ class TestTube(object):
         print('PropMech.pwr_req: %f' % prob['comp.PropMech.pwr_req'])
         print('Total Tube Power: %f' % prob['comp.TubePower.tot_power'])
         """
-
 
         # Test Values
         assert np.isclose(prob['comp.Vacuum.weight_tot'], 1521.2524 , rtol=.01)

@@ -45,8 +45,7 @@ class TubeGroup(Group):
     inlet.F_ram : float
         Inlet ram drag from Cycle (N)
 
-
-    Outputs
+    Returns
     -------
     temp_boundary : float
         Ambient temperature inside tube (K)
@@ -84,8 +83,8 @@ class TubeGroup(Group):
                                                               'm_pod',
                                                               'Cd',
                                                               'S',
-                                                              'D_magnetic',
-                                                              'Thrust_pod', #need to calculate nozzle.Fg - inlet.F_ram to get thrust
+                                                              'mag_drag',
+                                                              'pod_thrust', #need to calculate nozzle.Fg - inlet.F_ram to get thrust
                                                               'A',
                                                               't',
                                                               'T_ambient'])
@@ -110,7 +109,6 @@ if __name__ == "__main__":
     top.root = Group()
     top.root.add('TubeGroup', TubeGroup())
 
-
     params = (
               ('radius_outer_tube', 1.115),
               ('length_tube', 482803.0),
@@ -119,11 +117,10 @@ if __name__ == "__main__":
               ('h', 10.0),
               ('Cd', 0.2),
               ('S', 1.4),
-              ('D_magnetic', 150.0),
-              ('Thrust_pod', 3500.0),
+              ('mag_drag', 150.0),
+              ('pod_thrust', 3500.0),
               ('A', .0225),
-              ('t', .05),
-              )
+              ('t', .05))
 
     top.root.add('des_vars',IndepVarComp(params))
     top.root.connect('des_vars.radius_outer_tube','TubeGroup.radius_outer_tube')
@@ -134,16 +131,14 @@ if __name__ == "__main__":
     top.root.connect('des_vars.h','TubeGroup.h')
     top.root.connect('des_vars.Cd','TubeGroup.Cd')
     top.root.connect('des_vars.S','TubeGroup.S')
-    top.root.connect('des_vars.D_magnetic','TubeGroup.D_magnetic')
-    top.root.connect('des_vars.Thrust_pod','TubeGroup.Thrust_pod')
+    top.root.connect('des_vars.mag_drag','TubeGroup.mag_drag')
+    top.root.connect('des_vars.pod_thrust','TubeGroup.pod_thrust')
     top.root.connect('des_vars.A','TubeGroup.A')
     top.root.connect('des_vars.t','TubeGroup.t')
 
     top.setup()
     top.root.list_connections()
     top.run()
-
-    print('\n')
 
     print('Vacuum.weight_tot:%f' % top['TubeGroup.Vacuum.weight_tot'])
     print('Struct.vac_weight: %f' % top['TubeGroup.Struct.vac_weight'])
@@ -159,4 +154,3 @@ if __name__ == "__main__":
 
     print('Total Power: %f' % top['TubeGroup.TubePower.tot_power'])
     print('mpod: %f' %top['TubeGroup.m_pod'])
-

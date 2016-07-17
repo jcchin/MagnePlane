@@ -1,4 +1,4 @@
-from openmdao.api import IndepVarComp,Component,Group
+from openmdao.api import IndepVarComp,Component,Group, Problem
 import numpy as np
 
 class TubePower(Component):
@@ -43,6 +43,7 @@ class TubePower(Component):
         unknowns['tot_power'] = params['vac_power']+params['prop_power']#+params['cooling_power']
 
 if __name__ == '__main__':
+    
     root = Group()
     prob = Problem(root)
     prob.root.add('comp', TubePower())
