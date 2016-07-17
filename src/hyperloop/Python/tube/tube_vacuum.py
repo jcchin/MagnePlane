@@ -7,7 +7,6 @@ from math import pi
 
 import numpy as np
 
-
 class Vacuum(Component):
     """
     Params
@@ -33,7 +32,7 @@ class Vacuum(Component):
     pump_weight : float
         Weight of one pump. Default value is 715.0.
 
-    Outputs
+    Returns
     -------
     tot_pwr : float
         Total power consumption. Default value is 0.0.
@@ -45,13 +44,13 @@ class Vacuum(Component):
         Volume of tube in liters. Default value is 0.0.
     energy_tot : float
         Total energy required to run the pumps. Default value is 0.0.
-    cost : float
+    cost_annual : float
         Total cost of pumps. The cost of purchasing the pumps and running them per year in USD.
     weight_tot: float
         Total weight of the pumps throughout the track in kg.
 
     References
-    -----
+    ----------
     [1] Laughlin, Robert B., Prof. "Energy Information Administration - Electricity Price." EIA.
     Stanford University, 30 Dec. 2008. Web. 24 June 2016.
     <http://large.stanford.edu/publications/power/references/voltprice/>
@@ -109,7 +108,7 @@ class Vacuum(Component):
                         1.0,
                         desc='total energy required to run the pumps',
                         units='J*1000')
-        self.add_output('cost_anual',
+        self.add_output('cost_annual',
                         1.0,
                         desc='total cost to run the vacuums per year',
                         units='USD/yr')
@@ -133,7 +132,7 @@ class Vacuum(Component):
         etot = params['pwr'] * n * (params['gamma'] * 86400.0)
 
         # Cost to Run the Vacuum for One Year
-        unknowns['cost_anual'] = etot * 365.0 * params['electricity_price'] / (
+        unknowns['cost_annual'] = etot * 365.0 * params['electricity_price'] / (
             1000.0 * 60.0 * 60.0 * (1.0 / 1000.0))
 
         # Total weight of all of the pumps.
@@ -158,6 +157,6 @@ if __name__ == '__main__':
 
     print('Total weight of the pumps (kg): %f' %
           (p['comp.weight_tot']))  # Print total weight
-    print('Total cost($): %f' % (p['comp.cost_anual']))  # Print total cost
+    print('Total cost($): %f' % (p['comp.cost_annual']))  # Print total cost
     print('Total number of pumps (#): %f' %
           (p['comp.number_pumps']))  # Print total number of required pumps
