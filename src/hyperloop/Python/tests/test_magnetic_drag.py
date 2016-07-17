@@ -3,12 +3,10 @@ Test for magnetic_drag.py. Uses test values and outputs given by
 the laminated sheet experiment in [1].
 """
 import pytest
-from hyperloop.Python import magnetic_drag
+from hyperloop.Python.pod.magnetic_levitation.magnetic_drag import MagDrag
 
 import numpy as np
 from openmdao.api import Group, Problem
-
-from hyperloop.Python.pod.magnetic_levitation.magnetic_drag import MagDrag
 
 def create_problem(magdrag):
     root = Group()
