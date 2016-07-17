@@ -9,14 +9,11 @@ def create_problem(component):
     prob.root.add('comp', component)
     return prob
 
-
 class TestTubeAndPylon(object):
     def test_case1_vs_npss(self):
 
         component = tube_and_pylon.TubeAndPylon()
-
         prob = create_problem(component)
-
         prob.setup()
 
         prob['comp.rho_tube'] = 7820.0

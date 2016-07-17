@@ -9,14 +9,11 @@ def create_problem(component):
     prob.root.add('comp', component)
     return prob
 
-
 class TestPropulsionMechanics(object):
     def test_case1_vs_npss(self):
 
         component = propulsion_mechanics.PropulsionMechanics()
-
         prob = create_problem(component)
-
         prob.setup()
 
         prob['comp.Cd'] = .2
@@ -24,8 +21,8 @@ class TestPropulsionMechanics(object):
         prob['comp.p_tube'] = 100.0
         prob['comp.T_ambient'] = 293.0
         prob['comp.R'] = 286.9
-        prob['comp.D_magnetic'] = 150.0
-        prob['comp.Thrust_pod'] = 3500.0
+        prob['comp.mag_drag'] = 150.0
+        prob['comp.pod_thrust'] = 3500.0
         prob['comp.vf'] = 335.0
         prob['comp.v0'] = 324.0
         prob['comp.rho_pm'] = 7400.0
@@ -36,5 +33,4 @@ class TestPropulsionMechanics(object):
         prob['comp.eta'] = .8
 
         prob.run()
-
         assert np.isclose(prob['comp.pwr_req'], 373460.335731, rtol=0.1)

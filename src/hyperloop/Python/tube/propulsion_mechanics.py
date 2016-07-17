@@ -12,41 +12,45 @@ class PropulsionMechanics(Component):
     """
     Params
     ------
-    Tube Pressure : float
+    p_tube : float
         Pressure of air in tube.  Default value is 100 Pa.  Value will come from vacuum component
-    Ideal Gas Constant : float
+    R : float
         Ideal gas constant. Default valut is 287 J/(m*K).
-    Ambient Temperature : float
+    T_ambient : float
         Tunnel ambient temperature. Default value is 298 K.
-    Gravity : float
+    g : float
         Gravitational acceleration. Default value is 9.81 m/s**2
-    Top Speed : float
+    vf : float
         Top pod speed after boosting section. Default value is 335 m/s. Value will be taken from aero module
-    Entance speed : float
+    vo : float
         Speed of pod when it enters boosting section. Default value is 324 m/s.
-    Magnet density : float
+    rho_pm : float
         Permanent magnet density. Default value is 7400 kg/m**3
-    Area of magnets : float
+    A : float
         Area of magnets on bottom of pod. Default value is .0225 m**2. Value will come from levitation module
-    Thickness of magnets : float
+    t : float
         Magnet thickness on bottomm of pod. Default value is .05 m. Value will come from levitation module
-    Pod mass : float
+    m_pod : float
         total mass of pod. Default value is 3100 kg. Value will come from weight component
-    Efficiency : float
+    eta : float
         Efficiency of propulsion system. Default value is .8. value will come from propulsion module.
-    Drag coefficient : float
+    Cd : float
         Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
-    Reference Area : float
+    S : float
         Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
-    Magnetic Drag : float
+    mag_drag : float
         Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
-    Pod Thrust : float
+    pod_thrust : float
         Thrust produced by pod compressed air. Default value 3500 N. Will pull value from NPSS
 
     Returns
     -------
-    Required Power : float
+    pwr_req : float
         Computes power required by accelerating segment
+    Fg_dP : float
+        TODO
+    m_dP : float
+        TODO
     """
 
     def __init__(self):
@@ -83,11 +87,11 @@ class PropulsionMechanics(Component):
         self.add_param('eta', val=.8, desc='LSM efficiency')
         self.add_param('Cd', val=.2, desc='Aerodynamic drag coefficient')
         self.add_param('S', val=1.4, desc='Frontal Area', units='m**2')
-        self.add_param('D_magnetic',
+        self.add_param('mag_drag',
                        val=150.0,
                        units='N',
                        desc='Magnetic Drag')
-        self.add_param('Thrust_pod',
+        self.add_param('pod_thrust',
                        val=3500.0,
                        units='N',
                        desc='Thrust Pod Nozzle')
@@ -97,47 +101,8 @@ class PropulsionMechanics(Component):
         self.add_output('m_dP', val=0.0)  #Define mass per unit power as output
 
     def solve_nonlinear(self, params, unknowns, resids):
-        """Evaluate function Preq = (1/eta)*(mg*(vf-vo)+(1/6)*(Cd*rho*S*(vf^3 - vo^3))+D_magnetic*(vf-v0))
+        """Evaluate function Preq = (1/eta)*(mg*(vf-vo)+(1/6)*(Cd*rho*S*(vf^3 - vo^3))+mag_drag*(vf-v0))
         Can be optimized in the future.  Friction and magnetic drag are neglected for now.
-
-        Params
-        ------
-        Tube Pressure : float
-            Pressure of air in tube.  Default value is 100 Pa.  Value will come from vacuum component
-        Ideal Gas Constant : float
-            Ideal gas constant. Default valut is 287 J/(m*K).
-        Ambient Temperature : float
-            Tunnel ambient temperature. Default value is 298 K.
-        Gravity : float
-            Gravitational acceleration. Default value is 9.81 m/s**2
-        Top Speed : float
-            Top pod speed after boosting section. Default value is 335 m/s. Value will be taken from aero module
-        Entance speed : float
-            Speed of pod when it enters boosting section. Default value is 324 m/s.
-        Magnet density : float
-            Permanent magnet density. Default value is 7400 kg/m**3
-        Area of magnets : float
-            Area of magnets on bottom of pod. Default value is .0225 m**2. Value will come from levitation module
-        Thickness of magnets : float
-            Magnet thickness on bottomm of pod. Default value is .05 m. Value will come from levitation module
-        Pod mass : float
-            total mass of pod. Default value is 3100 kg. Value will come from weight component
-        Efficiency : float
-            Efficiency of propulsion system. Default value is .8. value will come from propulsion module.
-        Drag coefficient : float
-            Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
-        Reference Area : float
-            Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
-        Magnetic Drag : float
-            Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
-        Pod Thrust : float
-            Thrust produced by pod compressed air. Default value 3500 N. Will pull value from NPSS
-
-        Returns
-        -------
-        Required Power : float
-            Computes power required by accelerating segment
-
         """
 
         eta = params['eta']
@@ -157,11 +122,10 @@ class PropulsionMechanics(Component):
         #Evaluate equation
         unknowns['pwr_req'] = (1.0 / eta) * (
             (m * g * (vf - v0)) + (1.0 / 6.0) * (Cd * rho * S * (
-                (vf**3.0) - (v0**3.0))) + params['D_magnetic'] *
-            (vf - v0) - params['Thrust_pod'] * (vf - v0))
+                (vf**3.0) - (v0**3.0))) + params['mag_drag'] *
+            (vf - v0) - params['pod_thrust'] * (vf - v0))
         unknowns['Fg_dP'] = (m * g) / unknowns['pwr_req']
         unknowns['m_dP'] = m / unknowns['pwr_req']
-
 
 if __name__ == '__main__':
 

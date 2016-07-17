@@ -8,7 +8,25 @@
 
     The `TempBalance` implicit component varies the boundary temp between the
     inside and outside of the tube, until Q released matches Q absorbed.
+    """
+from math import log, pi, sqrt, e
 
+from openmdao.core.group import Group, Component, IndepVarComp
+from openmdao.solvers.newton import Newton
+from openmdao.units.units import convert_units as cu
+from openmdao.solvers.scipy_gmres import ScipyGMRES
+from openmdao.api import NLGaussSeidel
+from openmdao.solvers.ln_gauss_seidel import LinearGaussSeidel
+from openmdao.solvers.ln_direct import DirectSolver
+
+from pycycle import species_data
+from pycycle.species_data import janaf
+from pycycle.components import FlowStart
+from pycycle.constants import AIR_FUEL_MIX, AIR_MIX
+from pycycle.flowstation import FlowIn, PassThrough
+
+class TempBalance(Component):
+    """
     Params
     ------
     radius_outer_tube : float
@@ -41,7 +59,7 @@
         optional fudge factor on Nusslet number to account for
         a small breeze on tube, 1 assumes no breeze
 
-    Outputs
+    Returns
     -------
     diameter_outer_tube : float
         outer diameter of the tube
@@ -92,38 +110,16 @@
 
     Notes
     -----
-
     Some of the original calculations from Jeff Berton, ported and extended by
     Jeff Chin. Compatible with OpenMDAO v1.5, python 2 and 3
 
     References
     ----------
-
     .. [1] https://mdao.grc.nasa.gov/publications/Berton-Thesis.pdf pg51
 
     .. [2] 3rd Ed. of Introduction to Heat Transfer by Incropera and DeWitt,
     equations (9.33) and (9.34) on page 465
-
     """
-
-from math import log, pi, sqrt, e
-
-from openmdao.core.group import Group, Component, IndepVarComp
-from openmdao.solvers.newton import Newton
-from openmdao.units.units import convert_units as cu
-from openmdao.solvers.scipy_gmres import ScipyGMRES
-from openmdao.api import NLGaussSeidel
-from openmdao.solvers.ln_gauss_seidel import LinearGaussSeidel
-from openmdao.solvers.ln_direct import DirectSolver
-
-from pycycle import species_data
-from pycycle.species_data import janaf
-from pycycle.components import FlowStart
-from pycycle.constants import AIR_FUEL_MIX, AIR_MIX
-from pycycle.flowstation import FlowIn, PassThrough
-
-
-class TempBalance(Component):
     def __init__(self):
         super(TempBalance, self).__init__()
         self.add_param('ss_temp_residual', val=0.)
