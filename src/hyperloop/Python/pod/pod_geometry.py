@@ -4,36 +4,24 @@ import numpy as np
 from openmdao.core.component import Component
 from openmdao.api import IndepVarComp, Component, Problem, Group
 class PodGeometry(Component):
-
     """
     Notes
     ------
-
     Computes to corss sectional area, length, and planform area of the pod based on the sizes of internal components
     and the necessary duct area within the po based on compressor peformance.  Assumes isentropic compression and a 
     compressor exit mach number of .3. 
 
     Params
     ------
-    Ratio of specific heats : float
-        Ratio of specific heats. Default value is 1.4
-    Ideal Gas Constant : float
-        Ideal gas constant. Default valut is 287 J/(m*K).
-    Blockage factor : float
+    bd : float
         ratio of diffused area to pod area. Default value is .9. Value will be taken from pod structure module
-    Compressor pressure ratio : float
-        Pressure ratio across compressor inlet and outlet.  Default value is 12.5.  Value will be taken from NPSS
-    Tube Pressure : float
+    p_tunnel : float
         Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
-    Ambient Temperature : float
-        Tunnel ambient temperature. Default value is 298 K.
-    Duct Mach number : float
+    A_duct : float
         Mach number of flow in the duct after exiting the compressor. Default value is .3
-    Diffuser Mach number : float
-        Maximum Mach number allowed at compressor inlet. Default value is .6
-    pod mach : float
+    dl_passenger : float
         pod Mach number. Default value is .8. value will be set by user
-    Pay load area : float
+    A_payload : float
         Cross sectional area of passenger compartment. Default value is 1.4 m**2
     L_comp : float
         length of the compressor. Default value is 1.0 m.
@@ -49,18 +37,16 @@ class PodGeometry(Component):
         length of the converging section of the nozzle. Default value is .3 m
     L_div : float
         length of the diverging section of the nozzle. Default value is 1.5 m
-    Diffuser diameter : float
-        Diameter of compressor inlet. Default value is 1.28 m.
 
     Returns
     -------
-    Pod Area : float
+    A_pod : float
         Cross sectional area of pod.
-    Pod diameter : float
+    D_pod : float
         Diameter of pod
-    Planform area : float
+    S : float
         Planform area of the pod
-    Pod length: float
+    L_pod : float
         Length of Pod
     """
 
