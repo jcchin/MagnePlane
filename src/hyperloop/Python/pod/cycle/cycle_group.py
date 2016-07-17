@@ -1,6 +1,6 @@
 """
-Group for the Cycle containing the following components:
-FlowPath and Compressor Mass
+Group for the Compressor Cycle Components. This group contains the following components:
+Flowpath, Compressor Mass, and Compressor Length.
 """
 from __future__ import print_function
 from openmdao.api import IndepVarComp, Component, Problem, Group
@@ -29,24 +29,72 @@ from hyperloop.Python.pod.cycle.compressor_mass import CompressorMass
 from hyperloop.Python.pod.cycle.comp_len import CompressorLen
 
 class Cycle(Group):
-  def __init__(self):
-    super(Cycle, self).__init__()
-
-    self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
-                                              'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W', 'fl_start.Fl_O:stat:P',
-                                              'fl_start.Fl_O:stat:T', 'fl_start.Fl_O:tot:P', 'fl_start.Fl_O:tot:T',
-                                              'fl_start.Fl_O:stat:rho', 'fl_start.Fl_O:stat:V', 'inlet.Fl_O:stat:MN',
-                                              'inlet.Fl_O:stat:P', 'inlet.Fl_O:stat:T', 'inlet.Fl_O:tot:P', 'inlet.Fl_O:tot:T',
-                                              'inlet.Fl_O:stat:W', 'comp.Fl_O:stat:MN', 'comp.Fl_O:stat:area',
-                                              'comp.Fl_O:stat:P', 'comp.Fl_O:stat:T'])
-    self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
-    self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'M_pod', 'T_tunnel', 'p_tunnel', 'comp_len'])
+    """
+	Params
+    ------
+    ram_recovery : float
+        Perfcentage of ram pressure recovered (1-ram_recovery) is lost
+    inlet_MN : float
+        Mach Number at the front face of the inlet
+    comp.PRdes : float
+        Pressure Ratio used to "design" and size the compressor
+    comp.effDes : float
+        Target Efficiency of the "design" compressor
+    comp.MN_target : float
+        Mach Number at the front face of the compressor
+    duct.dPqP : float
+        Pressure loss across a duct
+    duct.MN_target : float
+        Mach Number at the front face of the duct
+    nozzle.Cfg : float
+        Gross Thrust Performance Coefficient
+    nozzle.dPqP : float
+        Pressure loss in the nozzle
+    shaft.Nmech : float
+        Mechanical RPM of the shaft (connected to compressor and motor)
     
-    self.connect('FlowPath.inlet.Fl_O:tot:h', ['CompressorMass.h_in', 'CompressorLen.h_in'])
-    self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])
-    self.connect('inlet.Fl_O:stat:area', ['CompressorMass.comp_inletArea', 'CompressorLen.comp_inletArea'])
-    self.connect('inlet.Fl_O:tot:T', 'CompressorLen.comp_inletTemp')
-    self.connect('inlet.Fl_O:stat:W', 'CompressorMass.mass_flow')
+    Returns
+    -------
+    comp.trq : float
+        Torque required by compressor motor(lb*ft)
+	comp.power : float
+        Torque required by compressor motor(hp)
+    comp_mass : float
+        Torque required by compressor motor(kg)
+    comp_len : float
+        Torque required by compressor motor(m)
+    comp.nozzle.Fg : float
+        Gross Thrust (lb)
+    comp.F_ram : float
+        Ram Drag (lb)
+    nozzle.Fl_O:tot:T : float
+        Nozzle Exit Tt (degR)
+    nozzle.Fl_O:stat:W : float
+        Nozzle Exit MFR (kg/s)
+	
+    References
+    ----------
+    .. [1] Miceahal Tong Correlation used.
+	.. [2] NASA-Glenn NPSS compressor cycle model.
+    """
+    def __init__(self):
+        super(Cycle, self).__init__()
+
+        self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
+                                                  'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W', 'fl_start.Fl_O:stat:P',
+                                                  'fl_start.Fl_O:stat:T', 'fl_start.Fl_O:tot:P', 'fl_start.Fl_O:tot:T',
+                                                  'fl_start.Fl_O:stat:rho', 'fl_start.Fl_O:stat:V', 'inlet.Fl_O:stat:MN',
+                                                  'inlet.Fl_O:stat:P', 'inlet.Fl_O:stat:T', 'inlet.Fl_O:tot:P', 'inlet.Fl_O:tot:T',
+                                                  'inlet.Fl_O:stat:W', 'comp.Fl_O:stat:MN', 'comp.Fl_O:stat:area',
+                                                  'comp.Fl_O:stat:P', 'comp.Fl_O:stat:T'])
+        self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
+        self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'M_pod', 'T_tunnel', 'p_tunnel', 'comp_len'])
+        
+        self.connect('FlowPath.inlet.Fl_O:tot:h', ['CompressorMass.h_in', 'CompressorLen.h_in'])
+        self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])
+        self.connect('inlet.Fl_O:stat:area', ['CompressorMass.comp_inletArea', 'CompressorLen.comp_inletArea'])
+        self.connect('inlet.Fl_O:tot:T', 'CompressorLen.comp_inletTemp')
+        self.connect('inlet.Fl_O:stat:W', 'CompressorMass.mass_flow')
 
 if __name__ == "__main__":
     prob = Problem()

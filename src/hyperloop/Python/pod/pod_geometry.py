@@ -8,21 +8,21 @@ class PodGeometry(Component):
     Notes
     ------
     Computes to corss sectional area, length, and planform area of the pod based on the sizes of internal components
-    and the necessary duct area within the po based on compressor peformance.  Assumes isentropic compression and a 
-    compressor exit mach number of .3. 
+    and the necessary duct area within the pod based on compressor peformance.  Assumes isentropic compression and a 
+    compressor exit mach number of .3. Also calculate blockage factors based on pressurized cylinder equations.
 
     Params
     ------
-    bd : float
-        ratio of diffused area to pod area. Default value is .9. Value will be taken from pod structure module
+    gam : float
+        Ratio of specific heats. Default value is 1.4
+    R : float
+        Ideal gas constant. Default valut is 287 J/(m*K).
     p_tunnel : float
         Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
-    A_duct : float
-        Mach number of flow in the duct after exiting the compressor. Default value is .3
-    dl_passenger : float
+    M_pod : float
         pod Mach number. Default value is .8. value will be set by user
-    A_payload : float
-        Cross sectional area of passenger compartment. Default value is 1.4 m**2
+    A_p : float
+        Cross sectional area of passenger compartment. Default value is 2.72 m**2
     L_comp : float
         length of the compressor. Default value is 1.0 m.
     L_bat : float
@@ -37,6 +37,24 @@ class PodGeometry(Component):
         length of the converging section of the nozzle. Default value is .3 m
     L_div : float
         length of the diverging section of the nozzle. Default value is 1.5 m
+    p_duct : float
+        Static pressure in the duct. Default value is 6800.0 Pa
+    p_passenger : float
+        Static pressure in passenger section. Default value is 101.3e3 Pa
+    rho_pod : float
+        Density of pod material. Default value is 2700.0 kg/m**3
+    n_passengers : float
+        Number of passengers per pod. Default value is 28
+    SF : float
+        Structural safety factor. Default value is 1.5
+    Su : float
+        Ultimate strength of pod material. Default value is 50.0e6 Pa
+    A_duct : float
+        Area of flow duct within pod. Default value is .3 m**2
+    dl_passenger : float
+        Length of passenger compartment per passenger row. Default value is .8 m.
+    g : float
+        gravitational acceleration. Default value is 9.81 m/s**2
 
     Returns
     -------
@@ -48,6 +66,14 @@ class PodGeometry(Component):
         Planform area of the pod
     L_pod : float
         Length of Pod
+    t_passenger : float
+        thickness of structure in passenger section.
+    t_pod : float
+        thickness of outer pod section.
+    BF : float
+        Pod blockage factor.
+    beta : float
+        Duct blockage factor.
     """
 
     def __init__(self):
