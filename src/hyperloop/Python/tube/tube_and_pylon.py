@@ -4,11 +4,10 @@ import numpy as np
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 from openmdao.api import ScipyOptimizer
 
-
 class TubeAndPylon(Component):
     """
     Notes
-    ------
+    -----
     Estimates tube tunnel cost and pylon material cost
     Optimizes tunnel thickness, pylon radius, and pylon spacing
 
@@ -84,10 +83,8 @@ class TubeAndPylon(Component):
     -----
     [1] USA. NASA. Buckling of Thin-Walled Circular Cylinders. N.p.: n.p., n.d. Web. 13 June 2016.
     """
-
     def __init__(self):
         super(TubeAndPylon, self).__init__()
-
         #Define material properties of tube
         self.add_param('rho_tube',
                        val=7820.0,
