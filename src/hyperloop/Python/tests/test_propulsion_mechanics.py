@@ -21,16 +21,15 @@ class TestPropulsionMechanics(object):
         prob['comp.p_tube'] = 100.0
         prob['comp.T_ambient'] = 293.0
         prob['comp.R'] = 286.9
-        prob['comp.mag_drag'] = 150.0
-        prob['comp.pod_thrust'] = 3500.0
+        prob['comp.D_mag'] = 150.0
         prob['comp.vf'] = 335.0
         prob['comp.v0'] = 324.0
-        prob['comp.rho_pm'] = 7400.0
-        prob['comp.A'] = .0225
-        prob['comp.t'] = .05
         prob['comp.g'] = 9.81
         prob['comp.m_pod'] = 3100.0
         prob['comp.eta'] = .8
+        prob['comp.nozzle_thrust'] = 21473.92
+        prob['comp.ram_drag'] = 7237.6
+        prob['comp.theta'] = 0.0
 
         prob.run()
-        assert np.isclose(prob['comp.pwr_req'], 373460.335731, rtol=0.1)
+        assert np.isclose(prob['comp.pwr_req'], 224712.997293, rtol=0.1)

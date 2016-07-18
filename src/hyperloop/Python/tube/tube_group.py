@@ -156,4 +156,3 @@ if __name__ == "__main__":
     print('\n')
     print('Total Power: %f' % top['TubeGroup.TubePower.tot_power'])
     print('Tube Temp: %f' % top['TubeGroup.temp_boundary'])
-

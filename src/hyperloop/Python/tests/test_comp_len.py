@@ -3,7 +3,6 @@ from src.hyperloop.Python.pod.cycle import comp_len
 import numpy as np
 from openmdao.api import Group, Problem
 
-
 def create_problem(component):
     root = Group()
     prob = Problem(root)
@@ -12,17 +11,11 @@ def create_problem(component):
 
 class TestCompressorLength(object):
 
-
     def test_case1(self):
 
-
         component  =  comp_len.CompressorLen()
-
         prob = create_problem(component)
-
         prob.setup()
-
-
 
         prob['comp.comp_inletTemp'] = 293.0
         prob['comp.h_in'] = 0.0
@@ -36,4 +29,4 @@ class TestCompressorLength(object):
         prob['comp.h_stage'] = 58.2
         prob.run()
 
-        assert np.isclose(prob['comp.L_comp'], 0.518 , rtol = 0.1)
+        assert np.isclose(prob['comp.comp_len'], 0.518 , rtol = 0.1)
