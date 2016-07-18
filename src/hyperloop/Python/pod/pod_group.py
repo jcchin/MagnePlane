@@ -9,9 +9,9 @@ from hyperloop.Python.pod.pod_mach import PodMach
 from hyperloop.Python.pod.cycle.cycle_group import Cycle
 from hyperloop.Python.pod.pod_geometry import PodGeometry
 from hyperloop.Python.pod.magnetic_levitation.levitation_group import LevGroup
-
+from openmdao.api import Newton, ScipyGMRES
 class PodGroup(Group):
-    """TODO
+    """TODOs
 
     Params
     ------
@@ -72,6 +72,13 @@ class PodGroup(Group):
     """
     def __init__(self):
         super(PodGroup, self).__init__()
+
+        self.nl_solver = Newton()
+        # self.nl_solver.options['maxiter'] = 1000
+        # self.nl_solver.options['atol'] = 0.0001
+
+        self.ln_solver = ScipyGMRES()
+        # self.ln_solver.options['maxiter'] = 100
 
         self.add('pod_mass', PodMass(), promotes=['pod_mass'])
         self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor_max_current', 'inverter_efficiency',
