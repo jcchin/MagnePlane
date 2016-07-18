@@ -94,7 +94,7 @@ class PodGroup(Group):
         self.connect('cycle.comp.power', 'drivetrain.design_power')
         self.connect('cycle.comp.trq', 'drivetrain.design_torque')
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
-        self.connect('cycle.comp.Fl_O:stat:area', 'pod_geometry.A_duct')
+        self.connect('cycle.FlowPath.comp.Fl_O:stat:area', 'pod_geometry.A_duct')
 
 if __name__ == "__main__":
 
