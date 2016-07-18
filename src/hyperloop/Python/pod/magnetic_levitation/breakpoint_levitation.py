@@ -189,6 +189,7 @@ class BreakPointDrag(Component):
         # Compute Intermediate Variables
         w_track = d_pod * track_factor
         track_res = rc * w_track / (delta_c * w_strip * num_sheets)  # Track Resistance
+        w_mag = w_track  # Set equal for simple model
 
         lam = num_mag_hal * mag_thk + spacing  # Compute Wavelength
         b0 = b_res * (1. - np.exp(-2. * pi * mag_thk / lam)) * (
@@ -241,10 +242,16 @@ class MagMass(Component):
         Length of the Hyperloop pod. Default value is 22.
     gamma : float
         Percent factor used in Area. Default value is 1.
+    d_pod : float
+        Diameter of the pod. Default value is 1.
+    track_factor : float
+        Factor to calculate track width. Default value is .75.
     w_mag : float
         Width of magnet array. Default value is 3.
     cost_per_kg : flost
         Cost of the magnets per kilogram. Default value is 44.
+    track_factor : float
+        Factor to adjust track width. Default value is .75.
 
     Returns
     -------
@@ -277,6 +284,8 @@ class MagMass(Component):
                        units='USD/kg',
                        desc='Cost of Magnet per Kilogram')
         self.add_param('w_mag', val=3.0, units='m', desc='Width of Magnet Array')
+        self.add_param('d_pod', val=1.0, units='m', desc='Diameter of Pod')
+        self.add_param('track_factor', val=0.75, desc='Track Factor Width')
 
         # Outputs
         self.add_output('mag_area', val=0.0, units='m', desc='Total Area of Magnets')
@@ -293,8 +302,12 @@ class MagMass(Component):
         l_pod = params['l_pod']  # Length of Pod
         rho_mag = params['rho_mag']  # Density of Magnets
         cost_per_kg = params['cost_per_kg']  # Cost per kg of Magnet
+        d_pod = params['d_pod']  # Diameter of the pod
+        track_factor = params['track_factor']  # Track Width Factor
 
         # Compute Intermediate Variables
+        w_track = d_pod * track_factor  # Calculate width of the track
+        w_mag = w_track  # Set equal for simple model
         mag_area = w_mag * l_pod * gamma  # Compute Magnet Area
         m_mag = rho_mag * mag_area * mag_thk  # Compute Magnet Mass
         cost = m_mag * cost_per_kg  # Compute Total Magnet Cost

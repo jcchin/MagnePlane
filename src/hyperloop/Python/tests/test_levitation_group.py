@@ -91,7 +91,6 @@ class TestLev(object):
 
         prob['comp.Drag.b_res'] = 1.21
         prob['comp.Drag.num_mag_hal'] = 4.0
-        prob['comp.Drag.w_mag'] = .06
         prob['comp.Drag.mag_thk'] = .012
         prob['comp.Drag.gamma'] = 1.0
         prob['comp.Drag.spacing'] = 0.007
@@ -99,9 +98,11 @@ class TestLev(object):
         prob['comp.Mass.mag_thk'] = .012
         prob['comp.Mass.gamma'] = 1.0
 
+        prob['comp.MDrag.vel'] = 350.0
+
         # Track Inputs
         prob['comp.d_pod'] = .11
-        prob['comp.Drag.track_factor'] = 1
+        prob['comp.Drag.track_factor'] = 1.0
         prob['comp.Drag.num_sheets'] = 1.0
         prob['comp.Drag.w_strip'] = .005
         prob['comp.Drag.delta_c'] = .0005334
@@ -115,11 +116,11 @@ class TestLev(object):
 
         prob.run()
 
-        # Print Statement for debugging
-        # print('track_ind is %12.12f' % prob['comp.Drag.track_ind'])
+        # Print Statements for debugging
+        # print('Mag Mass %f' % prob['comp.m_mag'])
+        # print('Mag Drag is %f' % prob['comp.mag_drag'])
 
         # Test Values
-        assert np.isclose(prob['comp.Drag.ld_ratio'], 0.21618, rtol=.01)
-        assert np.isclose(prob['comp.Drag.track_res'], 0.000707, rtol=.01)
-        assert np.isclose(prob['comp.Drag.track_ind'], 5.7619e-8, rtol=.01)
-        assert np.isclose(prob['comp.Drag.b0'], 0.81281, rtol=.01)
+        assert np.isclose(prob['comp.m_mag'], .4455, rtol=.01)
+        assert np.isclose(prob['comp.mag_drag'], 1.128, rtol=.01)
+

@@ -51,7 +51,7 @@ class LevGroup(Group):
 
         # Creates components of the group.
         self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'd_pod', 'l_pod', 'vel_b'])
-        self.add('Mass', MagMass(), promotes=['l_pod', 'cost', 'm_mag'])
+        self.add('Mass', MagMass(), promotes=['l_pod', 'cost', 'm_mag', 'd_pod'])
         self.add('MDrag', MagDrag(), promotes=['mag_drag'])
 
         # Connect Drag outputs to MDrag inputs
@@ -60,9 +60,6 @@ class LevGroup(Group):
         self.connect('Drag.pod_weight', 'MDrag.pod_weight')
         self.connect('Drag.lam', 'MDrag.lam')
         self.connect('Drag.pod_weight', 'MDrag.pod_weight')
-
-        # Connect w_track to w_mag to assume magnet array width = width of track unless testing.
-        self.connect('Drag.w_track', ['Drag.w_mag', 'Mass.w_mag'])
 
 if __name__ == "__main__":
 
