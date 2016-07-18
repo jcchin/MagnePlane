@@ -10,6 +10,10 @@ from openmdao.api import IndepVarComp, Component, Group, Problem
 
 class PropulsionMechanics(Component):
     """
+    Notes
+    ------
+    Calculate power required to accelerate pod in one boosting section assuming linear acceleration of 1g
+
     Params
     ------
     p_tube : float
@@ -24,12 +28,6 @@ class PropulsionMechanics(Component):
         Top pod speed after boosting section. Default value is 335 m/s. Value will be taken from aero module
     vo : float
         Speed of pod when it enters boosting section. Default value is 324 m/s.
-    rho_pm : float
-        Permanent magnet density. Default value is 7400 kg/m**3
-    A : float
-        Area of magnets on bottom of pod. Default value is .0225 m**2. Value will come from levitation module
-    t : float
-        Magnet thickness on bottomm of pod. Default value is .05 m. Value will come from levitation module
     m_pod : float
         total mass of pod. Default value is 3100 kg. Value will come from weight component
     eta : float
@@ -40,8 +38,10 @@ class PropulsionMechanics(Component):
         Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
     mag_drag : float
         Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
-    pod_thrust : float
-        Thrust produced by pod compressed air. Default value 3500 N. Will pull value from NPSS
+    nozzle_thrust : float
+        Thrust produced by pod compressed air. Default value 21473.92 N. Will pull value from flow_path.py
+    ram_drag : float
+        Drag produced by inlet ram pressure. Default value is 7237.6
 
     Returns
     -------
@@ -74,12 +74,6 @@ class PropulsionMechanics(Component):
         self.add_param('g', val=9.81, desc='Gavity', units='m/s**2')
         self.add_param('vf', val=335.0, desc='Top Speed', units='m/s')
         self.add_param('v0', val=324.0, desc='Entrance Speed', units='m/s')
-        self.add_param('rho_pm',
-                       val=7400.0,
-                       desc='Density of PM',
-                       units='kg/m**3')
-        self.add_param('A', val=.0225, desc='Area of magnets', units='m**2')
-        self.add_param('t', val=.05, desc='Thickness of magnets', units='m')
         self.add_param('m_pod',
                        val=3100.0,
                        desc='mass of the pod without the magnets',
@@ -87,21 +81,24 @@ class PropulsionMechanics(Component):
         self.add_param('eta', val=.8, desc='LSM efficiency')
         self.add_param('Cd', val=.2, desc='Aerodynamic drag coefficient')
         self.add_param('S', val=1.4, desc='Frontal Area', units='m**2')
-        self.add_param('mag_drag',
+        self.add_param('D_mag',
                        val=150.0,
                        units='N',
                        desc='Magnetic Drag')
-        self.add_param('pod_thrust',
-                       val=3500.0,
+        self.add_param('nozzle_thrust',
+                       val=21473.92,
                        units='N',
-                       desc='Thrust Pod Nozzle')
+                       desc='Thrust of Pod Nozzle')
+        self.add_param('ram_drag', val = 7237.6, units = 'N', desc = 'Drag from inlet ram pressure')
+        self.add_param('theta', val = 0.0, units = 'rad', desc = 'Pod pitch angle')
+
 
         self.add_output('pwr_req', val=0.0)  #Define power as output
         self.add_output('Fg_dP', val=0.0)  #Define Thrust per unit Power output
         self.add_output('m_dP', val=0.0)  #Define mass per unit power as output
 
     def solve_nonlinear(self, params, unknowns, resids):
-        """Evaluate function Preq = (1/eta)*(mg*(vf-vo)+(1/6)*(Cd*rho*S*(vf^3 - vo^3))+mag_drag*(vf-v0))
+        """Evaluate function Preq = (1/eta)*(mg*(1+sin(theta))*(vf-vo)+(1/6)*(Cd*rho*S*(vf^3 - vo^3))+D_mag*(vf-v0))
         Can be optimized in the future.  Friction and magnetic drag are neglected for now.
         """
 
@@ -111,21 +108,21 @@ class PropulsionMechanics(Component):
         v0 = params['v0']
         Cd = params['Cd']
         S = params['S']
+        m_pod = params['m_pod']
 
         #Calculate intermediate variables
         rho = params['p_tube'] / (params['R'] * params['T_ambient']
                                   )  #Calculate air density, rho = P/(RT)
-        m = params['m_pod'] + params['rho_pm'] * params['A'] * params[
-            't']  #Calculate total mass, m = m_pod + rho*A*t
+        pod_thrust = params['nozzle_thrust'] - params['ram_drag']
         L = ((vf**2) - (v0**2)) / (2 * g)  #Calculate necessary track length
 
         #Evaluate equation
         unknowns['pwr_req'] = (1.0 / eta) * (
-            (m * g * (vf - v0)) + (1.0 / 6.0) * (Cd * rho * S * (
-                (vf**3.0) - (v0**3.0))) + params['mag_drag'] *
-            (vf - v0) - params['pod_thrust'] * (vf - v0))
-        unknowns['Fg_dP'] = (m * g) / unknowns['pwr_req']
-        unknowns['m_dP'] = m / unknowns['pwr_req']
+            (m_pod * g * (1 + np.sin(params['theta']))* (vf - v0)) + (1.0 / 6.0) * (Cd * rho * S * (
+                (vf**3.0) - (v0**3.0))) + params['D_mag'] *
+            (vf - v0) - pod_thrust * (vf - v0))
+        unknowns['Fg_dP'] = (m_pod * g) / unknowns['pwr_req']
+        unknowns['m_dP'] = m_pod / unknowns['pwr_req']
 
 if __name__ == '__main__':
 
@@ -133,10 +130,8 @@ if __name__ == '__main__':
     root = Group()
     root.add('p', PropulsionMechanics())
     root.add('p1', IndepVarComp('eta', .8))
-    root.add('p2', IndepVarComp('rho_pm', 7400.0))
 
     root.connect('p1.eta', 'p.eta')
-    root.connect('p2.rho_pm', 'p.rho_pm')
 
     #Set up problem
     top = Problem()
@@ -147,7 +142,6 @@ if __name__ == '__main__':
     top.setup()
 
     top['p1.eta'] = .8
-    top['p2.rho_pm'] = 7400.0
 
     top.run()
 
