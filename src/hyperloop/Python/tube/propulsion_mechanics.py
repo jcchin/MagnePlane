@@ -47,10 +47,6 @@ class PropulsionMechanics(Component):
     -------
     pwr_req : float
         Computes power required by accelerating segment
-    Fg_dP : float
-        Thrust per unit power
-    m_dP : float
-        Mass per unit output
     """
 
     def __init__(self):
