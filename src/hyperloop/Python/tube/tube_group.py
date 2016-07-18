@@ -38,7 +38,7 @@ class TubeGroup(Group):
         Thickness of magnets (m)
     pod_frontal_area : float
         Front cross sectional area of pod from Geometry (m^2)
-    magdrag : float
+    mag_drag : float
         Magnetic drag on pod from Breakpoint Levitation (N)
     nozzle.Fg : float
         Nozzle thrust from Cycle (N)
@@ -75,7 +75,7 @@ class TubeGroup(Group):
                                                            'nozzle_air_Cp'])
         self.add('Struct', TubeAndPylon(), promotes=['p_tunnel',
                                                      'm_pod',
-                                                     'r',
+                                                     'tube_area',
                                                      'h']) #need to add A_tube and calculate radius in tubeAndPylon
         self.add('PropMech', PropulsionMechanics(), promotes=['p_tube',
                                                               'vf',
@@ -113,7 +113,7 @@ if __name__ == "__main__":
               ('radius_outer_tube', 1.115),
               ('length_tube', 482803.0),
               ('m_pod', 3100.0),
-              ('r', 1.1),
+              ('tube_area', 40.0),
               ('h', 10.0),
               ('Cd', 0.2),
               ('S', 1.4),
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     top.root.connect('des_vars.length_tube','TubeGroup.length_tube')
     top.root.connect('des_vars.m_pod','TubeGroup.m_pod')
     top.root.connect('des_vars.m_pod', 'TubeGroup.m_pod')
-    top.root.connect('des_vars.r','TubeGroup.r')
+    top.root.connect('des_vars.tube_area','TubeGroup.tube_area')
     top.root.connect('des_vars.h','TubeGroup.h')
     top.root.connect('des_vars.Cd','TubeGroup.Cd')
     top.root.connect('des_vars.S','TubeGroup.S')
@@ -140,17 +140,20 @@ if __name__ == "__main__":
     top.root.list_connections()
     top.run()
 
-    print('Vacuum.weight_tot:%f' % top['TubeGroup.Vacuum.weight_tot'])
-    print('Struct.vac_weight: %f' % top['TubeGroup.Struct.vac_weight'])
+    # print('\n')
+    # print('Vacuum.weight_tot:%f' % top['TubeGroup.Vacuum.weight_tot'])
+    # print('Struct.vac_weight: %f' % top['TubeGroup.Struct.vac_weight'])
+    #
+    # print('temp_boundary: %f' %top['TubeGroup.temp_boundary'])
+    # print('PropMech.T_ambient: %f' % top['TubeGroup.T_ambient'])
+    # print('TubePower.tube_temp: %f' % top['TubeGroup.TubePower.tube_temp'])
+    #
+    # print('Vacuum.tot_pwr %f' % top['TubeGroup.Vacuum.tot_pwr'])
+    # print('TubePower.vac_power: %f' % top['TubeGroup.TubePower.vac_power'])
+    # print('PropMech.pwr_req: %f' % top['TubeGroup.PropMech.pwr_req'])
+    # print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
 
-    print('temp_boundary: %f' %top['TubeGroup.temp_boundary'])
-    print('PropMech.T_ambient: %f' % top['TubeGroup.T_ambient'])
-    print('TubePower.tube_temp: %f' % top['TubeGroup.TubePower.tube_temp'])
-
-    print('Vacuum.tot_pwr %f' % top['TubeGroup.Vacuum.tot_pwr'])
-    print('TubePower.vac_power: %f' % top['TubeGroup.TubePower.vac_power'])
-    print('PropMech.pwr_req: %f' % top['TubeGroup.PropMech.pwr_req'])
-    print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
-
+    print('\n')
     print('Total Power: %f' % top['TubeGroup.TubePower.tot_power'])
-    print('mpod: %f' %top['TubeGroup.m_pod'])
+    print('Tube Temp: %f' % top['TubeGroup.temp_boundary'])
+

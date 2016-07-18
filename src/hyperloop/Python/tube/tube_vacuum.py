@@ -1,5 +1,5 @@
 """
-Current calculation to determine total number of pumps needed and their respective cost per year.
+Current calculation to determine total number of vacuum pumps needed and their respective cost per year.
 The National average for Electricity runs $.13 cents per kilowatt hour.
 """
 from openmdao.core.component import Component
