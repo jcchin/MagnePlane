@@ -36,7 +36,7 @@ class PropulsionMechanics(Component):
         Drag coefficient of pod.  Default value is .2. More accurate results will come from CFD
     S : float
         Reference area of the pod. Default value is 1.4 m**2. Value will be pulled from geometry module
-    mag_drag : float
+    D_mag : float
         Drag force from magnetic levitation in N. Default value is 150 N.  Value will come from levitation analysis
     nozzle_thrust : float
         Thrust produced by pod compressed air. Default value 21473.92 N. Will pull value from flow_path.py

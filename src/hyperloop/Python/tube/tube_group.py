@@ -97,23 +97,28 @@ class TubeGroup(Group):
                                                               'vf',
                                                               'v0',
                                                               'm_pod',
+                                                              'Cd',
                                                               'S',
-                                                              'mag_drag',
-                                                              'nozzle.Fg',
-                                                              'inlet.F_ram']
-        self.add('TubePower', TubePower(), promotes=['num_thrust', 'elec_price', 'time_thrust'])
+                                                              'D_mag',
+                                                              'Fg_dP',
+                                                              'ram_drag',
+                                                              'nozzle_thrust'])
+        self.add('TubePower', TubePower(), promotes=['num_thrust',
+                                                     'elec_price',
+                                                     'time_thrust'])
 
         #Connects vacuum outputs to downstream components
         self.connect('Vacuum.weight_tot', 'Struct.vac_weight')
         self.connect('Vacuum.pwr_tot', 'TubePower.vac_power')
-        self.connect('Vacuum.energy_tot', 'TubePower.vac_energy')
+        self.connect('Vacuum.energy_tot', 'TubePower.vac_energy_day')
 
         #Connects tube_wall_temp outputs to downstream components
-        self.connect('temp_boundary', 'T_ambient')
+        self.connect('temp_boundary', 'PropMech.T_ambient')
         self.connect('temp_boundary', 'TubePower.tube_temp')
 
         #Connects propulsion_mechanics outputs to downstream components
         self.connect('PropMech.pwr_req', 'TubePower.prop_power')
+
 
         self.ln_solver = ScipyGMRES()
 
@@ -124,7 +129,6 @@ if __name__ == "__main__":
     top.root.add('TubeGroup', TubeGroup())
 
     params = (
-              ('radius_outer_tube', 1.115),
               ('length_tube', 482803.0),
               ('m_pod', 3100.0),
               ('tube_area', 40.0),
@@ -132,12 +136,10 @@ if __name__ == "__main__":
               ('Cd', 0.2),
               ('S', 1.4),
               ('mag_drag', 150.0),
-              ('pod_thrust', 3500.0),
-              ('A', .0225),
-              ('t', .05))
+              ('pod_thrust', 3500.0)
+    )
 
     top.root.add('des_vars',IndepVarComp(params))
-    top.root.connect('des_vars.radius_outer_tube','TubeGroup.radius_outer_tube')
     top.root.connect('des_vars.length_tube','TubeGroup.length_tube')
     top.root.connect('des_vars.m_pod','TubeGroup.m_pod')
     top.root.connect('des_vars.m_pod', 'TubeGroup.m_pod')
@@ -145,10 +147,9 @@ if __name__ == "__main__":
     top.root.connect('des_vars.h','TubeGroup.h')
     top.root.connect('des_vars.Cd','TubeGroup.Cd')
     top.root.connect('des_vars.S','TubeGroup.S')
-    top.root.connect('des_vars.mag_drag','TubeGroup.mag_drag')
-    top.root.connect('des_vars.pod_thrust','TubeGroup.pod_thrust')
-    top.root.connect('des_vars.A','TubeGroup.A')
-    top.root.connect('des_vars.t','TubeGroup.t')
+    top.root.connect('des_vars.mag_drag','TubeGroup.D_mag')
+    top.root.connect('des_vars.pod_thrust','TubeGroup.nozzle_thrust')
+
 
     top.setup()
     top.root.list_connections()
@@ -168,5 +169,5 @@ if __name__ == "__main__":
     # print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
 
     print('\n')
-    print('Total Power: %f' % top['TubeGroup.TubePower.tot_power'])
-    print('Tube Temp: %f' % top['TubeGroup.temp_boundary'])
+    print('Total Power [kW]: %f' % top['TubeGroup.TubePower.tot_power'])
+    print('Tube Temp [K]: %f' % top['TubeGroup.temp_boundary'])
