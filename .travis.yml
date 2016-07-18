@@ -2,7 +2,6 @@
 branches:
   only:
     - master
-    - work
     - release
 
 sudo: false
@@ -41,6 +40,7 @@ before_install:
 install:
 - conda install --yes python=$PY numpy scipy=0.16.1 sphinx==1.3.1 matplotlib pytest
 - pip install git+http://github.com/OpenMDAO/OpenMDAO.git@master
+- pip install https://d8e4e44837ba61d8e8d38167033f219b21e85e9a@github.com/colinxs/Pycycle2.git
 - pip install -e .
 
 script: py.test -c setup.cfg
