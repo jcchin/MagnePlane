@@ -19,7 +19,7 @@ class TubeAndPod(Group):
 		self.add('tube', TubeGroup(), promotes=['length_tube', 'h'])
 
 		self.connect('tube.T_ambient', 'pod.T_ambient')
-		self.connect('pod.A_tube', 'tube.A_tube')
+		self.connect('pod.A_tube', 'tube.tube_area')
 		self.connect('pod.pod_mass', 'tube.m_pod')
 		self.connect('pod.S', 'tube.S')
 		self.connect('pod.mag_drag', 'tube.D_magnetic')
