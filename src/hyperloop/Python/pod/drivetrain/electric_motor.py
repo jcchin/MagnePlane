@@ -143,10 +143,10 @@ class MotorGroup(Group):
                               units='A'),
                  promotes=['motor_max_current'])
 
-        self.add('idp4',
-                 IndepVarComp('design_torque', 1.0,
-                              units='N*m'),
-                 promotes=['design_torque'])
+        # self.add('idp4',
+        #          IndepVarComp('design_torque', 1.0,
+        #                       units='N*m'),
+        #          promotes=['design_torque'])
 
         self.connect('motor_size.power_iron_loss', 'motor.power_iron_loss')
         self.connect('motor_size.power_mech', 'motor.power_mech')
@@ -333,6 +333,7 @@ class MotorSize(Component):
         unknowns['power_mech'] = unknowns['w_operating'] * params['design_torque']
 
         # calc size
+        print('max_torque %f' % unknowns['max_torque'])
         unknowns['motor_volume'] = 293722.0 * np.power(unknowns['max_torque'],
                                               0.7592)  # mm^3
         unknowns['motor_diameter'] = np.power(unknowns['motor_volume'] / params['motor_LD_ratio'],
