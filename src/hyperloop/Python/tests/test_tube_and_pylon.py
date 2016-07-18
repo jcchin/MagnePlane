@@ -28,16 +28,17 @@ class TestTubeAndPylon(object):
         prob['comp.alpha_tube'] = 0.0
         prob['comp.dT_tube'] = 0.0
         prob['comp.m_pod'] = 3100.0
-        prob['comp.r'] = 1.1
+        #prob['comp.r'] = 1.1
+        prob['comp.tube_area'] = 3.8013271
         prob['comp.t'] = 5.0
         prob['comp.rho_pylon'] = 2400.0
         prob['comp.E_pylon'] = 41.0e9
         prob['comp.v_pylon'] = .2
         prob['comp.Su_pylon'] = 40.0e6
-        prob['comp.sf'] = 1.5
         prob['comp.unit_cost_pylon'] = .05
         prob['comp.h'] = 10.0
         prob['comp.r_pylon'] = 1.1
+        prob['comp.vac_weight'] = 1500.0
 
         prob.run()
 
