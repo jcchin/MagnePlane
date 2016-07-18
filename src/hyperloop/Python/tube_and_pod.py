@@ -22,10 +22,10 @@ class TubeAndPod(Group):
 		self.connect('pod.A_tube', 'tube.tube_area')
 		self.connect('pod.pod_mass', 'tube.m_pod')
 		self.connect('pod.S', 'tube.S')
-		self.connect('pod.mag_drag', 'tube.D_magnetic')
-		#self.connect('pod.nozzle.Fg', 'tube.Thrust_pod') need to calculate nozzle.Fg - inlet.Fg_ram to get thrust
-		#self.connect('pod.inlet.Fg_ram', 'tube.Thrust_pod')
-		self.connect('pod.mag_area', 'tube.A')
+		self.connect('pod.mag_drag', 'tube.D_mag')
+		self.connect('pod.nozzle.Fg', 'tube.nozzle_thrust')
+		self.connect('pod.inlet.F_ram', 'tube.ram_drag')
+
 
 if __name__ == '__main__':
 

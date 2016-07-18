@@ -19,30 +19,23 @@ class TestTube(object):
         # prob.root.list_connections()
 
         #Tube Inputs
-        #Vacuum
-        prob['comp.tube_radius'] = 5.0
 
-        #Temp Balance
-        prob['comp.temp_boundary'] = 322.0
+        #prob['comp.temp_boundary'] = 322.0
 
-        #Tube Wall Temp
-        prob['comp.radius_outer_tube'] = 1.115
         prob['comp.length_tube'] = 482803.0
 
-        #Tube and Pylon
         prob['comp.m_pod'] = 3100.0
-        prob['comp.r'] = 1.1
+        prob['comp.tube_area'] = 40.0
         prob['comp.h'] = 10.0
 
-        #Propulsion Mechanics
-        prob['comp.Cd'] = .2
+        prob['comp.Cd'] = 0.2
         prob['comp.S'] = 1.4
         prob['comp.mag_drag'] = 150.0
-        prob['comp.pod_thrust'] = 3500.0
-        prob['comp.A'] = .0225
-        prob['comp.t'] = .05
-
+        prob['comp.nozzle_thrust'] = 3500.0
+        prob['comp.ram_drag'] = 7237.6
         prob.run()
+
+
 
         # Print Statement for debugging
         """
@@ -55,9 +48,13 @@ class TestTube(object):
         """
 
         # Test Values
-        assert np.isclose(prob['comp.Vacuum.weight_tot'], 1521.2524 , rtol=.01)
-        assert np.isclose(prob['comp.Struct.vac_weight'], 1521.2524 , rtol=.01)
-        assert np.isclose(prob['comp.Vacuum.tot_pwr'], 1.000, rtol=.01)
-        assert np.isclose(prob['comp.TubePower.vac_power'], 1000.000, rtol=.01)
-        assert np.isclose(prob['comp.PropMech.pwr_req'], 373437.942, rtol=.01)
-        assert np.isclose(prob['comp.TubePower.tot_power'], 374437.941, rtol=.01)
+        assert np.isclose(prob['comp.TubePower.tot_power'],2379.206449, rtol=.01)
+        assert np.isclose(prob['comp.temp_boundary'],322.00, rtol=.01)
+
+
+        assert np.isclose(prob['comp.Vacuum.weight_tot'], 774.7674 , rtol=.01)
+        assert np.isclose(prob['comp.Struct.vac_weight'], 774.7674 , rtol=.01)
+        assert np.isclose(prob['comp.Vacuum.pwr_tot'], 20.0464, rtol=.01)
+        assert np.isclose(prob['comp.TubePower.vac_power'], 20.0464, rtol=.01)
+        assert np.isclose(prob['comp.PropMech.pwr_req'], 471832.00359, rtol=.01)
+        assert np.isclose(prob['comp.TubePower.tot_power'], 471832.00359, rtol=.01)

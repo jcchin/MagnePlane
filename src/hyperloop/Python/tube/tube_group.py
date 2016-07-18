@@ -100,9 +100,8 @@ class TubeGroup(Group):
                                                               'Cd',
                                                               'S',
                                                               'D_mag',
-                                                              'Fg_dP',
-                                                              'ram_drag',
-                                                              'nozzle_thrust'])
+                                                              'nozzle_thrust',
+                                                              'ram_drag'])
         self.add('TubePower', TubePower(), promotes=['num_thrust',
                                                      'elec_price',
                                                      'time_thrust'])
@@ -136,19 +135,20 @@ if __name__ == "__main__":
               ('Cd', 0.2),
               ('S', 1.4),
               ('mag_drag', 150.0),
-              ('pod_thrust', 3500.0)
+              ('Fg', 3500.0),
+              ('F_ram',7237.6)
     )
 
     top.root.add('des_vars',IndepVarComp(params))
     top.root.connect('des_vars.length_tube','TubeGroup.length_tube')
     top.root.connect('des_vars.m_pod','TubeGroup.m_pod')
-    top.root.connect('des_vars.m_pod', 'TubeGroup.m_pod')
     top.root.connect('des_vars.tube_area','TubeGroup.tube_area')
     top.root.connect('des_vars.h','TubeGroup.h')
     top.root.connect('des_vars.Cd','TubeGroup.Cd')
     top.root.connect('des_vars.S','TubeGroup.S')
     top.root.connect('des_vars.mag_drag','TubeGroup.D_mag')
-    top.root.connect('des_vars.pod_thrust','TubeGroup.nozzle_thrust')
+    top.root.connect('des_vars.Fg','TubeGroup.nozzle_thrust')
+    top.root.connect('des_vars.F_ram','TubeGroup.ram_drag')
 
 
     top.setup()
@@ -160,14 +160,14 @@ if __name__ == "__main__":
     # print('Struct.vac_weight: %f' % top['TubeGroup.Struct.vac_weight'])
     #
     # print('temp_boundary: %f' %top['TubeGroup.temp_boundary'])
-    # print('PropMech.T_ambient: %f' % top['TubeGroup.T_ambient'])
+    # print('PropMech.T_ambient: %f' % top['TubeGroup.PropMech.T_ambient'])
     # print('TubePower.tube_temp: %f' % top['TubeGroup.TubePower.tube_temp'])
     #
-    # print('Vacuum.tot_pwr %f' % top['TubeGroup.Vacuum.tot_pwr'])
+    # print('Vacuum.pwr_tot %f' % top['TubeGroup.Vacuum.pwr_tot'])
     # print('TubePower.vac_power: %f' % top['TubeGroup.TubePower.vac_power'])
     # print('PropMech.pwr_req: %f' % top['TubeGroup.PropMech.pwr_req'])
     # print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
 
     print('\n')
-    print('Total Power [kW]: %f' % top['TubeGroup.TubePower.tot_power'])
+    print('Total Tube Power [kW]: %f' % top['TubeGroup.TubePower.tot_power'])
     print('Tube Temp [K]: %f' % top['TubeGroup.temp_boundary'])
