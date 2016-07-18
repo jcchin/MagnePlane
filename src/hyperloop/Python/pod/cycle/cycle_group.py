@@ -80,32 +80,22 @@ class Cycle(Group):
     def __init__(self):
         super(Cycle, self).__init__()
 
-        self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'comp.Nmech', 'inlet.Fl_O:stat:area', 'nozzle.Fg', 
-                                                  'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W', 'fl_start.Fl_O:stat:P',
-                                                  'fl_start.Fl_O:stat:T', 'fl_start.Fl_O:tot:P', 'fl_start.Fl_O:tot:T',
-                                                  'fl_start.Fl_O:stat:rho', 'fl_start.Fl_O:stat:V', 'inlet.Fl_O:stat:MN',
-                                                  'inlet.Fl_O:stat:P', 'inlet.Fl_O:stat:T', 'inlet.Fl_O:tot:P', 'inlet.Fl_O:tot:T',
-                                                  'inlet.Fl_O:stat:W', 'comp.Fl_O:stat:MN', 'comp.Fl_O:stat:area',
-                                                  'comp.Fl_O:stat:P', 'comp.Fl_O:stat:T'])
+        self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T',
+                                                    'nozzle.Fl_O:stat:W'])
         self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
         self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'M_pod', 'T_tunnel', 'p_tunnel', 'comp_len'])
         
         self.connect('FlowPath.inlet.Fl_O:tot:h', ['CompressorMass.h_in', 'CompressorLen.h_in'])
         self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])
-        self.connect('inlet.Fl_O:stat:area', ['CompressorMass.comp_inletArea', 'CompressorLen.comp_inletArea'])
-        self.connect('inlet.Fl_O:tot:T', 'CompressorLen.comp_inletTemp')
-        self.connect('inlet.Fl_O:stat:W', 'CompressorMass.mass_flow')
+        self.connect('FlowPath.inlet.Fl_O:stat:area', ['CompressorMass.comp_inletArea', 'CompressorLen.comp_inletArea'])
+        self.connect('FlowPath.inlet.Fl_O:tot:T', 'CompressorLen.comp_inletTemp')
+        self.connect('FlowPath.inlet.Fl_O:stat:W', 'CompressorMass.mass_flow')
 
 if __name__ == "__main__":
     prob = Problem()
     root = prob.root = Group()
 
     root.add('Cycle', Cycle())
-
-    recorder = SqliteRecorder('FlowPathdb')
-    recorder.options['record_params'] = True
-    recorder.options['record_metadata'] = True
-    prob.driver.add_recorder(recorder)
 
     params = (('vehicleMach', 0.8),
               ('inlet_MN', 0.65),
@@ -149,10 +139,6 @@ if __name__ == "__main__":
     # Shaft
     prob['Cycle.FlowPath.shaft.Nmech'] = 10000.
 
-    #prob.print_all_convergence()
-    import time
-    t = time.time()
-
     prob.run()
 
     print('Comp_Mass %f' % prob['Cycle.comp_mass'])
@@ -160,6 +146,6 @@ if __name__ == "__main__":
     print('H_int %f' % prob['Cycle.FlowPath.inlet.Fl_O:tot:h'])
     print('H_out %f' % prob['Cycle.FlowPath.comp.Fl_O:tot:h'])
     print("Compressor Area:       %.6f m^2" %
-          (cu(prob['Cycle.inlet.Fl_O:stat:area'], 'inch**2', 'm**2')))
+          (cu(prob['Cycle.FlowPath.inlet.Fl_O:stat:area'], 'inch**2', 'm**2')))
     print("Compressor Tt:         %.6f Btu/lbm" %
-          (prob['Cycle.inlet.Fl_O:tot:T']))
+          (prob['Cycle.FlowPath.inlet.Fl_O:tot:T']))

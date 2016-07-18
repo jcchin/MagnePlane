@@ -35,14 +35,7 @@ class TestCycle(object):
         CycleGroup = cycle_group.Cycle()
 
         prob = create_problem(CycleGroup)
-
         prob.setup()
-        # prob.root.list_connections()
-
-        recorder = SqliteRecorder('FlowPathdb')
-        recorder.options['record_params'] = True
-        recorder.options['record_metadata'] = True
-        prob.driver.add_recorder(recorder)
 
         params = (('vehicleMach', 0.8),
                   ('inlet_MN', 0.65),
@@ -85,10 +78,6 @@ class TestCycle(object):
 
         # Shaft
         prob['Cycle.FlowPath.shaft.Nmech'] = 10000.
-
-        #prob.print_all_convergence()
-        import time
-        t = time.time()
 
         prob.run()
 
