@@ -26,7 +26,7 @@ from hyperloop.Python.pod.cycle import cycle_group
 def create_problem(GroupName):
     root = Group()
     prob = Problem(root)
-    prob.root.add('comp', GroupName)
+    prob.root.add('Cycle', GroupName)
     return prob
 
 class TestCycle(object):
@@ -35,7 +35,6 @@ class TestCycle(object):
         CycleGroup = cycle_group.Cycle()
 
         prob = create_problem(CycleGroup)
-        prob.setup()
 
         params = (('vehicleMach', 0.8),
                   ('inlet_MN', 0.65),
@@ -82,10 +81,9 @@ class TestCycle(object):
         prob.run()
 
         # Test Values
-        assert np.isclose(prob['comp.Comp_Mass'], 583.259285, rtol=.01)
-        assert np.isclose(prob['comp.Comp_len'], 0.609973, rtol=.01)
-        assert np.isclose(prob['comp.FlowPath.inlet.Fl_O:tot:h'], 11.208383, rtol=.01)
-        assert np.isclose(prob['comp.FlowPath.comp.Fl_O:tot:h'], 116.307430, rtol=.01)
-        assert np.isclose(prob['comp.inlet.Fl_O:stat:area'], 1.794921, rtol=.01)
-        assert np.isclose(prob['comp.inlet.Fl_O:tot:T'], 591.096183, rtol=.01)
-
+        assert np.isclose(prob['Cycle.comp_mass'], 583.259285, rtol=.01)
+        assert np.isclose(prob['Cycle.comp_len'], 0.609973, rtol=.01)
+        assert np.isclose(prob['Cycle.FlowPath.inlet.Fl_O:tot:h'], 11.208383, rtol=.01)
+        assert np.isclose(prob['Cycle.FlowPath.comp.Fl_O:tot:h'], 116.307430, rtol=.01)
+        assert np.isclose((cu(prob['Cycle.FlowPath.inlet.Fl_O:stat:area'], 'inch**2', 'm**2')), 1.794921, rtol=.01)
+        assert np.isclose(prob['Cycle.FlowPath.inlet.Fl_O:tot:T'], 591.096183, rtol=.01)
