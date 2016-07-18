@@ -23,7 +23,23 @@ class TubeGroup(Group):
     tube_length : float
         Total length of tube from Mission (m)
     tube_area : float
-        Cross sectional area of tube from Aero (m)
+        Cross sectional area of tube from Pod Mach (m)
+    pressure_initial : float
+        initial Pressure before the pump down . Default value is 760.2.
+    pressure_final : float
+        Desired pressure within tube. Default value is 7.0.
+    speed : float
+        Pumping speed. Default value is 163333.3.
+    pwr : float
+        Motor rating. Default value is 18.5.
+    electricity_price : float
+        Cost of electricity per kilowatt hour. Default value is 0.13.
+    time_down : float
+        Desired pump down time. Default value is 300.0.
+    gamma : float
+        Operational percentage of the pump per day. Default value is 0.8.
+    pump_weight : float
+        Weight of one pump. Default value is 715.0.
     nozzle.Fl_O:stat:W : float
         Pod exit flow rate from Cycle (kg/s)
     nozzle.Fl_O:tot:T : float
@@ -57,8 +73,8 @@ class TubeGroup(Group):
         super(TubeGroup, self).__init__()
 
         #Adding in components to Tube Group
-        self.add('Vacuum', Vacuum(), promotes=['tube_radius',
-                                               'tube_length',
+        self.add('Vacuum', Vacuum(), promotes=['tube_length',
+                                               'tube_area',
                                                'pressure_initial',
                                                'pressure_final',
                                                'pwr',
@@ -66,33 +82,31 @@ class TubeGroup(Group):
                                                'electricity_price',
                                                'time_down',
                                                'gamma',
-                                               'pump_weight']) #need to add A_tube and calculate radius and length in vacuum
+                                               'pump_weight'])
         self.add('TempBalance', TempBalance(), promotes=['temp_boundary'])
-        self.add('TubeWallTemp',TubeWallTemp(), promotes=['radius_outer_tube',
-                                                           'length_tube',
+        self.add('TubeWallTemp',TubeWallTemp(), promotes=['length_tube',
+                                                           'diameter_outer_tube',
                                                            'nozzle_air_W',
                                                            'nozzle_air_Tt',
                                                            'nozzle_air_Cp'])
         self.add('Struct', TubeAndPylon(), promotes=['p_tunnel',
                                                      'm_pod',
                                                      'tube_area',
-                                                     'h']) #need to add A_tube and calculate radius in tubeAndPylon
+                                                     'h'])
         self.add('PropMech', PropulsionMechanics(), promotes=['p_tube',
                                                               'vf',
                                                               'v0',
                                                               'm_pod',
-                                                              'Cd',
                                                               'S',
                                                               'mag_drag',
-                                                              'pod_thrust', #need to calculate nozzle.Fg - inlet.F_ram to get thrust
-                                                              'A',
-                                                              't',
-                                                              'T_ambient'])
-        self.add('TubePower', TubePower())
+                                                              'nozzle.Fg',
+                                                              'inlet.F_ram']
+        self.add('TubePower', TubePower(), promotes=['num_thrust', 'elec_price', 'time_thrust'])
 
         #Connects vacuum outputs to downstream components
         self.connect('Vacuum.weight_tot', 'Struct.vac_weight')
-        self.connect('Vacuum.tot_pwr', 'TubePower.vac_power')
+        self.connect('Vacuum.pwr_tot', 'TubePower.vac_power')
+        self.connect('Vacuum.energy_tot', 'TubePower.vac_energy')
 
         #Connects tube_wall_temp outputs to downstream components
         self.connect('temp_boundary', 'T_ambient')
