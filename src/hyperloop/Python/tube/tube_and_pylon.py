@@ -58,7 +58,7 @@ class TubeAndPylon(Component):
     r_pylon : float
         Radius of each pylon. Default value is 1 m. Value will be optimized in problem driver
     vac_weight : float
-        Total weight of vacuums. Default value is 0 kg. Value will come from vacuum component
+        Total weight of vacuums. Default value is 1500.0 kg. Value will come from vacuum component
 
     Returns
     -------
@@ -66,9 +66,9 @@ class TubeAndPylon(Component):
         mass of individual pylon in kg/pylon
     m_prime: float
         Calculates mass per unit length of tube in kg/m
-    VonMises : float
+    von_mises : float
         Von Mises stress in the tube in Pa
-    total material cost : float
+    total_material_cost : float
         returns total cost of tube and pylon materials per unit distance in USD/m
     R : float
         Returns vertical component of force on each pylon in N
@@ -121,7 +121,8 @@ class TubeAndPylon(Component):
             units='K', desc='Temperature change')
         self.add_param('m_pod', val=3100.0, units='kg', desc='mass of pod')
 
-        self.add_param('r', val=1.1, units='m', desc='inner tube radius')
+        self.add_param('tube_area', val=3.8013, units='m**2', desc='inner tube area')
+        #self.add_param('r', val=1.1, units='m', desc='inner tube radius')
         self.add_param('t', val=.05, units='m', desc='tube thickness')
         #self.add_param('dx', val = 500.0, units = 'm', desc = 'distance between pylons')
 
@@ -147,7 +148,7 @@ class TubeAndPylon(Component):
 
         self.add_param('r_pylon', val=1.1, units='m', desc='inner tube radius')
 
-        self.add_param('vac_weight', val=0.0, units='kg', desc='vacuum weight')
+        self.add_param('vac_weight', val=1500.0, units='kg', desc='vacuum weight')
 
         #Define outputs
         self.add_output('m_pylon',
@@ -196,7 +197,8 @@ class TubeAndPylon(Component):
         dT_tube = params['dT_tube']
         unit_cost_tube = params['unit_cost_tube']
         g = params['g']
-        r = params['r']
+        tube_area = params['tube_area']
+        #r = params['r']
         t = params['t']
         m_pod = params['m_pod']
         p_tunnel = params['p_tunnel']
@@ -211,6 +213,8 @@ class TubeAndPylon(Component):
         vac_weight = params['vac_weight']
 
         #Compute intermediate variable
+        r = np.sqrt(tube_area/np.pi)
+        #print(r)
         q = rho_tube * np.pi * ((
             (r + t)**2) - (r**2)) * g  #Calculate distributed load
         dp = p_ambient - p_tunnel  #Calculate delta pressure
@@ -252,16 +256,22 @@ if __name__ == '__main__':
     top = Problem()
     root = top.root = Group()
 
-    params = (('r', 1.1, {'units': 'm'}), ('t', 5.0, {'units': 'm'}),
+    params = (#('r', 1.1, {'units': 'm'}),
+              ('tube_area', 3.80132711084, {'units': 'm**2'}),
+              ('t', 5.0, {'units': 'm'}),
               ('r_pylon', 1.1, {'units': 'm'}),
-              ('Su_tube', 152.0e6, {'units': 'Pa'}), ('sf', 1.5),
+              ('Su_tube', 152.0e6, {'units': 'Pa'}),
+              ('sf', 1.5),
               ('p_ambient', 100.0, {'units': 'Pa'}),
-              ('p_tunnel', 101300.0, {'units': 'Pa'}), ('v_tube', .3),
-              ('rho_tube', 7820.0, {'units': 'kg/m^3'}),
+              ('p_tunnel', 101300.0, {'units': 'Pa'}),
+              ('v_tube', .3),
+              ('rho_tube', 7820.0, {'units': 'kg/m**3'}),
               ('rho_pylon', 2400.0, {'units': 'Pa'}),
               ('Su_pylon', 40.0e6, {'units': 'Pa'}),
               ('E_pylon', 41.0e9, {'units': 'Pa'}),
-              ('h', 10.0, {'units': 'm'}), ('m_pod', 3100.0, {'units': 'kg'}))
+              ('h', 10.0, {'units': 'm'}),
+              ('m_pod', 3100.0, {'units': 'kg'})
+              )
     root.add('input_vars', IndepVarComp(params))
     root.add('p', TubeAndPylon())
 
@@ -270,7 +280,8 @@ if __name__ == '__main__':
     root.add('con2', ExecComp(
         'c2 = t - t_crit'))  #Impose buckling constraint for tube dx = ((pi**3)*E_pylon*(r_pylon**4))/(8*(h**2)*rho_tube*pi*(((r+t)**2)-(r**2))*g)
 
-    root.connect('input_vars.r', 'p.r')
+    #root.connect('input_vars.r', 'p.r')
+    root.connect('input_vars.tube_area', 'p.tube_area')
     root.connect('input_vars.t', 'p.t')
     root.connect('input_vars.r_pylon', 'p.r_pylon')
 
@@ -313,7 +324,7 @@ if __name__ == '__main__':
     print('total material cost per m is $%6.2f/km' %
           (top['p.total_material_cost'] * (1.0e3)))
     print('pylon radius is %6.3f m' % top['p.r_pylon'])
-    print('tube thicknes is %6.4f mm' % (top['p.t'] * (1.0e3)))
+    print('tube thickness is %6.4f mm' % (top['p.t'] * (1.0e3)))
     print('mass per unit length is %6.2f kg/m' % top['p.m_prime'])
     print('vertical force on each pylon is %6.2f kN' % (top['p.R'] / (1.0e3)))
     print('Von Mises stress is %6.3f MPa' % (top['p.von_mises'] / (1.0e6)))
@@ -329,3 +340,5 @@ if __name__ == '__main__':
         print('con2 not satisfied')
     else:
         print('Yield constraints are satisfied')
+
+

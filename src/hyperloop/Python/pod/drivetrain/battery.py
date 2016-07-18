@@ -253,7 +253,7 @@ class Battery(Component):
         n_parallel = np.ceil(n_parallel)
         n_series = np.ceil(n_cells / n_parallel)
 
-        assert n_cells >= n_parallel
+        # assert n_cells >= n_parallel
 
         unknowns['n_cells'] = n_cells
 
@@ -309,19 +309,19 @@ class Battery(Component):
         resids : `VecWrapper`
             `VecWrapper` containing residuals
         """
-        assert params['q_l'] > 0
-        assert params['des_time'] > 0
-        assert params['time_of_flight'] > 0
-        assert params['des_power'] > 0
-        assert params['des_current'] > 0
-        assert params['e_full'] > 0
-        assert params['q_n'] > 0
-        assert params['e_exp'] > 0
-        assert params['e_nom'] > 0
-        assert params['t_nom'] > 0
-        assert params['t_exp'] > 0
-        assert params['r'] > 0
-        assert unknowns['n_cells'] > 0
+        # assert params['q_l'] > 0
+        # assert params['des_time'] > 0
+        # assert params['time_of_flight'] > 0
+        # assert params['des_power'] > 0
+        # assert params['des_current'] > 0
+        # assert params['e_full'] > 0
+        # assert params['q_n'] > 0
+        # assert params['e_exp'] > 0
+        # assert params['e_nom'] > 0
+        # assert params['t_nom'] > 0
+        # assert params['t_exp'] > 0
+        # assert params['r'] > 0
+        # assert unknowns['n_cells'] > 0
 
 
 if __name__ == '__main__':
