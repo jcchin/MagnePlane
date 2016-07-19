@@ -15,8 +15,10 @@ class TubeAndPylon(Component):
 
     Params
     ------
+    tube_area : float
+        Inner tube radius. Default is 3.8013 m**2
     rho_tube : float
-        density of tube material. Default is 7820 kg/m**3
+        Density of tube material. Default is 7820 kg/m**3
     E_tube : float
         Young's modulus of tube material. Default value is 200e9 Pa
     v_tube : float
