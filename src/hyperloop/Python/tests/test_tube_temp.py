@@ -21,8 +21,6 @@ class TestTubeWall(object):
         prob.root.add('des_vars', IndepVarComp(params), promotes=['*'])
         #prob.root.connect('P', 'tt.nozzle_air.P')
         prob.root.connect('T', 'tt.nozzle_air_Tt')
-        #prob.root.connect('P', 'tt.bearing_air.P')
-        #prob.root.connect('T', 'tt.bearing_air.T')
 
         prob.setup(check=True)
 
@@ -30,7 +28,7 @@ class TestTubeWall(object):
 
         prob['tt.nozzle_air_W'] = 1.08
         prob['tt.nozzle_air_Cp'] = 0.28 #fudged to hit original calcs (no more bearings)
-        #prob['tt.bearing_air.W'] = 0.
+
         prob[
             'tt.radius_outer_tube'] = 2.22504 / 2.  #, units = 'm', iotype='in', desc='Tube out diameter') #7.3ft
         prob[
