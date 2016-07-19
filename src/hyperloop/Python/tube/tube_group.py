@@ -118,7 +118,7 @@ class TubeGroup(Group):
                                               'nozzle_air_W',
                                               'nozzle_air_Tt',
                                               'nozzle_air_Cp',
-                                              'num_pods'
+                                              'num_pods',
                                               'temp_boundary'])
         self.add('Struct', TubeAndPylon(), promotes=['p_tunnel',
                                                      'm_pod',
@@ -136,8 +136,7 @@ class TubeGroup(Group):
                                                               'nozzle_thrust'])
         self.add('TubePower', TubePower(), promotes=['num_thrust',
                                                      'elec_price',
-                                                     'time_thrust',
-                                                     'prop_power'])
+                                                     'time_thrust'])
 
         #Connects vacuum outputs to downstream components
         self.connect('Vacuum.weight_tot', 'Struct.vac_weight')
