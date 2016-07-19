@@ -17,7 +17,7 @@ class TestInverter(object):
         prob = create_problem(inverter.Inverter())
         prob.setup()
 
-        prob['comp.efficiency'] = 0.704995
+        prob['comp.inverter_efficiency'] = 0.704995
         prob['comp.output_voltage'] = 10.1528
         prob['comp.output_current'] = 11.0613
         prob['comp.input_voltage'] = 24
@@ -34,7 +34,7 @@ class TestInverter(object):
         prob = create_problem(inverter.Inverter())
         prob.setup()
 
-        prob['comp.efficiency'] = 0.85
+        prob['comp.inverter_efficiency'] = 0.85
 
         prob['comp.output_voltage'] = 15
         prob['comp.output_current'] = 30

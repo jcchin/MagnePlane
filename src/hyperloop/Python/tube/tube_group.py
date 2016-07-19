@@ -23,7 +23,23 @@ class TubeGroup(Group):
     tube_length : float
         Total length of tube from Mission (m)
     tube_area : float
-        Cross sectional area of tube from Aero (m)
+        Cross sectional area of tube from Pod Mach (m)
+    pressure_initial : float
+        initial Pressure before the pump down . Default value is 760.2.
+    pressure_final : float
+        Desired pressure within tube. Default value is 7.0.
+    speed : float
+        Pumping speed. Default value is 163333.3.
+    pwr : float
+        Motor rating. Default value is 18.5.
+    electricity_price : float
+        Cost of electricity per kilowatt hour. Default value is 0.13.
+    time_down : float
+        Desired pump down time. Default value is 300.0.
+    gamma : float
+        Operational percentage of the pump per day. Default value is 0.8.
+    pump_weight : float
+        Weight of one pump. Default value is 715.0.
     nozzle.Fl_O:stat:W : float
         Pod exit flow rate from Cycle (kg/s)
     nozzle.Fl_O:tot:T : float
@@ -38,7 +54,7 @@ class TubeGroup(Group):
         Thickness of magnets (m)
     pod_frontal_area : float
         Front cross sectional area of pod from Geometry (m^2)
-    magdrag : float
+    mag_drag : float
         Magnetic drag on pod from Breakpoint Levitation (N)
     nozzle.Fg : float
         Nozzle thrust from Cycle (N)
@@ -57,8 +73,8 @@ class TubeGroup(Group):
         super(TubeGroup, self).__init__()
 
         #Adding in components to Tube Group
-        self.add('Vacuum', Vacuum(), promotes=['tube_radius',
-                                               'tube_length',
+        self.add('Vacuum', Vacuum(), promotes=['tube_length',
+                                               'tube_area',
                                                'pressure_initial',
                                                'pressure_final',
                                                'pwr',
@@ -66,40 +82,42 @@ class TubeGroup(Group):
                                                'electricity_price',
                                                'time_down',
                                                'gamma',
-                                               'pump_weight']) #need to add A_tube and calculate radius and length in vacuum
+                                               'pump_weight'])
         self.add('TempBalance', TempBalance(), promotes=['temp_boundary'])
-        self.add('TubeWallTemp',TubeWallTemp(), promotes=['radius_outer_tube',
-                                                           'length_tube',
+        self.add('TubeWallTemp',TubeWallTemp(), promotes=['length_tube',
+                                                           'diameter_outer_tube',
                                                            'nozzle_air_W',
                                                            'nozzle_air_Tt',
                                                            'nozzle_air_Cp'])
         self.add('Struct', TubeAndPylon(), promotes=['p_tunnel',
                                                      'm_pod',
-                                                     'r',
-                                                     'h']) #need to add A_tube and calculate radius in tubeAndPylon
+                                                     'tube_area',
+                                                     'h'])
         self.add('PropMech', PropulsionMechanics(), promotes=['p_tube',
                                                               'vf',
                                                               'v0',
                                                               'm_pod',
                                                               'Cd',
                                                               'S',
-                                                              'mag_drag',
-                                                              'pod_thrust', #need to calculate nozzle.Fg - inlet.F_ram to get thrust
-                                                              'A',
-                                                              't',
-                                                              'T_ambient'])
-        self.add('TubePower', TubePower())
+                                                              'D_mag',
+                                                              'nozzle_thrust',
+                                                              'ram_drag'])
+        self.add('TubePower', TubePower(), promotes=['num_thrust',
+                                                     'elec_price',
+                                                     'time_thrust'])
 
         #Connects vacuum outputs to downstream components
         self.connect('Vacuum.weight_tot', 'Struct.vac_weight')
-        self.connect('Vacuum.tot_pwr', 'TubePower.vac_power')
+        self.connect('Vacuum.pwr_tot', 'TubePower.vac_power')
+        self.connect('Vacuum.energy_tot', 'TubePower.vac_energy_day')
 
         #Connects tube_wall_temp outputs to downstream components
-        self.connect('temp_boundary', 'T_ambient')
+        self.connect('temp_boundary', 'PropMech.T_ambient')
         self.connect('temp_boundary', 'TubePower.tube_temp')
 
         #Connects propulsion_mechanics outputs to downstream components
         self.connect('PropMech.pwr_req', 'TubePower.prop_power')
+
 
         self.ln_solver = ScipyGMRES()
 
@@ -110,47 +128,46 @@ if __name__ == "__main__":
     top.root.add('TubeGroup', TubeGroup())
 
     params = (
-              ('radius_outer_tube', 1.115),
               ('length_tube', 482803.0),
               ('m_pod', 3100.0),
-              ('r', 1.1),
+              ('tube_area', 40.0),
               ('h', 10.0),
               ('Cd', 0.2),
               ('S', 1.4),
               ('mag_drag', 150.0),
-              ('pod_thrust', 3500.0),
-              ('A', .0225),
-              ('t', .05))
+              ('Fg', 3500.0),
+              ('F_ram',7237.6)
+    )
 
     top.root.add('des_vars',IndepVarComp(params))
-    top.root.connect('des_vars.radius_outer_tube','TubeGroup.radius_outer_tube')
     top.root.connect('des_vars.length_tube','TubeGroup.length_tube')
     top.root.connect('des_vars.m_pod','TubeGroup.m_pod')
-    top.root.connect('des_vars.m_pod', 'TubeGroup.m_pod')
-    top.root.connect('des_vars.r','TubeGroup.r')
+    top.root.connect('des_vars.tube_area','TubeGroup.tube_area')
     top.root.connect('des_vars.h','TubeGroup.h')
     top.root.connect('des_vars.Cd','TubeGroup.Cd')
     top.root.connect('des_vars.S','TubeGroup.S')
-    top.root.connect('des_vars.mag_drag','TubeGroup.mag_drag')
-    top.root.connect('des_vars.pod_thrust','TubeGroup.pod_thrust')
-    top.root.connect('des_vars.A','TubeGroup.A')
-    top.root.connect('des_vars.t','TubeGroup.t')
+    top.root.connect('des_vars.mag_drag','TubeGroup.D_mag')
+    top.root.connect('des_vars.Fg','TubeGroup.nozzle_thrust')
+    top.root.connect('des_vars.F_ram','TubeGroup.ram_drag')
+
 
     top.setup()
     top.root.list_connections()
     top.run()
 
-    print('Vacuum.weight_tot:%f' % top['TubeGroup.Vacuum.weight_tot'])
-    print('Struct.vac_weight: %f' % top['TubeGroup.Struct.vac_weight'])
+    # print('\n')
+    # print('Vacuum.weight_tot:%f' % top['TubeGroup.Vacuum.weight_tot'])
+    # print('Struct.vac_weight: %f' % top['TubeGroup.Struct.vac_weight'])
+    #
+    # print('temp_boundary: %f' %top['TubeGroup.temp_boundary'])
+    # print('PropMech.T_ambient: %f' % top['TubeGroup.PropMech.T_ambient'])
+    # print('TubePower.tube_temp: %f' % top['TubeGroup.TubePower.tube_temp'])
+    #
+    # print('Vacuum.pwr_tot %f' % top['TubeGroup.Vacuum.pwr_tot'])
+    # print('TubePower.vac_power: %f' % top['TubeGroup.TubePower.vac_power'])
+    # print('PropMech.pwr_req: %f' % top['TubeGroup.PropMech.pwr_req'])
+    # print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
 
-    print('temp_boundary: %f' %top['TubeGroup.temp_boundary'])
-    print('PropMech.T_ambient: %f' % top['TubeGroup.T_ambient'])
-    print('TubePower.tube_temp: %f' % top['TubeGroup.TubePower.tube_temp'])
-
-    print('Vacuum.tot_pwr %f' % top['TubeGroup.Vacuum.tot_pwr'])
-    print('TubePower.vac_power: %f' % top['TubeGroup.TubePower.vac_power'])
-    print('PropMech.pwr_req: %f' % top['TubeGroup.PropMech.pwr_req'])
-    print('TubePower.prop_power: %f' % top['TubeGroup.TubePower.prop_power'])
-
-    print('Total Power: %f' % top['TubeGroup.TubePower.tot_power'])
-    print('mpod: %f' %top['TubeGroup.m_pod'])
+    print('\n')
+    print('Total Tube Power [kW]: %f' % top['TubeGroup.TubePower.tot_power'])
+    print('Tube Temp [K]: %f' % top['TubeGroup.temp_boundary'])

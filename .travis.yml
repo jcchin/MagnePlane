@@ -1,46 +1,39 @@
-# whitelist
 branches:
   only:
-    - master
-    - work
-    - release
-
+  - master
+  - release
 sudo: false
-
 os:
-  - linux
-#  - osx
-
+- linux
 language: generic
-
 env:
-- PY=2.7
-- PY=3.4
-
+  matrix:
+  - PY=2.7
+  - PY=3.4
+  global:
+    secure: HgsQUjCehMnD+hDbBLUwKGC++PQhMg+eWU36MSDYS5hV7KA6KFvduTMfPexWMGKLlQ66vrdscto6oZ7ZwbC5BzPcFqhI3mjp0a6MkWuead92X2y7vE52cR0StnaSJ05rU/pppmTymQxKYSx7A6YniG8CgAs9pQJlzrSUISSKtXao+oaFykfWSEX4iN9m4yhCWdSp4TxXKTPcEdJnk2BMsIN4y01lLqL6t7+EBwotB0I8b+h8rDTz1LXl1TjWFXVes/6CQjqzl3ovhQiVoXIBoi4vB3YlM6At3XoeIeC1KjsatAQBChbPlyZe8GasjMZnEuz3N9D/gHHlOdEZng/M1aDo+ZX8nAbD1Gf8KXvgth3VzPTQBZ+1JumP0VZ2Fnh3kTIr0Ry5T9rfYF5thZrS32K3lRAGQUZe0zdEMZZT2Jn5E/z4ZZBDRP8/k9ehK344DzBpNAPjHypQWFr3CnKRq2ypDzYVGGN1nWpiWsYum30rkr+NEq5zmNsZ3J1/Nh0Kud7ViGWCUAlwD1NOIIFYVT6rckWlFhlS1EKVQ6qsIpe8z41pbg3IH8jg74DF4zZDpTECgtP0Pe7FKNroCJRiNGsaeQcGm5NV3nZZ/f0HQ8G0n5LIFpDjsPy3/UwEofOme3lQzmPLmgFQpBu4uNLdxesNQPqUJJxK7AjqUdTtetY=
 notifications:
   slack:
     rooms:
-      - nasa-marti:LQtJC0nM2e2m8eVCcGlPzCsk#build-updates
+    - nasa-marti:LQtJC0nM2e2m8eVCcGlPzCsk#build-updates
     on_success: never
-
 before_install:
-- OS=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "MacOSX"; else echo "Linux"; fi)
+- echo -e "machine github.com\n  login $APIKEY" >> ~/.netrc
+- OS=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "MacOSX"; else echo "Linux";
+  fi)
 - wget "https://repo.continuum.io/miniconda/Miniconda-latest-$OS-x86_64.sh" -O miniconda.sh
 - chmod +x miniconda.sh
-- if [ "$OS" = "Linux" ]; then
-    ./miniconda.sh -b  -p /home/travis/miniconda;
-  fi
-- if [ "$OS" = "MacOSX" ]; then
-    ./miniconda.sh -b  -p /Users/travis/miniconda;
-  fi
-- PATHPREFIX=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "/Users/travis/miniconda/bin"; else echo "/home/travis/miniconda/bin"; fi)
+- if [ "$OS" = "Linux" ]; then ./miniconda.sh -b  -p /home/travis/miniconda; fi
+- if [ "$OS" = "MacOSX" ]; then ./miniconda.sh -b  -p /Users/travis/miniconda; fi
+- PATHPREFIX=$(if [[ "$TRAVIS_OS_NAME" = "osx" ]]; then echo "/Users/travis/miniconda/bin";
+  else echo "/home/travis/miniconda/bin"; fi)
 - export PATH=$PATHPREFIX:$PATH
 - export OPENMDAO_TEST_DOCS=1
 - conda update --yes conda
-
 install:
 - conda install --yes python=$PY numpy scipy=0.16.1 sphinx==1.3.1 matplotlib pytest
 - pip install git+http://github.com/OpenMDAO/OpenMDAO.git@master
+- pip install git+https://github.com/OpenMDAO/Pycycle2.git
+- pip install git+https://github.com/openmdao/pointer
 - pip install -e .
-
 script: py.test -c setup.cfg
