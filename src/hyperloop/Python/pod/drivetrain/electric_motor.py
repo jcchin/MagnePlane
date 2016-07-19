@@ -636,8 +636,6 @@ if __name__ == '__main__':
 
     prob.setup(check=True)
 
-
-
     prob['motor_max_current'] = 450.0
     prob['motor_LD_ratio'] = 0.83
     prob['design_power'] = 110000
