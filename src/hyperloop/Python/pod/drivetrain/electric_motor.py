@@ -15,7 +15,7 @@ class MotorBalance(Component):
     Params
     ------
     motor_power_input : float
-        total required power input into motor
+        total required power input into motor (W)
     current : float
         current through motor (A)
     voltage : float
@@ -54,7 +54,7 @@ class MotorBalance(Component):
 
 class MotorGroup(Group):
     def __init__(self):
-        """motorGroup represents a BLDC motor in an OpenMDAO model which can calculate
+        """MotorGroup represents a BLDC motor in an OpenMDAO model which can calculate
         size, mass, and various performance characteristics of a BLDC motor based
         on input paramters
 
@@ -80,7 +80,7 @@ class MotorGroup(Group):
         motor_LD_ratio : float
             length to diameter ratio of motor (unitless)
         motor_oversize_factor : float
-            scales peak motor power by this figure
+            scales peak motor power by this figure (unitless)
 
         Outputs
         -------
@@ -166,7 +166,7 @@ class MotorGroup(Group):
 
 
 class MotorSize(Component):
-    """motor_size models the size of a BLDC motor based on a set of input paramters
+    """MotorSize models the size of a BLDC motor based on a set of input paramters
     using data from existing commerical BLDC motors and work done by ([1]_)
 
 
@@ -181,7 +181,7 @@ class MotorSize(Component):
     n_phases : float
         number of motor phases (unitless)
     motor_oversize_factor : float
-        scales peak motor power by this figure
+        scales peak motor power by this figure (unitless)
     kappa : float
         ratio of base speed to max speed (unitless)
     pole_pairs : float
@@ -212,14 +212,14 @@ class MotorSize(Component):
     power_windage_loss : float
         friction loss from motor operation (W)
     winding_resistance : float
-        total resistance of copper winding (ohm
+        total resistance of copper winding (ohm)
     w_operating : float
         operating speed of motor (rad/s)
 
     References
     ----------
-    [1] "J. Gladin, K. Ali, K. Collins, "Conceptual Modeling of Electric and Hybrid-Electric
-    Propulsion for UAS Applications," Georgia Tech, 2015.
+    .. [1] "J. Gladin, K. Ali, K. Collins, "Conceptual Modeling of Electric and Hybrid-Electric
+           Propulsion for UAS Applications," Georgia Tech, 2015.
     """
 
     def __init__(self):
@@ -369,7 +369,7 @@ class MotorSize(Component):
         Returns
         -------
         float
-            the total windage losses of the motor in W
+            the total windage losses of the motor (W)
         """
         return 0
 
@@ -412,7 +412,7 @@ class MotorSize(Component):
         Returns
         -------
         float
-            the total resistive losses of the copper winding in W
+            the total resistive losses of the copper winding (W)
 
         """
         # D-axis resistance per motor phase at very high-speed (short-cruit)
@@ -448,7 +448,7 @@ class MotorSize(Component):
         Returns
         -------
         float
-            the total iron core losses of the motor in W
+            the total iron core losses of the motor (W)
         """
 
         stator_core_density = 7650.0  # kg/m^3
@@ -488,6 +488,10 @@ class Motor(Component):
         motor No-load Current (A)
     motor_max_current : float
         max motor phase current (A)
+    pole_pairs : float
+        number of motor pole pairs (unitless)
+    n_phases : float
+        number of motor phases (unitless)
     max_torque : float
         maximum possible torque for motor (N*m)
     power_iron_loss : float
@@ -498,6 +502,7 @@ class Motor(Component):
         friction loss from motor operation (W)
     winding_resistance : float
         total resistance of copper winding (ohm)
+
     Outputs
     -------
     current : float
@@ -511,12 +516,12 @@ class Motor(Component):
     frequency : float
         Frequency of electric output waveform (Hz)
     motor_power_input : float
-        total required power input into motor
+        total required power input into motor (W)
 
     References
     ----------
-    [1] "J. Gladin, K. Ali, K. Collins, "Conceptual Modeling of Electric and Hybrid-Electric
-    Propulsion for UAS Applications," Georgia Tech, 2015.
+    .. [1] "J. Gladin, K. Ali, K. Collins, "Conceptual Modeling of Electric and Hybrid-Electric
+            Propulsion for UAS Applications," Georgia Tech, 2015.
 
     """
 
