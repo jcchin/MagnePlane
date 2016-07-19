@@ -82,7 +82,6 @@ class MotorGroup(Group):
         motor_oversize_factor : float
             scales peak motor power by this figure
 
-
         Outputs
         -------
         current : float

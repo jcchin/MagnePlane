@@ -29,8 +29,10 @@ class TempBalance(Component):
     """
     Params
     ------
-    radius_outer_tube : float
-        tube outer radius (m)
+    tube_area : float
+        tube inner area (m^2)
+    tube_thickness : float
+        tube thickness (m)
     length_tube : float
         Length of the entire Hyperloop tube (m)
     num_pods : int
@@ -120,6 +122,7 @@ class TempBalance(Component):
     .. [2] 3rd Ed. of Introduction to Heat Transfer by Incropera and DeWitt,
     equations (9.33) and (9.34) on page 465
     """
+    
     def __init__(self):
         super(TempBalance, self).__init__()
         self.add_param('ss_temp_residual', val=0.)
@@ -153,10 +156,14 @@ class TubeWallTemp(Component):
 
         #--Inputs--
         #Hyperloop Parameters/Design Variables
-        self.add_param('radius_outer_tube',
-                       1.115,
+        self.add_param('tube_area',
+                       3.9057,
+                       units='m**2',
+                       desc='tube inner area')
+        self.add_param('tube_thickness',
+                       .05,
                        units='m',
-                       desc='tube outer radius')  #7.3ft
+                       desc='tube thickness')  #7.3ft
         self.add_param(
             'length_tube',
             482803.,
@@ -302,7 +309,7 @@ class TubeWallTemp(Component):
     def solve_nonlinear(self, p, u, r):
         """Calculate Various Paramters"""
 
-        u['diameter_outer_tube'] = 2 * p['radius_outer_tube']
+        u['diameter_outer_tube'] = 2*sqrt(p['tube_area']/pi) + p['tube_thickness']
 
         # u['bearing_q'] = cu(p['bearing_air_W'], 'lbm/s', 'kg/s') * cu(
         #     p['bearing_air_Cp'], 'Btu/(lbm*degR)', 'J/(kg*K)') * (
@@ -392,7 +399,6 @@ class TubeWallTemp(Component):
         # print("u['ss_temp_residual'] ", u['ss_temp_residual'])
         # print("temp boundary", p['temp_boundary'])
 
-
 class TubeTemp(Group):
     """An Assembly that computes Steady State temp"""
 
@@ -400,7 +406,7 @@ class TubeTemp(Group):
         super(TubeTemp, self).__init__()
 
         self.add('tm', TubeWallTemp(), promotes=[
-            'length_tube','radius_outer_tube','num_pods',
+            'length_tube','tube_area','tube_thickness','num_pods',
             'nozzle_air_W','nozzle_air_Tt','nozzle_air_Cp'])
 
         self.add('tmp_balance', TempBalance(), promotes=['temp_boundary'])
@@ -438,7 +444,8 @@ if __name__ == "__main__":
     params = (('P', 0.3, {'units': 'psi'}), ('T', 1500.0, {'units': 'degR'}),
               ('W', 1.0, {'units': 'lbm/s'}), ('Cp', 0.24, {'units': 'Btu/(lbm*degF)'}))
     dvars = (
-        ('radius', 1.1125),  #desc='Tube out diameter' #7.3ft
+        ('tube_area',3.9057),  #desc='Tube out diameter' #7.3ft
+        ('tube_thickness',.05),
         ('length_tube',
          482803.),  #desc='Length of entire Hyperloop') #300 miles, 1584000ft
         ('num_pods',
@@ -459,7 +466,8 @@ if __name__ == "__main__":
     prob.root.connect('des_vars.W', 'tt.nozzle_air_W')
     prob.root.connect('des_vars.Cp', 'tt.nozzle_air_Cp')
 
-    prob.root.connect('vars.radius', 'tt.radius_outer_tube')
+    prob.root.connect('vars.tube_area', 'tt.tube_area')
+    prob.root.connect('vars.tube_thickness', 'tt.tube_thickness')
     prob.root.connect('vars.length_tube', 'tt.length_tube')
     prob.root.connect('vars.num_pods', 'tt.num_pods')
     #prob.root.connect('vars.temp_boundary','tmp_balance.temp_boundary')

@@ -27,6 +27,7 @@ class Drivetrain(Group):
     Params
     ------
     design_torque : float
+        desired design torque for motor (N*m)
     design_power : float
         desired design value for motor power (W)
     motor_max_current : float
@@ -43,7 +44,6 @@ class Drivetrain(Group):
         total mission time (h)
     battery_cross_section_area : float
         cross_sectional area of battery used to compute length (cm^2)
-
 
     Outputs
     -------
