@@ -138,5 +138,18 @@ if __name__ == '__main__':
     prob['battery.cell_height'] = 61.0
     prob['battery.cell_diameter'] = 33.0
 
+
+
+
     prob.root.list_connections()
     prob.run()
+
+    print(prob['battery_mass'])
+    print(prob['battery_volume'])
+    print(prob['battery_cost'])
+    print(prob['battery_length'])
+    print(prob['motor_volume'])
+    print(prob['motor_diameter'])
+    print(prob['motor_mass'])
+    print(prob['motor_length'])
+    print(prob['motor_power_input'])
