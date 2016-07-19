@@ -144,7 +144,6 @@ class TempBalance(Component):
             if 'temp_boundary' in dresids and 'ss_temp_residual' in dparams:
                 dparams['ss_temp_residual'] += dresids['temp_boundary']
 
-
 class TubeWallTemp(Component):
     """ Calculates Q released/absorbed by the hyperloop tube """
 
