@@ -23,7 +23,6 @@ class TubePower(Component):
     elec_price : float
         Cost of electricity per kiloWatt-hour (USD/(kW*h))
 
-
     Outputs
     -------
     tot_power : float
