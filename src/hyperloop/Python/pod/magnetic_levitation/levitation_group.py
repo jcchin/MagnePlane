@@ -24,6 +24,7 @@ class LevGroup(Group):
         mass of the pod (kg)
     l_pod : float
         length of the pod (m)
+    d_pod : diameter of the pod (m)
     w_track : float
         width of the track (m)
     vel_b : float
@@ -49,8 +50,8 @@ class LevGroup(Group):
         super(LevGroup, self).__init__()
 
         # Creates components of the group.
-        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'w_track', 'l_pod', 'vel_b'])
-        self.add('Mass', MagMass(), promotes=['l_pod', 'cost', 'm_mag'])
+        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'd_pod', 'l_pod', 'vel_b'])
+        self.add('Mass', MagMass(), promotes=['l_pod', 'cost', 'm_mag', 'd_pod'])
         self.add('MDrag', MagDrag(), promotes=['mag_drag'])
 
         # Connect Drag outputs to MDrag inputs
@@ -60,9 +61,6 @@ class LevGroup(Group):
         self.connect('Drag.lam', 'MDrag.lam')
         self.connect('Drag.pod_weight', 'MDrag.pod_weight')
 
-        # Connect w_track to w_mag to assume magnet array width = width of track
-        self.connect('w_track', ['Drag.w_mag', 'Mass.w_mag'])
-
 if __name__ == "__main__":
 
     top = Problem()
@@ -71,11 +69,10 @@ if __name__ == "__main__":
     # Define Parameters
     params = (('m_pod', 3000.0, {'units': 'kg'}),
     		  ('l_pod', 25.0, {'units': 'm'}),
-              ('w_track', 2.0, {'units': 'm'}),
+              ('d_pod', 2.0, {'units': 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
-              ('w_mag', 2.0, {'units': 'm'}),
+              ('gamma', 1.0),
               ('mag_thk', .05, {'units': 'm'}),
-              ('gamma', .05),
               ('g', 9.81, {'units': 'm/s**2'}))
 
     root.add('input_vars', IndepVarComp(params))
@@ -98,7 +95,7 @@ if __name__ == "__main__":
     root.connect('input_vars.m_pod', 'lev.m_pod')
     root.connect('lev.m_pod', 'con1.m_pod')
     root.connect('input_vars.l_pod', 'lev.l_pod')
-    root.connect('input_vars.w_mag', 'lev.Drag.w_mag')
+    root.connect('input_vars.d_pod', 'lev.d_pod')
     root.connect('input_vars.vel_b', 'lev.vel_b')
 
     # Finite Difference

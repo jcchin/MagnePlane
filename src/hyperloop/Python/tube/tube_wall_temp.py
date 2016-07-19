@@ -144,7 +144,6 @@ class TempBalance(Component):
             if 'temp_boundary' in dresids and 'ss_temp_residual' in dparams:
                 dparams['ss_temp_residual'] += dresids['temp_boundary']
 
-
 class TubeWallTemp(Component):
     """ Calculates Q released/absorbed by the hyperloop tube """
 
@@ -187,9 +186,9 @@ class TubeWallTemp(Component):
                         34.,
                         #units = 'K',
                         desc='temp of the air exiting the pod nozzle')
-        self.add_param('bearing_air_W', 34., desc='air exiting the air bearings')
-        self.add_param('bearing_air_Cp', 34., desc='air exiting the air bearings')
-        self.add_param('bearing_air_Tt', 34., desc='air exiting the air bearings')
+        # self.add_param('bearing_air_W', 34., desc='air exiting the air bearings')
+        # self.add_param('bearing_air_Cp', 34., desc='air exiting the air bearings')
+        # self.add_param('bearing_air_Tt', 34., desc='air exiting the air bearings')
 
         #constants
         self.add_param('solar_insolation',
@@ -305,14 +304,14 @@ class TubeWallTemp(Component):
 
         u['diameter_outer_tube'] = 2 * p['radius_outer_tube']
 
-        u['bearing_q'] = cu(p['bearing_air_W'], 'lbm/s', 'kg/s') * cu(
-            p['bearing_air_Cp'], 'Btu/(lbm*degR)', 'J/(kg*K)') * (
-                cu(p['bearing_air_Tt'], 'degR', 'degK') - p['temp_boundary'])
+        # u['bearing_q'] = cu(p['bearing_air_W'], 'lbm/s', 'kg/s') * cu(
+        #     p['bearing_air_Cp'], 'Btu/(lbm*degR)', 'J/(kg*K)') * (
+        #         cu(p['bearing_air_Tt'], 'degR', 'degK') - p['temp_boundary'])
         u['nozzle_q'] = cu(p['nozzle_air_W'], 'lbm/s', 'kg/s') * cu(
             p['nozzle_air_Cp'], 'Btu/(lbm*degR)', 'J/(kg*K)') * (
                 cu(p['nozzle_air_Tt'], 'degR', 'degK') - p['temp_boundary'])
         #Q = mdot * cp * deltaT
-        u['heat_rate_pod'] = u['nozzle_q'] + u['bearing_q']
+        u['heat_rate_pod'] = u['nozzle_q'] #+ u['bearing_q']
         #Total Q = Q * (number of pods)
         u['total_heat_rate_pods'] = u['heat_rate_pod'] * p['num_pods']
 
@@ -400,22 +399,21 @@ class TubeTemp(Group):
     def __init__(self):
         super(TubeTemp, self).__init__()
 
-        self.add('tm', TubeWallTemp(), promotes=['radius_outer_tube'])
-        self.add('tmp_balance', TempBalance())
+        self.add('tm', TubeWallTemp(), promotes=[
+            'length_tube','radius_outer_tube','num_pods',
+            'nozzle_air_W','nozzle_air_Tt','nozzle_air_Cp'])
 
-        self.add('nozzle_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
-        self.add('bearing_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
+        self.add('tmp_balance', TempBalance(), promotes=['temp_boundary'])
 
-        self.connect("nozzle_air.Fl_O:tot:T", "tm.nozzle_air_Tt")
-        self.connect("nozzle_air.Fl_O:tot:Cp", "tm.nozzle_air_Cp")
-        self.connect("nozzle_air.Fl_O:stat:W", "tm.nozzle_air_W")
+        #self.add('nozzle_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
+        #self.add('bearing_air', FlowStart(thermo_data=janaf, elements=AIR_MIX))
 
-        self.connect("bearing_air.Fl_O:tot:T", "tm.bearing_air_Tt")
-        self.connect("bearing_air.Fl_O:tot:Cp", "tm.bearing_air_Cp")
-        self.connect("bearing_air.Fl_O:stat:W", "tm.bearing_air_W")
+        #self.connect("nozzle_air.Fl_O:tot:T", "tm.nozzle_air_Tt")
+        #self.connect("nozzle_air.Fl_O:tot:Cp", "tm.nozzle_air_Cp")
+        #self.connect("nozzle_air.Fl_O:stat:W", "tm.nozzle_air_W")
 
         self.connect('tm.ss_temp_residual', 'tmp_balance.ss_temp_residual')
-        self.connect('tmp_balance.temp_boundary', 'tm.temp_boundary')
+        self.connect('temp_boundary', 'tm.temp_boundary')
 
         self.nl_solver = Newton()
         self.nl_solver.options['atol'] = 1e-5
@@ -438,7 +436,7 @@ if __name__ == "__main__":
     prob.root.add('tt', TubeTemp())
 
     params = (('P', 0.3, {'units': 'psi'}), ('T', 1500.0, {'units': 'degR'}),
-              ('W', 1.0, {'units': 'lbm/s'}))
+              ('W', 1.0, {'units': 'lbm/s'}), ('Cp', 0.24, {'units': 'Btu/(lbm*degF)'}))
     dvars = (
         ('radius', 1.1125),  #desc='Tube out diameter' #7.3ft
         ('length_tube',
@@ -456,17 +454,14 @@ if __name__ == "__main__":
     #tube inputs
     prob.root.add('vars', IndepVarComp(dvars))
 
-    prob.root.connect('des_vars.P', 'tt.nozzle_air.P')
-    prob.root.connect('des_vars.T', 'tt.nozzle_air.T')
-    prob.root.connect('des_vars.W', 'tt.nozzle_air.W')
-
-    prob.root.connect('des_vars2.P', 'tt.bearing_air.P')
-    prob.root.connect('des_vars2.T', 'tt.bearing_air.T')
-    prob.root.connect('des_vars2.W', 'tt.bearing_air.W')
+    #prob.root.connect('des_vars.P', 'tt.nozzle_air_P')
+    prob.root.connect('des_vars.T', 'tt.nozzle_air_Tt')
+    prob.root.connect('des_vars.W', 'tt.nozzle_air_W')
+    prob.root.connect('des_vars.Cp', 'tt.nozzle_air_Cp')
 
     prob.root.connect('vars.radius', 'tt.radius_outer_tube')
-    prob.root.connect('vars.length_tube', 'tt.tm.length_tube')
-    prob.root.connect('vars.num_pods', 'tt.tm.num_pods')
+    prob.root.connect('vars.length_tube', 'tt.length_tube')
+    prob.root.connect('vars.num_pods', 'tt.num_pods')
     #prob.root.connect('vars.temp_boundary','tmp_balance.temp_boundary')
     prob.root.connect('vars.temp_outside_ambient',
                       'tt.tm.temp_outside_ambient')
@@ -477,10 +472,7 @@ if __name__ == "__main__":
     prob['des_vars.T'] = 1710.0
     prob['des_vars.P'] = 0.304434211
     prob['des_vars.W'] = 1.08
-
-    prob['des_vars2.T'] = 1710.0
-    prob['des_vars2.P'] = 0.304434211
-    prob['des_vars2.W'] = 0
+    prob['des_vars.Cp'] = 0.24
 
     prob.run()
 

@@ -30,8 +30,6 @@ class BreakPointDrag(Component):
         Length of the Hyperloop pod. Default value is 22.
     gamma : float
         Percent factor used in Area. Default value is 1.
-    w_track : float
-        Width of track. Default value is 3.
     w_mag : float
         Width of magnet array. Default value is 3.
     spacing : float
@@ -52,6 +50,10 @@ class BreakPointDrag(Component):
         Breakpoint velocity of the pod. Default value is 23.
     h_lev : float
         Levitation height. Default value is .01.
+    d_pod : float
+        Diameter of the pod. Default value is 1.
+    track_factor : float
+        Factor to adjust track width. Default value is .75.
 
     Returns
     -------
@@ -63,6 +65,8 @@ class BreakPointDrag(Component):
         Inductance of the track. Default value is 0.0.
     b0 : float
         Halbach Peak Strength. Default value is 0.0.
+    w_track : float
+        Width of track. Default value is 0.0.
     mag_area : float
         Total area of the magnetic array. Default value is 0.0.
     omegab : float
@@ -104,7 +108,7 @@ class BreakPointDrag(Component):
                        desc='Halbach Spacing Factor')
 
         # Track Inputs (laminated track)
-        self.add_param('w_track', val=3.0, units='m', desc='Width of Track')
+        self.add_param('d_pod', val=1.0, units='m', desc='Diameter of the Pod')
         self.add_param('w_strip',
                        val=0.005,
                        units='m',
@@ -126,6 +130,7 @@ class BreakPointDrag(Component):
                        val=4.0 * pi * 10 ** -7,
                        units='ohm*s/m',
                        desc='Permeability of Free Space')
+        self.add_param('track_factor', val=0.75, desc='Track Width Factor')
 
         # Pod/Track Relation Inputs
         self.add_param('vel_b',
@@ -147,6 +152,7 @@ class BreakPointDrag(Component):
                         val=0.0,
                         units='rad/s',
                         desc='Breakpoint Frequency')
+        self.add_output('w_track', val=0.0, units='m', desc='Width of the Track')
         self.add_output('fyu', val=0.0, units='N', desc='Levitation Force')
         self.add_output('fxu', val=0.0, units='N', desc='Break Point Drag Force')
         self.add_output('ld_ratio', val=0.0, desc='Lift to Drag Ratio')
@@ -163,12 +169,13 @@ class BreakPointDrag(Component):
         mag_thk = params['mag_thk']  # Magnet Thickness
         gamma = params['gamma']  # Area Scalar
         l_pod = params['l_pod']  # Length of the Pod
-        w_mag = params['w_mag']  # Width of Magnetic Array
         m_pod = params['m_pod']  # Mass of Pod
-        spacing = params['spacing'] # Spacing between each magnet.
+        d_pod = params['d_pod']  # Diameter of the Pod
+        w_mag = params['w_mag']  # Width of Magnetic Array
+        spacing = params['spacing']  # Spacing between each magnet
+        track_factor = params['track_factor']  # Factor for track width
 
         # Track Parameters
-        w_track = params['w_track']  # Width of Track
         w_strip = params['w_strip']  # Width of Conductive Strip
         num_sheets = params['num_sheets']  # Number of Laminated Layers
         delta_c = params['delta_c']  # Single Layer Thickness
@@ -177,10 +184,12 @@ class BreakPointDrag(Component):
 
         #Constants
         MU0 = params['MU0']  # Permeability of Free Space
-        g = params['g']
+        g = params['g']  # gravity
 
         # Compute Intermediate Variables
+        w_track = d_pod * track_factor
         track_res = rc * w_track / (delta_c * w_strip * num_sheets)  # Track Resistance
+        w_mag = w_track  # Set equal for simple model
 
         lam = num_mag_hal * mag_thk + spacing  # Compute Wavelength
         b0 = b_res * (1. - np.exp(-2. * pi * mag_thk / lam)) * (
@@ -206,6 +215,7 @@ class BreakPointDrag(Component):
 
         unknowns['lam'] = lam
         unknowns['b0'] = b0
+        unknowns['w_track'] = w_track
         unknowns['track_ind'] = track_ind
         unknowns['mag_area'] = mag_area
         unknowns['omegab'] = omegab
@@ -232,10 +242,16 @@ class MagMass(Component):
         Length of the Hyperloop pod. Default value is 22.
     gamma : float
         Percent factor used in Area. Default value is 1.
+    d_pod : float
+        Diameter of the pod. Default value is 1.
+    track_factor : float
+        Factor to calculate track width. Default value is .75.
     w_mag : float
         Width of magnet array. Default value is 3.
     cost_per_kg : flost
         Cost of the magnets per kilogram. Default value is 44.
+    track_factor : float
+        Factor to adjust track width. Default value is .75.
 
     Returns
     -------
@@ -268,6 +284,8 @@ class MagMass(Component):
                        units='USD/kg',
                        desc='Cost of Magnet per Kilogram')
         self.add_param('w_mag', val=3.0, units='m', desc='Width of Magnet Array')
+        self.add_param('d_pod', val=1.0, units='m', desc='Diameter of Pod')
+        self.add_param('track_factor', val=0.75, desc='Track Factor Width')
 
         # Outputs
         self.add_output('mag_area', val=0.0, units='m', desc='Total Area of Magnets')
@@ -284,8 +302,12 @@ class MagMass(Component):
         l_pod = params['l_pod']  # Length of Pod
         rho_mag = params['rho_mag']  # Density of Magnets
         cost_per_kg = params['cost_per_kg']  # Cost per kg of Magnet
+        d_pod = params['d_pod']  # Diameter of the pod
+        track_factor = params['track_factor']  # Track Width Factor
 
         # Compute Intermediate Variables
+        w_track = d_pod * track_factor  # Calculate width of the track
+        w_mag = w_track  # Set equal for simple model
         mag_area = w_mag * l_pod * gamma  # Compute Magnet Area
         m_mag = rho_mag * mag_area * mag_thk  # Compute Magnet Mass
         cost = m_mag * cost_per_kg  # Compute Total Magnet Cost
@@ -369,3 +391,5 @@ if __name__ == "__main__":
     # print('track_res is %f m' % top['p.track_res'])
     # print('track_ind is %12.12f m' % top['p.track_ind'])
     # print('b0 is %f m' % top['p.b0'])
+    print ('w_mag is %f m' % top['p.w_mag'])
+    print ('w_track is %f m' % top['p.w_track'])
