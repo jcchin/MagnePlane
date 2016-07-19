@@ -27,10 +27,11 @@ class TestTubeWall(object):
         #tm.nozzle_air.setTotalTP(1710, 0.304434211)
 
         prob['tt.nozzle_air_W'] = 1.08
+        prob['tt.tube_thickness'] = .05 #, units = ''
         prob['tt.nozzle_air_Cp'] = 0.28 #fudged to hit original calcs (no more bearings)
 
         prob[
-            'tt.radius_outer_tube'] = 2.22504 / 2.  #, units = 'm', iotype='in', desc='Tube out diameter') #7.3ft
+            'tt.tube_area'] = 3.9057  #, units = 'm', iotype='in', desc='Tube out diameter') #7.3ft
         prob[
             'tt.length_tube'] = 482803.  #, units = 'm', iotype='in', desc='Length of entire Hyperloop') #300 miles, 1584000ft
         prob[
@@ -67,13 +68,13 @@ class TestTubeWall(object):
         #print('Pr:', npss, pyc, rel_err)
         assert np.isclose(pyc, npss, rtol=rtol)
 
-        npss = 23163846280.
+        npss = 24578559455.
         pyc = prob['tt.tm.Gr']
         rel_err = abs(npss - pyc) / npss
         print('Gr:', npss, pyc, rel_err)
         assert np.isclose(pyc, npss, rtol=rtol)
 
-        npss = 16369476896.
+        npss = 17368984791.
         pyc = prob['tt.tm.Ra']
         rel_err = abs(npss - pyc) / npss
         print('Ra:', npss, pyc, rel_err)
@@ -99,7 +100,7 @@ class TestTubeWall(object):
         #print('h:', npss, pyc, rel_err)
         assert np.isclose(pyc, npss, rtol=rtol)
 
-        npss = 3374876.
+        npss = 3458233.
         pyc = prob['tt.tm.area_convection']
         rel_err = abs(npss - pyc) / npss
         #print('area_convection:', npss, pyc, rel_err)
@@ -117,7 +118,7 @@ class TestTubeWall(object):
         print('total_q_nat_conv:', npss, pyc, rel_err)
         assert np.isclose(pyc, npss, rtol=rtol)
 
-        npss = 1074256.
+        npss = 1100789.
         pyc = prob['tt.tm.area_viewing']
         rel_err = abs(npss - pyc) / npss
         #print('area_viewing:', npss, pyc, rel_err)
@@ -129,13 +130,13 @@ class TestTubeWall(object):
         #print('q_per_area_solar:', npss, pyc, rel_err)
         assert np.isclose(pyc, npss, rtol=rtol)
 
-        npss = 375989751.
+        npss = 385276479.
         pyc = prob['tt.tm.q_total_solar']
         rel_err = abs(npss - pyc) / npss
         #print('q_total_solar:', npss, pyc, rel_err)
         assert np.isclose(pyc, npss, rtol=rtol)
 
-        npss = 3374876.115
+        npss = 3458233.
         pyc = prob['tt.tm.area_rad']
         rel_err = abs(npss - pyc) / npss
         #print('area_rad:', npss, pyc, rel_err)

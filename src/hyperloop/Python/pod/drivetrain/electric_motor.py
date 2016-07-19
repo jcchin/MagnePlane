@@ -82,7 +82,6 @@ class MotorGroup(Group):
         motor_oversize_factor : float
             scales peak motor power by this figure (unitless)
 
-
         Outputs
         -------
         current : float
@@ -636,8 +635,6 @@ if __name__ == '__main__':
     # prob.driver.add_recorder(rec)
 
     prob.setup(check=True)
-
-
 
     prob['motor_max_current'] = 450.0
     prob['motor_LD_ratio'] = 0.83

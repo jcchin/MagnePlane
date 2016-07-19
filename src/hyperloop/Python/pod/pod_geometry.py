@@ -13,6 +13,8 @@ class PodGeometry(Component):
 
     Params
     ------
+    A_payload : float
+        Cross sectional area of passenger compartment. Default value is 2.72
     gam : float
         Ratio of specific heats. Default value is 1.4
     R : float
@@ -37,6 +39,8 @@ class PodGeometry(Component):
         length of the converging section of the nozzle. Default value is .3 m
     L_div : float
         length of the diverging section of the nozzle. Default value is 1.5 m
+    L_motor : float
+        length of the motor. Default value is 1.0 m
     p_duct : float
         Static pressure in the duct. Default value is 6800.0 Pa
     p_passenger : float
@@ -63,7 +67,7 @@ class PodGeometry(Component):
     D_pod : float
         Diameter of pod
     S : float
-        Planform area of the pod
+        Platform area of the pod
     L_pod : float
         Length of Pod
     t_passenger : float

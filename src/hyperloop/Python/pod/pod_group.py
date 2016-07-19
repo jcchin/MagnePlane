@@ -15,55 +15,45 @@ class PodGroup(Group):
 
     Params
     ------
-    p_tube : float
-        pressure of the tube (kg)
+    p_tunnel : float
+        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
     M_pod : float
-        Mach number of the pod
-    A_payload : float
-    	cross sectional area of passenger compartment
-    M_duct : float
-    	Mach number of the duct
-    w_track : float
-        width of the track (m)
-    prc : float
-    	pressure ratio of the compressor
-    n_passengers : float
-    	number of passengers
-    T_tunnel : float
-    	tunnel temperature (K)
-	p_tunnel : float
-    	tunnel pressure (Pa)
+        pod Mach number. Default value is .8
     T_ambient : float
-    	ambient temperature (K)
+        Tunnel ambient temperature. Default value is 298 K
     des_time : float
         time until design power point (h)
     time_of_flight : float
         total mission time (h)
     motor_max_current : float
         max motor phase current (A)
+    motor_LD_ratio : float
+        length to diameter ratio of motor (unitless)
     motor_oversize_factor : float
         scales peak motor power by this figure
     inverter_efficiency : float
         power out / power in (W)
     battery_cross_section_area : float
-        cross_sectional area of battery used to compute length (cm**2)
+        cross_sectional area of battery used to compute length (cm^2)
+    p_tunnel : float
+        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+    M_pod : float
+        pod Mach number. Default value is .8
+    n_passengers : float
+        Number of passengers per pod. Default value is 28
+    A_payload : float
+        Cross sectional area of passenger compartment. Default value is 2.72
 
     Returns
     -------
+    A_tube : float
+        will return optimal tunnel area based on pod Mach number
+    S : float
+        Platform area of the pod
     mag_drag : float
         magnetic drag from levitation system (N)
-    nozzle.Fl_O:stat:W : float
-        Pod exit flow rate from Cycle (kg/s)
-    nozzle.Fl_O:tot:T : float
-        Pod exit temperature from Cycle (K)
-    nozzle.Fg : float
-        Nozzle thrust from Cycle (N)
-    inlet.F_ram : float
-        Inlet ram drag from Cycle (N)
-    A_tube : float
-    	Area of the tube (m**2)
-    S : float
-    	platform area of pod (m**2)
+    pod_mass : float
+            Pod Mass (kg)
 
     References
     ----------
@@ -80,28 +70,39 @@ class PodGroup(Group):
         self.ln_solver = ScipyGMRES()
         # self.ln_solver.options['maxiter'] = 100
 
-        self.add('pod_mass', PodMass(), promotes=['pod_mass'])
-        self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor_max_current', 'inverter_efficiency',
-        											   'motor_oversize_factor', 'battery_cross_section_area'])
-        self.add('levitation_group', LevGroup(), promotes=['w_track', 'mag_drag'])
-        self.add('pod_mach', PodMach(), promotes=['p_tube', 'M_pod', 'A_tube', 'prc', 'T_ambient'])
         self.add('cycle', Cycle(), promotes=['nozzle.Fg', 'inlet.F_ram','M_pod', 'p_tunnel', 'nozzle.Fl_O:stat:W',
-        									 'nozzle.Fl_O:tot:T', 'T_tunnel', 'p_tunnel', 'M_pod'])
-        self.add('pod_geometry', PodGeometry(), promotes=['A_payload', 'S', 'n_passengers'])
+                                             'nozzle.Fl_O:tot:T', 'T_tunnel', 'p_tunnel', 'M_pod', 'fl_start.MN_target'])
+        self.add('pod_mach', PodMach(), promotes=['p_tunnel', 'M_pod', 'T_ambient', 'A_tube'])
+        self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
+                                                       'inverter_efficiency', 'motor_oversize_factor', 'battery_cross_section_area'])
+        self.add('pod_geometry', PodGeometry(), promotes=['A_payload', 'n_passengers', 'S'])
+        self.add('levitation_group', LevGroup(), promotes=['mag_drag'])
+        self.add('pod_mass', PodMass(), promotes=['pod_mass'])
 
-        self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
-        self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
-        self.connect('drivetrain.motor_mass', 'pod_mass.motor_mass')
-        self.connect('drivetrain.battery_mass', 'pod_mass.battery_mass')
-        self.connect('drivetrain.motor_length', 'pod_geometry.L_motor')
-        self.connect('pod_mass', 'levitation_group.m_pod')
-        self.connect('levitation_group.m_mag', 'pod_mass.mag_mass')
-        self.connect('pod_geometry.D_pod', 'pod_mass.podgeo_d')
+        # TODO Connects Cycle outputs to downstream components
         self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
         self.connect('cycle.comp.power', 'drivetrain.design_power')
         self.connect('cycle.comp.trq', 'drivetrain.design_torque')
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
         self.connect('cycle.FlowPath.comp.Fl_O:stat:area', 'pod_geometry.A_duct')
+        
+        # Connects Drivetrain outputs to downstream components
+        self.connect('drivetrain.battery_mass', 'pod_mass.battery_mass')
+        self.connect('drivetrain.battery_length', 'pod_geometry.L_bat')
+        self.connect('drivetrain.motor_mass', 'pod_mass.motor_mass')
+        self.connect('drivetrain.motor_length', 'pod_geometry.L_motor')
+
+        # Connects Pod Geometry outputs to downstream components
+        self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
+        self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
+        self.connect('pod_geometry.BF', 'pod_mach.BF')
+        self.connect('pod_geometry.D_pod', 'pod_mass.podgeo_d')
+
+        # Connects Levitation outputs to downstream components
+        self.connect('levitation_group.m_mag', 'pod_mass.mag_mass')
+
+        # Connects Pod Mass outputs to downstream components
+        self.connect('pod_mass', 'levitation_group.m_pod')
 
 if __name__ == "__main__":
 

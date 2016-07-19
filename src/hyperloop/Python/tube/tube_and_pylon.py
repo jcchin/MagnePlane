@@ -1,8 +1,7 @@
 from __future__ import print_function
 
 import numpy as np
-from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
-from openmdao.api import ScipyOptimizer
+from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp, ScipyOptimizer
 
 class TubeAndPylon(Component):
     """

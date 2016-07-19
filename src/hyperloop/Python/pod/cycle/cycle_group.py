@@ -81,7 +81,7 @@ class Cycle(Group):
         super(Cycle, self).__init__()
 
         self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T',
-                                                    'nozzle.Fl_O:stat:W'])
+                                                    'nozzle.Fl_O:stat:W', 'fl_start.MN_target'])
         self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
         self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'M_pod', 'T_tunnel', 'p_tunnel', 'comp_len'])
         
