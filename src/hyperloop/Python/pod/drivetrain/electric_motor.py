@@ -333,7 +333,7 @@ class MotorSize(Component):
         unknowns['power_mech'] = unknowns['w_operating'] * params['design_torque']
 
         # calc size
-        print('max_torque %f' % unknowns['max_torque'])
+        # print('max_torque %f' % unknowns['max_torque'])
         unknowns['motor_volume'] = 293722.0 * np.power(unknowns['max_torque'],
                                               0.7592)  # mm^3
         unknowns['motor_diameter'] = np.power(unknowns['motor_volume'] / params['motor_LD_ratio'],
