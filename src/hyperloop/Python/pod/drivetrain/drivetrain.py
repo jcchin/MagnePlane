@@ -27,6 +27,7 @@ class Drivetrain(Group):
     Params
     ------
     design_torque : float
+            desired torque at max rpm (N*m)
     design_power : float
         desired design value for motor power (W)
     motor_max_current : float
@@ -137,9 +138,6 @@ if __name__ == '__main__':
     prob['battery.cell_mass'] = 170
     prob['battery.cell_height'] = 61.0
     prob['battery.cell_diameter'] = 33.0
-
-
-
 
     prob.root.list_connections()
     prob.run()
