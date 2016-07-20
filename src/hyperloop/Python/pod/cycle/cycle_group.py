@@ -92,7 +92,7 @@ class Cycle(Group):
         self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T',
                                                     'nozzle.Fl_O:stat:W', 'comp.Fl_O:stat:area'])
         
-        # Connects tube group level variables to downstream components
+        # Connects cycle group level variables to downstream components
         self.connect('pod_mach_number', ['CompressorLen.M_pod', 'FlowPathInputs.pod_mach', 'FlowPath.fl_start.MN_target'])
         self.connect('tube_pressure', ['CompressorLen.p_tunnel', 'FlowPathInputs.tube_pressure'])
         self.connect('tube_temp', ['CompressorLen.T_tunnel', 'FlowPathInputs.tube_temp'])
@@ -110,27 +110,27 @@ class Cycle(Group):
         self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])
 
         # Overwrite default pycycle values with new ones in FlowPath
-        FlowPath.inlet.ram_recovery = 0.99
+        self.FlowPath.inlet.ram_recovery = 0.99
 
         # Inlet Conditions
-        FlowPath.inlet.MN_target = 0.65
-        if FlowPath.inlet.MN_target > pod_mach_number:
-            FlowPath.inlet.MN_target = pod_mach_number
+        self.FlowPath.inlet.MN_target = 0.65
+        if self.FlowPath.inlet.MN_target > self['pod_mach_number']:
+            self.FlowPath.inlet.MN_target = self.pod_mach_number
 
         # Compressor Conditions
-        FlowPath.comp.map.effDes = 0.9
-        FlowPath.comp.MN_target = 0.65
+        self.FlowPath.comp.map.effDes = 0.9
+        self.FlowPath.comp.MN_target = 0.65
 
         # Duct
-        FlowPath.duct.MN_target = 0.65
-        FlowPath.duct.dPqP = 0.
+        self.FlowPath.duct.MN_target = 0.65
+        self.FlowPath.duct.dPqP = 0.
 
         # Nozzle Conditions
-        FlowPath.nozzle.Cfg = 1.0
-        FlowPath.nozzle.dPqP = 0.
+        self.FlowPath.nozzle.Cfg = 1.0
+        self.FlowPath.nozzle.dPqP = 0.
 
         # Shaft
-        FlowPath.shaft.Nmech = 10000.
+        self.FlowPath.shaft.Nmech = 10000.
 
 if __name__ == "__main__":
     prob = Problem()

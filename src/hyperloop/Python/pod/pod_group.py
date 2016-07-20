@@ -83,28 +83,32 @@ class PodGroup(Group):
     def __init__(self):
         super(PodGroup, self).__init__()
 
-        self.nl_solver = Newton()
-        # self.nl_solver.options['maxiter'] = 1000
-        # self.nl_solver.options['atol'] = 0.0001
+        des_vars = (('pod_mach_number', .8, {'units': 'unitless'}),
+                    ('tube_pressure', 850., {'units': 'Pa'}),
+                    ('tube_temp', 320., {'units': 'K'}))
 
-        self.ln_solver = ScipyGMRES()
-        # self.ln_solver.options['maxiter'] = 100
+        self.add('input_vars',IndepVarComp(des_vars), promotes=['pod_mach_number', 'tube_pressure', 'tube_temp'])
 
-        self.add('cycle', Cycle(), promotes=['nozzle.Fg', 'inlet.F_ram','M_pod', 'p_tunnel', 'nozzle.Fl_O:stat:W',
-                                             'nozzle.Fl_O:tot:T', 'T_tunnel', 'p_tunnel', 'M_pod', 'fl_start.MN_target'])
-        self.add('pod_mach', PodMach(), promotes=['p_tunnel', 'M_pod', 'T_ambient', 'A_tube'])
+        self.add('cycle', Cycle(), promotes=['comp.map.PRdes', 'nozzle.Ps_exhaust', 'comp_inlet_area',
+                                             'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W'])
+        self.add('pod_mach', PodMach(), promotes=['A_tube'])
         self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                                        'inverter_efficiency', 'motor_oversize_factor', 'battery_cross_section_area'])
         self.add('pod_geometry', PodGeometry(), promotes=['A_payload', 'n_passengers', 'S'])
         self.add('levitation_group', LevGroup(), promotes=['mag_drag'])
         self.add('pod_mass', PodMass(), promotes=['pod_mass'])
 
-        # TODO Connects Cycle outputs to downstream components
-        self.connect('cycle.comp_mass', 'pod_mass.comp_mass')
+        # Connects pod group level variables to downstream components
+        self.connect('pod_mach_number', ['cycle.pod_mach_number', 'pod_mach.M_pod'])
+        self.connect('tube_pressure', ['cycle.tube_pressure', 'pod_mach.p_tunnel'])
+        self.connect('tube_temp', ['cycle.tube_temp', 'pod_mach.T_ambient'])
+
+        # Connects cycle group outputs to downstream components
+        self.connect('cycle.comp_len', 'pod_geometry.L_comp')
+        self.connect('cycle.comp_mass', ['pod_mass.comp_mass', 'levitation_group.m_pod'])
         self.connect('cycle.comp.power', 'drivetrain.design_power')
         self.connect('cycle.comp.trq', 'drivetrain.design_torque')
-        self.connect('cycle.comp_len', 'pod_geometry.L_comp')
-        self.connect('cycle.FlowPath.comp.Fl_O:stat:area', 'pod_geometry.A_duct')
+        self.connect('cycle.comp.Fl_O:stat:area', 'pod_geometry.A_duct')
         
         # Connects Drivetrain outputs to downstream components
         self.connect('drivetrain.battery_mass', 'pod_mass.battery_mass')
@@ -116,7 +120,7 @@ class PodGroup(Group):
         self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
         self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
         self.connect('pod_geometry.BF', 'pod_mach.BF')
-        self.connect('pod_geometry.D_pod', 'pod_mass.podgeo_d')
+        self.connect('pod_geometry.D_pod', ['pod_mass.podgeo_d', 'levitation_group.d_pod'])
 
         # Connects Levitation outputs to downstream components
         self.connect('levitation_group.m_mag', 'pod_mass.mag_mass')
@@ -130,38 +134,42 @@ if __name__ == "__main__":
     root = prob.root = Group()
     root.add('Pod', PodGroup())
 
-    params = (('p_tube', 850.0, {'units' : 'Pa'}),
-             ('M_pod', .8, {'units' : 'unitless'}),
-             ('A_payload', 1.4),
-             ('w_track', 2.0, {'units': 'm'}),
-             ('prc', 12.5, {'units' : 'unitless'}),
-             ('vehicleMach', 0.8),
-             ('inlet_MN', 0.65),
-             ('P', 0.1885057735, {'units': 'psi'}),
-             ('T', 591.0961831, {'units': 'degR'}),
-             ('W', 4.53592, {'units': 'kg/s'}),
-             ('PsE', 0.59344451, {'units': 'psi'}),
-             ('cmpMach', 0.65), )
+    params = (('A_inlet_pod', 3.053648, {'units': 'm**2'}),
+              ('comp_PR', 6.0, {'units': 'unitless'}),
+              ('PsE', 0.59344451, {'units': 'psi'})
+              ('des_time', 1.0),
+              ('time_of_flight', 2.0),
+              ('motor_max_current', 42.0),
+              ('motor_LD_ratio', 0.83),
+              ('motor_oversize_factor', 1.0),
+              ('inverter_efficiency', 1.0),
+              ('battery_cross_section_area', 1.0, {'units': 'cm**2'}),
+              ('n_passengers', 28),
+              ('A_payload', 2.72))
 
     prob.root.add('des_vars', IndepVarComp(params))
-    prob.root.connect('des_vars.PsE', 'Pod.cycle.FlowPath.nozzle.Ps_exhaust')
-    prob.root.connect('des_vars.P', 'Pod.cycle.FlowPath.fl_start.P')
-    prob.root.connect('des_vars.T', 'Pod.cycle.FlowPath.fl_start.T')
-    prob.root.connect('des_vars.W', 'Pod.cycle.FlowPath.fl_start.W')
-    prob.root.connect('des_vars.vehicleMach', 'Pod.cycle.FlowPath.fl_start.MN_target')
-    prob.root.connect('des_vars.inlet_MN', 'Pod.cycle.FlowPath.inlet.MN_target')
-    prob.root.connect('des_vars.p_tube', 'Pod.p_tube')
-    prob.root.connect('des_vars.M_pod', 'Pod.M_pod')
+    prob.root.connect('des_vars.A_inlet_pod', 'Pod.comp_inlet_area')
+    prob.root.connect('des_vars.comp_PR', 'Pod.comp.map.PRdes')
+    prob.root.connect('des_vars.PsE', 'Pod.nozzle.Ps_exhaust')
+    prob.root.connect('des_vars.des_time', 'Pod.des_time')
+    prob.root.connect('des_vars.time_of_flight', 'Pod.time_of_flight')
+    prob.root.connect('des_vars.motor_max_current', 'Pod.motor_max_current')
+    prob.root.connect('des_vars.motor_LD_ratio', 'Pod.motor_LD_ratio')
+    prob.root.connect('des_vars.motor_oversize_factor', 'Pod.motor_oversize_factor')
+    prob.root.connect('des_vars.inverter_efficiency', 'Pod.inverter_efficiency')
+    prob.root.connect('des_vars.battery_cross_section_area', 'Pod.battery_cross_section_area')
+    prob.root.connect('des_vars.n_passengers', 'Pod.n_passengers')
     prob.root.connect('des_vars.A_payload', 'Pod.A_payload')
-    prob.root.connect('des_vars.w_track', 'Pod.w_track')
 
     prob.setup()
     prob.root.list_connections()
     prob.run()
 
+    print('nozzle.Fg: %f' % prob['Pod.nozzle.Fg'])
+    print('inlet.F_ram: %f' % prob['Pod.inlet.F_ram'])
+    print('nozzle.Fl_O:tot:T: %f' % prob['Pod.nozzle.Fl_O:tot:T'])
+    print('nozzle.Fl_O:stat:W: %f' % prob['Pod.nozzle.Fl_O:stat:W'])
     print('A Tube: %f' % prob['Pod.A_tube'])
     print('Mag Drag :%f' % prob['Pod.mag_drag'])
     print('S :%f' % prob['Pod.S'])
-    print('nozzle.Fl_O:tot:T %f' % prob['Pod.nozzle.Fl_O:tot:T'])
-    print('nozzle.Fl_O:stat:W %f' % prob['Pod.nozzle.Fl_O:stat:W'])
-    print('nozzle.Fg %f' % prob['Pod.nozzle.Fg'])
+    print('pod_mass :%f' % prob['Pod.pod_mass'])
