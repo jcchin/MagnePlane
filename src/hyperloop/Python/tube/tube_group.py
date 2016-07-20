@@ -46,8 +46,6 @@ class TubeGroup(Group):
         Number of Pods in the Tube at a given time
     nozzle_air_W : float
         mass flow rate of the air exiting the pod nozzle (kg/s)
-    nozzle_air_Cp : float
-        specific heat of the air exiting the pod nozzle
     nozzle_air_T : float
         temp of the air exiting the pod nozzle (K)
     tunnel_pressure : float
@@ -113,7 +111,6 @@ class TubeGroup(Group):
 
         self.add('Temp',TubeTemp(), promotes=['nozzle_air_W',
                                               'nozzle_air_Tt',
-                                              'nozzle_air_Cp',
                                               'num_pods',
                                               'temp_boundary'])
 

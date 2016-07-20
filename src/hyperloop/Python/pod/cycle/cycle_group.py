@@ -32,6 +32,10 @@ class Cycle(Group):
     """
 	Params
     ------
+    A_inlet : float
+        Inlet area of pod. (m**2)
+    M_pod : float
+        Pod Mach Number. (unitless)
     ram_recovery : float
         Perfcentage of ram pressure recovered (1-ram_recovery) is lost
     inlet_MN : float
@@ -55,14 +59,14 @@ class Cycle(Group):
     
     Returns
     -------
+    comp_len : float
+        Length of Compressor (m)
+    comp_mass : float
+        Compressor Mass (kg)
     comp.trq : float
         Torque required by compressor motor(lb*ft)
 	comp.power : float
         Torque required by compressor motor(hp)
-    comp_mass : float
-        Torque required by compressor motor(kg)
-    comp_len : float
-        Torque required by compressor motor(m)
     comp.nozzle.Fg : float
         Gross Thrust (lb)
     comp.F_ram : float

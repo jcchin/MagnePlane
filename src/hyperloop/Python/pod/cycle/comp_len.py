@@ -3,46 +3,49 @@ import numpy as np
 from openmdao.api import Component, Problem, Group
 
 class CompressorLen(Component):
-    """The CompressorMass class represents a compressor length component
-        in an OpenMDAO model.
-        A `CompressorMass` models length of a compressor that uses NPSS data
-        to obtain enthalpy data,and mass_flow for a particular pressure ratio.
-        It also uses a correlation derived by Micheal Tong at NASA Glenn Center
-        to obtain Compressor Length.
+    """
+    The CompressorMass class represents a compressor length component
+    in an OpenMDAO model.
+
+    A `CompressorMass` models length of a compressor that uses NPSS data
+    to obtain enthalpy data,and mass_flow for a particular pressure ratio.
+    It also uses a correlation derived by Micheal Tong at NASA Glenn Center
+    to obtain Compressor Length.
+    
     Params
-        ----
-        comp_inletTemp: float
-            Compressor Inlet Temperature. (K)
-        h_in : float
-            Heat in. (kJ/kg)
-        h_in : float
-            Heat out. (kJ/kg)
-        h_out : float
-            Hea    self.t out. (kJ/kg)
-        comp_inletArea : float
-            Compressor Inlet Area. (m**2)
-        A_inlet : float
-            Inlet area of pod. (m**2)
-        comp_mach : float
-            Compressor Mach at Inlet. (m/s)
-        M_pod : float
-            Pod Mach Number. (unitless)
-        T_tunnel : float
-            Tunnel temperature. (K)
-        gam : float
-            Ratio of specific heats. (unitless)
-        R : float
-            Ideal gas constant. (J/(kg*K))
-        p_tunnel : float
-            tunnel pressure. (Pa)
-        air_den : float
-            air density. (kg/m**3)
-        h_stage : float
-            enthalpy added per stage. (kJ/kg)
-    Outputs
+    ------
+    comp_inletTemp: float
+        Compressor Inlet Temperature. (K)
+    h_in : float
+        Heat in. (kJ/kg)
+    h_out : float
+        Heat out. (kJ/kg)
+    comp_inletArea : float
+        Compressor Inlet Area. (m**2)
+    A_inlet : float
+        Inlet area of pod. (m**2)
+    comp_mach : float
+        Compressor Mach at Inlet. (m/s)
+    M_pod : float
+        Pod Mach Number. (unitless)
+    T_tunnel : float
+        Tunnel temperature. (K)
+    gam : float
+        Ratio of specific heats. (unitless)
+    R : float
+        Ideal gas constant. (J/(kg*K))
+    p_tunnel : float
+        tunnel pressure. (Pa)
+    air_den : float
+        air density. (kg/m**3)
+    h_stage : float
+        enthalpy added per stage. (kJ/kg)
+
+    Returns
     -------
     comp_len : float
         Length of Compressor (m)
+        
     References
     -----
     .. [1] Michael Tong Correlation used.
