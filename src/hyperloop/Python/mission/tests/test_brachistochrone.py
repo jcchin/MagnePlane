@@ -2,7 +2,6 @@ from __future__ import division, print_function, absolute_import
 
 import unittest
 import numpy as np
-from numpy.testing import assert_almost_equal
 
 try:
     from openmdao.api import pyOptSparseDriver
@@ -15,7 +14,7 @@ from pointer.components import Problem, Trajectory, CollocationPhase
 
 from hyperloop.Python.mission.rhs import MagnePlaneRHS
 
-class test_magneplane_brachistochrone(unittest.TestCase):
+class TestMagneplanBrachistochrone(unittest.TestCase):
 
     def setUp(self):
         solver = 'SLSQP'

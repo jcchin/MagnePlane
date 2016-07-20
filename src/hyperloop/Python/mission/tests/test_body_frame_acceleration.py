@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python.mission import body_frame_acceleration
+from hyperloop.Python.mission import body_frame_acceleration
 import numpy as np
 from openmdao.api import Group, Problem
 
