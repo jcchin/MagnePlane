@@ -36,54 +36,36 @@ class TestCycle(object):
 
         prob = create_problem(CycleGroup)
 
-        params = (('vehicleMach', 0.8),
-                  ('inlet_MN', 0.65),
-                  ('P', 0.1885057735, {'units': 'psi'}),
-                  ('T', 591.0961831, {'units': 'degR'}),
-                  ('W', 4.53592, {'units': 'kg/s'}),
-                  ('PsE', 0.59344451, {'units': 'psi'}),
-                  ('cmpMach', 0.65), )
+        params = (('A_inlet_pod', 2.0869, {'units': 'm**2'}),
+              ('comp_PR', 12.6, {'units': 'unitless'}),
+              ('PsE', 0.05588, {'units': 'psi'}),
+              ('pod_mach_number', .8, {'units': 'unitless'}),
+              ('tube_pressure', 850., {'units': 'Pa'}),
+              ('tube_temp', 320., {'units': 'K'}),
+              ('comp_inlet_area', 2.3884, {'units': 'm**2'}))
 
         prob.root.add('des_vars', IndepVarComp(params))
-        prob.root.connect('des_vars.PsE', 'Cycle.FlowPath.nozzle.Ps_exhaust')
-        prob.root.connect('des_vars.P', 'Cycle.FlowPath.fl_start.P')
-        prob.root.connect('des_vars.T', 'Cycle.FlowPath.fl_start.T')
-        prob.root.connect('des_vars.W', 'Cycle.FlowPath.fl_start.W')
 
-        prob.root.connect('des_vars.vehicleMach', 'Cycle.FlowPath.fl_start.MN_target')
-        prob.root.connect('des_vars.inlet_MN', 'Cycle.FlowPath.inlet.MN_target')
+        prob.root.connect('des_vars.A_inlet_pod', 'Cycle.A_inlet')
+        prob.root.connect('des_vars.comp_PR', 'Cycle.FlowPath.comp.map.PRdes')
+        prob.root.connect('des_vars.PsE', 'Cycle.FlowPath.nozzle.Ps_exhaust')
+        prob.root.connect('des_vars.pod_mach_number', 'Cycle.pod_mach')
+        prob.root.connect('des_vars.tube_pressure', 'Cycle.tube_pressure')
+        prob.root.connect('des_vars.tube_temp', 'Cycle.tube_temp')
+        prob.root.connect('des_vars.comp_inlet_area', 'Cycle.comp_inlet_area')
 
         prob.setup()
         prob.root.list_connections()
 
-        # Inlet Conditions
-
-        prob['Cycle.FlowPath.inlet.ram_recovery'] = 0.99
-        if prob['des_vars.inlet_MN'] > prob['des_vars.vehicleMach']:
-            prob['des_vars.inlet_MN'] = prob['des_vars.vehicleMach']
-
-        # Compressor Conditions
-        prob['Cycle.FlowPath.comp.map.PRdes'] = 6.0
-        prob['Cycle.FlowPath.comp.map.effDes'] = 0.9
-        prob['Cycle.FlowPath.comp.MN_target'] = 0.65
-
-        # Duct
-        prob['Cycle.FlowPath.duct.MN_target'] = 0.65
-        prob['Cycle.FlowPath.duct.dPqP'] = 0.
-
-        # Nozzle Conditions
-        prob['Cycle.FlowPath.nozzle.Cfg'] = 1.0
-        prob['Cycle.FlowPath.nozzle.dPqP'] = 0.
-
-        # Shaft
-        prob['Cycle.FlowPath.shaft.Nmech'] = 10000.
-
         prob.run()
 
         # Test Values
-        assert np.isclose(prob['Cycle.comp_mass'], 583.259285, rtol=.01)
-        assert np.isclose(prob['Cycle.comp_len'], 0.609973, rtol=.01)
-        assert np.isclose(prob['Cycle.FlowPath.inlet.Fl_O:tot:h'], 11.208383, rtol=.01)
-        assert np.isclose(prob['Cycle.FlowPath.comp.Fl_O:tot:h'], 116.307430, rtol=.01)
-        assert np.isclose((cu(prob['Cycle.FlowPath.inlet.Fl_O:stat:area'], 'inch**2', 'm**2')), 1.794921, rtol=.01)
-        assert np.isclose(prob['Cycle.FlowPath.inlet.Fl_O:tot:T'], 591.096183, rtol=.01)
+        assert np.isclose(prob['Cycle.comp_len'], 0.775, rtol=.01)
+        assert np.isclose(prob['Cycle.comp_mass'], 774.18, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.comp.trq'], 'ft*lbf', 'N*m'), -2622.13, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.comp.power'], 'hp', 'W'), -2745896.44, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2'), 0.371, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.nozzle.Fg'], 'lbf', 'N'), 6562.36, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.inlet.F_ram'], 'lbf', 'N'), 1855.47, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.nozzle.Fl_O:tot:T'], 'degR', 'K'), 767.132, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.nozzle.Fl_O:stat:W'], 'lbm/s', 'kg/s'), 6.467, rtol=.01)

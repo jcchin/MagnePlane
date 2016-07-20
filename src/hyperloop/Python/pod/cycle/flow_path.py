@@ -148,9 +148,6 @@ if __name__ == "__main__":
     import time
     t = time.time()
     prob.run()
-    #print (time.time() - t)
-    #inputs = ['balance.Pt', 'balance.Tt', 'balance.W', 'balance.BPR']
-    #prob.check_total_derivatives()
 
     batteries = (-prob['FlowPath.comp.power'] * HPtoKW * (tubeLen / (
         prob['FlowPath.fl_start.Fl_O:stat:V'] * 0.3048) / 3600.0)) / teslaPack
