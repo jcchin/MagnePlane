@@ -82,7 +82,9 @@ class FlowPath(Group):
                     ('duct_dPqP', 0.),
                     ('nozzle_Cfg', 1.0),
                     ('nozzle_dPqP', 0.),
-                    ('shaft_Nmech', 10000.))
+                    ('shaft_Nmech', 10000.),
+                    ('inlet_MN', 0.6),
+                    ('comp_MN', 0.65))
 
         self.add('input_vars',IndepVarComp(des_vars))
 
@@ -107,6 +109,8 @@ class FlowPath(Group):
         self.connect('input_vars.nozzle_Cfg', 'nozzle.Cfg')
         self.connect('input_vars.nozzle_dPqP', 'nozzle.dPqP')
         self.connect('input_vars.shaft_Nmech', 'shaft.Nmech')
+        self.connect('input_vars.inlet_MN', 'inlet.MN_target')
+        self.connect('input_vars.comp_MN', 'comp.MN_target')
 
         self.connect('comp.trq', 'shaft.trq_0')
         self.connect('shaft.Nmech', 'comp.Nmech')

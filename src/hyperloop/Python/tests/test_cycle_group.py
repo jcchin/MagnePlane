@@ -64,7 +64,7 @@ class TestCycle(object):
         assert np.isclose(prob['Cycle.comp_mass'], 774.18, rtol=.01)
         assert np.isclose(cu(prob['Cycle.comp.trq'], 'ft*lbf', 'N*m'), -2622.13, rtol=.01)
         assert np.isclose(cu(prob['Cycle.comp.power'], 'hp', 'W'), -2745896.44, rtol=.01)
-        assert np.isclose(cu(prob['Cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2'), 0.371, rtol=.01)
+        assert np.isclose(cu(prob['Cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2'), 0.314, rtol=.01)
         assert np.isclose(cu(prob['Cycle.nozzle.Fg'], 'lbf', 'N'), 6562.36, rtol=.01)
         assert np.isclose(cu(prob['Cycle.inlet.F_ram'], 'lbf', 'N'), 1855.47, rtol=.01)
         assert np.isclose(cu(prob['Cycle.nozzle.Fl_O:tot:T'], 'degR', 'K'), 767.132, rtol=.01)
