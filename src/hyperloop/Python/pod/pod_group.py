@@ -15,12 +15,18 @@ class PodGroup(Group):
 
     Params
     ------
-    p_tunnel : float
-        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
-    M_pod : float
-        pod Mach number. Default value is .8
-    T_ambient : float
-        Tunnel ambient temperature. Default value is 298 K
+    pod_mach_number : float
+        Vehicle mach number (unitless)
+    tube_pressure : float
+        Tube total pressure (Pa)
+    tube_temp : float
+        Tube total temperature (K)
+    comp.map.PRdes : float
+        Pressure ratio of compressor (unitless)
+    nozzle.Ps_exhaust : float
+        Exit pressure of nozzle (psi)
+    comp_inlet_area : float
+        Inlet area of compressor. (m**2)
     des_time : float
         time until design power point (h)
     time_of_flight : float
@@ -35,10 +41,6 @@ class PodGroup(Group):
         power out / power in (W)
     battery_cross_section_area : float
         cross_sectional area of battery used to compute length (cm^2)
-    p_tunnel : float
-        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
-    M_pod : float
-        pod Mach number. Default value is .8
     n_passengers : float
         Number of passengers per pod. Default value is 28
     A_payload : float
@@ -46,6 +48,24 @@ class PodGroup(Group):
 
     Returns
     -------
+    comp_len : float
+        Length of Compressor (m)
+    comp_mass : float
+        Mass of compressor (kg)
+    comp.trq : float
+        Total torque required by motor (ft*lbf)
+    comp.power : float
+        Total power required by motor (hp)
+    comp.Fl_O:stat:area : float
+        Area of the duct (in**2)
+    nozzle.Fg : float
+        Nozzle thrust (lbf)
+    inlet.F_ram : float
+        Ram drag (lbf)
+    nozzle.Fl_O:tot:T : float
+        Total temperature at nozzle exit (degR)
+    nozzle.Fl_O:stat:W : float
+        Total mass flow rate at nozzle exit (lbm/s)
     A_tube : float
         will return optimal tunnel area based on pod Mach number
     S : float

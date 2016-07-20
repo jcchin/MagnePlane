@@ -46,7 +46,7 @@ class Cycle(Group):
     comp.map.PRdes : float
         Pressure ratio of compressor (unitless)
     nozzle.Ps_exhaust : float
-        Exit pressure of nozzle (psi)
+        Exit pressure of nozzle (Pa)
     
     Returns
     -------
@@ -55,19 +55,19 @@ class Cycle(Group):
     comp_mass : float
         Mass of compressor (kg)
     comp.trq : float
-        Total torque required by motor (lb*ft)
+        Total torque required by motor (ft*lbf)
     comp.power : float
         Total power required by motor (hp)
     comp.Fl_O:stat:area : float
         Area of the duct (in**2)
     nozzle.Fg : float
-        Nozzle thrust (lbs)
+        Nozzle thrust (lbf)
     inlet.F_ram : float
-        Ram drag (lbs)
+        Ram drag (lbf)
     nozzle.Fl_O:tot:T : float
         Total temperature at nozzle exit (degR)
     nozzle.Fl_O:stat:W : float
-        Total mass flow rate at nozzle exit (kg/s)
+        Total mass flow rate at nozzle exit (lbm/s)
 	
     References
     ----------
@@ -108,6 +108,29 @@ class Cycle(Group):
         self.connect('nozzle.Fl_O:stat:W', 'CompressorMass.mass_flow')
         self.connect('FlowPath.inlet.Fl_O:tot:h', ['CompressorMass.h_in', 'CompressorLen.h_in'])
         self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])
+
+        # Overwrite default pycycle values with new ones in FlowPath
+        FlowPath.inlet.ram_recovery = 0.99
+
+        # Inlet Conditions
+        FlowPath.inlet.MN_target = 0.65
+        if FlowPath.inlet.MN_target > pod_mach_number:
+            FlowPath.inlet.MN_target = pod_mach_number
+
+        # Compressor Conditions
+        FlowPath.comp.map.effDes = 0.9
+        FlowPath.comp.MN_target = 0.65
+
+        # Duct
+        FlowPath.duct.MN_target = 0.65
+        FlowPath.duct.dPqP = 0.
+
+        # Nozzle Conditions
+        FlowPath.nozzle.Cfg = 1.0
+        FlowPath.nozzle.dPqP = 0.
+
+        # Shaft
+        FlowPath.shaft.Nmech = 10000.
 
 if __name__ == "__main__":
     prob = Problem()
