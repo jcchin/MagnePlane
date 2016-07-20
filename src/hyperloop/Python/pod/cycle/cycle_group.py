@@ -46,7 +46,7 @@ class Cycle(Group):
     comp.map.PRdes : float
         Pressure ratio of compressor (unitless)
     nozzle.Ps_exhaust : float
-        Exit pressure of nozzle (psi)
+        Exit pressure of nozzle (Pa)
     
     Returns
     -------
@@ -55,19 +55,19 @@ class Cycle(Group):
     comp_mass : float
         Mass of compressor (kg)
     comp.trq : float
-        Total torque required by motor (lb*ft)
+        Total torque required by motor (ft*lbf)
     comp.power : float
         Total power required by motor (hp)
     comp.Fl_O:stat:area : float
         Area of the duct (in**2)
     nozzle.Fg : float
-        Nozzle thrust (lbs)
+        Nozzle thrust (lbf)
     inlet.F_ram : float
-        Ram drag (lbs)
+        Ram drag (lbf)
     nozzle.Fl_O:tot:T : float
         Total temperature at nozzle exit (degR)
     nozzle.Fl_O:stat:W : float
-        Total mass flow rate at nozzle exit (kg/s)
+        Total mass flow rate at nozzle exit (lbm/s)
 	
     References
     ----------
@@ -77,26 +77,18 @@ class Cycle(Group):
 
     def __init__(self):
         super(Cycle, self).__init__()
-        
-        des_vars = (('pod_mach_number', .8, {'units': 'unitless'}),
-                    ('tube_pressure', 850., {'units': 'Pa'}),
-                    ('tube_temp', 320., {'units': 'K'}),
-                    ('comp_inlet_area', 2.3884, {'units': 'm**2'}))
-
-        self.add('input_vars',IndepVarComp(des_vars), promotes=['pod_mach_number', 'tube_pressure', 'tube_temp',
-                                                                'comp_inlet_area'])
 
         self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'comp_len'])
         self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
-        self.add('FlowPathInputs', FlowPathInputs())
+        self.add('FlowPathInputs', FlowPathInputs(), promotes=['pod_mach', 'tube_pressure', 'tube_temp', 'comp_inlet_area'])
         self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T',
                                                     'nozzle.Fl_O:stat:W', 'comp.Fl_O:stat:area'])
         
-        # Connects tube group level variables to downstream components
-        self.connect('pod_mach_number', ['CompressorLen.M_pod', 'FlowPathInputs.pod_mach', 'FlowPath.fl_start.MN_target'])
-        self.connect('tube_pressure', ['CompressorLen.p_tunnel', 'FlowPathInputs.tube_pressure'])
-        self.connect('tube_temp', ['CompressorLen.T_tunnel', 'FlowPathInputs.tube_temp'])
-        self.connect('comp_inlet_area', ['CompressorLen.comp_inletArea', 'CompressorMass.comp_inletArea', 'FlowPathInputs.comp_inlet_area'])
+        # Connects cycle group level variables to downstream components
+        self.connect('pod_mach', ['CompressorLen.M_pod', 'FlowPath.fl_start.MN_target'])
+        self.connect('tube_pressure', 'CompressorLen.p_tunnel')
+        self.connect('tube_temp', 'CompressorLen.T_tunnel')
+        self.connect('comp_inlet_area', ['CompressorLen.comp_inletArea', 'CompressorMass.comp_inletArea'])
 
         # Connects FlowPathInputs outputs to downstream components
         self.connect('FlowPathInputs.Pt', 'FlowPath.fl_start.P')
@@ -115,15 +107,23 @@ if __name__ == "__main__":
 
     root.add('Cycle', Cycle())
 
-    params = (('A_inlet_pod', 3.053648, {'units': 'm**2'}),
-              ('comp_PR', 6.0, {'units': 'unitless'}),
-              ('PsE', 0.59344451, {'units': 'psi'}))
+    params = (('A_inlet_pod', 2.0869, {'units': 'm**2'}),
+              ('comp_PR', 12.6, {'units': 'unitless'}),
+              ('PsE', 0.05588, {'units': 'psi'}),
+              ('pod_mach_number', .8, {'units': 'unitless'}),
+              ('tube_pressure', 850., {'units': 'Pa'}),
+              ('tube_temp', 320., {'units': 'K'}),
+              ('comp_inlet_area', 2.3884, {'units': 'm**2'}))
 
     prob.root.add('des_vars', IndepVarComp(params))
 
     prob.root.connect('des_vars.A_inlet_pod', 'Cycle.A_inlet')
     prob.root.connect('des_vars.comp_PR', 'Cycle.FlowPath.comp.map.PRdes')
     prob.root.connect('des_vars.PsE', 'Cycle.FlowPath.nozzle.Ps_exhaust')
+    prob.root.connect('des_vars.pod_mach_number', 'Cycle.pod_mach')
+    prob.root.connect('des_vars.tube_pressure', 'Cycle.tube_pressure')
+    prob.root.connect('des_vars.tube_temp', 'Cycle.tube_temp')
+    prob.root.connect('des_vars.comp_inlet_area', 'Cycle.comp_inlet_area')
 
     prob.setup()
     prob.root.list_connections()
