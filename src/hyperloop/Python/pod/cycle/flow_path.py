@@ -34,42 +34,39 @@ class FlowPath(Group):
     """
     Params
     ------
-    ram_recovery : float
-        Perfcentage of ram pressure recovered (1-ram_recovery) is lost
-    inlet_MN : float
-        Mach Number at the front face of the inlet
-    comp.PRdes : float
-        Pressure Ratio used to "design" and size the compressor
-    comp.effDes : float
-        Target Efficiency of the "design" compressor
-    comp.MN_target : float
-        Mach Number at the front face of the compressor
-    duct.dPqP : float
-        Pressure loss across a duct
-    duct.MN_target : float
-        Mach Number at the front face of the duct
-    nozzle.Cfg : float
-        Gross Thrust Performance Coefficient
-    nozzle.dPqP : float
-        Pressure loss in the nozzle
-    shaft.Nmech : float
-        Mechanical RPM of the shaft (connected to compressor and motor)
+    fl_start.P : float
+        Tube total pressure (psi)
+    fl_start.T : float
+        Tube total temperature (degR)
+    fl_start.W : float
+        Tube total mass flow (kg/s)
+    fl_start.MN_target : float
+        Vehicle mach number (unitless)
+    comp.map.PRdes : float
+        Pressure ratio of compressor (unitless)
+    nozzle.Ps_exhaust : float
+        Exit pressure of nozzle (psi)
 
     Returns
     -------
-    Freestream Conditions : float
-        Required as boundary conditions for CFD
-    Fan Face Conditions : float
-        Required as boundary conditions for CFD
-    Nozzle Plenum Conditions : float
-        Required as boundary conditions for CFD
-    Nozzle Exit Conditions : float
-        Required as boundary conditions for CFD.
-        Also includes Thrust, Inlet Ram Drag, and Pod Gross Thrust
-    comp pwr out : float
-        Power required by the compressor
-    comp trq out : float
-        Torque required by compressor motor
+    comp.torque : float
+        Total torque required by motor (lb*ft)
+    comp.power : float
+        Total power required by motor (hp)
+    comp.Fl_O:stat:area : float
+        Area of the duct (in**2)
+    nozzle.Fg : float
+        Nozzle thrust (lbs)
+    inlet.F_ram : float
+        Ram drag (lbs)
+    nozzle.Fl_O:tot:T : float
+        Total temperature at nozzle exit (degR)
+    nozzle.Fl_O:stat:W : float
+        Total mass flow rate at nozzle exit (kg/s)
+    FlowPath.inlet.Fl_O:tot:h : float
+        Inlet enthalpy of compressor (btu/lbm)
+    FlowPath.comp.Fl_O:tot:h : float
+        Exit enthalpy of compressor (btu/lbm)
 
     Notes
     -----

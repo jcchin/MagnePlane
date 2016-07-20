@@ -27,69 +27,87 @@ from openmdao.api import SqliteRecorder
 from hyperloop.Python.pod.cycle.flow_path import FlowPath
 from hyperloop.Python.pod.cycle.compressor_mass import CompressorMass
 from hyperloop.Python.pod.cycle.comp_len import CompressorLen
+from hyperloop.Python.pod.cycle.flow_path_inputs import FlowPathInputs
 
 class Cycle(Group):
     """
 	Params
     ------
-    ram_recovery : float
-        Perfcentage of ram pressure recovered (1-ram_recovery) is lost
-    inlet_MN : float
-        Mach Number at the front face of the inlet
-    comp.PRdes : float
-        Pressure Ratio used to "design" and size the compressor
-    comp.effDes : float
-        Target Efficiency of the "design" compressor
-    comp.MN_target : float
-        Mach Number at the front face of the compressor
-    duct.dPqP : float
-        Pressure loss across a duct
-    duct.MN_target : float
-        Mach Number at the front face of the duct
-    nozzle.Cfg : float
-        Gross Thrust Performance Coefficient
-    nozzle.dPqP : float
-        Pressure loss in the nozzle
-    shaft.Nmech : float
-        Mechanical RPM of the shaft (connected to compressor and motor)
+    pod_mach_number : float
+        Vehicle mach number (unitless)
+    tube_pressure : float
+        Tube total pressure (Pa)
+    tube_temp : float
+        Tube total temperature (K)
+    comp_inlet_area : float
+        Inlet area of compressor. (m**2)
+    A_inlet : float
+        Inlet area of pod. (m**2)
+    comp.map.PRdes : float
+        Pressure ratio of compressor (unitless)
+    nozzle.Ps_exhaust : float
+        Exit pressure of nozzle (psi)
     
     Returns
     -------
-    comp.trq : float
-        Torque required by compressor motor(lb*ft)
-	comp.power : float
-        Torque required by compressor motor(hp)
-    comp_mass : float
-        Torque required by compressor motor(kg)
     comp_len : float
-        Torque required by compressor motor(m)
-    comp.nozzle.Fg : float
-        Gross Thrust (lb)
-    comp.F_ram : float
-        Ram Drag (lb)
+        Length of Compressor (m)
+    comp_mass : float
+        Mass of compressor (kg)
+    comp.trq : float
+        Total torque required by motor (lb*ft)
+    comp.power : float
+        Total power required by motor (hp)
+    comp.Fl_O:stat:area : float
+        Area of the duct (in**2)
+    nozzle.Fg : float
+        Nozzle thrust (lbs)
+    inlet.F_ram : float
+        Ram drag (lbs)
     nozzle.Fl_O:tot:T : float
-        Nozzle Exit Tt (degR)
+        Total temperature at nozzle exit (degR)
     nozzle.Fl_O:stat:W : float
-        Nozzle Exit MFR (kg/s)
+        Total mass flow rate at nozzle exit (kg/s)
 	
     References
     ----------
     .. [1] Miceahal Tong Correlation used.
 	.. [2] NASA-Glenn NPSS compressor cycle model.
     """
+
     def __init__(self):
         super(Cycle, self).__init__()
-
-        self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T',
-                                                    'nozzle.Fl_O:stat:W', 'fl_start.MN_target'])
-        self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
-        self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'M_pod', 'T_tunnel', 'p_tunnel', 'comp_len'])
         
+        des_vars = (('pod_mach_number', .8, {'units': 'unitless'}),
+                    ('tube_pressure', 850., {'units': 'Pa'}),
+                    ('tube_temp', 320., {'units': 'K'}),
+                    ('comp_inlet_area', 2.3884, {'units': 'm**2'}))
+
+        self.add('input_vars',IndepVarComp(des_vars), promotes=['pod_mach_number', 'tube_pressure', 'tube_temp',
+                                                                'comp_inlet_area'])
+
+        self.add('CompressorLen', CompressorLen(), promotes=['A_inlet', 'comp_len'])
+        self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
+        self.add('FlowPathInputs', FlowPathInputs())
+        self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T',
+                                                    'nozzle.Fl_O:stat:W', 'comp.Fl_O:stat:area'])
+        
+        # Connects tube group level variables to downstream components
+        self.connect('pod_mach_number', ['CompressorLen.M_pod', 'FlowPathInputs.pod_mach', 'FlowPath.fl_start.MN_target'])
+        self.connect('tube_pressure', ['CompressorLen.p_tunnel', 'FlowPathInputs.tube_pressure'])
+        self.connect('tube_temp', ['CompressorLen.T_tunnel', 'FlowPathInputs.tube_temp'])
+        self.connect('comp_inlet_area', ['CompressorLen.comp_inletArea', 'CompressorMass.comp_inletArea', 'FlowPathInputs.comp_inlet_area'])
+
+        # Connects FlowPathInputs outputs to downstream components
+        self.connect('FlowPathInputs.Pt', 'FlowPath.fl_start.P')
+        self.connect('FlowPathInputs.Tt', 'FlowPath.fl_start.T')
+        self.connect('FlowPathInputs.m_dot', 'FlowPath.fl_start.W')
+
+        # Connects FlowPath outputs to downstream components
+        self.connect('nozzle.Fl_O:tot:T', 'CompressorLen.comp_inletTemp')
+        self.connect('nozzle.Fl_O:stat:W', 'CompressorMass.mass_flow')
         self.connect('FlowPath.inlet.Fl_O:tot:h', ['CompressorMass.h_in', 'CompressorLen.h_in'])
         self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])
-        self.connect('FlowPath.inlet.Fl_O:stat:area', ['CompressorMass.comp_inletArea', 'CompressorLen.comp_inletArea'])
-        self.connect('FlowPath.inlet.Fl_O:tot:T', 'CompressorLen.comp_inletTemp')
-        self.connect('FlowPath.inlet.Fl_O:stat:W', 'CompressorMass.mass_flow')
 
 if __name__ == "__main__":
     prob = Problem()
@@ -97,55 +115,30 @@ if __name__ == "__main__":
 
     root.add('Cycle', Cycle())
 
-    params = (('vehicleMach', 0.8),
-              ('inlet_MN', 0.65),
-              ('P', 0.1885057735, {'units': 'psi'}),
-              ('T', 591.0961831, {'units': 'degR'}),
-              ('W', 4.53592, {'units': 'kg/s'}),
-              ('PsE', 0.59344451, {'units': 'psi'}),
-              ('cmpMach', 0.65), )
+    params = (('A_inlet_pod', 3.053648, {'units': 'm**2'}),
+              ('comp_PR', 6.0, {'units': 'unitless'}),
+              ('PsE', 0.59344451, {'units': 'psi'}))
 
     prob.root.add('des_vars', IndepVarComp(params))
-    prob.root.connect('des_vars.PsE', 'Cycle.FlowPath.nozzle.Ps_exhaust')
-    prob.root.connect('des_vars.P', 'Cycle.FlowPath.fl_start.P')
-    prob.root.connect('des_vars.T', 'Cycle.FlowPath.fl_start.T')
-    prob.root.connect('des_vars.W', 'Cycle.FlowPath.fl_start.W')
 
-    prob.root.connect('des_vars.vehicleMach', 'Cycle.FlowPath.fl_start.MN_target')
-    prob.root.connect('des_vars.inlet_MN', 'Cycle.FlowPath.inlet.MN_target')
+    prob.root.connect('des_vars.A_inlet_pod', 'Cycle.A_inlet')
+    prob.root.connect('des_vars.comp_PR', 'Cycle.FlowPath.comp.map.PRdes')
+    prob.root.connect('des_vars.PsE', 'Cycle.FlowPath.nozzle.Ps_exhaust')
 
     prob.setup()
     prob.root.list_connections()
 
-    # Inlet Conditions
-
-    prob['Cycle.FlowPath.inlet.ram_recovery'] = 0.99
-    if prob['des_vars.inlet_MN'] > prob['des_vars.vehicleMach']:
-        prob['des_vars.inlet_MN'] = prob['des_vars.vehicleMach']
-
-    # Compressor Conditions
-    prob['Cycle.FlowPath.comp.map.PRdes'] = 6.0
-    prob['Cycle.FlowPath.comp.map.effDes'] = 0.9
-    prob['Cycle.FlowPath.comp.MN_target'] = 0.65
-
-    # Duct
-    prob['Cycle.FlowPath.duct.MN_target'] = 0.65
-    prob['Cycle.FlowPath.duct.dPqP'] = 0.
-
-    # Nozzle Conditions
-    prob['Cycle.FlowPath.nozzle.Cfg'] = 1.0
-    prob['Cycle.FlowPath.nozzle.dPqP'] = 0.
-
-    # Shaft
-    prob['Cycle.FlowPath.shaft.Nmech'] = 10000.
-
     prob.run()
 
-    print('Comp_Mass %f' % prob['Cycle.comp_mass'])
-    print('Comp_len %f' % prob['Cycle.comp_len'])
-    print('H_int %f' % prob['Cycle.FlowPath.inlet.Fl_O:tot:h'])
-    print('H_out %f' % prob['Cycle.FlowPath.comp.Fl_O:tot:h'])
-    print("Compressor Area:       %.6f m^2" %
-          (cu(prob['Cycle.FlowPath.inlet.Fl_O:stat:area'], 'inch**2', 'm**2')))
-    print("Compressor Tt:         %.6f Btu/lbm" %
-          (prob['Cycle.FlowPath.inlet.Fl_O:tot:T']))
+    print('Comp_len %f m' % prob['Cycle.comp_len'])
+    print('Comp_Mass %f kg' % prob['Cycle.comp_mass'])
+
+    print('Torque %f N*m' % (cu(prob['Cycle.comp.trq'], 'ft*lbf', 'N*m')))
+    print('Power %f W' % (cu(prob['Cycle.comp.power'], 'hp', 'W')))
+
+    print('A_duct %f m**2' % (cu(prob['Cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2')))
+    print('nozzle.Fg %f N' % (cu(prob['Cycle.nozzle.Fg'], 'lbf', 'N')))
+    print('inlet.F_ram %f N' % (cu(prob['Cycle.inlet.F_ram'], 'lbf', 'N')))
+
+    print('Nozzle exit temp %f K' % (cu(prob['Cycle.nozzle.Fl_O:tot:T'], 'degR', 'K')))
+    print('Nozzle exit MFR %f kg/s' % (cu(prob['Cycle.nozzle.Fl_O:stat:W'], 'lbm/s', 'kg/s')))

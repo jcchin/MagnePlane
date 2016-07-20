@@ -43,8 +43,6 @@ class TempBalance(Component):
         Average Temperature of the outside air (K)
     nozzle_air_W : float
         mass flow rate of the air exiting the pod nozzle (kg/s)
-    nozzle_air_Cp : float
-        specific heat of the air exiting the pod nozzle
     nozzle_air_T : float
         temp of the air exiting the pod nozzle (K)
     solar_insolation : float
@@ -187,7 +185,8 @@ class TubeWallTemp(Component):
                         #units = 'kg/s',
                         desc='mass flow rate of the air exiting the pod nozzle')
         self.add_param('nozzle_air_Cp',
-                        34.,
+                        1.009,
+                        units='kJ/kg/K',
                         desc='specific heat of air exiting the pod nozzle')
         self.add_param('nozzle_air_Tt',
                         34.,
@@ -407,7 +406,7 @@ class TubeTemp(Group):
 
         self.add('tm', TubeWallTemp(), promotes=[
             'length_tube','tube_area','tube_thickness','num_pods',
-            'nozzle_air_W','nozzle_air_Tt','nozzle_air_Cp'])
+            'nozzle_air_W','nozzle_air_Tt'])
 
         self.add('tmp_balance', TempBalance(), promotes=['temp_boundary'])
 

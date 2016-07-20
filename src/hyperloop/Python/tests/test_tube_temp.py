@@ -28,7 +28,7 @@ class TestTubeWall(object):
 
         prob['tt.nozzle_air_W'] = 1.08
         prob['tt.tube_thickness'] = .05 #, units = ''
-        prob['tt.nozzle_air_Cp'] = 0.28 #fudged to hit original calcs (no more bearings)
+        prob['tt.tm.nozzle_air_Cp'] = 0.28 #fudged to hit original calcs (no more bearings)
 
         prob[
             'tt.tube_area'] = 3.9057  #, units = 'm', iotype='in', desc='Tube out diameter') #7.3ft

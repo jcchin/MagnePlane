@@ -3,32 +3,35 @@ import numpy as np
 from openmdao.api import Component, Problem, Group
 
 class CompressorMass(Component):
-    """The CompressorMass class represents a compressor mass component
-        in an OpenMDAO model.
+    """
+    The CompressorMass class represents a compressor mass component
+    in an OpenMDAO model.
 
-        A `CompressorMass` models mass of a compressor that uses NPSS data
-        to obtain enthalpy data,and mass_flow for a particular pressure ratio.
-        It also uses a correlation derived by Miceal Tong at NASA Glenn Center
-        to obtain Compressor Mass.
+    A `CompressorMass` models mass of a compressor that uses NPSS data
+    to obtain enthalpy data,and mass_flow for a particular pressure ratio.
+    It also uses a correlation derived by Miceal Tong at NASA Glenn Center
+    to obtain Compressor Mass.
+    
     Params
-        ----
-        comp_eff : float
-            Compressor Efficiency. (unitless)
-        mass_flow : float
-            Mass Flow for Compressor. (kg/s)
-        h_in : float
-            Heat in. (kJ/kg)
-        h_out : float
-            Hea    self.t out. (kJ/kg)
-        comp_inletArea : float
-            Compressor Inlet Area. (m**2)
-    Outputs
+    ------
+    comp_eff : float
+        Compressor Efficiency. (unitless)
+    mass_flow : float
+        Mass Flow for Compressor. (kg/s)
+    h_in : float
+        Heat in. (kJ/kg)
+    h_out : float
+        Heat out. (kJ/kg)
+    comp_inletArea : float
+        Compressor Inlet Area. (m**2)
+
+    Returns
     -------
     comp_mass : float
         Compressor Mass (kg)
 
     References
-    -----
+    ----------
     .. [1] Michael Tong Correlation used.
 
     .. [2] NASA-Glenn NPSS compressor cycle model.

@@ -25,7 +25,6 @@ class TestTube(object):
         prob['comp.tube_thickness'] = .05
         prob['comp.nozzle_air_W'] = 1.08
         prob['comp.nozzle_air_Tt'] = 1710.0
-        prob['comp.nozzle_air_Cp'] = 0.24
         prob['comp.num_pods'] = 34
         prob['comp.tunnel_pressure'] = 850.0
         prob['comp.pod_mass'] = 3100.0
