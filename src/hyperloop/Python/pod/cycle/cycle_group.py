@@ -130,6 +130,9 @@ if __name__ == "__main__":
 
     prob.run()
 
+    print('H in %f' % prob['Cycle.FlowPath.inlet.Fl_O:tot:h'])
+    print('H out %f' % prob['Cycle.FlowPath.comp.Fl_O:tot:h'])
+
     print('Comp_len %f m' % prob['Cycle.comp_len'])
     print('Comp_Mass %f kg' % prob['Cycle.comp_mass'])
 
