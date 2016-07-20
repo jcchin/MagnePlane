@@ -131,7 +131,7 @@ class CompressorLen(Component):
         comp_inlet_flow_area = m_dot / ((air_den_comp)*(comp_mach)*np.sqrt(gam*9.81*R*comp_inletTemp))
         hub_tip_ratio = (np.sqrt(comp_r**2 - (comp_inlet_flow_area / 3.1416))) / comp_r
         no_stages = ((h_out - h_in)/ h_stage) + 1
-        print(no_stages)
+        #print(no_stages)
         unknowns['comp_len'] = 0.2 + (0.234 - 0.218*hub_tip_ratio)*(no_stages)*comp_r*2
 
 if __name__ == "__main__":
