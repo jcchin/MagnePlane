@@ -165,6 +165,7 @@ if __name__ == "__main__":
               ('pod_mass', 3100., {'units': 'kg'}))
 
     top.root.add('des_vars',IndepVarComp(des_vars))
+    top.root.connect('des_vars.pressure_initial', 'TubeGroup.pressure_initial')
     top.root.connect('des_vars.nozzle_air_W', 'TubeGroup.nozzle_air_W')
     top.root.connect('des_vars.nozzle_air_Tt', 'TubeGroup.nozzle_air_Tt')
     top.root.connect('des_vars.num_pods', 'TubeGroup.num_pods')
