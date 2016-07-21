@@ -90,18 +90,11 @@ class TubeGroup(Group):
     def __init__(self):
         super(TubeGroup, self).__init__()
 
-        des_vars = (('tube_area', 41., {'units': 'm**2'}),
-                    ('tube_length', 480000., {'units': 'm'}),
-                    ('tunnel_pressure', 850., {'units': 'Pa'}),
-                    ('electricity_price', .13, {'units': 'USD/kW/h'}),
-                    ('tube_thickness', .05, {'units': 'm'}),
-                    ('pod_mass', 3100., {'units': 'kg'}))
-
-        self.add('input_vars',IndepVarComp(des_vars), promotes=['tube_area', 'tube_length', 'tunnel_pressure',
-                                                           'electricity_price', 'tube_thickness', 'pod_mass'])
-
         # Adding in components to Tube Group
-        self.add('Vacuum', Vacuum(), promotes=['pressure_initial',
+        self.add('Vacuum', Vacuum(), promotes=['tube_area',
+        									   'tube_length',
+        									   'electricity_price',
+        									   'pressure_initial',
                                                'pressure_final',
                                                'pwr',
                                                'speed',
@@ -112,9 +105,10 @@ class TubeGroup(Group):
         self.add('Temp',TubeTemp(), promotes=['nozzle_air_W',
                                               'nozzle_air_Tt',
                                               'num_pods',
-                                              'temp_boundary'])
+                                              'temp_boundary',
+                                              'tube_thickness'])
 
-        self.add('Struct', TubeAndPylon(), promotes=['h'])
+        self.add('Struct', TubeAndPylon(), promotes=['h', 'p_tunnel', 'm_pod'])
         
         self.add('PropMech', PropulsionMechanics(), promotes=['vf',
                                                               'v0',
@@ -128,12 +122,12 @@ class TubeGroup(Group):
                                                      'time_thrust'])
 
         # Connects tube group level variables to downstream components
-        self.connect('tube_area', ['Vacuum.tube_area', 'Temp.tube_area', 'Struct.tube_area'])
-        self.connect('tube_length', ['Vacuum.tube_length', 'Temp.length_tube'])
-        self.connect('tunnel_pressure', ['Struct.p_tunnel', 'PropMech.p_tube'])
-        self.connect('electricity_price', ['Vacuum.electricity_price', 'TubePower.elec_price'])
-        self.connect('tube_thickness', ['Temp.tube_thickness', 'Struct.t'])
-        self.connect('pod_mass', ['Struct.m_pod', 'PropMech.m_pod'])
+        self.connect('tube_area', ['Temp.tube_area', 'Struct.tube_area'])
+        self.connect('tube_length', 'Temp.length_tube')
+        self.connect('p_tunnel', 'PropMech.p_tube')
+        self.connect('electricity_price', 'TubePower.elec_price')
+        self.connect('tube_thickness', 'Struct.t')
+        self.connect('m_pod', 'PropMech.m_pod')
 
         # Connects vacuum outputs to downstream components
         self.connect('Vacuum.weight_tot', 'Struct.vac_weight')
@@ -157,7 +151,6 @@ if __name__ == "__main__":
 
     des_vars = (('nozzle_air_W',1.08, {'units': 'kg/s'}),
               ('nozzle_air_Tt',1710.0, {'units': 'K'}),
-              ('nozzle_air_Cp',0.24, {'units': 'kJ/kg/degK'}),
               ('num_pods',34, {'units': 'unitless'}),
               ('h', 10.0, {'units': 'm'}),
               ('vf',335.0, {'units': 'm/s'}),
@@ -168,12 +161,17 @@ if __name__ == "__main__":
               ('nozzle_thrust', 3500.0, {'units': 'N'}),
               ('ram_drag',7237.6, {'units': 'N'}),
               ('num_thrust',5.0, {'units': 'unitless'}),
-              ('time_thrust',1.5, {'units': 's'}))
+              ('time_thrust',1.5, {'units': 's'}),
+              ('tube_area', 41., {'units': 'm**2'}),
+              ('tube_length', 480000., {'units': 'm'}),
+              ('tunnel_pressure', 850., {'units': 'Pa'}),
+              ('electricity_price', .13, {'units': 'USD/kW/h'}),
+              ('tube_thickness', .05, {'units': 'm'}),
+              ('pod_mass', 3100., {'units': 'kg'}))
 
     top.root.add('des_vars',IndepVarComp(des_vars))
     top.root.connect('des_vars.nozzle_air_W', 'TubeGroup.nozzle_air_W')
     top.root.connect('des_vars.nozzle_air_Tt', 'TubeGroup.nozzle_air_Tt')
-    top.root.connect('des_vars.nozzle_air_Cp', 'TubeGroup.nozzle_air_Cp')
     top.root.connect('des_vars.num_pods', 'TubeGroup.num_pods')
     top.root.connect('des_vars.h','TubeGroup.h')
     top.root.connect('des_vars.vf', 'TubeGroup.vf')
@@ -185,6 +183,12 @@ if __name__ == "__main__":
     top.root.connect('des_vars.ram_drag','TubeGroup.ram_drag')
     top.root.connect('des_vars.num_thrust', 'TubeGroup.num_thrust')
     top.root.connect('des_vars.time_thrust', 'TubeGroup.time_thrust')
+    top.root.connect('des_vars.tube_area', 'TubeGroup.tube_area')
+    top.root.connect('des_vars.tube_length', 'TubeGroup.tube_length')
+    top.root.connect('des_vars.tunnel_pressure', 'TubeGroup.p_tunnel')
+    top.root.connect('des_vars.electricity_price', 'TubeGroup.electricity_price')
+    top.root.connect('des_vars.tube_thickness', 'TubeGroup.tube_thickness')
+    top.root.connect('des_vars.pod_mass', 'TubeGroup.m_pod')
 
     # from openmdao.api import view_tree
     # view_tree(top)
