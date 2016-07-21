@@ -38,9 +38,9 @@ class TubeGroup(Group):
         mass flow rate of the air exiting the pod nozzle (kg/s)
     nozzle_air_T : float
         temp of the air exiting the pod nozzle (K)
-    tunnel_pressure : float
+    p_tunnel : float
         Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
-    pod_mass : float
+    m_pod : float
         Total weight of pod from pod_mass (kg)
     h : float
         Height of each pylon. Default value is 10 m.
@@ -153,7 +153,7 @@ if __name__ == "__main__":
               ('Cd', 0.2, {'units': 'm'}),
               ('S', 1.4, {'units': 'm**2'}),
               ('D_mag', 150.0, {'units': 'N'}),
-              ('nozzle_thrust', 3500.0, {'units': 'N'}),
+              ('nozzle_thrust', 21473.92, {'units': 'N'}),
               ('ram_drag',7237.6, {'units': 'N'}),
               ('num_thrust',5.0, {'units': 'unitless'}),
               ('time_thrust',1.5, {'units': 's'}),

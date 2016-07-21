@@ -84,7 +84,7 @@ class TubeAndPod(Group):
         """
         super(TubeAndPod, self).__init__()
 
-        self.add('tube', TubeAndPod(), promotes=['p_tunnel', 'pressure_initial', 'pressure_final', 'pwr',
+        self.add('tube', TubeGroup(), promotes=['p_tunnel', 'pressure_initial', 'pressure_final', 'pwr',
                                               'speed', 'time_down', 'gamma', 'pump_weight',
                                               'electricity_price', 'tube_area', 'tube_thickness',
                                               'tube_length', 'vf', 'vo', 'num_thrust', 'time_thrust',])
