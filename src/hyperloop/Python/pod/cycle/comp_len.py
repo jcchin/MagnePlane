@@ -51,7 +51,7 @@ class CompressorLen(Component):
     """
     def __init__(self):
         super(CompressorLen, self).__init__()
-        self.add_param('t_temp',
+        self.add_param('T_tunnel',
                        val=293.,
                        desc='Total Temperature',
                        units='K')
@@ -95,7 +95,7 @@ class CompressorLen(Component):
         self.add_param('h_stage',
                        val=58.2,
                        desc='enthalpy added per stage',
-                       units='kg/m**3')
+                       units='kJ/kg/K')
         self.add_output('comp_len',
                     val=1.0,
                     desc='Length of Compressor',
@@ -103,7 +103,7 @@ class CompressorLen(Component):
 
     def solve_nonlinear(self, params, unknowns, resids):
         p_tunnel = params['p_tunnel']
-        t_temp = params['t_temp']
+        T_tunnel = params['T_tunnel']
         R = params['R']
         A_inlet = params['A_inlet']
         M_pod = params['A_inlet']
@@ -115,15 +115,14 @@ class CompressorLen(Component):
         h_stage = params['h_stage']
 
         #Calculating Length of Compressor.
-        rho_tunnel = p_tunnel/(R*t_temp)
+        rho_tunnel = p_tunnel/(R*T_tunnel)
         air_den = ((rho_tunnel)*(M_pod)*(A_inlet))/ (comp_mach*comp_inletArea)
         comp_r = np.sqrt(comp_inletArea / np.pi)
-        m_dot = rho_tunnel*A_inlet*M_pod*np.sqrt(gam*R*t_temp)
-        comp_inlet_flow_area = m_dot / ((air_den)*(comp_mach)*np.sqrt(gam*R*t_temp))
+        m_dot = rho_tunnel*A_inlet*M_pod*np.sqrt(gam*R*T_tunnel)
+        comp_inlet_flow_area = m_dot / ((air_den)*(comp_mach)*np.sqrt(gam*R*T_tunnel))
         hub_tip_ratio = (np.sqrt(comp_r**2 - (comp_inlet_flow_area / 3.1416))) / comp_r
         no_stages = ((h_out - h_in)/ h_stage) + 1
        
-	   
         unknowns['comp_len'] = 0.2 + (0.234 - 0.218*hub_tip_ratio)*(no_stages)*comp_r*2
 
 if __name__ == "__main__":
