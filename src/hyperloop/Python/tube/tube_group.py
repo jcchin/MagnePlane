@@ -18,8 +18,6 @@ class TubeGroup(Group):
         Cross sectional inner area of tube from Pod Mach. Default is 41. m**2
     pressure_initial : float
         initial Pressure before the pump down . Default value is 760.2.
-    pressure_final : float
-        Desired pressure within tube. Default value is 7.0.
     speed : float
         Pumping speed. Default value is 163333.3.
     pwr : float
@@ -84,10 +82,9 @@ class TubeGroup(Group):
 
         # Adding in components to Tube Group
         self.add('Vacuum', Vacuum(), promotes=['tube_area',
-        									   'tube_length',
-        									   'electricity_price',
-        									   'pressure_initial',
-                                               'pressure_final',
+        									                     'tube_length',
+                          									   'electricity_price',
+                          									   'pressure_initial',
                                                'pwr',
                                                'speed',
                                                'time_down',
@@ -116,7 +113,7 @@ class TubeGroup(Group):
         # Connects tube group level variables to downstream components
         self.connect('tube_area', ['Temp.tube_area', 'Struct.tube_area'])
         self.connect('tube_length', 'Temp.length_tube')
-        self.connect('p_tunnel', 'PropMech.p_tube')
+        self.connect('p_tunnel', ['PropMech.p_tube', 'Vacuum.pressure_final'])
         self.connect('electricity_price', 'TubePower.elec_price')
         self.connect('tube_thickness', 'Struct.t')
         self.connect('m_pod', 'PropMech.m_pod')
@@ -142,7 +139,6 @@ if __name__ == "__main__":
     top.root.add('TubeGroup', TubeGroup())
 
     des_vars = (('pressure_initial', 760.2, {'units' : 'torr'}),
-              ('pressure_final', 7.0, {'units' : 'torr'}),
               ('pwr', 18.5, {'units' : 'kW'}),
               ('speed', 163333.3, {'units' : 'L/min'}),
               ('time_down', 300.0, {'units' : 'min'}),
