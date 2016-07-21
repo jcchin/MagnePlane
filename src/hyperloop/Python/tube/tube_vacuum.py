@@ -17,7 +17,7 @@ class Vacuum(Component):
         Desired pressure within tube. Default value is 7.0.
     speed : float
         Pumping speed. Default value is 163333.3.
-    tube_Area : float
+    tube_area : float
         Area of the tube. Default value is 5.0.
     tube_length : float
         Length of the tube. Default value is 5000.0.
