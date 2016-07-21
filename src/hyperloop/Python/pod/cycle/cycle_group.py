@@ -82,7 +82,8 @@ class Cycle(Group):
         self.add('CompressorMass', CompressorMass(), promotes=['comp_mass'])
         self.add('FlowPathInputs', FlowPathInputs(), promotes=['pod_mach', 'tube_pressure', 'tube_temp', 'comp_inlet_area'])
         self.add('FlowPath', FlowPath(), promotes=['comp.trq', 'comp.power', 'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T',
-                                                    'nozzle.Fl_O:stat:W', 'comp.Fl_O:stat:area'])
+                                                    'nozzle.Fl_O:stat:W', 'comp.Fl_O:stat:area', 'comp.map.PRdes', 
+                                                    'nozzle.Ps_exhaust'])
         
         # Connects cycle group level variables to downstream components
         self.connect('pod_mach', ['CompressorLen.M_pod', 'FlowPath.fl_start.MN_target'])

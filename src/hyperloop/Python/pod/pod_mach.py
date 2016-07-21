@@ -30,7 +30,7 @@ class PodMach(Component):
         Pod length. Default value is 22 m. Value will be taken from pod geometry module
     prc : float
         Pressure ratio across compressor inlet and outlet.  Default value is 12.5.  Value will be taken from NPSS
-    p_tunnel : float
+    p_tube : float
         Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
     T_ambient : float
         Tunnel ambient temperature. Default value is 298 K.
