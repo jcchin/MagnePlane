@@ -97,7 +97,7 @@ class TubeGroup(Group):
                                               'temp_boundary',
                                               'tube_thickness'])
 
-        self.add('Struct', TubeAndPylon(), promotes=['h', 'p_tunnel', 'm_pod'])
+        self.add('Struct', TubeAndPylon(), promotes=['h', 'p_tunnel', 'm_pod', 'r_pylon'])
         
         self.add('PropMech', PropulsionMechanics(), promotes=['vf',
                                                               'v0',
@@ -162,7 +162,8 @@ if __name__ == "__main__":
               ('tunnel_pressure', 850., {'units': 'Pa'}),
               ('electricity_price', .13, {'units': 'USD/kW/h'}),
               ('tube_thickness', .05, {'units': 'm'}),
-              ('pod_mass', 3100., {'units': 'kg'}))
+              ('pod_mass', 3100., {'units': 'kg'}),
+              ('r_pylon', .1, {'units' : 'm'}))
 
     top.root.add('des_vars',IndepVarComp(des_vars))
     top.root.connect('des_vars.pressure_initial', 'TubeGroup.pressure_initial')
@@ -190,6 +191,7 @@ if __name__ == "__main__":
     top.root.connect('des_vars.pwr', 'TubeGroup.pwr')
     top.root.connect('des_vars.speed', 'TubeGroup.speed')
     top.root.connect('des_vars.time_down', 'TubeGroup.time_down')
+    top.root.connect('des_vars.r_pylon', 'TubeGroup.r_pylon')
 
     # from openmdao.api import view_tree
     # view_tree(top)
