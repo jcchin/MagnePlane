@@ -8,15 +8,7 @@ from hyperloop.Python.tube.tube_power import TubePower
 
 class TubeGroup(Group):
     """
-    Group containing tube components
-
-    Components
-    ----------
-    Vacuum : Vacuum
-    Tube Temperature/Thermal Conditions : TempBalance, TubeWallTemp
-    Structural : TubeAndPylon
-    Propulsion Mechanics : PropulsionMechanics
-    Tube Power Requirements : TubePower
+    Group containing tube and pod groups
 
     Params
     ------
@@ -149,7 +141,14 @@ if __name__ == "__main__":
     top.root = Group()
     top.root.add('TubeGroup', TubeGroup())
 
-    des_vars = (('nozzle_air_W',1.08, {'units': 'kg/s'}),
+    des_vars = (('pressure_initial', 760.2, {'units' : 'torr'}),
+              ('pressure_final', 7.0, {'units' : 'torr'}),
+              ('pwr', 18.5, {'units' : 'kW'}),
+              ('speed', 163333.3, {'units' : 'L/min'}),
+              ('time_down', 300.0, {'units' : 'min'}),
+              ('gamma', .8, {'units' : 'unitless'}),
+              ('pump_weight', 715.0, {'units' : 'kg'}),
+              ('nozzle_air_W',1.08, {'units': 'kg/s'}),
               ('nozzle_air_Tt',1710.0, {'units': 'K'}),
               ('num_pods',34, {'units': 'unitless'}),
               ('h', 10.0, {'units': 'm'}),

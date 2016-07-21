@@ -137,10 +137,10 @@ class MotorGroup(Group):
         self.connect('idp2.pole_pairs',
                      ['motor_size.pole_pairs', 'motor.pole_pairs'])
 
-        self.add('idp3',
-                 IndepVarComp('motor_max_current', 42.0,
-                              units='A'),
-                 promotes=['motor_max_current'])
+        #self.add('idp3',
+        #         IndepVarComp('motor_max_current', 42.0,
+        #                      units='A'),
+        #         promotes=['motor_max_current'])
 
         # self.add('idp4',
         #          IndepVarComp('design_torque', 1.0,

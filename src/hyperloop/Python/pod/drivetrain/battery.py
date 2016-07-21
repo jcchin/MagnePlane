@@ -140,7 +140,7 @@ class Battery(Component):
         self.add_param('battery_cross_section_area',
                        1.0,
                        desc='cross_sectional area of battery used to compute length',
-                       units='cm^2')
+                       units='cm**2')
         self.add_param('cell_mass',
                        val=170.0,
                        desc='mass of a single cell',
