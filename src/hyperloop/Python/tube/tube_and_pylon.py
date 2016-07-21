@@ -341,5 +341,3 @@ if __name__ == '__main__':
         print('con2 not satisfied')
     else:
         print('Yield constraints are satisfied')
-
-

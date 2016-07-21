@@ -165,6 +165,7 @@ if __name__ == "__main__":
               ('pod_mass', 3100., {'units': 'kg'}))
 
     top.root.add('des_vars',IndepVarComp(des_vars))
+    top.root.connect('des_vars.pressure_initial', 'TubeGroup.pressure_initial')
     top.root.connect('des_vars.nozzle_air_W', 'TubeGroup.nozzle_air_W')
     top.root.connect('des_vars.nozzle_air_Tt', 'TubeGroup.nozzle_air_Tt')
     top.root.connect('des_vars.num_pods', 'TubeGroup.num_pods')
@@ -184,6 +185,11 @@ if __name__ == "__main__":
     top.root.connect('des_vars.electricity_price', 'TubeGroup.electricity_price')
     top.root.connect('des_vars.tube_thickness', 'TubeGroup.tube_thickness')
     top.root.connect('des_vars.pod_mass', 'TubeGroup.m_pod')
+    top.root.connect('des_vars.gamma', 'TubeGroup.gamma')
+    top.root.connect('des_vars.pump_weight', 'TubeGroup.pump_weight')
+    top.root.connect('des_vars.pwr', 'TubeGroup.pwr')
+    top.root.connect('des_vars.speed', 'TubeGroup.speed')
+    top.root.connect('des_vars.time_down', 'TubeGroup.time_down')
 
     # from openmdao.api import view_tree
     # view_tree(top)

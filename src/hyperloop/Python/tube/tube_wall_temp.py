@@ -460,18 +460,14 @@ if __name__ == "__main__":
     #tube inputs
     prob.root.add('vars', IndepVarComp(dvars))
 
-    #prob.root.connect('des_vars.P', 'tt.nozzle_air_P')
     prob.root.connect('des_vars.T', 'tt.nozzle_air_Tt')
     prob.root.connect('des_vars.W', 'tt.nozzle_air_W')
-    prob.root.connect('des_vars.Cp', 'tt.nozzle_air_Cp')
 
     prob.root.connect('vars.tube_area', 'tt.tube_area')
     prob.root.connect('vars.tube_thickness', 'tt.tube_thickness')
     prob.root.connect('vars.length_tube', 'tt.length_tube')
     prob.root.connect('vars.num_pods', 'tt.num_pods')
-    #prob.root.connect('vars.temp_boundary','tmp_balance.temp_boundary')
-    prob.root.connect('vars.temp_outside_ambient',
-                      'tt.tm.temp_outside_ambient')
+    prob.root.connect('vars.temp_outside_ambient','tt.tm.temp_outside_ambient')
 
     prob.setup()
     prob.root.list_connections()
