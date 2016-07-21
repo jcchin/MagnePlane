@@ -62,12 +62,12 @@ class Vacuum(Component):
                        desc='initial Pressure before the pump down',
                        units='torr')
         self.add_param('pressure_final',
-                       7.0,
+                       6.37552,
                        desc='desired pressure within the tube',
                        units='torr')
         self.add_param('speed', 163333.3, desc='Pumping speed', units='L/min')
-        self.add_param('tube_area', 78.5, desc='Area of the tube', units='ft**2')
-        self.add_param('tube_length', 5000.0, desc='Length of the tube', units='ft')
+        self.add_param('tube_area', 441.32, desc='Area of the tube', units='ft**2')
+        self.add_param('tube_length', 1574803.15, desc='Length of the tube', units='ft')
         self.add_param('pwr', 18.5, desc='motor rating', units='kW')
         self.add_param('electricity_price',
                        0.13,
