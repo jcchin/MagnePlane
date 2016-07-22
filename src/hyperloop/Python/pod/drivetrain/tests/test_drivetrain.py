@@ -20,8 +20,8 @@ class TestDrivetrain(object):
         # setup ElectricMotor
         prob['motor_max_current'] = 42.0
         prob['motor_LD_ratio'] = 0.83
-        prob['design_torque'] = 0.801933
-        prob['design_power'] = 0.394 * 746 / 1.844
+        prob['design_torque'] = -0.801933
+        prob['design_power'] = -0.394 * 746 / 1.844
         prob['motor.idp1.n_phases'] = 3.0
         prob['motor.motor_size.kappa'] = 1 / 1.75
         prob['motor.idp2.pole_pairs'] = 6.0

@@ -116,7 +116,7 @@ class TestMagneplanBrachistochrone(unittest.TestCase):
 
         self.prob = prob
 
-    @unittest.skipIf(True,'Test skipped with SLSQP until performance improves')
+    # @unittest.skipIf(True,'Test skipped with SLSQP until performance improves')
     def test_brachistochrone_solution(self):
         self.prob.setup()
         self.prob.run()
