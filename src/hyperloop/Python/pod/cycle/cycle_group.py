@@ -98,6 +98,7 @@ class Cycle(Group):
         self.connect('FlowPath.comp.Fl_O:tot:h', ['CompressorMass.h_out', 'CompressorLen.h_out'])
 
 if __name__ == "__main__":
+    
     prob = Problem()
     root = prob.root = Group()
 

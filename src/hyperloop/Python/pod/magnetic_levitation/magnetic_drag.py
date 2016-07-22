@@ -4,14 +4,14 @@ Default track and magnet parameters taken from breakpointlev.py.
 Calculates Magnetic Drag at set velocity desired with given parameters.
 """
 from math import pi
-from openmdao.api import Group, Component, Problem
+from openmdao.api import Group, Component, Problem, IndepVarComp
 
 class MagDrag(Component):
     """
     Params
     ------
     vel : float
-        Desired velocity of the pod. Default value is 335.
+        Desired velocity of the pod. Default value is 350.
     track_res : float
         Resistance of the track. Default value is 3.14e-4.
     track_ind : float
@@ -94,10 +94,23 @@ if __name__ == "__main__":
 
     root.add('p', MagDrag())
 
+    params = (('track_res', 0.004817), ('track_ind', 0.000004285714286),
+              ('lam', 0.600000), ('pod_weight', 29430.0),
+              ('vel', 350.))
+
+    root.add('input_vars', IndepVarComp(params))
+
+    root.connect('input_vars.track_res', 'p.track_res')
+    root.connect('input_vars.track_ind', 'p.track_ind')
+    root.connect('input_vars.lam', 'p.lam')
+    root.connect('input_vars.pod_weight', 'p.pod_weight')
+    root.connect('input_vars.vel', 'p.vel')
+
     top.setup()
+    top.root.list_connections()
     top.run()
 
     print('Magnetic Drag from Levitation is %2.2fN' % top['p.mag_drag_lev'])
     print('Magnetic Drag from Propulsion is %2.2fN' % top['p.mag_drag_prop'])
     # print('\n')
-    print('Total Magnetic Drag is %2.2fN' % top['p.mag_drag'])
+    print('Total Magnetic Drag is %f N' % top['p.mag_drag'])
