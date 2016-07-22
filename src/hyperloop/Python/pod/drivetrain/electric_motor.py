@@ -320,16 +320,19 @@ class MotorSize(Component):
             `VecWrapper` containing residuals
 
         """
-        design_power = params['design_power'] * params['motor_oversize_factor']
+        # following sign convention for pycycle
+        design_torque = -params['design_torque']
+        design_power = -params['design_power'] * params['motor_oversize_factor']
+
         # calc max torque, rotational velocity, power
         # w_max = params['max_rpm'] * 2.0 * np.pi / 60.0  # rad/sec
-        unknowns['w_operating'] = design_power / params['design_torque'] # operating at maximum speed
+        unknowns['w_operating'] = design_power / design_torque # operating at maximum speed
         unknowns['w_base'] = params['kappa'] * unknowns['w_operating']
         unknowns['max_torque'] = design_power / unknowns['w_base']
         # unknowns['torque'] = design_power / w_max
 
         # unknowns['w_operating'] = params['speed'] * 2 * np.pi / 60.0
-        unknowns['power_mech'] = unknowns['w_operating'] * params['design_torque']
+        unknowns['power_mech'] = unknowns['w_operating'] * design_torque
 
         # calc size
         # print('max_torque %f' % unknowns['max_torque'])
@@ -598,6 +601,9 @@ class Motor(Component):
                         units='W')
 
     def solve_nonlinear(self, params, unknowns, resids):
+        # following sign convention for pycycle
+        design_torque = -1 * params['design_torque']
+
         # voltage constant
         k_v = (params['motor_max_current'] - params['I0']
                ) / params['max_torque'] * 30.0 / np.pi
@@ -605,14 +611,14 @@ class Motor(Component):
         k_t = 30.0 / np.pi * 1.0 / k_v
 
         # Calculating phase current, phase voltage, frequency, and phase
-        unknowns['current'] = params['I0'] + params['design_torque'] / k_t
+        unknowns['current'] = params['I0'] + design_torque / k_t
         power_copper_loss = np.power(unknowns['current'],
                                      2.0) * params['winding_resistance']
         unknowns['motor_power_input'] = params['power_mech'] + params[
             'power_windage_loss'] + params[
                 'power_iron_loss'] + power_copper_loss
 
-        unknowns['current'] = params['I0'] + params['design_torque'] / k_t
+        unknowns['current'] = params['I0'] + design_torque / k_t
         unknowns['phase_current'] = unknowns['current'] / params['n_phases']
 
         unknowns['voltage'] = unknowns['current'] * params[
