@@ -74,7 +74,7 @@ class TubeAndPod(Group):
         -------
         S : float
             Platform area of the pod
-        pod_mass : float
+        total_pod_mass : float
             Pod Mass (kg)
 
         References
@@ -84,15 +84,18 @@ class TubeAndPod(Group):
         """
         super(TubeAndPod, self).__init__()
 
-        self.add('tube', TubeGroup(), promotes=['p_tunnel', 'pressure_initial', 'pressure_final', 'pwr',
+        self.add('tube', TubeGroup(), promotes=['p_tunnel', 'pressure_initial', 'pwr',
                                               'speed', 'time_down', 'gamma', 'pump_weight',
                                               'electricity_price', 'tube_area', 'tube_thickness',
-                                              'tube_length', 'vf', 'vo', 'num_thrust', 'time_thrust',])
+                                              'tube_length', 'vf', 'v0', 'num_thrust', 'time_thrust',])
         self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
                                               'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
                                               'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                               'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
-                                              'n_passengers', 'A_payload', 'S', 'pod_mass'])
+                                              'n_passengers', 'A_payload', 'S', 'total_pod_mass'])
+
+        # Connects promoted group level params
+        self.connect('tube_pressure', 'tube.p_tunnel')
 
         # Connects tube group outputs to pod
         self.connect('tube.temp_boundary', 'pod.tube_temp')
@@ -105,7 +108,7 @@ class TubeAndPod(Group):
         self.connect('pod.A_tube', 'tube.tube_area')
         self.connect('pod.S', 'tube.S')
         self.connect('pod.mag_drag', 'tube.D_mag')
-        self.connect('pod.pod_mass', 'tube.pod_mass')
+        self.connect('pod.total_pod_mass', 'tube.pod_mass')
 
 if __name__ == '__main__':
 
@@ -144,36 +147,34 @@ if __name__ == '__main__':
               ('A_payload', 2.72))
 
     prob.root.add('des_vars', IndepVarComp(params))
-    prob.root.add('des_vars.tube_pressure', 'TubeAndPod.p_tunnel')
-    prob.root.add('des_vars.pressure_initial', 'TubeAndPod.pressure_initial')
-    prob.root.add('des_vars.pressure_final', 'TubeAndPod.pressure_final')
-    prob.root.add('des_vars.pwr','TubeAndPod.pwr')
-    prob.root.add('des_vars.speed', 'TubeAndPod.speed')
-    prob.root.add('des_vars.time_down', 'TubeAndPod.time_down')
-    prob.root.add('des_vars.gamma','TubeAndPod.gamma')
-    prob.root.add('des_vars.pump_weight','TubeAndPod.pump_weight')
-    prob.root.add('des_vars.electricity_price','TubeAndPod.electricity_price')
-    prob.root.add('des_vars.tube_area','TubeAndPod.tube_area')
-    prob.root.add('des_vars.tube_thickness', 'TubeAndPod.tube_thickness')
-    prob.root.add('des_vars.tube_length', 'TubeAndPod.tube_length')
-    prob.root.add('des_vars.vf', 'TubeAndPod.vf')
-    prob.root.add('des_vars.vo', 'TubeAndPod.vo')
-    prob.root.add('des_vars.num_thrust', 'TubeAndPod.num_thrust')
-    prob.root.add('des_vars.time_thrust', 'TubeAndPod.time_thrust')
-    prob.root.add('des_vars.pod_mach', 'TubeAndPod.pod_mach')
-    prob.root.add('des_vars.pod_mach', 'TubeAndPod.pod_mach')
-    prob.root.add('des_vars.comp_inlet_area', 'TubeAndPod.comp_inlet_area')
-    prob.root.add('des_vars.comp_PR', 'TubeAndPod.comp.map.PRdes')
-    prob.root.add('des_vars.PsE', 'TubeAndPod.nozzle.Ps_exhaust')
-    prob.root.add('des_vars.des_time', 'TubeAndPod.des_time')
-    prob.root.add('des_vars.time_of_flight', 'TubeAndPod.time_of_flight')
-    prob.root.add('des_vars.motor_max_current', 'TubeAndPod.motor_max_current')
-    prob.root.add('des_vars.motor_LD_ratio', 'TubeAndPod.motor_LD_ratio')
-    prob.root.add('des_vars.motor_oversize_factor', 'TubeAndPod.motor_oversize_factor')
-    prob.root.add('des_vars.inverter_efficiency', 'TubeAndPod.inverter_efficiency')
-    prob.root.add('des_vars.battery_cross_section_area', 'TubeAndPod.battery_cross_section_area')
-    prob.root.add('des_vars.n_passengers', 'TubeAndPod.n_passengers')
-    prob.root.add('des_vars.A_payload', 'TubeAndPod.A_payload')
+    prob.root.connect('des_vars.tube_pressure', 'TubeAndPod.tube_pressure')
+    prob.root.connect('des_vars.pressure_initial', 'TubeAndPod.pressure_initial')
+    prob.root.connect('des_vars.pwr','TubeAndPod.pwr')
+    prob.root.connect('des_vars.speed', 'TubeAndPod.speed')
+    prob.root.connect('des_vars.time_down', 'TubeAndPod.time_down')
+    prob.root.connect('des_vars.gamma','TubeAndPod.gamma')
+    prob.root.connect('des_vars.pump_weight','TubeAndPod.pump_weight')
+    prob.root.connect('des_vars.electricity_price','TubeAndPod.electricity_price')
+    prob.root.connect('des_vars.tube_area','TubeAndPod.tube_area')
+    prob.root.connect('des_vars.tube_thickness', 'TubeAndPod.tube_thickness')
+    prob.root.connect('des_vars.tube_length', 'TubeAndPod.tube_length')
+    prob.root.connect('des_vars.vf', 'TubeAndPod.vf')
+    prob.root.connect('des_vars.vo', 'TubeAndPod.vo')
+    prob.root.connect('des_vars.num_thrust', 'TubeAndPod.num_thrust')
+    prob.root.connect('des_vars.time_thrust', 'TubeAndPod.time_thrust')
+    prob.root.connect('des_vars.pod_mach', 'TubeAndPod.pod_mach')
+    prob.root.connect('des_vars.comp_inlet_area', 'TubeAndPod.comp_inlet_area')
+    prob.root.connect('des_vars.comp_PR', 'TubeAndPod.comp.map.PRdes')
+    prob.root.connect('des_vars.PsE', 'TubeAndPod.nozzle.Ps_exhaust')
+    prob.root.connect('des_vars.des_time', 'TubeAndPod.des_time')
+    prob.root.connect('des_vars.time_of_flight', 'TubeAndPod.time_of_flight')
+    prob.root.connect('des_vars.motor_max_current', 'TubeAndPod.motor_max_current')
+    prob.root.connect('des_vars.motor_LD_ratio', 'TubeAndPod.motor_LD_ratio')
+    prob.root.connect('des_vars.motor_oversize_factor', 'TubeAndPod.motor_oversize_factor')
+    prob.root.connect('des_vars.inverter_efficiency', 'TubeAndPod.inverter_efficiency')
+    prob.root.connect('des_vars.battery_cross_section_area', 'TubeAndPod.battery_cross_section_area')
+    prob.root.connect('des_vars.n_passengers', 'TubeAndPod.n_passengers')
+    prob.root.connect('des_vars.A_payload', 'TubeAndPod.A_payload')
 
     prob.setup()
     prob.root.list_connections()
