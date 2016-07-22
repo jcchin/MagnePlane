@@ -17,16 +17,10 @@ class TestCompressorLength(object):
         prob = create_problem(component)
         prob.setup()
 
-        prob['comp.comp_inletTemp'] = 293.0
         prob['comp.h_in'] = 0.0
         prob['comp.h_out'] = 207.
         prob['comp.comp_inletArea'] = 1.287
-        prob['comp.A_inlet'] = 1.1
-        prob['comp.comp_mach'] = 0.6
-        prob['comp.M_pod'] = 0.8
-        prob['comp.T_tunnel'] = 298.0
-        prob['comp.p_tunnel'] = 850.0
         prob['comp.h_stage'] = 58.2
         prob.run()
 
-        assert np.isclose(prob['comp.comp_len'], 0.518 , rtol = 0.1)
+        assert np.isclose(prob['comp.comp_len'], 1.562, rtol = 0.1)
