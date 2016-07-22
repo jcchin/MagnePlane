@@ -63,20 +63,6 @@ class BreakPointDrag(Component):
         Resistance of the track. Default value is 0.0
     track_ind : float
         Inductance of the track. Default value is 0.0.
-    b0 : float
-        Halbach Peak Strength. Default value is 0.0.
-    w_track : float
-        Width of track. Default value is 0.0.
-    mag_area : float
-        Total area of the magnetic array. Default value is 0.0.
-    omegab : float
-        Breakpoint frequency of the induced current. Default value is 0.0.
-    fyu : float
-        Levitation force. Default value is 0.0.
-    fxu : float
-        Break point drag force. Default value is 0.0.
-    ld_ratio : float
-        Lift to drag ratio. Default value is 0.0.
     pod_weight : float
         Weight of the Pod. Default value is 0.0.
 
@@ -234,6 +220,8 @@ class MagMass(Component):
 
     Params
     ------
+    m_pod : float
+        Mass of the pod with no magnets. Default value is 3000.0 kg
     mag_thk : float
         Thickness of Magnet. Default value is 0.15.
     rho_mag : float
@@ -257,10 +245,10 @@ class MagMass(Component):
     -------
     mag_area : float
         Total area of the magnetic array. Default value is 0.0
-    m_mag : float
-        Mass of the permanent magnets. Default value is 0.0.
     cost : float
         Total cost of the magnets. Default value is 0.0.
+    total_pod_mass : float
+        Final mass of the pod with magnets. Default value is 0.0.
 
     Notes
     -----
@@ -272,6 +260,7 @@ class MagMass(Component):
         super(MagMass, self).__init__()
 
         # Pod Inputs
+        self.add_param('m_pod', val=3000.0, units='kg', desc='Pod Mass')
         self.add_param('mag_thk', val=0.15, units='m', desc='Thickness of Magnet')
         self.add_param('rho_mag',
                        val=7500.0,
@@ -291,11 +280,13 @@ class MagMass(Component):
         self.add_output('mag_area', val=0.0, units='m', desc='Total Area of Magnets')
         self.add_output('m_mag', val=0.0, units='kg', desc='Mass of Magnets')
         self.add_output('cost', val=0.0, units='USD', desc='Cost of Magnets')
+        self.add_output('total_pod_mass', val=0.0, units = 'kg', desc = 'Total pod mass')
 
     def solve_nonlinear(self, params, unknowns,
                         resids):  # params, unknowns, residuals
 
         # Parameters
+        m_pod = params['m_pod']
         mag_thk = params['mag_thk']  # Thickness of Magnet
         w_mag = params['w_mag']  # Width of Magnet Array
         gamma = params['gamma']  # Area Scalar
@@ -315,62 +306,58 @@ class MagMass(Component):
         unknowns['mag_area'] = mag_area
         unknowns['m_mag'] = m_mag
         unknowns['cost'] = cost
-
+        unknowns['total_pod_mass'] = m_mag + m_pod
 
 if __name__ == "__main__":
 
     top = Problem()
     root = top.root = Group()
 
-    # Define Parameters
-    params = (('mag_thk', .05, {'units': 'm'}), ('gamma', .05),
-              ('m_pod', 3000.0, {'units': 'kg'}),
-              ('g', 9.81, {'units': 'm/s**2'}))
-
-    # Add Components
-    root.add('input_vars', IndepVarComp(params))
     root.add('p', BreakPointDrag())
     root.add('q', MagMass())
 
+    # Define Parameters
+    params = (('m_pod', 3000.0, {'units': 'kg'}),
+              ('l_pod', 22.0, {'units': 'm'}),
+              ('d_pod', 1.0, {'units': 'm'}),
+              ('vel_b', 23.0, {'units': 'm/s'}),
+              ('h_lev', 0.01, {'unit': 'm'}),
+              ('vel', 350.0, {'units': 'm/s'}))
+
+    top.root.add('input_vars', IndepVarComp(params))
+
     # Constraint Equation
-    root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
+    #root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
 
     # Connect
     root.connect('input_vars.m_pod', 'p.m_pod')
-    root.connect('p.m_pod', 'con1.m_pod')
-    root.connect('p.fyu', 'con1.fyu')
-    root.connect('input_vars.g', 'p.g')
-    root.connect('p.g', 'con1.g')
-
-    root.connect('input_vars.mag_thk', 'p.mag_thk')
-    root.connect('input_vars.mag_thk', 'q.mag_thk')
-
-    root.connect('input_vars.gamma', 'p.gamma')
-    root.connect('input_vars.gamma', 'q.gamma')
+    #root.connect('p.m_pod', 'con1.m_pod')
+    #root.connect('p.fyu', 'con1.fyu')
+    #root.connect('p.g', 'con1.g')
 
     # Finite Difference
-    root.deriv_options['type'] = 'fd'
-    root.fd_options['form'] = 'forward'
-    root.fd_options['step_size'] = 1.0e-6
+    #root.deriv_options['type'] = 'fd'
+    #root.fd_options['form'] = 'forward'
+    #root.fd_options['step_size'] = 1.0e-6
 
     # Optimizer Driver
-    top.driver = ScipyOptimizer()
-    top.driver.options['optimizer'] = 'COBYLA'
+    #prob.driver = ScipyOptimizer()
+    #prob.driver.options['optimizer'] = 'COBYLA'
 
     # Design Variables
-    top.driver.add_desvar('input_vars.mag_thk', lower=.01, upper=.15, scaler=100)
-    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
+    #prob.driver.add_desvar('input_vars.mag_thk', lower=.01, upper=.15, scaler=100)
+    #prob.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
 
     # Add Constraint
-    top.driver.add_constraint('con1.c1', lower=0.0)
+    #prob.driver.add_constraint('con1.c1', lower=0.0)
 
     # Problem Objective
-    alpha = .5
-    root.add('obj_cmp', ExecComp('obj = (alpha*fxu)/1000 + ((1-alpha)*m_mag)'))
-    root.connect('p.fxu', 'obj_cmp.fxu')
-    root.connect('q.m_mag', 'obj_cmp.m_mag')
+    #alpha = .5
+    #root.add('obj_cmp', ExecComp('obj = (alpha*fxu)/1000 + ((1-alpha)*m_mag)'))
+    #root.connect('p.fxu', 'obj_cmp.fxu')
+    #root.connect('q.m_mag', 'obj_cmp.m_mag')
 
-    top.driver.add_objective('obj_cmp.obj')
+    #prob.driver.add_objective('obj_cmp.obj')
 
     top.setup()
 
@@ -378,18 +365,20 @@ if __name__ == "__main__":
 
     # Print Outputs for Debugging
     # print('\n')
-    # print('Lift to BreakPointDrag Ratio is %f' % top['p.ld_ratio'])
-    # print('fyu is %f' % top['p.fyu'])
-    # print('fxu is %f' % top['p.fxu'])
-    # print('c1 is %f' % top['con1.c1'])
-    # print('Total Magnet Area is %f m^2' % top['p.mag_area'])
-    # print('Total Magnet Weight is %f kg' % top['q.m_mag'])
-    # print('Total Magnet Cost is $%f' % top['q.cost'])
-    # print('mag_thk is %f m' % top['p.mag_thk'])
-    # print('Gamma is %f' % top['p.gamma'])
-    # print('\n')
-    # print('track_res is %f m' % top['p.track_res'])
-    # print('track_ind is %12.12f m' % top['p.track_ind'])
-    # print('b0 is %f m' % top['p.b0'])
-    print ('w_mag is %f m' % top['p.w_mag'])
-    print ('w_track is %f m' % top['p.w_track'])
+    # print('Lift to BreakPointDrag Ratio is %f' % prob['p.ld_ratio'])
+    # print('fyu is %f' % prob['p.fyu'])
+    # print('fxu is %f' % prob['p.fxu'])
+    # print('c1 is %f' % prob['con1.c1'])
+    # print('Total Magnet Area is %f m^2' % prob['p.mag_area'])
+    # print('Total Magnet Weight is %f kg' % prob['q.m_mag'])
+    # print('Total Magnet Cost is $%f' % prob['q.cost'])
+    # print('mag_thk is %f m' % prob['p.mag_thk'])
+    # print('Gamma is %f' % prob['p.gamma'])
+    print('track_res is %f' % top['p.track_res'])
+    print('track_ind is %f' % top['p.track_ind'])
+    print('lam is %f' % top['p.lam'])
+    print('pod_weight is %f kg' % top['p.pod_weight'])
+    print('\n')
+    print('m_mag is %f m' % top['q.m_mag'])
+    print('mag_area is %f m' % top['q.mag_area'])
+    print('total_pod_mass is %f kg' % top['q.total_pod_mass'])

@@ -19,7 +19,6 @@ class TestLev(object):
     """
     Params
     ------
-
     m_pod : float
         Mass of the hyperloop pod. Test value is .375.
     b_res : float

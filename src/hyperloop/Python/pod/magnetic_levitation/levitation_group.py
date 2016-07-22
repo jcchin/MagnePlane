@@ -1,5 +1,6 @@
-from openmdao.api import Group, Problem, IndepVarComp, ExecComp, ScipyOptimizer
-from hyperloop.Python.pod.magnetic_levitation.breakpoint_levitation import BreakPointDrag, MagMass
+from openmdao.api import Group, Component, Problem, IndepVarComp, ExecComp, ScipyOptimizer
+from hyperloop.Python.pod.magnetic_levitation.breakpoint_levitation import BreakPointDrag
+from hyperloop.Python.pod.magnetic_levitation.breakpoint_levitation import MagMass
 from hyperloop.Python.pod.magnetic_levitation.magnetic_drag import MagDrag
 
 class LevGroup(Group):
@@ -24,20 +25,21 @@ class LevGroup(Group):
         mass of the pod (kg)
     l_pod : float
         length of the pod (m)
-    d_pod : diameter of the pod (m)
-    w_track : float
-        width of the track (m)
+    d_pod : float
+        diameter of the pod (m)
     vel_b : float
         desired breakpoint levitation speed (m/s)
+    h_lev : float
+        Levitation height. Default value is .01
+    vel : float
+        desired magnetic drag speed (m/s)
 
     Outputs
     -------
     mag_drag : float
         magnetic drag from levitation system (N)
-    m_mag : float
-        mass of the magnets needed for levitation (kg)
-    cost : float
-        total material cost for the magnets (USD)
+    total_pod_mass : float
+        total mass of the pod including magnets (kg)
 
     References
     ----------
@@ -50,79 +52,81 @@ class LevGroup(Group):
         super(LevGroup, self).__init__()
 
         # Creates components of the group.
-        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'd_pod', 'l_pod', 'vel_b'])
-        self.add('Mass', MagMass(), promotes=['l_pod', 'cost', 'm_mag', 'd_pod'])
-        self.add('MDrag', MagDrag(), promotes=['mag_drag'])
+        self.add('Drag', BreakPointDrag(), promotes=['m_pod', 'd_pod', 'l_pod', 'vel_b', 'h_lev'])
+        self.add('Mass', MagMass(), promotes=['total_pod_mass'])
+        self.add('MDrag', MagDrag(), promotes=['vel', 'mag_drag'])
+
+        # Connects promoted group params to rest of group
+        self.connect('m_pod', 'Mass.m_pod')
+        self.connect('d_pod', 'Mass.d_pod')
+        self.connect('l_pod', 'Mass.l_pod')
 
         # Connect Drag outputs to MDrag inputs
         self.connect('Drag.track_res', 'MDrag.track_res')
         self.connect('Drag.track_ind', 'MDrag.track_ind')
         self.connect('Drag.pod_weight', 'MDrag.pod_weight')
         self.connect('Drag.lam', 'MDrag.lam')
-        self.connect('Drag.pod_weight', 'MDrag.pod_weight')
 
 if __name__ == "__main__":
 
-    top = Problem()
-    root = top.root = Group()
+    prob = Problem()
+    root = prob.root = Group()
+
+    root.add('lev', LevGroup())
 
     # Define Parameters
     params = (('m_pod', 3000.0, {'units': 'kg'}),
-    		  ('l_pod', 25.0, {'units': 'm'}),
-              ('d_pod', 2.0, {'units': 'm'}),
+              ('l_pod', 22.0, {'units': 'm'}),
+              ('d_pod', 1.0, {'units': 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
-              ('gamma', 1.0),
-              ('mag_thk', .05, {'units': 'm'}),
-              ('g', 9.81, {'units': 'm/s**2'}))
+              ('h_lev', 0.01, {'unit': 'm'}),
+              ('vel', 350.0, {'units': 'm/s'}))
 
-    root.add('input_vars', IndepVarComp(params))
-    root.add('lev', LevGroup())
+    prob.root.add('input_vars', IndepVarComp(params))
 
     # Constraint Equation
-    root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
+    #root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
 
     # Connect
-    root.connect('lev.Drag.fyu', 'con1.fyu')
-    root.connect('input_vars.g', 'lev.Drag.g')
-    root.connect('lev.Drag.g', 'con1.g')
+    #prob.root.connect('lev.Drag.fyu', 'con1.fyu')
+    #prob.root.connect('lev.Drag.g', 'con1.g')
 
-    root.connect('input_vars.mag_thk', 'lev.Drag.mag_thk')
-    root.connect('input_vars.mag_thk', 'lev.Mass.mag_thk')
-
-    root.connect('input_vars.gamma', 'lev.Drag.gamma')
-    root.connect('input_vars.gamma', 'lev.Mass.gamma')
-
-    root.connect('input_vars.m_pod', 'lev.m_pod')
-    root.connect('lev.m_pod', 'con1.m_pod')
-    root.connect('input_vars.l_pod', 'lev.l_pod')
-    root.connect('input_vars.d_pod', 'lev.d_pod')
-    root.connect('input_vars.vel_b', 'lev.vel_b')
+    prob.root.connect('input_vars.m_pod', 'lev.m_pod')
+    #prob.root.connect('lev.m_pod', 'con1.m_pod')
+    prob.root.connect('input_vars.l_pod', 'lev.l_pod')
+    prob.root.connect('input_vars.d_pod', 'lev.d_pod')
+    prob.root.connect('input_vars.vel_b', 'lev.vel_b')
+    prob.root.connect('input_vars.h_lev', 'lev.h_lev')
+    prob.root.connect('input_vars.vel', 'lev.vel')
 
     # Finite Difference
-    root.deriv_options['type'] = 'fd'
-    root.fd_options['form'] = 'forward'
-    root.fd_options['step_size'] = 1.0e-6
+    #root.deriv_options['type'] = 'fd'
+    #root.fd_options['form'] = 'forward'
+    #root.fd_options['step_size'] = 1.0e-6
 
     # Optimizer Driver
-    top.driver = ScipyOptimizer()
-    top.driver.options['optimizer'] = 'COBYLA'
+    #top.driver = ScipyOptimizer()
+    #top.driver.options['optimizer'] = 'COBYLA'
 
     # Design Variables
-    top.driver.add_desvar('input_vars.mag_thk', lower=.01, upper=.15, scaler=100)
-    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
+    #top.driver.add_desvar('input_vars.mag_thk', lower=.01, upper=.15, scaler=100)
+    #top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
 
     # Add Constraint
-    top.driver.add_constraint('con1.c1', lower=0.0)
+    #top.driver.add_constraint('con1.c1', lower=0.0)
 
     # Problem Objective
-    alpha = .5
-    root.add('obj_cmp', ExecComp('obj = (alpha*fxu)/1000 + ((1-alpha)*m_mag)'))
-    root.connect('lev.Drag.fxu', 'obj_cmp.fxu')
-    root.connect('lev.m_mag', 'obj_cmp.m_mag')
+    #alpha = .5
+    #root.add('obj_cmp', ExecComp('obj = (alpha*fxu)/1000 + ((1-alpha)*m_mag)'))
+    #prob.root.connect('lev.Drag.fxu', 'obj_cmp.fxu')
+    #prob.root.connect('lev.m_mag', 'obj_cmp.m_mag')
 
-    top.driver.add_objective('obj_cmp.obj')
+    #top.driver.add_objective('obj_cmp.obj')
 
-    top.setup()
-    top.run()
+    prob.setup()
+    prob.root.list_connections()
 
-    print('Mag_drag %fN' % top['lev.mag_drag'])
+    prob.run()
+
+    print('Mag_drag %f N' % prob['lev.mag_drag'])
+    print('Total pod mass %f kg' % prob['lev.total_pod_mass'])

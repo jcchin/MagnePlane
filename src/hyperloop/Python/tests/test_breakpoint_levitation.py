@@ -6,7 +6,8 @@ from math import pi
 import numpy as np
 from openmdao.api import Group, Problem
 
-from hyperloop.Python.pod.magnetic_levitation import levitation_group
+from hyperloop.Python.pod.magnetic_levitation.breakpoint_levitation import BreakPointDrag
+from hyperloop.Python.pod.magnetic_levitation.breakpoint_levitation import MagMass
 
 def create_problem(GroupName):
     root = Group()
@@ -59,3 +60,4 @@ class TestLev(object):
         assert np.isclose(prob['comp.Drag.track_res'], 0.000707, rtol=.01)
         assert np.isclose(prob['comp.Drag.track_ind'], 5.7619e-8, rtol=.01)
         assert np.isclose(prob['comp.Drag.b0'], 0.81281, rtol=.01)
+        assert np.isclose(prob['comp.total_pod_mass'], 3000.375, rtol=0.01)
