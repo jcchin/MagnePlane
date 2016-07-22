@@ -317,20 +317,22 @@ if __name__ == "__main__":
     root.add('q', MagMass())
 
     # Define Parameters
-    params = (('m_pod', 3000.0, {'units': 'kg'}),
-              ('l_pod', 22.0, {'units': 'm'}),
-              ('d_pod', 1.0, {'units': 'm'}),
-              ('vel_b', 23.0, {'units': 'm/s'}),
-              ('h_lev', 0.01, {'unit': 'm'}),
-              ('vel', 350.0, {'units': 'm/s'}))
+    # params = (('m_pod', 3000.0, {'units': 'kg'}),
+    #           ('l_pod', 22.0, {'units': 'm'}),
+    #           ('d_pod', 1.0, {'units': 'm'}),
+    #           ('vel_b', 23.0, {'units': 'm/s'}),
+    #           ('h_lev', 0.01, {'unit': 'm'}),
+    #           ('vel', 350.0, {'units': 'm/s'}))
 
-    top.root.add('input_vars', IndepVarComp(params))
+    # top.root.add('input_vars', IndepVarComp(params))
 
     # Constraint Equation
     #root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
 
     # Connect
-    root.connect('input_vars.m_pod', 'p.m_pod')
+    # root.connect('input_vars.m_pod', 'p.m_pod')
+    # root.connect('input_vars.vel_b', 'p.vel_b')
+    # root.connect('input_vars.h_lev', 'p.h_lev')
     #root.connect('p.m_pod', 'con1.m_pod')
     #root.connect('p.fyu', 'con1.fyu')
     #root.connect('p.g', 'con1.g')
@@ -375,7 +377,7 @@ if __name__ == "__main__":
     # print('mag_thk is %f m' % prob['p.mag_thk'])
     # print('Gamma is %f' % prob['p.gamma'])
     print('track_res is %f' % top['p.track_res'])
-    print('track_ind is %f' % top['p.track_ind'])
+    print('track_ind is %.15f' % top['p.track_ind'])
     print('lam is %f' % top['p.lam'])
     print('pod_weight is %f kg' % top['p.pod_weight'])
     print('\n')

@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     root.add('p', MagDrag())
 
-    params = (('track_res', 0.004817), ('track_ind', 0.000004),
+    params = (('track_res', 0.004817), ('track_ind', 0.000004285714286),
               ('lam', 0.600000), ('pod_weight', 29430.0),
               ('vel', 350.))
 
@@ -113,4 +113,4 @@ if __name__ == "__main__":
     print('Magnetic Drag from Levitation is %2.2fN' % top['p.mag_drag_lev'])
     print('Magnetic Drag from Propulsion is %2.2fN' % top['p.mag_drag_prop'])
     # print('\n')
-    print('Total Magnetic Drag is %2.2fN' % top['p.mag_drag'])
+    print('Total Magnetic Drag is %f N' % top['p.mag_drag'])
