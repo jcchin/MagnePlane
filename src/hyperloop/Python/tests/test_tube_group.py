@@ -54,6 +54,7 @@ class TestTube(object):
         prob['comp.tube_thickness'] = 0.05
         prob['comp.m_pod'] = 3100.
         prob['comp.r_pylon'] = 0.1
+        prob['comp.num_pods'] = 34.
 
         prob.run()
 

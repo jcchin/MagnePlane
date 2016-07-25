@@ -146,7 +146,7 @@ if __name__ == "__main__":
               ('pump_weight', 715.0, {'units' : 'kg'}),
               ('nozzle_air_W',1.08, {'units': 'kg/s'}),
               ('nozzle_air_Tt',1710.0, {'units': 'K'}),
-              ('num_pods',34, {'units': 'unitless'}),
+              ('num_pods',34., {'units': 'unitless'}),
               ('h', 10.0, {'units': 'm'}),
               ('vf',335.0, {'units': 'm/s'}),
               ('v0',324.0, {'units': 'm/s'}),
