@@ -60,7 +60,7 @@ class PodMass(Component):
                        desc='Length of pod',
                        units='m')
         self.add_param('BF',
-                        val=1.,
+                        val=.99,
                         desc='blockage factor of pod',
                         units='unitless')
         self.add_output('pod_mass',
@@ -76,9 +76,10 @@ class PodMass(Component):
         battery_mass = params['battery_mass']
         comp_mass = params['comp_mass']
         pod_len = params['pod_len']
+        BF = params['BF']
 
         #adds up the mass.
-        unknowns['pod_mass'] = mag_mass + np.pi*(podgeo_d/2)**2*pod_len*al_rho + motor_mass + battery_mass + comp_mass
+        unknowns['pod_mass'] = mag_mass + np.pi*(podgeo_d/2)**2*pod_len*al_rho*(1-BF) + motor_mass + battery_mass + comp_mass
 
 if __name__== '__main__':
     # set up problem.

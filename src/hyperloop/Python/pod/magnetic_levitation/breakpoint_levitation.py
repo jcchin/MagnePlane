@@ -84,9 +84,9 @@ class BreakPointDrag(Component):
         self.add_param('num_mag_hal',
                        val=4.0,
                        desc='Number of Magnets per Halbach Array')
-        self.add_param('mag_thk', val=0.15, units='m', desc='Thickness of magnet')
+        self.add_param('mag_thk', val=0.031416, units='m', desc='Thickness of magnet')
         self.add_param('l_pod', val=22.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1.0, desc='Percent Factor')
+        self.add_param('gamma', val=0.005502, desc='Percent Factor')
         self.add_param('w_mag', val=3.0, units='m', desc='Width of magnet array')
         self.add_param('spacing',
                        val=0.0,
@@ -101,7 +101,7 @@ class BreakPointDrag(Component):
                        desc='Width of Conductive Strip')
         self.add_param('num_sheets', val=1.0, desc='Number of Laminated Sheets')
         self.add_param('delta_c',
-                       val=0.0005334,
+                       val=0.0321,
                        units='m',
                        desc='Single Layer Thickness')
         self.add_param('strip_c',
@@ -261,13 +261,13 @@ class MagMass(Component):
 
         # Pod Inputs
         self.add_param('m_pod', val=3000.0, units='kg', desc='Pod Mass')
-        self.add_param('mag_thk', val=0.15, units='m', desc='Thickness of Magnet')
+        self.add_param('mag_thk', val=0.031416, units='m', desc='Thickness of Magnet')
         self.add_param('rho_mag',
                        val=7500.0,
                        units='kg/m**3',
                        desc='Density of Magnet')
         self.add_param('l_pod', val=22.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=1.0, desc='Percent Factor')
+        self.add_param('gamma', val=0.005502, desc='Percent Factor')
         self.add_param('cost_per_kg',
                        val=44.0,
                        units='USD/kg',
@@ -316,50 +316,56 @@ if __name__ == "__main__":
     root.add('p', BreakPointDrag())
     root.add('q', MagMass())
 
-    # Define Parameters
-    # params = (('m_pod', 3000.0, {'units': 'kg'}),
-    #           ('l_pod', 22.0, {'units': 'm'}),
-    #           ('d_pod', 1.0, {'units': 'm'}),
-    #           ('vel_b', 23.0, {'units': 'm/s'}),
-    #           ('h_lev', 0.01, {'unit': 'm'}),
-    #           ('vel', 350.0, {'units': 'm/s'}))
+    #Define Parameters
+    params = (('m_pod', 3000.0, {'units': 'kg'}),
+              ('l_pod', 22.0, {'units': 'm'}),
+              ('d_pod', 1.0, {'units': 'm'}),
+              ('vel_b', 23.0, {'units': 'm/s'}),
+              ('h_lev', 0.01, {'unit': 'm'}),
+              ('vel', 350.0, {'units': 'm/s'}),
+              ('mag_thk', .15, {'units': 'm'}),
+              ('gamma', 0.5),
+              ('g', 9.81, {'units': 'm/s**2'}))
 
-    # top.root.add('input_vars', IndepVarComp(params))
+    top.root.add('input_vars', IndepVarComp(params))
 
-    # Constraint Equation
-    #root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
+    #Constraint Equation
+    root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
 
-    # Connect
-    # root.connect('input_vars.m_pod', 'p.m_pod')
-    # root.connect('input_vars.vel_b', 'p.vel_b')
-    # root.connect('input_vars.h_lev', 'p.h_lev')
-    #root.connect('p.m_pod', 'con1.m_pod')
-    #root.connect('p.fyu', 'con1.fyu')
-    #root.connect('p.g', 'con1.g')
+   # Connect
+    root.connect('input_vars.m_pod', 'p.m_pod')
+    root.connect('input_vars.vel_b', 'p.vel_b')
+    root.connect('input_vars.h_lev', 'p.h_lev')
+    root.connect('input_vars.g','p.g')
+    root.connect('input_vars.mag_thk',['q.mag_thk', 'p.mag_thk'])
+    root.connect('input_vars.gamma',['p.gamma','q.gamma'])
+    root.connect('p.m_pod', 'con1.m_pod')
+    root.connect('p.fyu', 'con1.fyu')
+    root.connect('p.g', 'con1.g')
 
-    # Finite Difference
-    #root.deriv_options['type'] = 'fd'
-    #root.fd_options['form'] = 'forward'
-    #root.fd_options['step_size'] = 1.0e-6
+    #Finite Difference
+    root.deriv_options['type'] = 'fd'
+    root.fd_options['form'] = 'forward'
+    root.fd_options['step_size'] = 1.0e-6
 
-    # Optimizer Driver
-    #prob.driver = ScipyOptimizer()
-    #prob.driver.options['optimizer'] = 'COBYLA'
+    #Optimizer Driver
+    top.driver = ScipyOptimizer()
+    top.driver.options['optimizer'] = 'COBYLA'
 
-    # Design Variables
-    #prob.driver.add_desvar('input_vars.mag_thk', lower=.01, upper=.15, scaler=100)
-    #prob.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
+    #Design Variables
+    top.driver.add_desvar('input_vars.mag_thk', lower=.01, upper=.15, scaler=100)
+    top.driver.add_desvar('input_vars.gamma', lower=0.1, upper=1.0)
 
-    # Add Constraint
-    #prob.driver.add_constraint('con1.c1', lower=0.0)
+    #Add Constraint
+    top.driver.add_constraint('con1.c1', lower=0.0)
 
-    # Problem Objective
-    #alpha = .5
-    #root.add('obj_cmp', ExecComp('obj = (alpha*fxu)/1000 + ((1-alpha)*m_mag)'))
-    #root.connect('p.fxu', 'obj_cmp.fxu')
-    #root.connect('q.m_mag', 'obj_cmp.m_mag')
+    #Problem Objective
+    alpha = .5
+    root.add('obj_cmp', ExecComp('obj = (alpha*fxu)/1000 + ((1-alpha)*m_mag)'))
+    root.connect('p.fxu', 'obj_cmp.fxu')
+    root.connect('q.m_mag', 'obj_cmp.m_mag')
 
-    #prob.driver.add_objective('obj_cmp.obj')
+    top.driver.add_objective('obj_cmp.obj')
 
     top.setup()
 
@@ -374,8 +380,8 @@ if __name__ == "__main__":
     # print('Total Magnet Area is %f m^2' % prob['p.mag_area'])
     # print('Total Magnet Weight is %f kg' % prob['q.m_mag'])
     # print('Total Magnet Cost is $%f' % prob['q.cost'])
-    # print('mag_thk is %f m' % prob['p.mag_thk'])
-    # print('Gamma is %f' % prob['p.gamma'])
+    print('mag_thk is %f m' % top['p.mag_thk'])
+    print('Gamma is %f' % top['p.gamma'])
     print('track_res is %f' % top['p.track_res'])
     print('track_ind is %.15f' % top['p.track_ind'])
     print('lam is %f' % top['p.lam'])

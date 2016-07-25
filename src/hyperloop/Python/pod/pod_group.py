@@ -10,6 +10,10 @@ from hyperloop.Python.pod.cycle.cycle_group import Cycle
 from hyperloop.Python.pod.pod_geometry import PodGeometry
 from hyperloop.Python.pod.magnetic_levitation.levitation_group import LevGroup
 from openmdao.api import Newton, ScipyGMRES
+
+import numpy as np
+import matplotlib.pylab as plt
+
 class PodGroup(Group):
     """TODOs
 
@@ -112,6 +116,7 @@ class PodGroup(Group):
         self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
         self.connect('pod_geometry.BF', 'pod_mach.BF')
         self.connect('pod_geometry.D_pod', ['pod_mass.podgeo_d', 'levitation_group.d_pod'])
+        self.connect('pod_geometry.BF', 'pod_mass.BF')
 
         # Connects Levitation outputs to downstream components
 
@@ -124,12 +129,12 @@ if __name__ == "__main__":
     root = prob.root = Group()
     root.add('Pod', PodGroup())
 
-    params = (('comp_inlet_area', 2.3884, {'units': 'm**2'}),
+    params = (('comp_inlet_area', 2.4492, {'units': 'm**2'}),
               ('comp_PR', 6.0, {'units': 'unitless'}),
-              ('PsE', 0.59344451, {'units': 'psi'}),
+              ('PsE', 0.05588, {'units': 'psi'}),
               ('des_time', 1.0),
               ('time_of_flight', 2.0),
-              ('motor_max_current', 42.0),
+              ('motor_max_current', 800.0),
               ('motor_LD_ratio', 0.83),
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
@@ -165,14 +170,44 @@ if __name__ == "__main__":
 
     prob.setup()
     prob.root.list_connections()
-    prob.run()
+
+    A_comp = np.linspace(1, 2.5, num = 50)
+    L = np.zeros((1, 50))
+    print(len(A_comp))
+    print(len(L))
+
+    #for i in range(len(A_comp)):
+    #    prob['des_vars.comp_inlet_area'] = A_comp[i]
+    #    prob.run()
+    #    L[0, i] = prob['Pod.pod_geometry.L_pod']
+
+    plt.plot(A_comp, L[0, :])
+    plt.show()
+    #prob.run()
 
     print('\n')
-    print('nozzle.Fg: %f' % prob['Pod.nozzle.Fg'])
-    print('inlet.F_ram: %f' % prob['Pod.inlet.F_ram'])
-    print('nozzle.Fl_O:tot:T: %f' % prob['Pod.nozzle.Fl_O:tot:T'])
-    print('nozzle.Fl_O:stat:W: %f' % prob['Pod.nozzle.Fl_O:stat:W'])
-    print('A Tube: %f' % prob['Pod.A_tube'])
-    print('Mag Drag :%f' % prob['Pod.mag_drag'])
-    print('S :%f' % prob['Pod.S'])
-    print('total_pod_mass :%f' % prob['Pod.total_pod_mass'])
+    print('total pressure       %f' % prob['Pod.cycle.FlowPathInputs.Pt'])
+    print('total temp           %f' % prob['Pod.cycle.FlowPathInputs.Tt'])
+    print('mass flow            %f' % prob['Pod.cycle.FlowPathInputs.m_dot'])
+    print('\n')
+    print('compressor mass      %f' % prob['Pod.cycle.comp_mass'])
+    print('compressor power     %f' % prob['Pod.cycle.comp.power'])
+    print('compressor trq       %f' % prob['Pod.cycle.comp.trq'])
+    print('\n')
+    print('battery length       %f' % prob['Pod.drivetrain.battery_length'])
+    print('motor length         %f' % prob['Pod.drivetrain.motor_length'])
+    print('battery mass         %f' % prob['Pod.drivetrain.battery_mass'])
+    print('motor mass           %f' % prob['Pod.drivetrain.motor_mass'])
+    print('\n')
+    print('pod length           %f' % prob['Pod.pod_geometry.L_pod'])
+    print('pod area             %f' % prob['Pod.S'])
+    print('pod cross section    %f' % prob['Pod.pod_geometry.A_pod'])
+    print('pod diameter         %f' % prob['Pod.pod_geometry.D_pod'])
+    print('\n')
+    print('Tube Area            %f' % prob['Pod.A_tube'])
+    print('\n')
+    print('pod mass w/o magnets %f' % prob['Pod.pod_mass.pod_mass'])
+    print('\n')
+    print('magnetic drag        %f' % prob['Pod.mag_drag'])
+    print('mag mass             %f' % prob['Pod.levitation_group.Mass.m_mag'])
+    print('total pod mass       %f' % prob['Pod.total_pod_mass'])
