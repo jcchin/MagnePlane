@@ -139,7 +139,7 @@ if __name__ == '__main__':
               ('motor_LD_ratio', 0.83),
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
-              ('battery_cross_section_area', 1.0, {'units': 'cm**2'}),
+              ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
               ('n_passengers', 28),
               ('A_payload', 2.72))
 

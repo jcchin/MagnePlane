@@ -10,6 +10,7 @@ from hyperloop.Python.pod.cycle.cycle_group import Cycle
 from hyperloop.Python.pod.pod_geometry import PodGeometry
 from hyperloop.Python.pod.magnetic_levitation.levitation_group import LevGroup
 from openmdao.api import Newton, ScipyGMRES
+from openmdao.units.units import convert_units as cu
 
 import numpy as np
 import matplotlib.pylab as plt
@@ -133,12 +134,12 @@ if __name__ == "__main__":
               ('comp_PR', 6.0, {'units': 'unitless'}),
               ('PsE', 0.05588, {'units': 'psi'}),
               ('des_time', 1.0),
-              ('time_of_flight', 2.0),
+              ('time_of_flight', 2.0, {'units' : 'h'}),
               ('motor_max_current', 800.0),
               ('motor_LD_ratio', 0.83),
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
-              ('battery_cross_section_area', 1.0, {'units': 'cm**2'}),
+              ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
               ('n_passengers', 28),
               ('A_payload', 2.72),
               ('pod_mach_number', .8, {'units': 'unitless'}),
@@ -187,7 +188,7 @@ if __name__ == "__main__":
     #prob.run()
 
     print('\n')
-    print('total pressure       %f' % prob['Pod.cycle.FlowPathInputs.Pt'])
+    print('total pressure       %f' % (prob['Pod.cycle.FlowPathInputs.Pt']))
     print('total temp           %f' % prob['Pod.cycle.FlowPathInputs.Tt'])
     print('mass flow            %f' % prob['Pod.cycle.FlowPathInputs.m_dot'])
     print('\n')
@@ -196,6 +197,7 @@ if __name__ == "__main__":
     print('compressor trq       %f' % prob['Pod.cycle.comp.trq'])
     print('\n')
     print('battery length       %f' % prob['Pod.drivetrain.battery_length'])
+    print('battery volume       %f' % prob['Pod.drivetrain.battery_volume'])
     print('motor length         %f' % prob['Pod.drivetrain.motor_length'])
     print('battery mass         %f' % prob['Pod.drivetrain.battery_mass'])
     print('motor mass           %f' % prob['Pod.drivetrain.motor_mass'])
