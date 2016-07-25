@@ -293,7 +293,7 @@ class Battery(Component):
         # TODO dev real model
         # unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000 / 5
         unknowns['battery_mass'] = energy_cap * n_cells / 265
-        unknowns['battery_volume'] = energy_cap * n_cells / 730 * 1000
+        unknowns['battery_volume'] = energy_cap * n_cells / 730 * 1000 / 0.9069
 
         # calculate output voltage of battery in the nominal zone
         unknowns['output_voltage'] = n_series * params['e_nom']
