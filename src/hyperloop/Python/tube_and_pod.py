@@ -17,8 +17,6 @@ class TubeAndPod(Group):
             Tube total pressure (Pa)
         pressure_initial : float
             initial Pressure before the pump down . Default value is 760.2.
-        pressure_final : float
-            Desired pressure within tube. Default value is 7.0.
         speed : float
             Pumping speed. Default value is 163333.3.
         pwr : float
@@ -84,9 +82,9 @@ class TubeAndPod(Group):
         """
         super(TubeAndPod, self).__init__()
 
-        self.add('tube', TubeGroup(), promotes=['p_tunnel', 'pressure_initial', 'pwr',
+        self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods',
                                               'speed', 'time_down', 'gamma', 'pump_weight',
-                                              'electricity_price', 'tube_area', 'tube_thickness',
+                                              'electricity_price', 'tube_thickness',
                                               'tube_length', 'vf', 'v0', 'num_thrust', 'time_thrust',])
         self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
                                               'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
@@ -106,9 +104,9 @@ class TubeAndPod(Group):
         self.connect('pod.nozzle.Fl_O:tot:T', 'tube.nozzle_air_W')
         self.connect('pod.nozzle.Fl_O:stat:W', 'tube.nozzle_air_Tt')
         self.connect('pod.A_tube', 'tube.tube_area')
-        self.connect('pod.S', 'tube.S')
+        self.connect('S', 'tube.S')
         self.connect('pod.mag_drag', 'tube.D_mag')
-        self.connect('pod.total_pod_mass', 'tube.pod_mass')
+        self.connect('total_pod_mass', 'tube.m_pod')
 
 if __name__ == '__main__':
 
@@ -118,18 +116,17 @@ if __name__ == '__main__':
 
     params = (('tube_pressure', 850.0, {'units' : 'Pa'}),
               ('pressure_initial', 760.2, {'units' : 'torr'}),
-              ('pressure_final', 7.0, {'units' : 'torr'}),
+              ('num_pods', 34.),
               ('pwr', 18.5, {'units' : 'kW'}),
               ('speed', 163333.3, {'units' : 'L/min'}),
               ('time_down', 300.0, {'units' : 'min'}),
               ('gamma', .8, {'units' : 'unitless'}),
               ('pump_weight', 715.0, {'units' : 'kg'}),
               ('electricity_price', 0.13, {'units' : 'USD/(kW*h)'}),
-              ('tube_area', 41., {'units' : 'm**2'}),
               ('tube_thickness', .05, {'units' : 'm'}),
               ('tube_length', 480000., {'units' : 'm'}),
               ('vf', 335.0, {'units' : 'm/s'}),
-              ('vo', 324.0, {'units' : 'm/s'}),
+              ('v0', 324.0, {'units' : 'm/s'}),
               ('num_thrust', 5., {'units' : 'unitless'}),
               ('time_thrust', 1.5, {'units' : 's'}),
               ('pod_mach', .8, {'units': 'unitless'}),
@@ -149,17 +146,17 @@ if __name__ == '__main__':
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.tube_pressure', 'TubeAndPod.tube_pressure')
     prob.root.connect('des_vars.pressure_initial', 'TubeAndPod.pressure_initial')
+    prob.root.connect('des_vars.num_pods', 'TubeAndPod.num_pods')
     prob.root.connect('des_vars.pwr','TubeAndPod.pwr')
     prob.root.connect('des_vars.speed', 'TubeAndPod.speed')
     prob.root.connect('des_vars.time_down', 'TubeAndPod.time_down')
     prob.root.connect('des_vars.gamma','TubeAndPod.gamma')
     prob.root.connect('des_vars.pump_weight','TubeAndPod.pump_weight')
     prob.root.connect('des_vars.electricity_price','TubeAndPod.electricity_price')
-    prob.root.connect('des_vars.tube_area','TubeAndPod.tube_area')
     prob.root.connect('des_vars.tube_thickness', 'TubeAndPod.tube_thickness')
     prob.root.connect('des_vars.tube_length', 'TubeAndPod.tube_length')
     prob.root.connect('des_vars.vf', 'TubeAndPod.vf')
-    prob.root.connect('des_vars.vo', 'TubeAndPod.vo')
+    prob.root.connect('des_vars.v0', 'TubeAndPod.v0')
     prob.root.connect('des_vars.num_thrust', 'TubeAndPod.num_thrust')
     prob.root.connect('des_vars.time_thrust', 'TubeAndPod.time_thrust')
     prob.root.connect('des_vars.pod_mach', 'TubeAndPod.pod_mach')
