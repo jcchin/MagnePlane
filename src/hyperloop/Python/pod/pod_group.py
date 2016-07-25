@@ -173,8 +173,8 @@ if __name__ == "__main__":
 
     A_comp = np.linspace(1, 2.5, num = 50)
     L = np.zeros((1, 50))
-    print(len(A_comp))
-    print(len(L))
+    #print(len(A_comp))
+    #print(len(L))
 
     #for i in range(len(A_comp)):
     #    prob['des_vars.comp_inlet_area'] = A_comp[i]
