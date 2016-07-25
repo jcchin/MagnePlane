@@ -114,8 +114,8 @@ if __name__ == '__main__':
     # setup ElectricMotor
     prob['motor_max_current'] = 800.0
     prob['motor_LD_ratio'] = 0.83
-    prob['design_power'] = -570353
-    prob['design_torque'] = -545
+    prob['design_power'] = -1779612
+    prob['design_torque'] = -1700
     prob['motor_oversize_factor'] = 1.0
     prob['motor.idp1.n_phases'] = 3.0
     prob['motor.motor_size.kappa'] = 1 / 1.75
@@ -127,12 +127,12 @@ if __name__ == '__main__':
 
     # setup battery
     prob['des_time'] = 1.0
-    prob['time_of_flight'] = 2.0
+    prob['time_of_flight'] = 1.0
     prob['battery.q_l'] = 0.1
     prob['battery.e_full'] = 1.4
     prob['battery.e_nom'] = 1.2
     prob['battery.e_exp'] = 1.27
-    prob['battery.q_n'] = 6.8
+    prob['battery.q_n'] = 3.5
     prob['battery.t_exp'] = 1.0
     prob['battery.t_nom'] = 4.3
     prob['battery.r'] = 0.0046
