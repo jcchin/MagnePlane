@@ -181,6 +181,7 @@ if __name__ == "__main__":
     #    prob.run()
     #    L[0, i] = prob['Pod.pod_geometry.L_pod']
 
+    prob.run()
     plt.plot(A_comp, L[0, :])
     plt.show()
     #prob.run()
