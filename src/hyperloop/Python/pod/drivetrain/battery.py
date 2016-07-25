@@ -138,7 +138,7 @@ class Battery(Component):
                        desc='battery resistance',
                        units='Ohms')
         self.add_param('battery_cross_section_area',
-                       1.0,
+                       1500.0,
                        desc='cross_sectional area of battery used to compute length',
                        units='cm**2')
         self.add_param('cell_mass',

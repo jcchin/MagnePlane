@@ -86,7 +86,7 @@ class PodGeometry(Component):
         self.add_param('L_comp', val=1.0, desc='Length of Compressor', units='m')
         self.add_param('L_bat', val=1.0, desc='Length of Battery', units='m')
         self.add_param('L_motor', val=1.0, desc='Length of Motor', units='m')
-        self.add_param('L_inverter', val=1.0, desc='Length of Inverter', units='m')
+        self.add_param('L_inverter', val=0.0, desc='Length of Inverter', units='m')
         self.add_param('L_trans', val=1.0, desc='Length of Transformer', units='m')
         self.add_param('L_p', val=11.2, desc='Payload Length', units='m')
         self.add_param('L_conv', val=.3, desc='Converging Lenth', units='m')

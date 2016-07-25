@@ -5,6 +5,8 @@ from hyperloop.Python.pod.drivetrain.battery import Battery
 from hyperloop.Python.pod.drivetrain.electric_motor import MotorGroup
 from hyperloop.Python.pod.drivetrain.inverter import Inverter
 
+import numpy as np
+import matplotlib.pylab as plt
 
 class Drivetrain(Group):
 
@@ -110,10 +112,10 @@ if __name__ == '__main__':
     prob.setup()
 
     # setup ElectricMotor
-    prob['motor_max_current'] = 42.0
+    prob['motor_max_current'] = 800.0
     prob['motor_LD_ratio'] = 0.83
-    prob['design_power'] = 0.394 * 746
-    prob['design_torque'] = 420.169
+    prob['design_power'] = -100 * 746
+    prob['design_torque'] = -10.0
     prob['motor_oversize_factor'] = 1.0
     prob['motor.idp1.n_phases'] = 3.0
     prob['motor.motor_size.kappa'] = 1 / 1.75
@@ -134,19 +136,31 @@ if __name__ == '__main__':
     prob['battery.t_exp'] = 1.0
     prob['battery.t_nom'] = 4.3
     prob['battery.r'] = 0.0046
-    prob['battery.cell_mass'] = 170
+    prob['battery.cell_mass'] = 170.0
     prob['battery.cell_height'] = 61.0
     prob['battery.cell_diameter'] = 33.0
 
     prob.root.list_connections()
-    prob.run()
 
-    print(prob['battery_mass'])
-    print(prob['battery_volume'])
-    print(prob['battery_cost'])
-    print(prob['battery_length'])
-    print(prob['motor_volume'])
-    print(prob['motor_diameter'])
-    print(prob['motor_mass'])
-    print(prob['motor_length'])
-    print(prob['motor_power_input'])
+    power = np.linspace(-100,-50,num = 100)*746
+    mass = np.zeros((1, len(power)))
+
+    #for i in range(len(power)):
+    #    prob['design_power'] = power[i]
+    #    prob.run()
+    #    mass[0, i] = prob['battery_mass']
+
+    plt.plot(power, mass[0, :])
+    plt.show()
+    #prob.run()
+
+    print('battery_mass %f' % prob['battery_mass'])
+    print(' %f' % prob['battery_volume'])
+    print(' %f' % prob['battery_cost'])
+    print('battery length %f' % prob['battery_length'])
+    print(' %f' % prob['motor_volume'])
+    print(' %f' % prob['motor_diameter'])
+    print('motor mass %f' % prob['motor_mass'])
+    print('motor length %f' % prob['motor_length'])
+    print(' %f' % prob['motor_power_input'])
+    
