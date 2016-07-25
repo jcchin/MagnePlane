@@ -114,8 +114,8 @@ if __name__ == '__main__':
     # setup ElectricMotor
     prob['motor_max_current'] = 800.0
     prob['motor_LD_ratio'] = 0.83
-    prob['design_power'] = -100 * 746
-    prob['design_torque'] = -10.0
+    prob['design_power'] = -570353
+    prob['design_torque'] = -545
     prob['motor_oversize_factor'] = 1.0
     prob['motor.idp1.n_phases'] = 3.0
     prob['motor.motor_size.kappa'] = 1 / 1.75
@@ -151,8 +151,8 @@ if __name__ == '__main__':
     #    mass[0, i] = prob['battery_mass']
 
     prob.run()
-    plt.plot(power, mass[0, :])
-    plt.show()
+    # plt.plot(power, mass[0, :])
+    # plt.show()
     #prob.run()
 
     print('battery_mass %f' % prob['battery_mass'])
