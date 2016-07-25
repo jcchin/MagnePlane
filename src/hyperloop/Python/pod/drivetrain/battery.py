@@ -96,7 +96,7 @@ class Battery(Component):
                        desc='time until design power point',
                        units='h')
         self.add_param('time_of_flight',
-                       val=2.0,
+                       val=1.0,
                        desc='total mission time',
                        units='h')
         self.add_param('des_power', val=7.0, desc='design power', units='W')
@@ -138,7 +138,7 @@ class Battery(Component):
                        desc='battery resistance',
                        units='Ohms')
         self.add_param('battery_cross_section_area',
-                       1500.0,
+                       5000.0,
                        desc='cross_sectional area of battery used to compute length',
                        units='cm**2')
         self.add_param('cell_mass',
@@ -195,7 +195,8 @@ class Battery(Component):
             `VecWrapper` containing residuals
 
         """
-
+        print(params['des_power'])
+        print(params['des_current'])
         # check representation invariant
         self._check_rep(params, unknowns, resids)
 
@@ -206,7 +207,10 @@ class Battery(Component):
 
         cap_discharge = self._calculate_total_discharge(
             params['time_of_flight'], params['des_current'])
+        # print((params['q_n'] * (1 - params['q_l'])))
+        # print cap_discharge
         n_parallel = cap_discharge / (params['q_n'] * (1 - params['q_l']))
+        # print(n_parallel)
         single_bat_current = params['des_current'] / n_parallel
         single_bat_discharge = self._calculate_total_discharge(
             params['des_time'], params['des_current']) / n_parallel
@@ -246,9 +250,12 @@ class Battery(Component):
 
         # single battery power at design power point
         p_bat = v_batt * single_bat_current
+        print(v_batt)
+        print('p_bat %f' % p_bat)
 
         # total number of battery cells
         n_cells = params['des_power'] / p_bat
+        print('n_cells %f' % n_cells)
         n_cells = np.ceil(n_cells)
         n_parallel = np.ceil(n_parallel)
         n_series = np.ceil(n_cells / n_parallel)
@@ -258,12 +265,14 @@ class Battery(Component):
         unknowns['n_cells'] = n_cells
 
         # calculate volume of cells accounting for hexagonal packing efficiency of 0.9069 and convert from mm^3 to cm^3
-        unknowns['battery_volume'] = n_cells * (
+        unknowns['battery_volume'] =(n_cells * (
             params['cell_height'] * np.pi * np.power(params['cell_diameter'] /
-                                                     2, 2)) / 0.9069 / 1000
+                                                     2, 2)) / 0.9069 / 1000) / 3.7
 
         # calculate mass of cells and convert to kg
-        unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000
+        # including rough approx of li-ion density
+        # TODO dev real model
+        unknowns['battery_mass'] = params['cell_mass'] * n_cells / 1000 / 5
 
         # calculate output voltage of battery in the nominal zone
         unknowns['output_voltage'] = n_series * params['e_nom']
