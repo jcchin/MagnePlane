@@ -35,7 +35,7 @@ class TempBalance(Component):
         tube thickness (m)
     length_tube : float
         Length of the entire Hyperloop tube (m)
-    num_pods : int
+    num_pods : float
         Number of Pods in the Tube at a given time
     temp_boundary : float
         Average Temperature of the tube wall (K). This state variable is varied
@@ -168,7 +168,7 @@ class TubeWallTemp(Component):
             units='m',
             desc='Length of entire Hyperloop')  #300 miles, 1584000ft
         self.add_param('num_pods',
-                       34,
+                       34.,
                        desc='Number of Pods in the Tube at a given time')  #
         self.add_param('temp_boundary',
                        322.0,
