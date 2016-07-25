@@ -150,6 +150,7 @@ if __name__ == '__main__':
     #    prob.run()
     #    mass[0, i] = prob['battery_mass']
 
+    prob.run()
     plt.plot(power, mass[0, :])
     plt.show()
     #prob.run()
