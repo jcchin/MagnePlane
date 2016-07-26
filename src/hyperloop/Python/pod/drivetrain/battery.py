@@ -197,8 +197,8 @@ class Battery(Component):
             `VecWrapper` containing residuals
 
         """
-        print(params['des_power'])
-        print(params['des_current'])
+        #print(params['des_power'])
+        #print(params['des_current'])
 
         # check representation invariant
         self._check_rep(params, unknowns, resids)
@@ -273,11 +273,11 @@ class Battery(Component):
         # print('p_bat %f' % p_bat)
 
         energy_cap = scipy.integrate.quad(func, 0, single_bat_discharge * 1000)[0] / 1000
-        print('energy cap %f' % energy_cap)
+        #print('energy cap %f' % energy_cap)
 
         # total number of battery cells
         n_cells = params['des_power'] / p_bat
-        print('n_cells %f' % n_cells)
+        #print('n_cells %f' % n_cells)
         n_cells = np.ceil(n_cells)
         n_parallel = np.ceil(n_parallel)
         n_series = np.ceil(n_cells / n_parallel)
