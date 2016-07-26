@@ -2,7 +2,7 @@
 Group for Tube and Pod components containing the following two sub-groups:
 Pod and Tube
 """
-from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES
+from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES, view_tree
 from hyperloop.Python.tube.tube_group import TubeGroup
 from hyperloop.Python.pod.pod_group import PodGroup
 
@@ -109,7 +109,7 @@ class TubeAndPod(Group):
         self.connect('total_pod_mass', 'tube.m_pod')
 
         self.nl_solver = NLGaussSeidel()
-        self.nl_solver.options['maxiter'] = 10
+        self.nl_solver.options['maxiter'] = 0
         self.nl_solver.options['atol'] = 0.0001
         self.nl_solver.options['iprint'] = 2
 
@@ -149,7 +149,7 @@ if __name__ == '__main__':
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
               ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
-              ('n_passengers', 28),
+              ('n_passengers', 28.),
               ('A_payload', 2.72),
               ('r_pylon', .1, {'units' : 'm'}),
               ('h', 10.0, {'units' : 'm'}),
@@ -194,8 +194,11 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.vel', 'TubeAndPod.vel')
 
     prob.setup()
-    prob.root.list_connections()
+    #prob.root.list_connections()
+    view_tree(prob)
+    exit()
     prob.run()
+    prob.root.list_states()
 
     print('\n')
     print('tube area            %f' % prob['TubeAndPod.pod.A_tube'])
