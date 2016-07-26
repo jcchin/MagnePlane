@@ -269,7 +269,7 @@ class TubeWallTemp(Component):
                         desc='Total Heat Radiated to the outside via Natural Convection')  #
         #Exhausted from Pods
         self.add_output('heat_rate_pod',
-                        519763,
+                        519763.,
                         units='W',
                         desc='Heating Due to a Single Pods')  #
         self.add_output('total_heat_rate_pods',
@@ -287,7 +287,7 @@ class TubeWallTemp(Component):
                         desc='Heat Radiated to the outside')  #
         #Radiated In
         self.add_output('viewing_angle',
-                        1074256,
+                        1074256.,
                         units='m**2',
                         desc='Effective Area hit by Sun')  #
         #Total Heating
@@ -301,7 +301,7 @@ class TubeWallTemp(Component):
                         desc='Total Heat Absorbed/Added via Pods and Solar Absorption')  #
         #Residual (for solver)
         self.add_output('ss_temp_residual',
-                        shape=1,
+                        shape=1.,
                         units='K',
                         desc='Residual of T_released - T_absorbed')
 

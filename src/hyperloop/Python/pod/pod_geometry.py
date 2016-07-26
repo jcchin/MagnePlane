@@ -97,7 +97,7 @@ class PodGeometry(Component):
         self.add_param('p_duct', 6800.0, desc = 'duct pressure', units = 'Pa')
         self.add_param('p_passenger', 101.0e3, desc = 'Passenger compartment pressure', units = 'Pa')
         self.add_param('rho_pod', 2700.0, desc = 'material density', units = 'kg/m**3')
-        self.add_param('n_passengers', 28, desc = 'number of passengers', units = 'unitless')
+        self.add_param('n_passengers', 28., desc = 'number of passengers', units = 'unitless')
         self.add_param('dm_passenger', 166.0, desc = 'mass per passenger', units = 'kg')
         self.add_param('SF', 1.5, desc = 'safety factor for pressure cylinder', units = 'unitless')
         self.add_param('Su', 50.0e6, desc = 'ultimate strength', units = 'Pa')

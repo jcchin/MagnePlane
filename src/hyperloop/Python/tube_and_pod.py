@@ -2,7 +2,7 @@
 Group for Tube and Pod components containing the following two sub-groups:
 Pod and Tube
 """
-from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES
+from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES, view_tree
 from hyperloop.Python.tube.tube_group import TubeGroup
 from hyperloop.Python.pod.pod_group import PodGroup
 
@@ -81,15 +81,16 @@ class TubeAndPod(Group):
         """
         super(TubeAndPod, self).__init__()
 
-        self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods',
+        self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods', 'Cd',
                                               'speed', 'time_down', 'gamma', 'pump_weight',
-                                              'electricity_price', 'tube_thickness',
-                                              'tube_length', 'vf', 'v0', 'num_thrust', 'time_thrust',])
+                                              'electricity_price', 'tube_thickness', 'r_pylon',
+                                              'tube_length', 'h', 'vf', 'v0', 'num_thrust', 'time_thrust',])
         self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
                                               'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
                                               'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                               'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
-                                              'n_passengers', 'A_payload', 'S', 'total_pod_mass'])
+                                              'n_passengers', 'A_payload', 'S', 'total_pod_mass', 'vel_b',
+                                              'h_lev', 'vel', 'mag_drag'])
 
         # Connects promoted group level params
         self.connect('tube_pressure', 'tube.p_tunnel')
@@ -100,15 +101,15 @@ class TubeAndPod(Group):
         # Connects pod group outputs to tube
         self.connect('pod.nozzle.Fg', 'tube.nozzle_thrust')
         self.connect('pod.inlet.F_ram', 'tube.ram_drag')
-        self.connect('pod.nozzle.Fl_O:tot:T', 'tube.nozzle_air_W')
-        self.connect('pod.nozzle.Fl_O:stat:W', 'tube.nozzle_air_Tt')
+        self.connect('pod.nozzle.Fl_O:tot:T', 'tube.nozzle_air_Tt')
+        self.connect('pod.nozzle.Fl_O:stat:W', 'tube.nozzle_air_W')
         self.connect('pod.A_tube', 'tube.tube_area')
         self.connect('S', 'tube.S')
-        self.connect('pod.mag_drag', 'tube.D_mag')
+        self.connect('mag_drag', 'tube.D_mag')
         self.connect('total_pod_mass', 'tube.m_pod')
 
         self.nl_solver = NLGaussSeidel()
-        self.nl_solver.options['maxiter'] = 10
+        self.nl_solver.options['maxiter'] = 0
         self.nl_solver.options['atol'] = 0.0001
         self.nl_solver.options['iprint'] = 2
 
@@ -134,6 +135,7 @@ if __name__ == '__main__':
               ('tube_length', 480000., {'units' : 'm'}),
               ('vf', 335.0, {'units' : 'm/s'}),
               ('v0', 324.0, {'units' : 'm/s'}),
+              ('Cd', 0.2, {'units': 'm'}),
               ('num_thrust', 5., {'units' : 'unitless'}),
               ('time_thrust', 1.5, {'units' : 's'}),
               ('pod_mach', .8, {'units': 'unitless'}),
@@ -147,8 +149,13 @@ if __name__ == '__main__':
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
               ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
-              ('n_passengers', 28),
-              ('A_payload', 2.72))
+              ('n_passengers', 28.),
+              ('A_payload', 2.72),
+              ('r_pylon', .1, {'units' : 'm'}),
+              ('h', 10.0, {'units' : 'm'}),
+              ('vel_b', 23.0, {'units': 'm/s'}),
+              ('h_lev', 0.01, {'unit': 'm'}),
+              ('vel', 350.0, {'units': 'm/s'}))
 
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.tube_pressure', 'TubeAndPod.tube_pressure')
@@ -162,8 +169,11 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.electricity_price','TubeAndPod.electricity_price')
     prob.root.connect('des_vars.tube_thickness', 'TubeAndPod.tube_thickness')
     prob.root.connect('des_vars.tube_length', 'TubeAndPod.tube_length')
+    prob.root.connect('des_vars.h', 'TubeAndPod.h')
+    prob.root.connect('des_vars.r_pylon', 'TubeAndPod.r_pylon')
     prob.root.connect('des_vars.vf', 'TubeAndPod.vf')
     prob.root.connect('des_vars.v0', 'TubeAndPod.v0')
+    prob.root.connect('des_vars.Cd', 'TubeAndPod.Cd')
     prob.root.connect('des_vars.num_thrust', 'TubeAndPod.num_thrust')
     prob.root.connect('des_vars.time_thrust', 'TubeAndPod.time_thrust')
     prob.root.connect('des_vars.pod_mach', 'TubeAndPod.pod_mach')
@@ -179,10 +189,46 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.battery_cross_section_area', 'TubeAndPod.battery_cross_section_area')
     prob.root.connect('des_vars.n_passengers', 'TubeAndPod.n_passengers')
     prob.root.connect('des_vars.A_payload', 'TubeAndPod.A_payload')
+    prob.root.connect('des_vars.vel_b', 'TubeAndPod.vel_b')
+    prob.root.connect('des_vars.h_lev', 'TubeAndPod.h_lev')
+    prob.root.connect('des_vars.vel', 'TubeAndPod.vel')
 
     prob.setup()
-    prob.root.list_connections()
+    #prob.root.list_connections()
+    view_tree(prob)
+    exit()
     prob.run()
+    prob.root.list_states()
 
+    print('\n')
+    print('tube area            %f' % prob['TubeAndPod.pod.A_tube'])
+    print('tube temp            %f' % prob['TubeAndPod.tube.temp_boundary'])
+    print('\n')
+    print('total pressure       %f' % prob['TubeAndPod.pod.nozzle.Fl_O:tot:T'])
+    print('total temp           %f' % prob['TubeAndPod.pod.nozzle.Fl_O:stat:W'])
+    print('mass flow            %f' % prob['TubeAndPod.pod.cycle.FlowPathInputs.m_dot'])
+    print('nozzle thrust        %f' % prob['TubeAndPod.pod.nozzle.Fg'])
+    print('ram drag             %f' % prob['TubeAndPod.pod.inlet.F_ram'])
+    print('\n')
+    print('compressor mass      %f' % prob['TubeAndPod.pod.cycle.comp_mass'])
+    print('compressor power     %f' % prob['TubeAndPod.pod.cycle.comp.power'])
+    print('compressor trq       %f' % prob['TubeAndPod.pod.cycle.comp.trq'])
+    print('\n')
+    print('battery length       %f' % prob['TubeAndPod.pod.drivetrain.battery_length'])
+    print('battery volume       %f' % prob['TubeAndPod.pod.drivetrain.battery_volume'])
+    print('motor length         %f' % prob['TubeAndPod.pod.drivetrain.motor_length'])
+    print('battery mass         %f' % prob['TubeAndPod.pod.drivetrain.battery_mass'])
+    print('motor mass           %f' % prob['TubeAndPod.pod.drivetrain.motor_mass'])
+    print('\n')
+    print('pod length           %f' % prob['TubeAndPod.pod.pod_geometry.L_pod'])
+    print('pod cross section    %f' % prob['TubeAndPod.pod.pod_geometry.A_pod'])
+    print('pod diameter         %f' % prob['TubeAndPod.pod.pod_geometry.D_pod'])
+    print('\n')
+    print('Tube Area            %f' % prob['TubeAndPod.pod.A_tube'])
+    print('\n')
+    print('pod mass w/o magnets %f' % prob['TubeAndPod.pod.pod_mass.pod_mass'])
+    print('mag mass             %f' % prob['TubeAndPod.pod.levitation_group.Mass.m_mag'])
+    print('\n')
     print('S: %f' % prob['TubeAndPod.S'])
-    print('Pod Mass: %f' % prob['TubeAndPod.total_pod_mass'])
+    print('Mag Drag: %f' % prob['TubeAndPod.mag_drag'])
+    print('total pod mass       %f' % prob['TubeAndPod.total_pod_mass'])
