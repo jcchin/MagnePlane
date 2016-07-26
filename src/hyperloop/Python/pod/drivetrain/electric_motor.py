@@ -7,7 +7,6 @@ from __future__ import print_function
 import numpy as np
 from openmdao.api import Component, Problem, Group, Newton, IndepVarComp, ScipyGMRES
 
-
 class MotorBalance(Component):
     """Creates an implicit connection used to balance conservation of energy
     across the motor by computing the residual of power_in - power_out.
