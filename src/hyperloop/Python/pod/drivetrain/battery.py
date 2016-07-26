@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.interpolate, scipy.integrate
 from openmdao.api import Component, Problem, Group
+import os
 
 
 class Battery(Component):
@@ -259,7 +260,9 @@ class Battery(Component):
 
         # single battery power at design power point
 
-        data = np.loadtxt('18650.csv', dtype='float', delimiter=',').transpose()
+        dir = os.path.dirname(__file__)
+        filename = os.path.join(dir, '18650.csv')
+        data = np.loadtxt(filename, dtype='float', delimiter=',').transpose()
 
         func = scipy.interpolate.UnivariateSpline(data[0], data[1])
         # print single_bat_discharge
