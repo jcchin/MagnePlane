@@ -2,7 +2,7 @@
 Group for Tube and Pod components containing the following two sub-groups:
 Pod and Tube
 """
-from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES, view_tree
+from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES
 from hyperloop.Python.tube.tube_group import TubeGroup
 from hyperloop.Python.pod.pod_group import PodGroup
 
@@ -109,7 +109,7 @@ class TubeAndPod(Group):
         self.connect('total_pod_mass', 'tube.m_pod')
 
         self.nl_solver = NLGaussSeidel()
-        self.nl_solver.options['maxiter'] = 0
+        self.nl_solver.options['maxiter'] = 20
         self.nl_solver.options['atol'] = 0.0001
         self.nl_solver.options['iprint'] = 2
 
@@ -194,19 +194,14 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.vel', 'TubeAndPod.vel')
 
     prob.setup()
-    #prob.root.list_connections()
-    view_tree(prob)
-    exit()
     prob.run()
-    prob.root.list_states()
 
     print('\n')
     print('tube area            %f' % prob['TubeAndPod.pod.A_tube'])
     print('tube temp            %f' % prob['TubeAndPod.tube.temp_boundary'])
     print('\n')
-    print('total pressure       %f' % prob['TubeAndPod.pod.nozzle.Fl_O:tot:T'])
-    print('total temp           %f' % prob['TubeAndPod.pod.nozzle.Fl_O:stat:W'])
-    print('mass flow            %f' % prob['TubeAndPod.pod.cycle.FlowPathInputs.m_dot'])
+    print('nozzle exit temp     %f' % prob['TubeAndPod.pod.nozzle.Fl_O:tot:T'])
+    print('nozzle mass flow     %f' % prob['TubeAndPod.pod.nozzle.Fl_O:stat:W'])
     print('nozzle thrust        %f' % prob['TubeAndPod.pod.nozzle.Fg'])
     print('ram drag             %f' % prob['TubeAndPod.pod.inlet.F_ram'])
     print('\n')
@@ -223,8 +218,6 @@ if __name__ == '__main__':
     print('pod length           %f' % prob['TubeAndPod.pod.pod_geometry.L_pod'])
     print('pod cross section    %f' % prob['TubeAndPod.pod.pod_geometry.A_pod'])
     print('pod diameter         %f' % prob['TubeAndPod.pod.pod_geometry.D_pod'])
-    print('\n')
-    print('Tube Area            %f' % prob['TubeAndPod.pod.A_tube'])
     print('\n')
     print('pod mass w/o magnets %f' % prob['TubeAndPod.pod.pod_mass.pod_mass'])
     print('mag mass             %f' % prob['TubeAndPod.pod.levitation_group.Mass.m_mag'])
