@@ -136,7 +136,7 @@ class Vacuum(Component):
 
         # unknowns['vol'] = vol
         # unknowns['volft'] = volft
-        unknowns['energy_tot'] = energy_tot
+        unknowns['energy_tot'] = energy_tot*.01
         unknowns['number_pumps'] = n
 
         unknowns['pwr_tot'] = params['pwr'] * n

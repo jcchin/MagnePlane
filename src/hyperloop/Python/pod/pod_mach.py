@@ -22,10 +22,10 @@ class PodMach(Component):
         Ratio of specific heats. Default value is 1.4
     R : float
         Ideal gas constant. Default valut is 287 J/(m*K).
-    BF : float
-        Blockage Factor. Default value is .9
     A_pod : float
         cross sectional area of the pod. Default value is 1.4 m**2. Value will be taken from pod geometry module
+    comp_inlet_area : float
+        Inlet area of compressor. (m**2)
     L : float
         Pod length. Default value is 22 m. Value will be taken from pod geometry module
     prc : float
@@ -71,7 +71,7 @@ class PodMach(Component):
                        val=287.0,
                        units='J/(kg*K)',
                        desc='Ideal gas constant')
-        self.add_param('BF', val=.99, desc='A_diff/A_pod')
+        self.add_param('comp_inlet_area', 2.3884, desc = 'compressor inlet area', units = 'm**2')
         self.add_param('A_pod', val=3.0536, units='m**2', desc='pod area')
         self.add_param('L', val=20.5, units='m', desc='pod length')
         self.add_param('prc',
@@ -129,7 +129,7 @@ class PodMach(Component):
     def solve_nonlinear(self, params, unknowns, resids):
 
         gam = params['gam']
-        BF = params['BF']
+        comp_inlet_area = params['comp_inlet_area']
         A_pod = params['A_pod']
         L = params['L']
         prc = params['prc']
@@ -160,6 +160,7 @@ class PodMach(Component):
               L) / mu  #Calculate length based Reynolds Number
         #delta_star = (.04775*L)/(Re**.2)    #Calculate displacement boundary layer thickness
 
+        BF = comp_inlet_area/A_pod           #Calculate diffuser based blockage factor
         A_diff = BF * A_pod  #Calculate diffuser output area based on blockage factor input
 
         #Calculate inlet area. Inlet is necessary if free stream Mach number is greater than max compressore mach number M_diff

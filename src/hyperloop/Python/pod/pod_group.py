@@ -99,6 +99,7 @@ class PodGroup(Group):
         self.connect('tube_pressure', 'pod_mach.p_tube')
         self.connect('tube_temp', 'pod_mach.T_ambient')
         self.connect('n_passengers', 'pod_mass.n_passengers')
+        self.connect('comp_inlet_area', 'pod_mach.comp_inlet_area')
 
         # Connects cycle group outputs to downstream components
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
@@ -116,7 +117,6 @@ class PodGroup(Group):
         # Connects Pod Geometry outputs to downstream components
         self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
         self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
-        self.connect('pod_geometry.BF', 'pod_mach.BF')
         self.connect('pod_geometry.D_pod', ['pod_mass.podgeo_d', 'levitation_group.d_pod'])
         self.connect('pod_geometry.BF', 'pod_mass.BF')
 
