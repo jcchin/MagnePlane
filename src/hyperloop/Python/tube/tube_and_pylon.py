@@ -258,12 +258,12 @@ if __name__ == '__main__':
     root = top.root = Group()
 
     params = (#('r', 1.1, {'units': 'm'}),
-              ('tube_area', 3.80132711084, {'units': 'm**2'}),
+              ('tube_area', 53.134589, {'units': 'm**2'}),
               ('t', 5.0, {'units': 'm'}),
               ('r_pylon', 1.1, {'units': 'm'}),
               ('Su_tube', 152.0e6, {'units': 'Pa'}),
               ('sf', 1.5),
-              ('p_ambient', 100.0, {'units': 'Pa'}),
+              ('p_ambient', 850.0, {'units': 'Pa'}),
               ('p_tunnel', 101300.0, {'units': 'Pa'}),
               ('v_tube', .3),
               ('rho_tube', 7820.0, {'units': 'kg/m**3'}),
@@ -307,6 +307,9 @@ if __name__ == '__main__':
     top.driver.add_constraint('con2.c2', lower=0.0)
 
     top.setup()
+    top['p.m_pod'] = 15000.0
+    top['p.p_tunnel'] = 850.0
+    top['input_vars.tube_area'] = 36.190520
 
     top.run()
 
