@@ -131,7 +131,7 @@ if __name__ == '__main__':
               ('gamma', .8, {'units' : 'unitless'}),
               ('pump_weight', 715.0, {'units' : 'kg'}),
               ('electricity_price', 0.13, {'units' : 'USD/(kW*h)'}),
-              ('tube_thickness', .05, {'units' : 'm'}),
+              ('tube_thickness', .0502868, {'units' : 'm'}),
               ('tube_length', 480000., {'units' : 'm'}),
               ('vf', 286.85, {'units' : 'm/s'}),
               ('v0', 286.85-15.0, {'units' : 'm/s'}),
@@ -151,7 +151,7 @@ if __name__ == '__main__':
               ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
               ('n_passengers', 28.),
               ('A_payload', 2.3248),
-              ('r_pylon', .1, {'units' : 'm'}),
+              ('r_pylon', 0.296, {'units' : 'm'}),
               ('h', 10.0, {'units' : 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
               ('h_lev', 0.01, {'unit': 'm'}),
@@ -247,7 +247,8 @@ if __name__ == '__main__':
     print('tube temperature                   %f K' % prob['TubeAndPod.tube.temp_boundary'])
     print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
     print('number of vacuum pumps             %f pumps' % prob['TubeAndPod.tube.Vacuum.number_pumps'])
-    print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'] )
+    print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
+    print('structural cost per unit length    %f USD/m' % prob['TubeAndPod.tube.Struct.total_material_cost'])
     print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
 
 

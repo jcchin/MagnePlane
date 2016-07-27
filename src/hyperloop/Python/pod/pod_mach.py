@@ -170,6 +170,7 @@ class PodMach(Component):
             A_inlet = A_diff
 
         eps = mach_to_area(M_pod, M_duct, gam)
+        print(eps)
         A_tube = (A_pod + np.pi * (((r_pod + delta_star)**2.0) - (r_pod**2.0)) -
                   (eps * A_inlet)) / ((1.0 + (np.sqrt(eps))) * (1.0 - (np.sqrt(eps))))
         pwr_comp = (rho_inf * U_inf * A_inlet) * cp * T_ambient * (1.0 + (
