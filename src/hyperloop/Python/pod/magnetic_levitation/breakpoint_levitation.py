@@ -260,20 +260,20 @@ class MagMass(Component):
         super(MagMass, self).__init__()
 
         # Pod Inputs
-        self.add_param('m_pod', val=3000.0, units='kg', desc='Pod Mass')
+        self.add_param('m_pod', val=30000.0, units='kg', desc='Pod Mass')
         self.add_param('mag_thk', val=0.031416, units='m', desc='Thickness of Magnet')
         self.add_param('rho_mag',
                        val=7500.0,
                        units='kg/m**3',
                        desc='Density of Magnet')
         self.add_param('l_pod', val=22.0, units='m', desc='Length of Pod')
-        self.add_param('gamma', val=0.005502, desc='Percent Factor')
+        self.add_param('gamma', val=0.027510, desc='Percent Factor')
         self.add_param('cost_per_kg',
                        val=44.0,
                        units='USD/kg',
                        desc='Cost of Magnet per Kilogram')
         self.add_param('w_mag', val=3.0, units='m', desc='Width of Magnet Array')
-        self.add_param('d_pod', val=1.0, units='m', desc='Diameter of Pod')
+        self.add_param('d_pod', val=3.0, units='m', desc='Diameter of Pod')
         self.add_param('track_factor', val=0.75, desc='Track Factor Width')
 
         # Outputs
@@ -317,12 +317,11 @@ if __name__ == "__main__":
     root.add('q', MagMass())
 
     #Define Parameters
-    params = (('m_pod', 3000.0, {'units': 'kg'}),
+    params = (('m_pod', 30000.0, {'units': 'kg'}),
               ('l_pod', 22.0, {'units': 'm'}),
-              ('d_pod', 1.0, {'units': 'm'}),
+              ('d_pod', 2.0, {'units': 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
               ('h_lev', 0.01, {'unit': 'm'}),
-              ('vel', 350.0, {'units': 'm/s'}),
               ('mag_thk', .15, {'units': 'm'}),
               ('gamma', 0.5),
               ('g', 9.81, {'units': 'm/s**2'}))
@@ -333,12 +332,13 @@ if __name__ == "__main__":
     root.add('con1', ExecComp('c1 = (fyu - m_pod * g)/1e5'))
 
    # Connect
-    root.connect('input_vars.m_pod', 'p.m_pod')
+    root.connect('input_vars.m_pod', ['p.m_pod','q.m_pod'])
     root.connect('input_vars.vel_b', 'p.vel_b')
     root.connect('input_vars.h_lev', 'p.h_lev')
     root.connect('input_vars.g','p.g')
     root.connect('input_vars.mag_thk',['q.mag_thk', 'p.mag_thk'])
     root.connect('input_vars.gamma',['p.gamma','q.gamma'])
+    root.connect('input_vars.d_pod', ['p.d_pod','q.d_pod'])
     root.connect('p.m_pod', 'con1.m_pod')
     root.connect('p.fyu', 'con1.fyu')
     root.connect('p.g', 'con1.g')
@@ -386,7 +386,10 @@ if __name__ == "__main__":
     print('track_ind is %.15f' % top['p.track_ind'])
     print('lam is %f' % top['p.lam'])
     print('pod_weight is %f kg' % top['p.pod_weight'])
+    print('lift is %f' % top['p.fyu'])
     print('\n')
-    print('m_mag is %f m' % top['q.m_mag'])
+    print('m_mag is %f kg' % top['q.m_mag'])
     print('mag_area is %f m' % top['q.mag_area'])
     print('total_pod_mass is %f kg' % top['q.total_pod_mass'])
+    print(top['p.m_pod'])
+
