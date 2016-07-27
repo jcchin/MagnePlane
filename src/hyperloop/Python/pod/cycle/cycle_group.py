@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     root.add('Cycle', Cycle())
 
-    params = (('comp_PR', 12.6, {'units': 'unitless'}),
+    params = (('comp_PR', 6.0, {'units': 'unitless'}),
               ('PsE', 0.05588, {'units': 'psi'}),
               ('pod_mach_number', .8, {'units': 'unitless'}),
               ('tube_pressure', 850., {'units': 'Pa'}),
@@ -125,18 +125,22 @@ if __name__ == "__main__":
 
     prob.run()
 
-    print('H in %f' % prob['Cycle.FlowPath.inlet.Fl_O:tot:h'])
-    print('H out %f' % prob['Cycle.FlowPath.comp.Fl_O:tot:h'])
+    print('Pt               %f' % prob['Cycle.FlowPathInputs.Pt'])
+    print('Tt               %f' % prob['Cycle.FlowPathInputs.Tt'])
+    print('m_dot            %f' % prob['Cycle.FlowPathInputs.m_dot'])
 
-    print('Comp_len %f m' % prob['Cycle.comp_len'])
-    print('Comp_Mass %f kg' % prob['Cycle.comp_mass'])
+    print('H in             %f' % prob['Cycle.FlowPath.inlet.Fl_O:tot:h'])
+    print('H out            %f' % prob['Cycle.FlowPath.comp.Fl_O:tot:h'])
 
-    print('Torque %f N*m' % (cu(prob['Cycle.comp.trq'], 'ft*lbf', 'N*m')))
-    print('Power %f W' % (cu(prob['Cycle.comp.power'], 'hp', 'W')))
+    print('Comp_len         %f m' % prob['Cycle.comp_len'])
+    print('Comp_Mass        %f kg' % prob['Cycle.comp_mass'])
 
-    print('A_duct %f m**2' % (cu(prob['Cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2')))
-    print('nozzle.Fg %f N' % (cu(prob['Cycle.nozzle.Fg'], 'lbf', 'N')))
-    print('inlet.F_ram %f N' % (cu(prob['Cycle.inlet.F_ram'], 'lbf', 'N')))
+    print('Torque           %f N*m' % (cu(prob['Cycle.comp.trq'], 'ft*lbf', 'N*m')))
+    print('Power            %f W' % (cu(prob['Cycle.comp.power'], 'hp', 'W')))
+
+    print('A_duct           %f m**2' % (cu(prob['Cycle.comp.Fl_O:stat:area'], 'inch**2', 'm**2')))
+    print('nozzle.Fg        %f N' % (cu(prob['Cycle.nozzle.Fg'], 'lbf', 'N')))
+    print('inlet.F_ram      %f N' % (cu(prob['Cycle.inlet.F_ram'], 'lbf', 'N')))
 
     print('Nozzle exit temp %f K' % (cu(prob['Cycle.nozzle.Fl_O:tot:T'], 'degR', 'K')))
-    print('Nozzle exit MFR %f kg/s' % (cu(prob['Cycle.nozzle.Fl_O:stat:W'], 'lbm/s', 'kg/s')))
+    print('Nozzle exit MFR  %f kg/s' % (cu(prob['Cycle.nozzle.Fl_O:stat:W'], 'lbm/s', 'kg/s')))

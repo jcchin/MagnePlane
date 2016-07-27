@@ -98,6 +98,7 @@ class PodGroup(Group):
         self.connect('pod_mach', 'pod_mach.M_pod')
         self.connect('tube_pressure', 'pod_mach.p_tube')
         self.connect('tube_temp', 'pod_mach.T_ambient')
+        self.connect('n_passengers', 'pod_mass.n_passengers')
 
         # Connects cycle group outputs to downstream components
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
@@ -130,17 +131,17 @@ if __name__ == "__main__":
     root = prob.root = Group()
     root.add('Pod', PodGroup())
 
-    params = (('comp_inlet_area', 2.4492, {'units': 'm**2'}),
+    params = (('comp_inlet_area', 2.3884, {'units': 'm**2'}),
               ('comp_PR', 6.0, {'units': 'unitless'}),
               ('PsE', 0.05588, {'units': 'psi'}),
               ('des_time', 1.0),
-              ('time_of_flight', 2.0, {'units' : 'h'}),
+              ('time_of_flight', 1.0, {'units' : 'h'}),
               ('motor_max_current', 800.0),
               ('motor_LD_ratio', 0.83),
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
               ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
-              ('n_passengers', 28),
+              ('n_passengers', 28.0),
               ('A_payload', 2.72),
               ('pod_mach_number', .8, {'units': 'unitless'}),
               ('tube_pressure', 850., {'units': 'Pa'}),
@@ -172,8 +173,8 @@ if __name__ == "__main__":
     prob.setup()
     prob.root.list_connections()
 
-    A_comp = np.linspace(1, 2.5, num = 50)
-    L = np.zeros((1, 50))
+    # A_comp = np.linspace(1, 2.5, num = 50)
+    # L = np.zeros((1, 50))
     #print(len(A_comp))
     #print(len(L))
 
@@ -183,8 +184,8 @@ if __name__ == "__main__":
     #    L[0, i] = prob['Pod.pod_geometry.L_pod']
 
     prob.run()
-    plt.plot(A_comp, L[0, :])
-    plt.show()
+    # plt.plot(A_comp, L[0, :])
+    # plt.show()
     #prob.run()
 
     print('\n')
@@ -195,6 +196,8 @@ if __name__ == "__main__":
     print('compressor mass      %f' % prob['Pod.cycle.comp_mass'])
     print('compressor power     %f' % prob['Pod.cycle.comp.power'])
     print('compressor trq       %f' % prob['Pod.cycle.comp.trq'])
+    print('ram drag             %f' % prob['Pod.inlet.F_ram'])
+    print('nozzle total temp    %f' % prob['Pod.nozzle.Fl_O:tot:T'])
     print('\n')
     print('battery length       %f' % prob['Pod.drivetrain.battery_length'])
     print('battery volume       %f' % prob['Pod.drivetrain.battery_volume'])
