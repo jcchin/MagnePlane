@@ -23,6 +23,10 @@ class PodMass(Component):
             Area of compressor (m**2)
         BF : float
             Blockage factor (unitless)
+        n_passengers : float
+            Number of passengers
+        m_per_passenger : float
+            mass per passenger (kg)
     Outputs
     -------
         pod_mass : float
@@ -63,6 +67,14 @@ class PodMass(Component):
                         val=.99,
                         desc='blockage factor of pod',
                         units='unitless')
+        self.add_param('n_passengers',
+                        val = 28.0,
+                        desc = 'number of passengers',
+                        units = 'unitless')
+        self.add_param('m_per_passenger',
+                        val = 100.0,
+                        desc = 'mass per passenger',
+                        units = 'kg')
         self.add_output('pod_mass',
                         val=1.,
                         desc='Pod Mass',
@@ -77,9 +89,11 @@ class PodMass(Component):
         comp_mass = params['comp_mass']
         pod_len = params['pod_len']
         BF = params['BF']
+        n_passengers = params['n_passengers']
+        m_per_passenger = params['m_per_passenger']
 
         #adds up the mass.
-        unknowns['pod_mass'] = mag_mass + np.pi*(podgeo_d/2)**2*pod_len*al_rho*(1-BF) + motor_mass + battery_mass + comp_mass
+        unknowns['pod_mass'] = mag_mass + np.pi*(podgeo_d/2)**2*pod_len*al_rho*(1-BF) + motor_mass + battery_mass + comp_mass + n_passengers*m_per_passenger
 
 if __name__== '__main__':
     # set up problem.

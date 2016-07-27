@@ -158,6 +158,7 @@ class PodMach(Component):
 
         Re = (rho_inf * U_inf *
               L) / mu  #Calculate length based Reynolds Number
+        #delta_star = (.04775*L)/(Re**.2)    #Calculate displacement boundary layer thickness
 
         A_diff = BF * A_pod  #Calculate diffuser output area based on blockage factor input
 

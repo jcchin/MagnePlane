@@ -124,27 +124,27 @@ if __name__ == '__main__':
 
     params = (('tube_pressure', 850.0, {'units' : 'Pa'}),
               ('pressure_initial', 760.2, {'units' : 'torr'}),
-              ('num_pods', 34.),
+              ('num_pods', 18.),
               ('pwr', 18.5, {'units' : 'kW'}),
               ('speed', 163333.3, {'units' : 'L/min'}),
-              ('time_down', 300.0, {'units' : 'min'}),
+              ('time_down', 1440.0, {'units' : 'min'}),
               ('gamma', .8, {'units' : 'unitless'}),
               ('pump_weight', 715.0, {'units' : 'kg'}),
               ('electricity_price', 0.13, {'units' : 'USD/(kW*h)'}),
               ('tube_thickness', .05, {'units' : 'm'}),
               ('tube_length', 480000., {'units' : 'm'}),
-              ('vf', 335.0, {'units' : 'm/s'}),
-              ('v0', 324.0, {'units' : 'm/s'}),
+              ('vf', 286.85, {'units' : 'm/s'}),
+              ('v0', 286.85-15.0, {'units' : 'm/s'}),
               ('Cd', 0.2, {'units': 'm'}),
-              ('num_thrust', 5., {'units' : 'unitless'}),
+              ('num_thrust', 600.0/24.0, {'units' : 'unitless'}),
               ('time_thrust', 1.5, {'units' : 's'}),
               ('pod_mach', .8, {'units': 'unitless'}),
               ('comp_inlet_area', 2.3884, {'units': 'm**2'}),
               ('comp_PR', 6.0, {'units': 'unitless'}),
-              ('PsE', 0.59344451, {'units': 'psi'}),
+              ('PsE', 0.05588, {'units': 'psi'}),
               ('des_time', 1.0),
-              ('time_of_flight', 2.0),
-              ('motor_max_current', 42.0),
+              ('time_of_flight', 1.0),
+              ('motor_max_current', 800.0),
               ('motor_LD_ratio', 0.83),
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
@@ -155,7 +155,7 @@ if __name__ == '__main__':
               ('h', 10.0, {'units' : 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
               ('h_lev', 0.01, {'unit': 'm'}),
-              ('vel', 350.0, {'units': 'm/s'}))
+              ('vel', 286.86, {'units': 'm/s'}))
 
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.tube_pressure', 'TubeAndPod.tube_pressure')
@@ -222,6 +222,6 @@ if __name__ == '__main__':
     print('pod mass w/o magnets %f' % prob['TubeAndPod.pod.pod_mass.pod_mass'])
     print('mag mass             %f' % prob['TubeAndPod.pod.levitation_group.Mass.m_mag'])
     print('\n')
-    print('S: %f' % prob['TubeAndPod.S'])
-    print('Mag Drag: %f' % prob['TubeAndPod.mag_drag'])
+    print('S:                   %f' % prob['TubeAndPod.S'])
+    print('Mag Drag:            %f' % prob['TubeAndPod.mag_drag'])
     print('total pod mass       %f' % prob['TubeAndPod.total_pod_mass'])
