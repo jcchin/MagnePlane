@@ -118,6 +118,8 @@ class PropulsionMechanics(Component):
                 (vf**3.0) - (v0**3.0))) + params['D_mag'] *
             (vf - v0) - pod_thrust * (vf - v0))
         unknowns['Fg_dP'] = (m_pod * g) / unknowns['pwr_req']
+        print("foobar", m_pod)
+
         unknowns['m_dP'] = m_pod / unknowns['pwr_req']
 
 if __name__ == '__main__':

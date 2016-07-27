@@ -280,7 +280,7 @@ class MagMass(Component):
         self.add_output('mag_area', val=0.0, units='m', desc='Total Area of Magnets')
         self.add_output('m_mag', val=0.0, units='kg', desc='Mass of Magnets')
         self.add_output('cost', val=0.0, units='USD', desc='Cost of Magnets')
-        self.add_output('total_pod_mass', val=0.0, units = 'kg', desc = 'Total pod mass')
+        self.add_output('total_pod_mass', val=100.0, units = 'kg', desc = 'Total pod mass')
 
     def solve_nonlinear(self, params, unknowns,
                         resids):  # params, unknowns, residuals
@@ -307,6 +307,8 @@ class MagMass(Component):
         unknowns['m_mag'] = m_mag
         unknowns['cost'] = cost
         unknowns['total_pod_mass'] = m_mag + m_pod
+
+        print ("barfoo", unknowns['total_pod_mass'])
 
 if __name__ == "__main__":
 
