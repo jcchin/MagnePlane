@@ -194,7 +194,11 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.vel', 'Hyperloop.vel')
 
     prob.setup()
+    # from openmdao.api import view_tree
+    # view_tree(prob)
     prob.run()
+
+    # prob.root.list_states()
 
     print('\n')
     print('tube area            %f' % prob['Hyperloop.pod.A_tube'])
