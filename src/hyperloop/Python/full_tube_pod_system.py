@@ -1,12 +1,12 @@
 """
-Group for Hyperloop containing the following two sub-groups:
+Group for Tube and Pod components containing the following two sub-groups:
 Pod and Tube
 """
 from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES
 from hyperloop.Python.tube.tube_group import TubeGroup
 from hyperloop.Python.pod.pod_group import PodGroup
 
-class Hyperloop(Group):
+class TubeAndPod(Group):
     def __init__(self):
         """TODOs
 
@@ -79,7 +79,7 @@ class Hyperloop(Group):
         .. [1] Friend, Paul. Magnetic Levitation Train Technology 1. Thesis.
            Bradley University, 2004. N.p.: n.p., n.d. Print.
         """
-        super(Hyperloop, self).__init__()
+        super(TubeAndPod, self).__init__()
 
         self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods', 'Cd',
                                               'speed', 'time_down', 'gamma', 'pump_weight',
@@ -120,78 +120,78 @@ if __name__ == '__main__':
 
     prob = Problem()
     root = prob.root = Group()
-    root.add('Hyperloop', Hyperloop())
+    root.add('TubeAndPod', TubeAndPod())
 
     params = (('tube_pressure', 850.0, {'units' : 'Pa'}),
               ('pressure_initial', 760.2, {'units' : 'torr'}),
-              ('num_pods', 34.),
+              ('num_pods', 18.),
               ('pwr', 18.5, {'units' : 'kW'}),
               ('speed', 163333.3, {'units' : 'L/min'}),
-              ('time_down', 300.0, {'units' : 'min'}),
+              ('time_down', 1440.0, {'units' : 'min'}),
               ('gamma', .8, {'units' : 'unitless'}),
               ('pump_weight', 715.0, {'units' : 'kg'}),
               ('electricity_price', 0.13, {'units' : 'USD/(kW*h)'}),
-              ('tube_thickness', .05, {'units' : 'm'}),
+              ('tube_thickness', .0415014, {'units' : 'm'}),
               ('tube_length', 480000., {'units' : 'm'}),
-              ('vf', 335.0, {'units' : 'm/s'}),
-              ('v0', 324.0, {'units' : 'm/s'}),
+              ('vf', 286.85, {'units' : 'm/s'}),
+              ('v0', 286.85-15.0, {'units' : 'm/s'}),
               ('Cd', 0.2, {'units': 'm'}),
-              ('num_thrust', 5., {'units' : 'unitless'}),
+              ('num_thrust', 600.0/24.0, {'units' : 'unitless'}),
               ('time_thrust', 1.5, {'units' : 's'}),
               ('pod_mach', .8, {'units': 'unitless'}),
               ('comp_inlet_area', 2.3884, {'units': 'm**2'}),
               ('comp_PR', 6.0, {'units': 'unitless'}),
-              ('PsE', 0.59344451, {'units': 'psi'}),
+              ('PsE', 0.05588, {'units': 'psi'}),
               ('des_time', 1.0),
-              ('time_of_flight', 2.0),
-              ('motor_max_current', 42.0),
+              ('time_of_flight', 1.0),
+              ('motor_max_current', 800.0),
               ('motor_LD_ratio', 0.83),
               ('motor_oversize_factor', 1.0),
               ('inverter_efficiency', 1.0),
               ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
               ('n_passengers', 28.),
-              ('A_payload', 2.72),
-              ('r_pylon', .1, {'units' : 'm'}),
+              ('A_payload', 2.3248),
+              ('r_pylon', 0.232, {'units' : 'm'}),
               ('h', 10.0, {'units' : 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
               ('h_lev', 0.01, {'unit': 'm'}),
-              ('vel', 350.0, {'units': 'm/s'}))
+              ('vel', 286.86, {'units': 'm/s'}))
 
     prob.root.add('des_vars', IndepVarComp(params))
-    prob.root.connect('des_vars.tube_pressure', 'Hyperloop.tube_pressure')
-    prob.root.connect('des_vars.pressure_initial', 'Hyperloop.pressure_initial')
-    prob.root.connect('des_vars.num_pods', 'Hyperloop.num_pods')
-    prob.root.connect('des_vars.pwr','Hyperloop.pwr')
-    prob.root.connect('des_vars.speed', 'Hyperloop.speed')
-    prob.root.connect('des_vars.time_down', 'Hyperloop.time_down')
-    prob.root.connect('des_vars.gamma','Hyperloop.gamma')
-    prob.root.connect('des_vars.pump_weight','Hyperloop.pump_weight')
-    prob.root.connect('des_vars.electricity_price','Hyperloop.electricity_price')
-    prob.root.connect('des_vars.tube_thickness', 'Hyperloop.tube_thickness')
-    prob.root.connect('des_vars.tube_length', 'Hyperloop.tube_length')
-    prob.root.connect('des_vars.h', 'Hyperloop.h')
-    prob.root.connect('des_vars.r_pylon', 'Hyperloop.r_pylon')
-    prob.root.connect('des_vars.vf', 'Hyperloop.vf')
-    prob.root.connect('des_vars.v0', 'Hyperloop.v0')
-    prob.root.connect('des_vars.Cd', 'Hyperloop.Cd')
-    prob.root.connect('des_vars.num_thrust', 'Hyperloop.num_thrust')
-    prob.root.connect('des_vars.time_thrust', 'Hyperloop.time_thrust')
-    prob.root.connect('des_vars.pod_mach', 'Hyperloop.pod_mach')
-    prob.root.connect('des_vars.comp_inlet_area', 'Hyperloop.comp_inlet_area')
-    prob.root.connect('des_vars.comp_PR', 'Hyperloop.comp.map.PRdes')
-    prob.root.connect('des_vars.PsE', 'Hyperloop.nozzle.Ps_exhaust')
-    prob.root.connect('des_vars.des_time', 'Hyperloop.des_time')
-    prob.root.connect('des_vars.time_of_flight', 'Hyperloop.time_of_flight')
-    prob.root.connect('des_vars.motor_max_current', 'Hyperloop.motor_max_current')
-    prob.root.connect('des_vars.motor_LD_ratio', 'Hyperloop.motor_LD_ratio')
-    prob.root.connect('des_vars.motor_oversize_factor', 'Hyperloop.motor_oversize_factor')
-    prob.root.connect('des_vars.inverter_efficiency', 'Hyperloop.inverter_efficiency')
-    prob.root.connect('des_vars.battery_cross_section_area', 'Hyperloop.battery_cross_section_area')
-    prob.root.connect('des_vars.n_passengers', 'Hyperloop.n_passengers')
-    prob.root.connect('des_vars.A_payload', 'Hyperloop.A_payload')
-    prob.root.connect('des_vars.vel_b', 'Hyperloop.vel_b')
-    prob.root.connect('des_vars.h_lev', 'Hyperloop.h_lev')
-    prob.root.connect('des_vars.vel', 'Hyperloop.vel')
+    prob.root.connect('des_vars.tube_pressure', 'TubeAndPod.tube_pressure')
+    prob.root.connect('des_vars.pressure_initial', 'TubeAndPod.pressure_initial')
+    prob.root.connect('des_vars.num_pods', 'TubeAndPod.num_pods')
+    prob.root.connect('des_vars.pwr','TubeAndPod.pwr')
+    prob.root.connect('des_vars.speed', 'TubeAndPod.speed')
+    prob.root.connect('des_vars.time_down', 'TubeAndPod.time_down')
+    prob.root.connect('des_vars.gamma','TubeAndPod.gamma')
+    prob.root.connect('des_vars.pump_weight','TubeAndPod.pump_weight')
+    prob.root.connect('des_vars.electricity_price','TubeAndPod.electricity_price')
+    prob.root.connect('des_vars.tube_thickness', 'TubeAndPod.tube_thickness')
+    prob.root.connect('des_vars.tube_length', 'TubeAndPod.tube_length')
+    prob.root.connect('des_vars.h', 'TubeAndPod.h')
+    prob.root.connect('des_vars.r_pylon', 'TubeAndPod.r_pylon')
+    prob.root.connect('des_vars.vf', 'TubeAndPod.vf')
+    prob.root.connect('des_vars.v0', 'TubeAndPod.v0')
+    prob.root.connect('des_vars.Cd', 'TubeAndPod.Cd')
+    prob.root.connect('des_vars.num_thrust', 'TubeAndPod.num_thrust')
+    prob.root.connect('des_vars.time_thrust', 'TubeAndPod.time_thrust')
+    prob.root.connect('des_vars.pod_mach', 'TubeAndPod.pod_mach')
+    prob.root.connect('des_vars.comp_inlet_area', 'TubeAndPod.comp_inlet_area')
+    prob.root.connect('des_vars.comp_PR', 'TubeAndPod.comp.map.PRdes')
+    prob.root.connect('des_vars.PsE', 'TubeAndPod.nozzle.Ps_exhaust')
+    prob.root.connect('des_vars.des_time', 'TubeAndPod.des_time')
+    prob.root.connect('des_vars.time_of_flight', 'TubeAndPod.time_of_flight')
+    prob.root.connect('des_vars.motor_max_current', 'TubeAndPod.motor_max_current')
+    prob.root.connect('des_vars.motor_LD_ratio', 'TubeAndPod.motor_LD_ratio')
+    prob.root.connect('des_vars.motor_oversize_factor', 'TubeAndPod.motor_oversize_factor')
+    prob.root.connect('des_vars.inverter_efficiency', 'TubeAndPod.inverter_efficiency')
+    prob.root.connect('des_vars.battery_cross_section_area', 'TubeAndPod.battery_cross_section_area')
+    prob.root.connect('des_vars.n_passengers', 'TubeAndPod.n_passengers')
+    prob.root.connect('des_vars.A_payload', 'TubeAndPod.A_payload')
+    prob.root.connect('des_vars.vel_b', 'TubeAndPod.vel_b')
+    prob.root.connect('des_vars.h_lev', 'TubeAndPod.h_lev')
+    prob.root.connect('des_vars.vel', 'TubeAndPod.vel')
 
     prob.setup()
     # from openmdao.api import view_tree
@@ -201,31 +201,54 @@ if __name__ == '__main__':
     # prob.root.list_states()
 
     print('\n')
-    print('tube area            %f' % prob['Hyperloop.pod.A_tube'])
-    print('tube temp            %f' % prob['Hyperloop.tube.temp_boundary'])
+    print('------ Freestream and Pod Inputs ------')
+    print('tube pressure                      %f Pa' % prob['des_vars.tube_pressure'])
+    print('pod mach number                    %f' % prob['des_vars.pod_mach'])
+    print('compressor area inlet              %f m**2' % prob['des_vars.comp_inlet_area'])
+    print('passenger cross sectional area     %f m**2' % prob['des_vars.A_payload'])
+    print('Pod drag coefficient               %f' % prob['des_vars.Cd'])
+    print('Passengers per pod                 %f' % prob['des_vars.n_passengers'])
+
     print('\n')
-    print('nozzle exit temp     %f' % prob['Hyperloop.pod.nozzle.Fl_O:tot:T'])
-    print('nozzle mass flow     %f' % prob['Hyperloop.pod.nozzle.Fl_O:stat:W'])
-    print('nozzle thrust        %f' % prob['Hyperloop.pod.nozzle.Fg'])
-    print('ram drag             %f' % prob['Hyperloop.pod.inlet.F_ram'])
+    print('------ Cycle Outputs ------')
+    print('Mass Flow                          %f kg/s' % prob['TubeAndPod.pod.cycle.FlowPathInputs.m_dot'])
+    print('compressor mass                    %f kg' % prob['TubeAndPod.pod.cycle.comp_mass'])
+    print('compressor power                   %f hp' % prob['TubeAndPod.pod.cycle.comp.power'])
+    print('compressor trq                     %f ft-lbs' % prob['TubeAndPod.pod.cycle.comp.trq'])
+    print('duct area                          %f in**2' % prob['TubeAndPod.pod.cycle.comp.Fl_O:stat:area'])
+    print('nozzle exit temp                   %f degR' % prob['TubeAndPod.pod.nozzle.Fl_O:tot:T'])
+    print('nozzle mass flow                   %f kg/s' % prob['TubeAndPod.pod.nozzle.Fl_O:stat:W'])
+    print('nozzle thrust                      %f lbs' % prob['TubeAndPod.pod.nozzle.Fg'])
+    print('ram drag                           %f lbs' % prob['TubeAndPod.pod.inlet.F_ram'])
+    print('net thrust                         %f lbs' % (prob['TubeAndPod.pod.nozzle.Fg']-prob['TubeAndPod.pod.inlet.F_ram']))
+
     print('\n')
-    print('compressor mass      %f' % prob['Hyperloop.pod.cycle.comp_mass'])
-    print('compressor power     %f' % prob['Hyperloop.pod.cycle.comp.power'])
-    print('compressor trq       %f' % prob['Hyperloop.pod.cycle.comp.trq'])
+    print('------ Drivetrain Outputs ------')
+    print('battery length                     %f cm' % prob['TubeAndPod.pod.drivetrain.battery_length'])
+    print('battery volume                     %f cm**3' % prob['TubeAndPod.pod.drivetrain.battery_volume'])
+    print('motor length                       %f m' % prob['TubeAndPod.pod.drivetrain.motor_length'])
+    print('battery mass                       %f kg' % prob['TubeAndPod.pod.drivetrain.battery_mass'])
+    print('motor mass                         %f kg' % prob['TubeAndPod.pod.drivetrain.motor_mass'])
+
     print('\n')
-    print('battery length       %f' % prob['Hyperloop.pod.drivetrain.battery_length'])
-    print('battery volume       %f' % prob['Hyperloop.pod.drivetrain.battery_volume'])
-    print('motor length         %f' % prob['Hyperloop.pod.drivetrain.motor_length'])
-    print('battery mass         %f' % prob['Hyperloop.pod.drivetrain.battery_mass'])
-    print('motor mass           %f' % prob['Hyperloop.pod.drivetrain.motor_mass'])
+    print('------ Pod Mass and Geometry Outputs ------')
+    print('pod length                         %f m' % prob['TubeAndPod.pod.pod_geometry.L_pod'])
+    print('pod cross section                  %f m**2' % prob['TubeAndPod.pod.pod_geometry.A_pod'])
+    print('pod diameter                       %f m' % prob['TubeAndPod.pod.pod_geometry.D_pod'])
+    print('planform area                      %f m**2' % prob['TubeAndPod.S']) 
+    print('inlet area                         %f m**2' % prob['TubeAndPod.pod.pod_mach.A_inlet'])
+    print('pod mass w/o magnets               %f kg' % prob['TubeAndPod.pod.pod_mass.pod_mass'])
+    print('mag mass                           %f kg' % prob['TubeAndPod.pod.levitation_group.Mass.m_mag'])
+    print('total pod mass                     %f kg' % prob['TubeAndPod.total_pod_mass'])
+
     print('\n')
-    print('pod length           %f' % prob['Hyperloop.pod.pod_geometry.L_pod'])
-    print('pod cross section    %f' % prob['Hyperloop.pod.pod_geometry.A_pod'])
-    print('pod diameter         %f' % prob['Hyperloop.pod.pod_geometry.D_pod'])
-    print('\n')
-    print('pod mass w/o magnets %f' % prob['Hyperloop.pod.pod_mass.pod_mass'])
-    print('mag mass             %f' % prob['Hyperloop.pod.levitation_group.Mass.m_mag'])
-    print('\n')
-    print('S: %f' % prob['Hyperloop.S'])
-    print('Mag Drag: %f' % prob['Hyperloop.mag_drag'])
-    print('total pod mass       %f' % prob['Hyperloop.total_pod_mass'])
+    print('------ Tube Outputs ------')
+    print('tube cross sectional area          %f m**2' % prob['TubeAndPod.pod.A_tube'])
+    print('tube temperature                   %f K' % prob['TubeAndPod.tube.temp_boundary'])
+    print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
+    print('number of vacuum pumps             %f pumps' % prob['TubeAndPod.tube.Vacuum.number_pumps'])
+    print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
+    print('structural cost per unit length    %f USD/m' % prob['TubeAndPod.tube.Struct.total_material_cost'])
+    print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
+
+
