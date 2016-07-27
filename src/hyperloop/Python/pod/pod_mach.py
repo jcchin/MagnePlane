@@ -99,10 +99,10 @@ class PodMach(Component):
                        val=1009.0,
                        units='J/(kg*K)',
                        desc='specific heat')
-        self.add_param('delta_star',
-                       val=.14,
-                       units='m',
-                       desc='Boundary layer displacement thickness')
+        # self.add_param('delta_star',
+        #                val=..14,
+        #                units='m',
+        #                desc='Boundary layer displacement thickness')
 
         self.add_param('M_pod', val=.8, desc='pod mach number')
 
@@ -140,7 +140,7 @@ class PodMach(Component):
         M_duct = params['M_duct']
         M_diff = params['M_diff']
         cp = params['cp']
-        delta_star = params['delta_star']
+        #delta_star = params['delta_star']
         M_pod = params['M_pod']
 
         def mach_to_area(M1, M2, gam):
@@ -158,7 +158,7 @@ class PodMach(Component):
 
         Re = (rho_inf * U_inf *
               L) / mu  #Calculate length based Reynolds Number
-        #delta_star = (.04775*L)/(Re**.2)    #Calculate displacement boundary layer thickness
+        delta_star = (.04775*L)/(Re**.2)    #Calculate displacement boundary layer thickness
 
         BF = comp_inlet_area/A_pod           #Calculate diffuser based blockage factor
         A_diff = BF * A_pod  #Calculate diffuser output area based on blockage factor input

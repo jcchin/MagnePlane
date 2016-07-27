@@ -309,6 +309,7 @@ if __name__ == '__main__':
     top.setup()
     top['p.m_pod'] = 15000.0
     top['p.p_tunnel'] = 850.0
+    top['input_vars.tube_area'] = 36.190520
 
     top.run()
 
