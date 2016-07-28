@@ -231,7 +231,8 @@ if __name__ == '__main__':
     print('compressor area inlet              %f m**2' % prob['des_vars.comp_inlet_area'])
     print('passenger cross sectional area     %f m**2' % prob['des_vars.A_payload'])
     print('Pod drag coefficient               %f' % prob['des_vars.Cd'])
-    print('Passengers per pod                 %f' % prob['des_vars.n_passengers'])
+    print('Passengers per pod                 %.0f passengers' % prob['des_vars.n_passengers'])
+    print('Time between departures            %f s' % prob['des_vars.pod_period'])
 
     print('\n')
     print('------ Cycle Outputs ------')
@@ -270,7 +271,7 @@ if __name__ == '__main__':
     print('tube cross sectional area          %f m**2' % prob['TubeAndPod.pod.A_tube'])
     print('tube temperature                   %f K' % prob['TubeAndPod.tube.temp_boundary'])
     print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
-    print('number of vacuum pumps             %f pumps' % prob['TubeAndPod.tube.Vacuum.number_pumps'])
+    print('number of vacuum pumps             %.0f pumps' % np.ceil(prob['TubeAndPod.tube.Vacuum.number_pumps']))
     print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
     print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
 
