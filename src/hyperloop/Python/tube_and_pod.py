@@ -5,6 +5,10 @@ Pod and Tube
 from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel, ScipyGMRES
 from hyperloop.Python.tube.tube_group import TubeGroup
 from hyperloop.Python.pod.pod_group import PodGroup
+from hyperloop.Python.ticket_cost import TicketCost
+
+import numpy as np 
+import matplotlib.pylab as plt 
 
 class TubeAndPod(Group):
     def __init__(self):
@@ -91,9 +95,10 @@ class TubeAndPod(Group):
                                               'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
                                               'n_passengers', 'A_payload', 'S', 'total_pod_mass', 'vel_b',
                                               'h_lev', 'vel', 'mag_drag'])
+        self.add('cost', TicketCost())
 
         # Connects promoted group level params
-        self.connect('tube_pressure', 'tube.p_tunnel')
+        self.connect('tube_pressure', ['tube.p_tunnel', 'cost.p_tunnel'])
 
         # Connects tube group outputs to pod
         self.connect('tube.temp_boundary', 'pod.tube_temp')
@@ -104,9 +109,15 @@ class TubeAndPod(Group):
         self.connect('pod.nozzle.Fl_O:tot:T', 'tube.nozzle_air_Tt')
         self.connect('pod.nozzle.Fl_O:stat:W', 'tube.nozzle_air_W')
         self.connect('pod.A_tube', 'tube.tube_area')
-        self.connect('S', 'tube.S')
-        self.connect('mag_drag', 'tube.D_mag')
-        self.connect('total_pod_mass', 'tube.m_pod')
+        self.connect('S', ['tube.S', 'cost.S'])
+        self.connect('mag_drag', ['tube.D_mag', 'cost.D_mag'])
+        self.connect('total_pod_mass', ['tube.m_pod', 'cost.m_pod'])
+        self.connect('vf', 'cost.vf')
+        self.connect('tube.Struct.total_material_cost', 'cost.length_cost')
+        self.connect('tube.Vacuum.pwr_tot', 'cost.vac_power')
+        self.connect('tube.PropMech.pwr_req', 'cost.prop_power')
+        self.connect('pod.cycle.comp.power', 'cost.pod_power')
+
 
         self.nl_solver = NLGaussSeidel()
         self.nl_solver.options['maxiter'] = 20
@@ -150,12 +161,19 @@ if __name__ == '__main__':
               ('inverter_efficiency', 1.0),
               ('battery_cross_section_area', 15000.0, {'units': 'cm**2'}),
               ('n_passengers', 28.),
-              ('A_payload', 2.3248),
+              ('A_payload', 2.3248, {'units' : 'm**2'}),
               ('r_pylon', 0.232, {'units' : 'm'}),
               ('h', 10.0, {'units' : 'm'}),
               ('vel_b', 23.0, {'units': 'm/s'}),
               ('h_lev', 0.01, {'unit': 'm'}),
-              ('vel', 286.86, {'units': 'm/s'}))
+              ('vel', 286.86, {'units': 'm/s'}),
+              ('pod_period', 120.0, {'units' : 's'}),
+              ('prop_period', 25.0e3, {'units' : 'm'}),
+              ('ib', .04),
+              ('bm', 20.0, {'units' : 'yr'}),
+              ('track_length', 600.0, {'units' : 'km'}),
+              ('avg_speed', 286.86, {'units' : 'm/s'})
+              )
 
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.tube_pressure', 'TubeAndPod.tube_pressure')
@@ -192,6 +210,12 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.vel_b', 'TubeAndPod.vel_b')
     prob.root.connect('des_vars.h_lev', 'TubeAndPod.h_lev')
     prob.root.connect('des_vars.vel', 'TubeAndPod.vel')
+    prob.root.connect('des_vars.pod_period', 'TubeAndPod.cost.pod_period')
+    prob.root.connect('des_vars.prop_period', 'TubeAndPod.cost.prop_period')
+    prob.root.connect('des_vars.ib', 'TubeAndPod.cost.ib')
+    prob.root.connect('des_vars.bm', 'TubeAndPod.cost.bm')
+    prob.root.connect('des_vars.track_length', 'TubeAndPod.cost.track_length')
+    prob.root.connect('des_vars.avg_speed', 'TubeAndPod.cost.avg_speed')
 
     prob.setup()
     # from openmdao.api import view_tree
@@ -248,7 +272,16 @@ if __name__ == '__main__':
     print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
     print('number of vacuum pumps             %f pumps' % prob['TubeAndPod.tube.Vacuum.number_pumps'])
     print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
-    print('structural cost per unit length    %f USD/m' % prob['TubeAndPod.tube.Struct.total_material_cost'])
     print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
 
+    print('\n')
+    print('------ Cost Results ------')
+    print('number of pods                     %.0f pods' % prob['TubeAndPod.cost.num_pods'])
+    print('structural cost per unit length    %f USD/m' % prob['TubeAndPod.tube.Struct.total_material_cost'])
+    print('populsion enrgy cost per year      %f USD' % prob['TubeAndPod.cost.prop_energy_cost'])
+    print('estimated ticket cost              %f USD' % prob['TubeAndPod.cost.ticket_cost'])
+
+    print('\n')
+
+   
 
