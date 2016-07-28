@@ -166,7 +166,7 @@ class TubeAndPylon(Component):
                         desc='max Von Mises Stress')
         self.add_output('total_material_cost',
                         val=0.0,
-                        units='USD',
+                        units='USD/m',
                         desc='cost of materials')
         self.add_output('R', val=0.0, units='N', desc='Force on pylon')
         self.add_output('delta',
