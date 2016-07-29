@@ -1,0 +1,52 @@
+\begin{thenomenclature} 
+
+ \nomgroup{A}
+
+  \item [{\beta}]\begingroup Volume coefficient of expansion (K)\nomeqref {0}
+		\nompageref{8}
+  \item [{\dot{m}}]\begingroup Mass flow rate\nomeqref {0}
+		\nompageref{8}
+  \item [{\epsilon}]\begingroup Emissivity Factor\nomeqref {0}
+		\nompageref{8}
+  \item [{\gamma}]\begingroup Heat Capacity Ratio\nomeqref {0}
+		\nompageref{8}
+  \item [{\rho}]\begingroup Total, Hemispherical Reflectivity\nomeqref {0}
+		\nompageref{8}
+  \item [{\sigma}]\begingroup Stefan-Boltzmann constant ($\frac{W}{m-K}$)\nomeqref {0}
+		\nompageref{8}
+  \item [{\upsilon}]\begingroup Kinematic Viscosity ($\frac{m^{2}}{s}$)\nomeqref {0}
+		\nompageref{8}
+  \item [{C_{p}}]\begingroup Heat capacity at constant pressure ($\frac{J}{kg-K}$) \nomeqref {0}
+		\nompageref{8}
+  \item [{c_{solar}}]\begingroup Gross Irradiance Adjustment\nomeqref {0}
+		\nompageref{8}
+  \item [{G}]\begingroup Solar Irradiance\nomeqref {0}\nompageref{8}
+  \item [{g}]\begingroup Acceleration of gravity, 9.81 ($\frac{m}{s^{2}}$)\nomeqref {0}
+		\nompageref{8}
+  \item [{Gr}]\begingroup Grashof Number, $\frac{ g \beta \delta TL^{3}}{v^{2}}$\nomeqref {0}
+		\nompageref{8}
+  \item [{h}]\begingroup Heat transfer coefficient ($\frac{W}{m^{2}-K}$)\nomeqref {0}
+		\nompageref{8}
+  \item [{k}]\begingroup Thermal Conductivity ($\frac{W}{m-K}$) \nomeqref {0}
+		\nompageref{8}
+  \item [{L}]\begingroup Length (m)\nomeqref {0}\nompageref{8}
+  \item [{MN}]\begingroup Mach Number\nomeqref {0}\nompageref{8}
+  \item [{NTU}]\begingroup Number of Transfer Units\nomeqref {0}
+		\nompageref{8}
+  \item [{Nu}]\begingroup Nusselt Number, $\frac{hL}{k}$\nomeqref {0}
+		\nompageref{8}
+  \item [{P}]\begingroup Pressure ($\frac{N}{m^{2}}$)\nomeqref {0}
+		\nompageref{8}
+  \item [{P_{rad}}]\begingroup Radiated Power (W)\nomeqref {0}
+		\nompageref{8}
+  \item [{PR}]\begingroup Pressure Ratio\nomeqref {0}\nompageref{8}
+  \item [{Pr}]\begingroup Prandtl Number, $\frac{\upsilon}{\alpha}$\nomeqref {0}
+		\nompageref{8}
+  \item [{Q}]\begingroup Heat flow rate (W)\nomeqref {0}\nompageref{8}
+  \item [{Ra}]\begingroup Rayleigh Number, $\frac{\rho U_{\infty} L}{\mu}$\nomeqref {0}
+		\nompageref{8}
+  \item [{T}]\begingroup Temperature (K)\nomeqref {0}\nompageref{8}
+  \item [{{\eta}_{ad}}]\begingroup Adiabatic Efficiency\nomeqref {0}
+		\nompageref{8}
+
+\end{thenomenclature}
