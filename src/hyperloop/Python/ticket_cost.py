@@ -100,7 +100,7 @@ class TicketCost(Component):
 		self.add_param('pod_power', val = 1.5e6, desc = 'Power required by pod motor', units = 'W')
 		self.add_param('prop_power', val = 350.0e3, desc = 'Power of single propulsive section', units = 'W')
 		self.add_param('vac_power', val = 71.049e6, desc = 'Power of vacuums', units = 'W')
-		self.add_param('alpha', val = .0001, desc = 'Steady State run capacity of vacuum pumps', units = 'unitless')
+		self.add_param('steady_vac_power', val = 950.0e3, desc = 'Steady State run power of vacuum pumps', units = 'W')
 		self.add_param('vf', val = 286.86, desc = 'Pod top speed', units = 'm/s')
 		self.add_param('g', val = 9.81, desc = 'Gravity', units = 'm/s/s')
 		self.add_param('Cd', val = .2, desc = 'Pod drag coefficient', units = 'unitless')
@@ -136,7 +136,7 @@ class TicketCost(Component):
 		pod_power = p['pod_power']
 		prop_power = p['prop_power']
 		vac_power = p['vac_power']
-		alpha = p['alpha']
+		steady_vac_power = -1.0*p['steady_vac_power']
 		vf = p['vf']
 		g = p['g']
 		Cd = p['Cd']
@@ -154,7 +154,7 @@ class TicketCost(Component):
 		flights_per_pod = (operating_time*pod_frequency)/num_pods
 		energy_per_flight = pod_power*(track_length/avg_speed)*.9
 		pod_energy = energy_per_flight*flights_per_pod*num_pods*JtokWh
-		vac_energy = vac_power*operating_time*alpha*JtokWh
+		vac_energy = steady_vac_power*operating_time*JtokWh
 
 		rho = p_tunnel/(R*T_tunnel)
 		start_distance = (vf**2)/(2*g)

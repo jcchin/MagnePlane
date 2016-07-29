@@ -88,7 +88,7 @@ class PropulsionMechanics(Component):
         self.add_param('ram_drag', val = 7237.6, units = 'N', desc = 'Drag from inlet ram pressure')
         self.add_param('theta', val = 0.0, units = 'rad', desc = 'Pod pitch angle')
 
-
+        self.add_output('D', val = 0.0, units = 'N', desc = 'total pod drag')
         self.add_output('pwr_req', val=0.0)  #Define power as output
         self.add_output('Fg_dP', val=0.0)  #Define Thrust per unit Power output
         self.add_output('m_dP', val=0.0)  #Define mass per unit power as output
@@ -113,6 +113,7 @@ class PropulsionMechanics(Component):
         L = ((vf**2) - (v0**2)) / (2 * g)  #Calculate necessary track length
 
         #Evaluate equation
+        unknowns['D'] = .5 * rho * (vf**2.0) * S * Cd
         unknowns['pwr_req'] = (1.0 / eta) * (
             (m_pod * g * (1 + np.sin(params['theta']))* (vf - v0)) + (1.0 / 6.0) * (Cd * rho * S * (
                 (vf**3.0) - (v0**3.0))) + params['D_mag'] *
