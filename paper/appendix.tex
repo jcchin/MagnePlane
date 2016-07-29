@@ -1,0 +1,77 @@
+\documentclass[heading.tex]{subfiles}
+\begin{document}
+
+\newpage
+\appendix
+
+ \crefalias{section}{appsec}
+\section{Sample Source Code and External Contributions} \label{app:Github}
+
+\subsection{Github}
+
+
+\subsection{Usage Example}
+
+
+
+\inputminted[fontsize=\tiny]{python}{code/example1.py}
+
+
+ Since assemblies often require iteration and convergence, a solver is then added. Each added parameter gives the solver variables to vary, until all declared constraints are satisfied.
+
+\section{Engineering Equations}
+
+\cite{Cengal}\textsuperscript{,}
+\cite{Turns}\textsuperscript{,}
+\cite{Churchill}
+
+\begin{equation}
+Q_{conv} = \underbrace{ \frac{k\cdot Nu}{ {D}_{o,tube}} }_\text{$h$}
+ \underbrace{ \pi {L}_{tube} {D}_{o,tube} }_\text{Area}
+ \underbrace{ (T_{tube}-T_{amb})  }_\text{$\Delta T$}
+\end{equation}
+
+\begin{equation}
+Q_{rad} = \underbrace{\epsilon \sigma (T_{tube}^4 - T_{amb}^4)}_\text{Radiated Power per unit Area}\underbrace{\pi L_{tube} D_{o,tube}}_\text{Surface Area}
+\end{equation}
+
+\begin{equation}
+\frac{A_{bypass}}{A_{tube}} = \frac{M_{pod}}{M_{bypass}}
+\left(\frac{1+ \frac{\gamma-1}{2} M_{bypass}^2}
+{1+ \frac{\gamma-1}{2} M_{pod}^2}\right)^{\frac{\gamma+1}{2\left(1-\gamma\right)}}
+\label{e:a-over-astar}
+\end{equation}
+
+\begin{equation}
+Nu = \Bigg(0.6 + \frac{0.387Ra^{\frac{1}{6}}}{[1+(\frac{0.559}{Pr})^{\frac{9}{16}}]^{\frac{8}{27}}}\Bigg)^2
+\end{equation}
+
+\begin{equation}
+Q_{conv} = \underbrace{ \frac{k\cdot Nu}{ {D}_{o,tube}} }_\text{$h$}
+ \underbrace{ \pi {L}_{tube} {D}_{o,tube} }_\text{Area}
+ \underbrace{ (T_{tube}-T_{amb})  }_\text{$\Delta T$}
+\end{equation}
+
+\begin{equation}
+T_{t,exit} = T_{t,inlet} \Bigg[ 1 + \frac{1}{\eta_{c}} \Big[ \pi_{c}^{\frac{\gamma-1}{\gamma}}- 1 \Big] \Bigg]
+\end{equation}
+
+\begin{equation}
+{Q}_{released}  = effectiveness \cdot \underbrace{\left(T_{hot,in} - T_{cold,in}\right) [ \dot{m} C_{p} ]_{fluid}}_\text{${Q}_{max}$}
+\end{equation}
+
+\begin{equation}
+\underbrace{\dot{m}_{air} C_{p, air} (T_{out, air} - T_{in, air})}_{{Q}_{released}}  = \underbrace{\dot{m}_{water} C_{p,water} (T_{out, water} - T_{in, water})}_{{Q}_{absorbed}}
+\end{equation}
+
+\begin{equation}
+T_{t,inlet} = T_{tube} [1 + \frac{\gamma -1}{2} M^2]
+\end{equation}
+
+\begin{equation}
+Q_{solar} = \underbrace{ (1- \rho_{r})  c_{solar}G}_\text{Solar Heat per unit Area} \underbrace{L_{tube}  D_{o,tube}}_\text{Effective Area}
+\end{equation}
+
+[To be continued...]
+
+\end{document}
