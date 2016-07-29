@@ -5,6 +5,63 @@ from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp
 import matplotlib.pylab as plt
 
 class BoundaryLayerSensitivity(Component):
+	
+	"""
+    Notes
+    ------
+    Component is not a part of the system model, but is instead intended to analyze the sensitivity of tube area to the bounday layer
+    thickness over the pod. Can be made to calculatee based on Reynolds number accourding to flat plate assumption or to vary boundary
+    layer to account for boundary layer suction or some other version of flow control.
+
+    Params
+    ------
+    gam : float
+        Ratio of specific heats. Default value is 1.4
+    R : float
+        Ideal gas constant. Default valut is 287 J/(m*K).
+    A_pod : float
+        cross sectional area of the pod. Default value is 1.4 m**2. Value will be taken from pod geometry module
+    comp_inlet_area : float
+        Inlet area of compressor. (m**2)
+    L : float
+        Pod length. Default value is 22 m. Value will be taken from pod geometry module
+    prc : float
+        Pressure ratio across compressor inlet and outlet.  Default value is 12.5.  Value will be taken from NPSS
+    p_tube : float
+        Pressure of air in tube.  Default value is 850 Pa.  Value will come from vacuum component
+    T_ambient : float
+        Tunnel ambient temperature. Default value is 298 K.
+    mu : float
+        Fluid dynamic viscosity. Default value is 1.846e-5 kg/(m*s)
+    M_duct : float
+        Maximum Mach number allowed in the duct. Default value is .95
+    M_diff : float
+        Maximum Mach number allowed at compressor inlet. Default valu is .6
+    cp : float
+        Specific heat of fluid. Default value is 1009 J/(kg*K)
+    M_pod : float
+        pod Mach number. Default value is .8
+    length_calc : bool
+    	True calculates boundary layer thickness. False takes boundary layer thickness as an input. Default value is false.
+
+    Returns
+    -------
+    A_tube : float
+        will return optimal tunnel area based on pod Mach number
+    pwr_comp : float
+        will return the power that needs to be delivered to the flow by the compressor.  Does not account for compressor efficiency
+    A_bypass : float
+        will return area of that the flow must go through to bypass pod
+    A_inlet : float
+        returns area of the inlet necessary to slow the flow down to M_diffuser
+    A_duct_eff : float
+        returns effective duct area which accounts for displacement boundary layer thickness approximation
+    A_diff : float
+        returns area of diffuser outlet
+    Re : float
+        returns free stream Reynolds number
+    """
+
 	def __init__(self):
         
 		super(BoundaryLayerSensitivity, self).__init__()
