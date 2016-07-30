@@ -209,6 +209,10 @@ if __name__ == '__main__':
 
 	top.setup()
 
+	top.run()
+
+	print(top['p.A_tube'])
+
 	delta_star = np.linspace(.02, .12, num = 50)
 	A_pod = np.linspace(2, 3, num = 3)
 	L = np.linspace(20.0, 40.0, num = 50)
