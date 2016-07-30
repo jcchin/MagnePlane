@@ -33,7 +33,7 @@ class SteadyStateVacuum(Group):
     fl_start.T : float
         Tube total temperature
     fl_start.W : float
-        Tube total mass flow
+        Leakage rate
     fl_start.MN_target : float
         Vehicle mach number
     comp.map.PRdes : float
@@ -46,21 +46,7 @@ class SteadyStateVacuum(Group):
     comp.torque : float
         Total torque required by motor
     comp.power : float
-        Total power required by motor
-    comp.Fl_O:stat:area : float
-        Area of the duct
-    nozzle.Fg : float
-        Nozzle thrust
-    inlet.F_ram : float
-        Ram drag
-    nozzle.Fl_O:tot:T : float
-        Total temperature at nozzle exit
-    nozzle.Fl_O:stat:W : float
-        Total mass flow rate at nozzle exit
-    p.inlet.Fl_O:tot:h : float
-        Inlet enthalpy of compressor
-    p.comp.Fl_O:tot:h : float
-        Exit enthalpy of compressor
+        Total power required by vacuum at steady state
 
     Notes
     -----
@@ -140,7 +126,7 @@ if __name__ == '__main__':
 	print("Compressor Ts:         %.6f degR" % (prob['p.comp.Fl_O:stat:T']))
 	print("Compressor Pt:         %.6f psi" % (prob['p.comp.Fl_O:tot:P']))
 	print("Compressor Tt:         %.6f degR" % (prob['p.comp.Fl_O:tot:T']))
-	print("Compressor Power Reqd:  %.6f hp" % (prob['p.comp.power']))
+	print("Compressor Power Reqd: %.6f hp" % (prob['p.comp.power']))
 
 
 

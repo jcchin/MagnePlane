@@ -88,7 +88,8 @@ class TubeAndPod(Group):
         self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods', 'Cd',
                                               'speed', 'time_down', 'gamma', 'pump_weight',
                                               'electricity_price', 'tube_thickness', 'r_pylon',
-                                              'tube_length', 'h', 'vf', 'v0', 'num_thrust', 'time_thrust', 'fl_start.W'])
+                                              'tube_length', 'h', 'vf', 'v0', 'num_thrust', 'time_thrust', 
+                                              'fl_start.W', 'depth'])
         self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
                                               'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
                                               'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
@@ -117,7 +118,7 @@ class TubeAndPod(Group):
         self.connect('tube.Vacuum.pwr_tot', 'cost.vac_power')
         self.connect('tube.PropMech.pwr_req', 'cost.prop_power')
         self.connect('pod.cycle.comp.power', 'cost.pod_power')
-        self.connect('tube.SteadyStateVacuum.comp.power', 'cost.steady_vac_power')
+        self.connect('tube.comp.power', 'cost.steady_vac_power')
 
 
         self.nl_solver = NLGaussSeidel()
@@ -174,7 +175,8 @@ if __name__ == '__main__':
               ('bm', 20.0, {'units' : 'yr'}),
               ('track_length', 600.0, {'units' : 'km'}),
               ('avg_speed', 286.86, {'units' : 'm/s'}),
-              ('W', 1.0, {'units' : 'kg/s'})
+              ('W', 1.0, {'units' : 'kg/s'}),
+              ('depth', 10.0, {'units' : 'm'})
               )
 
     prob.root.add('des_vars', IndepVarComp(params))
@@ -324,7 +326,7 @@ if __name__ == '__main__':
     # print('tube temperature                   %f K' % prob['TubeAndPod.tube.temp_boundary'])
     # print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
     # print('number of vacuum pumps             %.0f pumps' % np.ceil(prob['TubeAndPod.tube.Vacuum.number_pumps']))
-    # print('steady sate vacuum power           %f hp' % prob['TubeAndPod.tube.SteadyStateVacuum.comp.power'])
+    # print('steady sate vacuum power           %f hp' % prob['TubeAndPod.tube.comp.power'])
     # print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
     # print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
 
