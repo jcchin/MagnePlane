@@ -64,8 +64,8 @@ class SteadyStateVacuum(Group):
                     ('nozzle_dPqP', 0.),
                     ('shaft_Nmech', 10000.),
                     ('inlet_MN', 0.0),
-                    ('comp_MN', 0.0),
-                    ('vehicle_mach', 0.0),
+                    ('comp_MN', 0.5),
+                    ('vehicle_mach', 0.8),
                     ('Pa', 101.3e3, {'units' : 'Pa'}))
 
         self.add('input_vars',IndepVarComp(des_vars))
