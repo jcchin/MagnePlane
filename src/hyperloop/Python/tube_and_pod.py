@@ -248,7 +248,6 @@ if __name__ == '__main__':
     # f = open('/Users/kennethdecker/Desktop/Paper figures/pressure_trade.txt', 'w')
     # f.write('%10s \t %10s \t %10s \t %10s \t %10s \t %10s \r\n' % ('pressure', 'A_tube', 'Re', 'power', 'Drag', 'Vac Power'))
 
-
     # for i in range(len(p_tunnel)):
     #     prob['des_vars.tube_pressure'] = p_tunnel[i]
 

@@ -124,7 +124,9 @@ if __name__ == "__main__":
     #top.driver.add_objective('obj_cmp.obj')
 
     prob.setup()
-    prob.root.list_connections()
+    #prob.root.list_connections()
+    from openmdao.api import view_tree
+    view_tree(prob)
 
     prob.run()
 
