@@ -75,7 +75,6 @@ class SteadyStateVacuum(Group):
         self.add('comp', Compressor(thermo_data=janaf, elements=AIR_MIX))
         self.add('q', ExecComp('Prc = Pa/Ps'), promotes = ['Prc', 'Pa'])
 
-
         # connect components
         connect_flow(self, 'fl_start.Fl_O', 'comp.Fl_I')
 
@@ -108,7 +107,6 @@ if __name__ == '__main__':
 	prob.root.connect('des_vars.T', 'p.fl_start.T')
 	prob.root.connect('des_vars.W', 'p.fl_start.W')
 
-
 	prob.setup()
 	prob.run()
 
@@ -127,11 +125,3 @@ if __name__ == '__main__':
 	print("Compressor Pt:         %.6f psi" % (prob['p.comp.Fl_O:tot:P']))
 	print("Compressor Tt:         %.6f degR" % (prob['p.comp.Fl_O:tot:T']))
 	print("Compressor Power Reqd: %.6f hp" % (prob['p.comp.power']))
-
-
-
-
-
-
-
-

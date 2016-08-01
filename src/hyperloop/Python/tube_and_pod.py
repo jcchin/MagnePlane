@@ -121,7 +121,6 @@ class TubeAndPod(Group):
         self.connect('tube.comp.power', 'cost.steady_vac_power')
         self.connect('tube.SubmergedTube.material_cost', 'cost.water_cost')
 
-
         self.nl_solver = NLGaussSeidel()
         self.nl_solver.options['maxiter'] = 20
         self.nl_solver.options['atol'] = 0.0001
@@ -179,8 +178,7 @@ if __name__ == '__main__':
               ('W', 1.0, {'units' : 'kg/s'}),
               ('depth', 10.0, {'units' : 'm'}),
               ('land_length', 600.0e3, {'units' : 'm'}),
-              ('water_length', 0.0e3, {'units' : 'm'})
-              )
+              ('water_length', 0.0e3, {'units' : 'm'}))
 
     prob.root.add('des_vars', IndepVarComp(params))
     prob.root.connect('des_vars.tube_pressure', 'TubeAndPod.tube_pressure')
@@ -227,7 +225,6 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.land_length', 'TubeAndPod.land_length')
     prob.root.connect('des_vars.water_length', 'TubeAndPod.water_length')
 
-
     prob.setup()
 
     # from openmdao.api import view_tree
@@ -236,7 +233,6 @@ if __name__ == '__main__':
 
     # prob.root.list_states()
     prob.run()
-
 
     # p_tunnel = 4.0*np.logspace(2,3, num = 100)
     # A_tube = np.zeros((1, len(p_tunnel)))
@@ -268,7 +264,6 @@ if __name__ == '__main__':
     #     steady_vac[0,i] = -1.0*prob['TubeAndPod.tube.comp.power']
 
     #     f.write('%10.2f \t %10.4f \t %10.0f \t %10.4f \t %10.4f \t %10.4f \r\n' % (p_tunnel[i], A_tube[0,i], Re[0,i], power[0,i], D[0,i], steady_vac[0,i]))
-
     
     # f.close()
     # plt.plot(p_tunnel, A_tube[0,:], 'b-', linewidth = 2.0)
@@ -355,6 +350,3 @@ if __name__ == '__main__':
     print('estimated ticket cost              %f USD' % prob['TubeAndPod.cost.ticket_cost'])
 
     print('\n')
-
-   
-

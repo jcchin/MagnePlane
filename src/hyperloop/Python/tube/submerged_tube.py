@@ -58,7 +58,6 @@ class SubmergedTube(Component):
 		self.add_output('material_cost', val = 1.0, desc = 'Material cost per unit length', units = 'USD/m')
 		self.add_output('m_prime', val = 1.0, desc = 'Tube mass per unit length')
 
-
 	def solve_nonlinear(self, p, u, r):
 		'''
 		t = (p*r)/(Su/SF); p = pa + rho*g*h; F_buoyant/L = rho*A_tube*g
@@ -86,5 +85,3 @@ if __name__ == '__main__':
 	print('buoyancy %f' % top['p.dF_buoyancy'])
 	print('material cost %f' % top['p.material_cost'])
 	print('Sectional mass %f' % top['p.m_prime'])
-
-
