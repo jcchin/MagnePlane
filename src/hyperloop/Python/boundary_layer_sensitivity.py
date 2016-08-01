@@ -209,6 +209,10 @@ if __name__ == '__main__':
 
 	top.setup()
 
+	top.run()
+
+	print(top['p.A_tube'])
+
 	delta_star = np.linspace(.02, .12, num = 50)
 	A_pod = np.linspace(2, 3, num = 3)
 	L = np.linspace(20.0, 40.0, num = 50)
@@ -236,5 +240,12 @@ if __name__ == '__main__':
 
 				A_tube[j,i] = top['p.A_tube']
 
-		plt.plot(delta_star, A_tube[0,:])
-		plt.show()
+	plt.hold(True)
+	line1, = plt.plot(delta_star, A_tube[0,:], 'b-', linewidth = 2.0, label = 'A_pod = 2.0 m^2')
+	line2, = plt.plot(delta_star, A_tube[1,:], 'r-', linewidth = 2.0, label = 'A_pod = 2.5 m^2')
+	line3, = plt.plot(delta_star, A_tube[2,:], 'g-', linewidth = 2.0, label = 'A_pod = 3.0 m^2')
+	plt.xlabel('Displacement Boundary Layer (m)', fontsize = 16, fontweight = 'bold')
+	plt.ylabel('Tube Cross Sectional Area (m**2)', fontsize = 16, fontweight = 'bold')
+	plt.xlim(.02, .12)
+	plt.legend(handles = [line1, line2, line3], loc = 2)
+	plt.show()
