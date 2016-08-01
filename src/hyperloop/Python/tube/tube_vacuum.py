@@ -161,3 +161,4 @@ if __name__ == '__main__':
           (p['comp.pwr_tot']))  # Print total power
     print('Total energy per day (kJ): %f' %
           (p['comp.energy_tot']))  # Print total energy consumed per day
+    

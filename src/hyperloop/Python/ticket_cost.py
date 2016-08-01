@@ -8,7 +8,6 @@ class TicketCost(Component):
 	'''
 	Notes
 	-------
-
 	This Component takes into account various cost figures from the system model and combines them to estimate tickt cost per passenger.
 
 	Params
@@ -77,9 +76,7 @@ class TicketCost(Component):
 	prop_energy_cost : float
 		cost of energy used by propulsion section per year. Default value is 0.0 USD
 
-
 	'''
-
 	def __init__(self):
 
 		super(TicketCost, self).__init__()
@@ -121,7 +118,6 @@ class TicketCost(Component):
 		self.add_output('prop_energy_cost', val = 0.0, desc = 'Cost of propulsion energy', units = 'USD')
 
 	def solve_nonlinear(self, p, u,r):
-
 
 		land_cost = p['land_cost']
 		water_cost = p['water_cost']

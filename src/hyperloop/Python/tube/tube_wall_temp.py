@@ -448,8 +448,8 @@ if __name__ == "__main__":
         ('length_tube',
          482803.),  #desc='Length of entire Hyperloop') #300 miles, 1584000ft
         ('num_pods',
-         34),  #desc='Number of Pods in the Tube at a given time') #
-        ('temp_boundary', 340),  #desc='Average Temperature of the tube') #
+         34.),  #desc='Number of Pods in the Tube at a given time') #
+        ('temp_boundary', 340.),  #desc='Average Temperature of the tube') #
         ('temp_outside_ambient', 305.6
          )  #desc='Average Temperature of the outside air
     )
