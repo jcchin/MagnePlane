@@ -6,6 +6,7 @@ from openmdao.api import Component, Group, Problem, IndepVarComp, NLGaussSeidel,
 from hyperloop.Python.tube.tube_group import TubeGroup
 from hyperloop.Python.pod.pod_group import PodGroup
 from hyperloop.Python.ticket_cost import TicketCost
+from hyperloop.Python.sample_mission import SampleMission
 
 import numpy as np 
 import matplotlib.pylab as plt 
@@ -96,24 +97,25 @@ class TubeAndPod(Group):
                                               'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
                                               'n_passengers', 'A_payload', 'S', 'total_pod_mass', 'vel_b',
                                               'h_lev', 'vel', 'mag_drag', 'L_pod'])
-        self.add('cost', TicketCost(), promotes = ['land_length', 'water_length'])
+        self.add('cost', TicketCost(), promotes = ['land_length', 'water_length', 'track_length'])
+        self.add('mission', SampleMission())
 
         # Connects promoted group level params
-        self.connect('tube_pressure', ['tube.p_tunnel', 'cost.p_tunnel'])
+        self.connect('tube_pressure', ['tube.p_tunnel', 'cost.p_tunnel', 'mission.p_tunnel'])
 
         # Connects tube group outputs to pod
         self.connect('tube.temp_boundary', 'pod.tube_temp')
 
         # Connects pod group outputs to tube
-        self.connect('pod.nozzle.Fg', 'tube.nozzle_thrust')
-        self.connect('pod.inlet.F_ram', 'tube.ram_drag')
+        self.connect('pod.nozzle.Fg', ['tube.nozzle_thrust', 'mission.nozzle_thrust'])
+        self.connect('pod.inlet.F_ram', ['tube.ram_drag', 'mission.ram_drag'])
         self.connect('pod.nozzle.Fl_O:tot:T', 'tube.nozzle_air_Tt')
         self.connect('pod.nozzle.Fl_O:stat:W', 'tube.nozzle_air_W')
         self.connect('pod.A_tube', 'tube.tube_area')
-        self.connect('S', ['tube.S', 'cost.S'])
+        self.connect('S', ['tube.S', 'cost.S', 'mission.S'])
         self.connect('L_pod', 'tube.L_pod')
-        self.connect('mag_drag', ['tube.D_mag', 'cost.D_mag'])
-        self.connect('total_pod_mass', ['tube.m_pod', 'cost.m_pod'])
+        self.connect('mag_drag', ['tube.D_mag', 'cost.D_mag', 'mission.D_mag'])
+        self.connect('total_pod_mass', ['tube.m_pod', 'cost.m_pod', 'mission.m_pod'])
         self.connect('vf', 'cost.vf')
         self.connect('pod_period', 'cost.pod_period')
         self.connect('tube.Struct.total_material_cost', 'cost.land_cost')
@@ -122,6 +124,8 @@ class TubeAndPod(Group):
         self.connect('pod.cycle.comp.power', 'cost.pod_power')
         self.connect('tube.comp.power', 'cost.steady_vac_power')
         self.connect('tube.SubmergedTube.material_cost', 'cost.water_cost')
+        self.connect('pod_mach', 'mission.M_pod')
+        self.connect('track_length', 'mission.track_length')
 
         self.nl_solver = NLGaussSeidel()
         self.nl_solver.options['maxiter'] = 20
@@ -220,7 +224,7 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.prop_period', 'TubeAndPod.cost.prop_period')
     prob.root.connect('des_vars.ib', 'TubeAndPod.cost.ib')
     prob.root.connect('des_vars.bm', 'TubeAndPod.cost.bm')
-    prob.root.connect('des_vars.track_length', 'TubeAndPod.cost.track_length')
+    prob.root.connect('des_vars.track_length', 'TubeAndPod.track_length')
     prob.root.connect('des_vars.avg_speed', 'TubeAndPod.cost.avg_speed')
     prob.root.connect('des_vars.land_length', 'TubeAndPod.land_length')
     prob.root.connect('des_vars.water_length', 'TubeAndPod.water_length')
