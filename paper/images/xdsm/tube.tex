@@ -1,0 +1,88 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+
+\input{diagram_border}
+
+\begin{document}
+
+\input{diagram_styles}
+
+\begin{tikzpicture}
+
+  \matrix[MatrixSetup]
+  {
+    %Row 1
+    \node [Function] (SubTube) {\Large \TwolineComponent{6em}{Submerged}{Tube}}; &
+    &
+    &
+    &
+    &
+    &
+    \\
+    &
+    \node [Analysis] (Temp) {\Large \TwolineComponent{6em}{Tube}{Temperature}}; &
+    \node [DataInter] (PropMech-Temp) {$T_\text{tube}$}; &
+    \node [DataInter] (SSVacuum-Temp) {$T_\text{tube}$}; &
+    &
+    \node [DataInter] (Power-Temp) {$T_\text{tube}$}; &
+    \\
+    &
+    &
+    \node [Function] (PropMech) {\Large \TwolineComponent{6em}{Propulsion}{Mechanics}}; &
+    &
+    &
+    \node [DataInter] (Power-PropMech) {$Pwr_\text{required}$}; &
+    \\
+    &
+    &
+    &
+    \node [Analysis] (SSVacuum) {\Large \TwolineComponent{6em}{Steady State}{Vacuum}}; &
+    &
+    &
+    \\
+    &
+    &
+    &
+    &
+    \node [Function] (Vacuum) {\Large Vacuum}; &
+    \node [DataInter] (Power-Vacuum) {$E_\text{total}, Pwr_\text{total}$}; &
+    \node [DataInter] (TubePylon-Vacuum) {$w_\text{total}$}; \\
+    %Row 6
+    &
+    &
+    &
+    &
+    &
+    \node [Function] (Power) {\Large Tube Power}; &
+    \\
+    &
+    &
+    &
+    &
+    &
+    &
+    \node [Function] (TubePylon) {\Large \TwolineComponent{6em}{Tube}{and Pylon}}; \\
+    %Row 8
+  };
+
+  \begin{pgfonlayer}{data}
+    \path
+    % Horizontal edges
+    (Temp) edge [DataLine] (Power-Temp)
+    (PropMech) edge [DataLine] (Power-PropMech)
+    (Vacuum) edge [DataLine] (TubePylon-Vacuum)
+    % Vertical edges
+    (PropMech-Temp) edge [DataLine] (PropMech)
+    (SSVacuum-Temp) edge [DataLine] (SSVacuum)
+    (Power-Temp) edge [DataLine] (Power)
+    (TubePylon-Vacuum) edge [DataLine] (TubePylon)
+    ;
+  \end{pgfonlayer}
+
+\end{tikzpicture}
+
+\end{document}

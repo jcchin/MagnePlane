@@ -150,6 +150,8 @@ if __name__ == '__main__':
     #    prob.run()
     #    mass[0, i] = prob['battery_mass']
 
+    #from openmdao.api import view_tree
+    #view_tree(prob)
     prob.run()
     # plt.plot(power, mass[0, :])
     # plt.show()
