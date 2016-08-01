@@ -5,7 +5,7 @@ dat = 'DataInter'
 
 Large="\Large "
 
-def build_cycle(xdsm):
+def build_flowpath(xdsm):
 
     x.addComp('Fl_Start', 'Function', Large + r'\TwolineComponent{6em}{Flow}{Start}')
     x.addComp('Inlet', 'Function', Large + r'Inlet')
@@ -22,5 +22,5 @@ def build_cycle(xdsm):
     x.addDep('Compressor','Shaft', dat, r"$N_\text{mech}$")
 
 x = XDSM()
-build_cycle(x)
+build_flowpath(x)
 x.write('flowpath',True)
