@@ -57,7 +57,7 @@ class SteadyStateVacuum(Group):
         super(SteadyStateVacuum, self).__init__()
 
         des_vars = (('ram_recovery', 0.99),
-                    ('effDes', 0.9),
+                    ('effDes', 0.8),
                     ('duct_MN', 0.0),
                     ('duct_dPqP', 0.),
                     ('nozzle_Cfg', 1.0),
@@ -74,6 +74,7 @@ class SteadyStateVacuum(Group):
         # internal flow
         self.add('comp', Compressor(thermo_data=janaf, elements=AIR_MIX))
         self.add('q', ExecComp('Prc = Pa/Ps'), promotes = ['Prc', 'Pa'])
+        self.add('q1', ExecComp('m_dot = 3*(A_tube*L_pod)*(1/pod_period)'), promotes = ['m_dot', 'pod_period', 'A_tube', 'L_pod'])
 
         # connect components
         connect_flow(self, 'fl_start.Fl_O', 'comp.Fl_I')
@@ -84,6 +85,7 @@ class SteadyStateVacuum(Group):
         self.connect('input_vars.vehicle_mach', 'fl_start.MN_target')
         self.connect('input_vars.Pa', 'Pa')
         self.connect('Prc', 'comp.map.PRdes')
+        self.connect('m_dot', 'fl_start.W')
         self.connect('fl_start.P', 'q.Ps')
 
 if __name__ == '__main__':
@@ -98,14 +100,18 @@ if __name__ == '__main__':
 	# prob.driver.add_recorder(recorder)
 
 	params = (('Pt', 850.0, {'units': 'Pa'}),
-	          ('T', 320.0, {'units': 'K'}),
-	          ('W', 1.0, {'units': 'kg/s'}))
+				('T', 320.0, {'units': 'K'}),
+				('L_pod', 22.0, {'units' : 'm'}),
+				('A_tube', 40.0, {'units' : 'm**2'}),
+				('pod_period', 120.0, {'units' : 's'}))
 
 	prob.root.add('des_vars', IndepVarComp(params))
 
 	prob.root.connect('des_vars.Pt', 'p.fl_start.P')
 	prob.root.connect('des_vars.T', 'p.fl_start.T')
-	prob.root.connect('des_vars.W', 'p.fl_start.W')
+	prob.root.connect('des_vars.A_tube', 'p.A_tube')
+	prob.root.connect('des_vars.L_pod', 'p.L_pod')
+	prob.root.connect('des_vars.pod_period', 'p.pod_period')
 
 	prob.setup()
 	prob.run()

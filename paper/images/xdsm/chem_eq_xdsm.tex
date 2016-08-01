@@ -1,0 +1,68 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+
+\input{diagram_border}
+
+\begin{document}
+
+\input{diagram_styles}
+
+\begin{tikzpicture}
+
+  \matrix[MatrixSetup]
+  {
+    %Row 1
+    \node [MDA] (solver) {\Large Solver}; &
+    \node [DataInter] (ChemEq-solver) {$n, \pi$}; &
+    &
+    &
+    \\
+    \node [DataInter] (solver-ChemEq) {$\mathcal{R}_\text{Gibbs}, \mathcal{R}_\text{mass}$}; &
+    \node [Analysis] (ChemEq) {\Large \TwolineComponent{6em}{Chemical}{Equilibrium}}; &
+    \node [DataInter] (Cp-ChemEq) {$n, b, b_o$}; &
+    \node [DataInter] (Cv-ChemEq) {$n, b, b_o$}; &
+    \node [DataInter] (props-ChemEq) {$n$}; \\
+    %Row 3
+    &
+    &
+    \node [Analysis] (Cp) {\Large $C_P$}; &
+    &
+    \node [DataInter] (props-Cp) {$C_P$}; \\
+    %Row 4
+    &
+    &
+    &
+    \node [Analysis] (Cv) {\Large $C_V$}; &
+    \node [DataInter] (props-Cv) {$C_V$}; \\
+    %Row 5
+    &
+    &
+    &
+    &
+    \node [Function] (props) {\Large \TwolineComponent{8.2em}{Thermodynamic}{Properties}}; \\
+    %Row 6
+  };
+
+  \begin{pgfonlayer}{data}
+    \path
+    % Horizontal edges
+    (solver) edge [DataLine] (ChemEq-solver)
+    (solver-ChemEq) edge [DataLine] (props-ChemEq)
+    (Cp) edge [DataLine] (props-Cp)
+    (Cv) edge [DataLine] (props-Cv)
+    % Vertical edges
+    (solver) edge [DataLine] (solver-ChemEq)
+    (ChemEq-solver) edge [DataLine] (ChemEq)
+    (Cp-ChemEq) edge [DataLine] (Cp)
+    (Cv-ChemEq) edge [DataLine] (Cv)
+    (props-ChemEq) edge [DataLine] (props)
+    ;
+  \end{pgfonlayer}
+
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,47 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+
+\input{diagram_border}
+
+\begin{document}
+
+\input{diagram_styles}
+
+\begin{tikzpicture}
+
+  \matrix[MatrixSetup]
+  {
+    %Row 1
+    \node [MDA] (Solver) {\Large Solver}; &
+    &
+    \node [DataInter] (TubeWallTemp-Solver) {$T_\text{boundary}$}; \\
+    %Row 2
+    \node [DataInter] (Solver-TempBal) {$\mathcal{R}(T_\text{boundary})$}; &
+    \node [Function] (TempBal) {\Large \TwolineComponent{6em}{Temp}{Balance}}; &
+    \\
+    &
+    \node [DataInter] (TempBal-TubeWallTemp) {$T_\text{ss residual}$}; &
+    \node [Function] (TubeWallTemp) {\Large \TwolineComponent{6em}{Tube Wall}{Temp}}; \\
+    %Row 4
+  };
+
+  \begin{pgfonlayer}{data}
+    \path
+    % Horizontal edges
+    (Solver) edge [DataLine] (TubeWallTemp-Solver)
+    (Solver-TempBal) edge [DataLine] (TempBal)
+    (TempBal-TubeWallTemp) edge [DataLine] (TubeWallTemp)
+    % Vertical edges
+    (Solver) edge [DataLine] (Solver-TempBal)
+    (TempBal) edge [DataLine] (TempBal-TubeWallTemp)
+    (TubeWallTemp-Solver) edge [DataLine] (TubeWallTemp)
+    ;
+  \end{pgfonlayer}
+
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,42 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+
+\input{diagram_border}
+
+\begin{document}
+
+\input{diagram_styles}
+
+\begin{tikzpicture}
+
+  \matrix[MatrixSetup]
+  {
+    %Row 1
+    \node [Function] (Drag) {\Large \TwolineComponent{6em}{BreakPoint}{Drag}}; &
+    \node [DataInter] (MDrag-Drag) {$R_\text{track}, L_\text{track}, \lambda, w_\text{pod}$}; &
+    \\
+    &
+    \node [Function] (MDrag) {\Large \TwolineComponent{6em}{Magnetic}{Drag}}; &
+    \\
+    &
+    &
+    \node [Function] (Mass) {\Large \TwolineComponent{6em}{Magnetic}{Mass}}; \\
+    %Row 4
+  };
+
+  \begin{pgfonlayer}{data}
+    \path
+    % Horizontal edges
+    (Drag) edge [DataLine] (MDrag-Drag)
+    % Vertical edges
+    (MDrag-Drag) edge [DataLine] (MDrag)
+    ;
+  \end{pgfonlayer}
+
+\end{tikzpicture}
+
+\end{document}
