@@ -25,15 +25,15 @@ from sphinx.apidoc import main
 
 #----------------get paths for test folders------------------------#
 
-def run_apidoc(_):
-    cur_dir = os.path.abspath(os.path.dirname(__file__))
-    proj_dir = os.path.join(cur_dir, '..', 'src', 'hyperloop')
-    if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
-        # If we are, assemble the path manually
-        main(['-e', '-o', cur_dir, proj_dir])
-
-def setup(app):
-    app.connect('builder-inited', run_apidoc)
+# def run_apidoc(_):
+#     cur_dir = os.path.abspath(os.path.dirname(__file__))
+#     proj_dir = os.path.join(cur_dir, '..', 'src', 'hyperloop')
+#     if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
+#         # If we are, assemble the path manually
+#         main(['-e', '-o', cur_dir, proj_dir])
+#
+# def setup(app):
+#     app.connect('builder-inited', run_apidoc)
 
 
 #-----------------------------------------------------------------#
