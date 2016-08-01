@@ -210,7 +210,9 @@ if __name__ == "__main__":
     # view_tree(top)
     # exit()
     top.setup()
-    top.root.list_connections()
+    #top.root.list_connections()
+    from openmdao.api import view_tree
+    view_tree(top)
     top.run()
 
     # print('\n')
