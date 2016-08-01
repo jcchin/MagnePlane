@@ -84,7 +84,8 @@ class TicketCost(Component):
 
 		super(TicketCost, self).__init__()
 
-		self.add_param('length_cost', val = 2.437e6, desc = 'Cost of materials per unit length', units = 'USD/km')
+		self.add_param('land_cost', val = 2.437e6, desc = 'Cost of materials over land per unit length', units = 'USD/km')
+		self.add_param('water_cost', val = 389.346941e3, desc = 'Cost of materials underwater per unit length', units = 'USD/km')
 		self.add_param('pod_cost', val = 1.0e6, desc = 'Cost of individual pod', units = 'USD')
 		self.add_param('capital_cost', val = 1.0e10, desc = 'Estimate of overhead capital cost', units = 'USD')
 		self.add_param('energy_cost', val = .13, desc = 'Cost of electricity', units = 'USD/kW/h')
@@ -97,10 +98,12 @@ class TicketCost(Component):
 		self.add_param('pod_period', val = 120.0, desc = 'Time in between departures', units = 's')
 		self.add_param('avg_speed', val = 286.86, desc = 'Average Pod Speed', units = 'm/s')
 		self.add_param('track_length', val = 600.0e3, desc = 'Track Length', units = 'm')
+		self.add_param('land_length', val = 600e3, desc = 'Length traveled over land', units = 'm')
+		self.add_param('water_length', val = 0.0e3, desc = 'Length traveled underwater', units = 'm')
 		self.add_param('pod_power', val = 1.5e6, desc = 'Power required by pod motor', units = 'W')
 		self.add_param('prop_power', val = 350.0e3, desc = 'Power of single propulsive section', units = 'W')
 		self.add_param('vac_power', val = 71.049e6, desc = 'Power of vacuums', units = 'W')
-		self.add_param('alpha', val = .0001, desc = 'Steady State run capacity of vacuum pumps', units = 'unitless')
+		self.add_param('steady_vac_power', val = 950.0e3, desc = 'Steady State run power of vacuum pumps', units = 'W')
 		self.add_param('vf', val = 286.86, desc = 'Pod top speed', units = 'm/s')
 		self.add_param('g', val = 9.81, desc = 'Gravity', units = 'm/s/s')
 		self.add_param('Cd', val = .2, desc = 'Pod drag coefficient', units = 'unitless')
@@ -120,7 +123,8 @@ class TicketCost(Component):
 	def solve_nonlinear(self, p, u,r):
 
 
-		length_cost = p['length_cost']
+		land_cost = p['land_cost']
+		water_cost = p['water_cost']
 		pod_cost= p['pod_cost']
 		capital_cost = p['capital_cost']
 		energy_cost = p['energy_cost']
@@ -133,10 +137,12 @@ class TicketCost(Component):
 		pod_period = p['pod_period']
 		avg_speed = p['avg_speed']
 		track_length = p['track_length']
+		land_length = p['land_length']
+		water_length = p['water_length']
 		pod_power = p['pod_power']
 		prop_power = p['prop_power']
 		vac_power = p['vac_power']
-		alpha = p['alpha']
+		steady_vac_power = -1.0*p['steady_vac_power']
 		vf = p['vf']
 		g = p['g']
 		Cd = p['Cd']
@@ -149,12 +155,13 @@ class TicketCost(Component):
 		thrust_time = p['thrust_time']
 		prop_period = p['prop_period']
 
+		length_cost = ((water_length/track_length)*water_cost) + ((land_length/track_length)*land_cost)
 		pod_frequency = 1.0/pod_period
 		num_pods = np.ceil((track_length/avg_speed)*pod_frequency)
 		flights_per_pod = (operating_time*pod_frequency)/num_pods
 		energy_per_flight = pod_power*(track_length/avg_speed)*.9
 		pod_energy = energy_per_flight*flights_per_pod*num_pods*JtokWh
-		vac_energy = vac_power*operating_time*alpha*JtokWh
+		vac_energy = steady_vac_power*operating_time*JtokWh
 
 		rho = p_tunnel/(R*T_tunnel)
 		start_distance = (vf**2)/(2*g)

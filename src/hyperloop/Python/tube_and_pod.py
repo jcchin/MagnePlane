@@ -88,14 +88,15 @@ class TubeAndPod(Group):
         self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods', 'Cd',
                                               'speed', 'time_down', 'gamma', 'pump_weight',
                                               'electricity_price', 'tube_thickness', 'r_pylon',
-                                              'tube_length', 'h', 'vf', 'v0', 'num_thrust', 'time_thrust',])
+                                              'tube_length', 'h', 'vf', 'v0', 'num_thrust', 'time_thrust', 
+                                              'fl_start.W', 'depth'])
         self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
                                               'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
                                               'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                               'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
                                               'n_passengers', 'A_payload', 'S', 'total_pod_mass', 'vel_b',
                                               'h_lev', 'vel', 'mag_drag'])
-        self.add('cost', TicketCost())
+        self.add('cost', TicketCost(), promotes = ['land_length', 'water_length'])
 
         # Connects promoted group level params
         self.connect('tube_pressure', ['tube.p_tunnel', 'cost.p_tunnel'])
@@ -113,19 +114,21 @@ class TubeAndPod(Group):
         self.connect('mag_drag', ['tube.D_mag', 'cost.D_mag'])
         self.connect('total_pod_mass', ['tube.m_pod', 'cost.m_pod'])
         self.connect('vf', 'cost.vf')
-        self.connect('tube.Struct.total_material_cost', 'cost.length_cost')
+        self.connect('tube.Struct.total_material_cost', 'cost.land_cost')
         self.connect('tube.Vacuum.pwr_tot', 'cost.vac_power')
         self.connect('tube.PropMech.pwr_req', 'cost.prop_power')
         self.connect('pod.cycle.comp.power', 'cost.pod_power')
+        self.connect('tube.comp.power', 'cost.steady_vac_power')
+        self.connect('tube.SubmergedTube.material_cost', 'cost.water_cost')
 
 
         self.nl_solver = NLGaussSeidel()
         self.nl_solver.options['maxiter'] = 20
         self.nl_solver.options['atol'] = 0.0001
-        self.nl_solver.options['iprint'] = 2
+        # self.nl_solver.options['iprint'] = 2
 
         self.ln_solver = ScipyGMRES()
-        self.ln_solver.options['maxiter'] = 100
+        self.ln_solver.options['maxiter'] = 20
 
 if __name__ == '__main__':
 
@@ -172,7 +175,11 @@ if __name__ == '__main__':
               ('ib', .04),
               ('bm', 20.0, {'units' : 'yr'}),
               ('track_length', 600.0, {'units' : 'km'}),
-              ('avg_speed', 286.86, {'units' : 'm/s'})
+              ('avg_speed', 286.86, {'units' : 'm/s'}),
+              ('W', 1.0, {'units' : 'kg/s'}),
+              ('depth', 10.0, {'units' : 'm'}),
+              ('land_length', 600.0e3, {'units' : 'm'}),
+              ('water_length', 0.0e3, {'units' : 'm'})
               )
 
     prob.root.add('des_vars', IndepVarComp(params))
@@ -216,13 +223,77 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.bm', 'TubeAndPod.cost.bm')
     prob.root.connect('des_vars.track_length', 'TubeAndPod.cost.track_length')
     prob.root.connect('des_vars.avg_speed', 'TubeAndPod.cost.avg_speed')
+    prob.root.connect('des_vars.W', 'TubeAndPod.fl_start.W')
+    prob.root.connect('des_vars.land_length', 'TubeAndPod.land_length')
+    prob.root.connect('des_vars.water_length', 'TubeAndPod.water_length')
+
 
     prob.setup()
+
     # from openmdao.api import view_tree
     # view_tree(prob)
-    prob.run()
+    # prob.run()
 
     # prob.root.list_states()
+    prob.run()
+
+
+    # p_tunnel = 4.0*np.logspace(2,3, num = 100)
+    # A_tube = np.zeros((1, len(p_tunnel)))
+    # Re = np.zeros((1, len(p_tunnel)))
+    # T_tunnel = np.zeros((1, len(p_tunnel)))
+    # L_pod = np.zeros((1, len(p_tunnel)))
+    # L_bat = np.zeros((1, len(p_tunnel)))
+    # power = np.zeros((1, len(p_tunnel)))
+    # D = np.zeros((1, len(p_tunnel)))
+    # steady_vac = np.zeros((1,len(p_tunnel)))
+
+    # # with open('/Users/kennethdecker/Desktop/Paper figures/pressure_trade.txt', 'w') as f:
+    # f = open('/Users/kennethdecker/Desktop/Paper figures/pressure_trade.txt', 'w')
+    # f.write('%10s \t %10s \t %10s \t %10s \t %10s \t %10s \r\n' % ('pressure', 'A_tube', 'Re', 'power', 'Drag', 'Vac Power'))
+
+
+    # for i in range(len(p_tunnel)):
+    #     prob['des_vars.tube_pressure'] = p_tunnel[i]
+
+    #     prob.run()
+
+    #     A_tube[0,i] = prob['TubeAndPod.pod.A_tube']
+    #     Re[0,i] = prob['TubeAndPod.pod.pod_mach.Re']
+    #     T_tunnel[0,i] = prob['TubeAndPod.tube.temp_boundary']
+    #     L_pod[0,i] = prob['TubeAndPod.pod.pod_geometry.L_pod']
+    #     L_bat[0,i] = prob['TubeAndPod.pod.drivetrain.battery_length']
+    #     power[0,i] = -1.0*prob['TubeAndPod.pod.cycle.comp.power']
+    #     D[0,i] = prob['TubeAndPod.tube.PropMech.D']
+    #     steady_vac[0,i] = -1.0*prob['TubeAndPod.tube.comp.power']
+
+    #     f.write('%10.2f \t %10.4f \t %10.0f \t %10.4f \t %10.4f \t %10.4f \r\n' % (p_tunnel[i], A_tube[0,i], Re[0,i], power[0,i], D[0,i], steady_vac[0,i]))
+
+    
+    # f.close()
+    # plt.plot(p_tunnel, A_tube[0,:], 'b-', linewidth = 2.0)
+    # plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
+    # plt.ylabel('Tube Area (m^2)', fontsize = 16, fontweight = 'bold')
+    # plt.show()
+    # plt.plot(p_tunnel, D[0,:], 'r-', linewidth = 2.0)
+    # plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
+    # plt.ylabel('Drag Force (N)', fontsize = 16, fontweight = 'bold')
+    # plt.show()
+    # plt.plot(p_tunnel, steady_vac[0,:], 'r-', linewidth = 2.0)
+    # plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
+    # plt.ylabel('Vacuum Power (hp)', fontsize = 16, fontweight = 'bold')
+    # plt.show()
+
+    # plt.plot(p_tunnel, Re[0,:])
+    # plt.show()
+    # plt.plot(p_tunnel, T_tunnel[0,:])
+    # plt.show()
+    # plt.plot(p_tunnel, L_pod[0,:])
+    # plt.show()
+    # plt.plot(p_tunnel, L_bat[0,:])
+    # plt.show()
+    # plt.plot(p_tunnel, power[0,:])
+    # plt.show()
 
     print('\n')
     print('------ Freestream and Pod Inputs ------')
@@ -272,6 +343,7 @@ if __name__ == '__main__':
     print('tube temperature                   %f K' % prob['TubeAndPod.tube.temp_boundary'])
     print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
     print('number of vacuum pumps             %.0f pumps' % np.ceil(prob['TubeAndPod.tube.Vacuum.number_pumps']))
+    print('steady sate vacuum power           %f hp' % prob['TubeAndPod.tube.comp.power'])
     print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
     print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
 
