@@ -15,7 +15,7 @@ class SampleMission(Component):
 
 		self.add_param('p_tunnel', 850.0, desc = 'Tunnel pressure', units = 'Pa')
 		self.add_param('T_tunnel', 320.0, desc = 'T_tunnel', units = 'K')
-		self.add_param('Cd', .20, desc = 'Pod drag coefficient', units = 'unitless')
+		self.add_param('Cd', .25, desc = 'Pod drag coefficient', units = 'unitless')
 		self.add_param('S', 40.0, desc = 'Pod planform area', units = 'm**2')
 		self.add_param('m_pod', 10000.0, desc = 'Pod mass', units = 'kg')
 		self.add_param('D_mag', (10000.0*9.81)/200.0, desc = 'Magnetic Drag', units = 'N')
@@ -63,15 +63,23 @@ class SampleMission(Component):
 		#Initialize numerical integration
 		i = x = 0.0
 		v = vf
-		dt = .001
+		dt = .01
 		net_thrust = nozzle_thrust - ram_drag
 		
 		while v > v0:
-			v = ((dt/m_pod)*(net_thrust - (.5*Cd*rho*S*(v**2.0)) - (m_pod*g*np.sin(theta)) - D_mag)) + v
-			x = x + v*dt
+			#Integrate numerically using predictor-corrector method for velocity
+			v_old = v
+			v_init = ((dt/m_pod)*(net_thrust - (.5*Cd*rho*S*(v**2.0)) - (m_pod*g*np.sin(theta)) - D_mag)) + v
+			v = v + ((dt/m_pod)*(net_thrust - (.5*Cd*rho*S*(v_init**2.0)) - (m_pod*g*np.sin(theta)) - D_mag) + \
+				((dt/m_pod)*(net_thrust - (.5*Cd*rho*S*(v**2.0)) - (m_pod*g*np.sin(theta)) - D_mag)))/2.0
+			x = x + ((v_old+v)/2.0)*dt
+			if v > v_old:
+				print('thrust greater than drag')
+				break
+
 			i = i + 1.0
 
-			if i>1000000:
+			if i>100000:
 				break
 
 		u['dx_start'] = dx_start
