@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Python documentation build configuration file, created by
-# sphinx-quickstart on Mon Aug  1 14:34:38 2016.
+# sphinx-quickstart on Mon Aug  1 15:03:26 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
