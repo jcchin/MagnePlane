@@ -125,8 +125,8 @@ if __name__ == "__main__":
 
     prob.setup()
     #prob.root.list_connections()
-    from openmdao.api import view_tree
-    view_tree(prob)
+    #from openmdao.api import view_tree
+    #view_tree(prob)
 
     prob.run()
 

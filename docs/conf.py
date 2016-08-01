@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Hyperloop documentation build configuration file, created by
-# sphinx-quickstart on Thu Jun 16 10:32:21 2016.
+# hyperloop documentation build configuration file, created by
+# sphinx-quickstart on Mon Aug  1 12:29:56 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -13,166 +12,39 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
+import sys
+import os
+from sphinx.apidoc import main
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#
-import os
-import sys
+#sys.path.insert(0, os.path.abspath('.'))
 
-#------------------------begin monkeypatch-----------------------
+
+#----------------get paths for test folders------------------------#
+
+# def run_apidoc(_):
+#     cur_dir = os.path.abspath(os.path.dirname(__file__))
+#     proj_dir = os.path.join(cur_dir, '..', 'src', 'hyperloop')
+#     if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
+#         # If we are, assemble the path manually
+#         main(['-e', '-o', cur_dir, proj_dir])
+#
+# def setup(app):
+#     app.connect('builder-inited', run_apidoc)
+
+
+#-----------------------------------------------------------------#
+
+
+#------------------------begin monkeypatch-----------------------#
 #monkeypatch to make our docs say "Args" instead of "Parameters"
 from numpydoc.docscrape_sphinx import SphinxDocString
 from numpydoc.docscrape import NumpyDocString, Reader
 import textwrap
 numpydoc_show_class_members = False
-
-# def generate_docs():
-#     index_top = """.. _source_documentation:
-#
-#
-# ===============================
-# Hyperloop Source Documentation
-# ===============================
-#
-#
-# .. toctree::
-#    :maxdepth: 3
-#    :glob:
-#
-#
-# """
-#
-#
-#     package_top = """
-# .. toctree::
-#     :maxdepth: 3
-#
-#
-# """
-#
-#
-#     package_bottom = """
-#
-# Indices and tables
-# ==================
-#
-# * :ref:`genindex`
-# * :ref:`modindex`
-# * :ref:`search`
-# """
-#
-#
-#     ref_sheet_bottom = """
-#    :members:
-#    :undoc-members:
-#    :show-inheritance:
-#
-#
-# .. toctree::
-#    :maxdepth: 2
-# """
-#
-#
-#     # need to set up the srcdocs directory structure, relative to docs.
-#     dir = os.path.dirname(__file__)
-#     if os.path.isdir(os.path.join(dir, "srcdocs")):
-#         import shutil
-#         shutil.rmtree(os.path.join(dir, "srcdocs"))
-#     os.mkdir(os.path.join(dir, "srcdocs"))
-#     os.mkdir(os.path.join(dir, "srcdocs", "packages"))
-#
-#
-#     # look for directories in the hyperloop level, one up from docs
-#     # those directories will be the hyperloop packages
-#     # auto-generate the top-level index.rst file for srcdocs, based on
-#     # hyperloop packages:
-#     IGNORE_LIST = ['Docs', '__pycache__', 'tests', 'tools']
-#     # to improve the order that the user sees in the source docs, put
-#     # the important packages in this list explicitly. Any new ones that
-#     # get added will show up at the end.
-#     packages = ['Aero', 'Cycle', 'Geometry', 'Meshing', 'Hardware',
-#                 'Python']
-#     # Everything in dir that isn't discarded is appended as a source package.
-#     for listing in os.listdir(os.path.join(dir, "../..")):
-#         if os.path.isdir(os.path.join("../..", listing)):
-#             if listing not in IGNORE_LIST and listing not in packages:
-#                 packages.append(listing)
-#
-#     # begin writing the 'srcdocs/index.rst' file at top level.
-#     index_filename = os.path.join(dir, "srcdocs", "index.rst")
-#     index = open(index_filename, "w")
-#     index.write(index_top)
-#
-#     # auto-generate package header files (e.g. 'hyperloop.battery.rst')
-#     for package in packages:
-#         # a package is e.g. hyperloop.Python, that contains source files
-#         # a sub_package, is a src file, e.g. hyperloop.Python.battery
-#         sub_packages = []
-#         package_filename = os.path.join(dir, "srcdocs", "packages",
-#                                         "hyperloop." + package + ".rst")
-#         package_name = "hyperloop." + package
-#
-#         # the sub_listing is going into each package dir and listing what's in it
-#         for sub_listing in sorted(os.listdir(os.path.join("../..", package))):
-#             # don't want to catalog files twice, nor use init files nor test dir
-#             if (os.path.isdir(sub_listing) and sub_listing != "test") or \
-#                (sub_listing.endswith(".py") and not sub_listing.startswith('_')):
-#                 # just want the name of e.g. battery not battery.py
-#                 sub_packages.append(sub_listing.rsplit('.')[0])
-#
-#         if len(sub_packages) > 0:
-#             # continue to write in the top-level index file.
-#             # only document non-empty packages to avoid errors
-#             # (e.g. at time of writing, Meshing, Aero, are empty dirs)
-#
-#             #specifically don't use os.path.join here.  Even windows wants the
-#             #stuff in the file to have fwd slashes.
-#             index.write("   packages/hyperloop." + package + "\n")
-#
-#             # make subpkg directory (e.g. srcdocs/packages/core) for ref sheets
-#             package_dirname = os.path.join(dir, "srcdocs", "packages", package)
-#             os.mkdir(package_dirname)
-#
-#             # create/write a package index file: (e.g. "srcdocs/packages/hyperloop.Python.rst")
-#             package_file = open(package_filename, "w")
-#             package_file.write(package_name + "\n")
-#             package_file.write("-" * len(package_name) + "\n")
-#             package_file.write(package_top)
-#
-#             for sub_package in sub_packages:
-#                 SKIP_SUBPACKAGES = []
-#                 # this line writes subpackage name e.g. "Python/battery.py"
-#                 # into the corresponding package index file (e.g. "hyperloop.battery.rst")
-#                 if sub_package not in SKIP_SUBPACKAGES:
-#                     #specifically don't use os.path.join here.  Even windows wants the
-#                     #stuff in the file to have fwd slashes.
-#                     package_file.write("    " + package + "/" + sub_package + "\n")
-#
-#                     # creates and writes out one reference sheet (e.g. core/component.rst)
-#                     ref_sheet_filename = os.path.join(package_dirname, sub_package + ".rst")
-#                     ref_sheet = open(ref_sheet_filename, "w")
-#                     # get the meat of the ref sheet code done
-#                     filename = sub_package + ".py"
-#                     ref_sheet.write(".. index:: " + filename + "\n\n")
-#                     ref_sheet.write(".. _" + package_name + "." + filename + ":\n\n")
-#                     ref_sheet.write(filename + "\n")
-#                     ref_sheet.write("+" * len(filename) + "\n\n")
-#                     ref_sheet.write(".. automodule:: " + package_name + "." + sub_package)
-#                     # finish and close each reference sheet.
-#                     ref_sheet.write(ref_sheet_bottom)
-#                     ref_sheet.close()
-#
-#             # finish and close each package file
-#             package_file.write(package_bottom)
-#             package_file.close()
-#
-#     # finish and close top-level index file
-#     index.close()
-#
-#
-# generate_docs()
-
 
 def _parse(self):
         self._doc.reset()
@@ -266,7 +138,6 @@ SphinxDocString._parse = _parse
 SphinxDocString.__str__ = __str__
 #--------------end monkeypatch---------------------
 
-sys.path.insert(0, os.path.abspath('../../..'))
 
 # -- General configuration ------------------------------------------------
 
@@ -330,14 +201,14 @@ language = None
 #
 # today = ''
 #
-# Else, today_fmt is used as the format for a strftime call.
+# Else, today_fmt is used asR the format for a strftime call.
 #
 # today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = []
+exclude_patterns = ['*tests.rst']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -675,3 +546,9 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+
+
+
+

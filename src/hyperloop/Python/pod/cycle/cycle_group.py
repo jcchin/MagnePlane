@@ -122,10 +122,10 @@ if __name__ == "__main__":
 
     prob.setup()
     # prob.root.list_connections()
-    print(prob.root.Cycle.list_order())
+    #print(prob.root.Cycle.list_order())
     #from openmdao.api import view_tree
     #view_tree(prob)
-    exit()
+    #exit()
 
     prob.run()
 
