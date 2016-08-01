@@ -90,7 +90,7 @@ class PodGroup(Group):
         self.add('pod_mach', PodMach(), promotes=['A_tube'])
         self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                                        'inverter_efficiency', 'motor_oversize_factor', 'battery_cross_section_area'])
-        self.add('pod_geometry', PodGeometry(), promotes=['A_payload', 'n_passengers', 'S'])
+        self.add('pod_geometry', PodGeometry(), promotes=['A_payload', 'n_passengers', 'S', 'L_pod'])
         self.add('levitation_group', LevGroup(), promotes=['vel_b', 'h_lev', 'vel', 'mag_drag', 'total_pod_mass'])
         self.add('pod_mass', PodMass())
 
@@ -100,6 +100,7 @@ class PodGroup(Group):
         self.connect('tube_temp', 'pod_mach.T_ambient')
         self.connect('n_passengers', 'pod_mass.n_passengers')
         self.connect('comp_inlet_area', 'pod_mach.comp_inlet_area')
+        self.connect('L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
 
         # Connects cycle group outputs to downstream components
         self.connect('cycle.comp_len', 'pod_geometry.L_comp')
@@ -116,7 +117,6 @@ class PodGroup(Group):
 
         # Connects Pod Geometry outputs to downstream components
         self.connect('pod_geometry.A_pod', 'pod_mach.A_pod')
-        self.connect('pod_geometry.L_pod', ['pod_mach.L', 'pod_mass.pod_len', 'levitation_group.l_pod'])
         self.connect('pod_geometry.D_pod', ['pod_mass.podgeo_d', 'levitation_group.d_pod'])
         self.connect('pod_geometry.BF', 'pod_mass.BF')
 
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     print('battery mass         %f' % prob['Pod.drivetrain.battery_mass'])
     print('motor mass           %f' % prob['Pod.drivetrain.motor_mass'])
     print('\n')
-    print('pod length           %f' % prob['Pod.pod_geometry.L_pod'])
+    print('pod length           %f' % prob['Pod.L_pod'])
     print('pod area             %f' % prob['Pod.S'])
     print('pod cross section    %f' % prob['Pod.pod_geometry.A_pod'])
     print('pod diameter         %f' % prob['Pod.pod_geometry.D_pod'])

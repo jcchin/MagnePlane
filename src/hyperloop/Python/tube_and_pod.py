@@ -89,13 +89,13 @@ class TubeAndPod(Group):
                                               'speed', 'time_down', 'gamma', 'pump_weight',
                                               'electricity_price', 'tube_thickness', 'r_pylon',
                                               'tube_length', 'h', 'vf', 'v0', 'num_thrust', 'time_thrust', 
-                                              'fl_start.W', 'depth'])
+                                              'fl_start.W', 'depth', 'pod_period'])
         self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
                                               'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
                                               'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                               'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
                                               'n_passengers', 'A_payload', 'S', 'total_pod_mass', 'vel_b',
-                                              'h_lev', 'vel', 'mag_drag'])
+                                              'h_lev', 'vel', 'mag_drag', 'L_pod'])
         self.add('cost', TicketCost(), promotes = ['land_length', 'water_length'])
 
         # Connects promoted group level params
@@ -111,9 +111,11 @@ class TubeAndPod(Group):
         self.connect('pod.nozzle.Fl_O:stat:W', 'tube.nozzle_air_W')
         self.connect('pod.A_tube', 'tube.tube_area')
         self.connect('S', ['tube.S', 'cost.S'])
+        self.connect('L_pod', 'tube.L_pod')
         self.connect('mag_drag', ['tube.D_mag', 'cost.D_mag'])
         self.connect('total_pod_mass', ['tube.m_pod', 'cost.m_pod'])
         self.connect('vf', 'cost.vf')
+        self.connect('pod_period', 'cost.pod_period')
         self.connect('tube.Struct.total_material_cost', 'cost.land_cost')
         self.connect('tube.Vacuum.pwr_tot', 'cost.vac_power')
         self.connect('tube.PropMech.pwr_req', 'cost.prop_power')
@@ -175,7 +177,6 @@ if __name__ == '__main__':
               ('bm', 20.0, {'units' : 'yr'}),
               ('track_length', 600.0, {'units' : 'km'}),
               ('avg_speed', 286.86, {'units' : 'm/s'}),
-              ('W', 1.0, {'units' : 'kg/s'}),
               ('depth', 10.0, {'units' : 'm'}),
               ('land_length', 600.0e3, {'units' : 'm'}),
               ('water_length', 0.0e3, {'units' : 'm'}))
@@ -221,7 +222,6 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.bm', 'TubeAndPod.cost.bm')
     prob.root.connect('des_vars.track_length', 'TubeAndPod.cost.track_length')
     prob.root.connect('des_vars.avg_speed', 'TubeAndPod.cost.avg_speed')
-    prob.root.connect('des_vars.W', 'TubeAndPod.fl_start.W')
     prob.root.connect('des_vars.land_length', 'TubeAndPod.land_length')
     prob.root.connect('des_vars.water_length', 'TubeAndPod.water_length')
 
@@ -323,7 +323,7 @@ if __name__ == '__main__':
 
     print('\n')
     print('------ Pod Mass and Geometry Outputs ------')
-    print('pod length                         %f m' % prob['TubeAndPod.pod.pod_geometry.L_pod'])
+    print('pod length                         %f m' % prob['TubeAndPod.L_pod'])
     print('pod cross section                  %f m**2' % prob['TubeAndPod.pod.pod_geometry.A_pod'])
     print('pod diameter                       %f m' % prob['TubeAndPod.pod.pod_geometry.D_pod'])
     print('planform area                      %f m**2' % prob['TubeAndPod.S']) 
