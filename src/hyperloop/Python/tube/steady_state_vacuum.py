@@ -131,11 +131,3 @@ if __name__ == '__main__':
 	print("Compressor Pt:         %.6f psi" % (prob['p.comp.Fl_O:tot:P']))
 	print("Compressor Tt:         %.6f degR" % (prob['p.comp.Fl_O:tot:T']))
 	print("Compressor Power Reqd: %.6f hp" % (prob['p.comp.power']))
-
-
-
-
-
-
-
-

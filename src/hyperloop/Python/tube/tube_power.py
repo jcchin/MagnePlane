@@ -45,7 +45,6 @@ class TubePower(Component):
     <http://large.stanford.edu/publications/power/references/voltprice/>
     Umrath, Walter, Dr. Fundamentals of Vacuum Technology. N.p.: Oerlikon Leybold Vacuum, n.d. Print.
 
-
     TODO: add in calculations for refrigeration power requirement?
 
     """
@@ -107,4 +106,3 @@ if __name__ == '__main__':
     print('Total Tube Power Required [kW]: %f' % prob['comp.tot_power'])
     print('Total Tube Energy Required [kJ]: %f' % prob['comp.tot_energy'])
     print('Tube Power Cost [USD/h]: %f' % prob['comp.cost_pwr'])
-

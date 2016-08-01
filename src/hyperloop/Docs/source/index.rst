@@ -5,6 +5,6 @@
 .. _MagnePlane Reference Sheets: srcdocs/index.html
 
 .. toctree::
-  :maxdepth: 3
+  :maxdepth: 6
 
   srcdocs/index.rst
