@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage{geometry}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+
+\input{diagram_border}
+
+\begin{document}
+
+\input{diagram_styles}
+
+\begin{tikzpicture}
+
+  \matrix[MatrixSetup]
+  {
+    %Row 1
+    \node [Function] (MotorSize) {\Large Motor Size}; &
+    &
+    &
+    \node [DataInter] (Motor-MotorSize) {\TwolineComponent{16em}{$\tau_\text{max}, Pwr_\text{mech}, \omega_\text{operating}$}{$Pwr_\text{iron loss}, R_\text{winding}, Pwr_\text{windage loss}$}}; \\
+    %Row 2
+    &
+    \node [MDA] (Solver) {\Large Solver}; &
+    &
+    \node [DataInter] (Motor-Solver) {$I_\text{no load}$}; \\
+    %Row 3
+    &
+    \node [DataInter] (Solver-MotorBalance) {$\mathcal{R}(I_\text{no load})$}; &
+    \node [Analysis] (MotorBalance) {\Large Motor Balance}; &
+    \\
+    &
+    &
+    \node [DataInter] (MotorBalance-Motor) {$I, V, Pwr_\text{motor input}$}; &
+    \node [Function] (Motor) {\Large Motor}; \\
+    %Row 5
+  };
+
+  \begin{pgfonlayer}{data}
+    \path
+    % Horizontal edges
+    (MotorSize) edge [DataLine] (Motor-MotorSize)
+    (Solver) edge [DataLine] (Motor-Solver)
+    (Solver-MotorBalance) edge [DataLine] (MotorBalance)
+    (MotorBalance-Motor) edge [DataLine] (Motor)
+    % Vertical edges
+    (Solver) edge [DataLine] (Solver-MotorBalance)
+    (MotorBalance) edge [DataLine] (MotorBalance-Motor)
+    (Motor-MotorSize) edge [DataLine] (Motor)
+    ;
+  \end{pgfonlayer}
+
+\end{tikzpicture}
+
+\end{document}
