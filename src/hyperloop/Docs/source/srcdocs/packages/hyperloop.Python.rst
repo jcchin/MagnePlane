@@ -8,6 +8,7 @@ hyperloop.Python
     Python/LIM
     Python/angular_velocity321
     Python/boundary_layer_sensitivity
+    Python/sample_mission
     Python/ticket_cost
     Python/tube_and_pod
 

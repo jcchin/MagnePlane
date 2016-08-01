@@ -52,60 +52,60 @@ class MotorBalance(Component):
             params['current'] * params['voltage'] - params['motor_power_input'])
 
 class MotorGroup(Group):
+    """MotorGroup represents a BLDC motor in an OpenMDAO model which can calculate
+    size, mass, and various performance characteristics of a BLDC motor based
+    on input paramters
+
+    Components
+    ----------
+    motor : Motor
+        Calculates the electrical characteristics of the motor
+    motor_size : MotorSize
+        Calculates the size, mass, and performance characteristics of the motor
+    motor_balance : MotorBalance
+        Calculates the residual in the conservation of energy equation between input
+        power and total power used by the motor from mechanical output and additional
+        losses
+
+    Params
+    ------
+    design_power : float
+        desired design value for motor power (W)
+    design_torque : float
+        desired torque at max rpm (N*m)
+    motor_max_current : float
+        max motor phase current (A)
+    motor_LD_ratio : float
+        length to diameter ratio of motor (unitless)
+    motor_oversize_factor : float
+        scales peak motor power by this figure (unitless)
+
+    Outputs
+    -------
+    current : float
+        current through motor (A)
+    voltage : float
+        voltage across motor in (V)
+    phase_current : float
+        phase current through motor (A)
+    phase_voltage : float
+        phase voltage across motor (V)
+    frequency : float
+        Frequency of electric output waveform (Hz)
+    motor_power_input : float
+        total required power input into motor (W)
+    motor_volume : float
+        D^2*L parameter which is proportional to Torque (mm^3)
+    motor_diameter : float
+        diameter of motor (m)
+    motor_mass : float
+        mass of motor (kg)
+    motor_length : float
+        motor length (m)
+    motor_power_input : float
+        total required power input into motor (W)
+    """
     def __init__(self):
-        """MotorGroup represents a BLDC motor in an OpenMDAO model which can calculate
-        size, mass, and various performance characteristics of a BLDC motor based
-        on input paramters
-
-        Components
-        ----------
-        motor : Motor
-            Calculates the electrical characteristics of the motor
-        motor_size : MotorSize
-            Calculates the size, mass, and performance characteristics of the motor
-        motor_balance : MotorBalance
-            Calculates the residual in the conservation of energy equation between input
-            power and total power used by the motor from mechanical output and additional
-            losses
-
-        Params
-        ------
-        design_power : float
-            desired design value for motor power (W)
-        design_torque : float
-            desired torque at max rpm (N*m)
-        motor_max_current : float
-            max motor phase current (A)
-        motor_LD_ratio : float
-            length to diameter ratio of motor (unitless)
-        motor_oversize_factor : float
-            scales peak motor power by this figure (unitless)
-
-        Outputs
-        -------
-        current : float
-            current through motor (A)
-        voltage : float
-            voltage across motor in (V)
-        phase_current : float
-            phase current through motor (A)
-        phase_voltage : float
-            phase voltage across motor (V)
-        frequency : float
-            Frequency of electric output waveform (Hz)
-        motor_power_input : float
-            total required power input into motor (W)
-        motor_volume : float
-            D^2*L parameter which is proportional to Torque (mm^3)
-        motor_diameter : float
-            diameter of motor (m)
-        motor_mass : float
-            mass of motor (kg)
-        motor_length : float
-            motor length (m)
-        motor_power_input : float
-            total required power input into motor (W)
-        """
         super(MotorGroup, self).__init__()
 
         self.add('motor',

@@ -1,17 +1,17 @@
-.. Python documentation master file, created by
-   sphinx-quickstart on Mon Aug  1 15:03:26 2016.
+.. hyperloop documentation master file, created by
+   sphinx-quickstart on Mon Aug  1 15:48:26 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Python's documentation!
-==================================
+Welcome to hyperloop's documentation!
+=====================================
 
 Contents:
 
 .. toctree::
    :maxdepth: 4
 
-   Python
+   hyperloop
 
 
 Indices and tables

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-# Python documentation build configuration file, created by
-# sphinx-quickstart on Mon Aug  1 15:03:26 2016.
+# hyperloop documentation build configuration file, created by
+# sphinx-quickstart on Mon Aug  1 15:48:26 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -19,6 +19,119 @@ import os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
+
+
+
+#------------------------begin monkeypatch-----------------------
+#monkeypatch to make our docs say "Args" instead of "Parameters"
+from numpydoc.docscrape_sphinx import SphinxDocString
+from numpydoc.docscrape import NumpyDocString, Reader
+import textwrap
+numpydoc_show_class_members = False
+
+def _parse(self):
+    self._doc.reset()
+    self._parse_summary()
+
+    for (section, content) in self._read_sections():
+        if not section.startswith('..'):
+            section = ' '.join([s.capitalize() for s in section.split(' ')])
+        if section in ('Args', 'Options', 'Params', 'Returns', 'Raises', 'Warns',
+                       'Other Args', 'Attributes', 'Methods', 'Outputs', 'Unknowns', 'Components'):
+            self[section] = self._parse_param_list(content)
+        elif section.startswith('.. index::'):
+            self['index'] = self._parse_index(section, content)
+        elif section == 'See Also':
+            self['See Also'] = self._parse_see_also(content)
+        else:
+            self[section] = content
+
+
+def __str__(self, indent=0, func_role="obj"):
+    out = []
+    out += self._str_signature()
+    out += self._str_index() + ['']
+    out += self._str_summary()
+    out += self._str_extended_summary()
+    out += self._str_param_list('Args')
+    out += self._str_options('Options')
+    out += self._str_options('Params')
+    out += self._str_options('Outputs')
+    out += self._str_options('Unknowns')
+    out += self._str_options('Components')
+
+
+
+    out += self._str_returns()
+    for param_list in ('Other Args', 'Raises', 'Warns'):
+        out += self._str_param_list(param_list)
+    out += self._str_warnings()
+    out += self._str_see_also(func_role)
+    out += self._str_section('Notes')
+    out += self._str_references()
+    out += self._str_examples()
+    for param_list in ('Attributes', 'Methods'):
+        out += self._str_member_list(param_list)
+    out = self._str_indent(out, indent)
+    return '\n'.join(out)
+
+
+def __init__(self, docstring, config={}):
+    docstring = textwrap.dedent(docstring).split('\n')
+
+    self._doc = Reader(docstring)
+    self._parsed_data = {
+        'Signature': '',
+        'Summary': [''],
+        'Extended Summary': [],
+        'Args': [],
+        'Options': [],
+        'Returns': [],
+        'Raises': [],
+        'Warns': [],
+        'Other Args': [],
+        'Attributes': [],
+        'Params': [],
+        'Outputs': [],
+        'Unknowns': [],
+        'Components': [],
+        'Methods': [],
+        'See Also': [],
+        'Notes': [],
+        'Warnings': [],
+        'References': '',
+        'Examples': '',
+        'index': {}
+    }
+
+    self._parse()
+
+
+def _str_options(self, name):
+    out = []
+    if self[name]:
+        out += self._str_field_list(name)
+        out += ['']
+        for param, param_type, desc in self[name]:
+            if param_type:
+                out += self._str_indent(['**%s** : %s' % (param.strip(),
+                                                          param_type)])
+            else:
+                out += self._str_indent(['**%s**' % param.strip()])
+            if desc:
+                out += ['']
+                out += self._str_indent(desc, 8)
+            out += ['']
+    return out
+
+
+# Do the actual patch switchover to these local versions
+NumpyDocString.__init__ = __init__
+SphinxDocString._str_options = _str_options
+SphinxDocString._parse = _parse
+SphinxDocString.__str__ = __str__
+# --------------end monkeypatch---------------------
+
 
 # -- General configuration ------------------------------------------------
 
@@ -38,6 +151,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'numpydoc',
 ]
+
+numpydoc_show_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -83,7 +198,7 @@ language = 'en'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*tests.rst']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '*.tests.rst']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -129,7 +244,7 @@ html_theme = 'sphinx_rtd_theme'
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
-#html_title = u'Python v'
+#html_title = u'hyperloop v'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -211,7 +326,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Hyperloopdoc'
+htmlhelp_basename = 'hyperloopdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -263,7 +378,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'Hyperloop', 'Hyperloop Documentation',
+    (master_doc, 'hyperloop', u'hyperloop Documentation',
      [author], 1)
 ]
 
