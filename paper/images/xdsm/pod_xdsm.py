@@ -7,6 +7,7 @@ Large="\Large "
 
 def build_pod(xdsm):
 
+    x.addComp('Drag', 'Function', Large + r'Drag')
     x.addComp('Cycle', 'Analysis', Large + r'Cycle')
     x.addComp('Drivetrain', 'Analysis', Large + r'Drivetrain')
     x.addComp('Geometry', 'Function', Large + r'Geometry')
