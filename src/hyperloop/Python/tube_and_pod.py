@@ -85,18 +85,23 @@ class TubeAndPod(Group):
            Bradley University, 2004. N.p.: n.p., n.d. Print.
         """
         super(TubeAndPod, self).__init__()
-
-        self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods', 'Cd',
-                                              'speed', 'time_down', 'gamma', 'pump_weight',
-                                              'electricity_price', 'tube_thickness', 'r_pylon',
-                                              'tube_length', 'h', 'vf', 'v0', 'num_thrust', 'time_thrust', 
-                                              'fl_start.W', 'depth', 'pod_period'])
         self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
                                               'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
                                               'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                               'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
                                               'n_passengers', 'A_payload', 'S', 'total_pod_mass', 'vel_b',
                                               'h_lev', 'vel', 'mag_drag', 'L_pod'])
+        self.add('tube', TubeGroup(), promotes=['pressure_initial', 'pwr', 'num_pods',
+                                              'speed', 'time_down', 'gamma', 'pump_weight',
+                                              'electricity_price', 'tube_thickness', 'r_pylon',
+                                              'tube_length', 'h', 'vf', 'v0', 'time_thrust', 
+                                              'fl_start.W', 'depth', 'pod_period'])
+        # self.add('pod', PodGroup(), promotes=['pod_mach', 'tube_pressure', 'comp.map.PRdes',
+        #                                       'nozzle.Ps_exhaust', 'comp_inlet_area', 'des_time',
+        #                                       'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
+        #                                       'motor_oversize_factor', 'inverter_efficiency', 'battery_cross_section_area',
+        #                                       'n_passengers', 'A_payload', 'S', 'total_pod_mass', 'vel_b',
+        #                                       'h_lev', 'vel', 'mag_drag', 'L_pod'])
         self.add('cost', TicketCost(), promotes = ['land_length', 'water_length', 'track_length', 'operating_time'])
         self.add('mission', SampleMission())
 
@@ -107,6 +112,7 @@ class TubeAndPod(Group):
         self.connect('tube.temp_boundary', 'pod.tube_temp')
 
         # Connects pod group outputs to tube
+        self.connect('pod.Cd', ['tube.Cd', 'cost.Cd', 'mission.Cd'])
         self.connect('pod.nozzle.Fg', ['tube.nozzle_thrust', 'mission.nozzle_thrust'])
         self.connect('pod.inlet.F_ram', ['tube.ram_drag', 'mission.ram_drag'])
         self.connect('pod.nozzle.Fl_O:tot:T', 'tube.nozzle_air_Tt')
@@ -127,7 +133,10 @@ class TubeAndPod(Group):
         self.connect('pod_mach', 'mission.M_pod')
         self.connect('track_length', 'mission.track_length')
         self.connect('n_passengers', 'cost.n_passengers')
-        self.connect('mission.boost_time', 'cost.thrust_time')
+
+        self.connect('mission.prop_period', 'cost.prop_period')
+        self.connect('mission.num_thrust', ['tube.num_thrust', 'cost.num_thrust'])
+        self.connect('mission.thrust_time', 'cost.thrust_time')
 
         self.nl_solver = NLGaussSeidel()
         self.nl_solver.options['maxiter'] = 20
@@ -156,8 +165,6 @@ if __name__ == '__main__':
               ('tube_length', 480000., {'units' : 'm'}),
               ('vf', 286.85, {'units' : 'm/s'}),
               ('v0', 286.85-15.0, {'units' : 'm/s'}),
-              ('Cd', 0.2, {'units': 'm'}),
-              ('num_thrust', 600.0/24.0, {'units' : 'unitless'}),
               ('time_thrust', 1.5, {'units' : 's'}),
               ('pod_mach', .8, {'units': 'unitless'}),
               ('comp_inlet_area', 2.3884, {'units': 'm**2'}),
@@ -178,7 +185,6 @@ if __name__ == '__main__':
               ('h_lev', 0.01, {'unit': 'm'}),
               ('vel', 286.86, {'units': 'm/s'}),
               ('pod_period', 120.0, {'units' : 's'}),
-              ('prop_period', 25.0e3, {'units' : 'm'}),
               ('ib', .04),
               ('bm', 20.0, {'units' : 'yr'}),
               ('track_length', 600.0, {'units' : 'km'}),
@@ -204,8 +210,6 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.r_pylon', 'TubeAndPod.r_pylon')
     prob.root.connect('des_vars.vf', 'TubeAndPod.vf')
     prob.root.connect('des_vars.v0', 'TubeAndPod.v0')
-    prob.root.connect('des_vars.Cd', 'TubeAndPod.Cd')
-    prob.root.connect('des_vars.num_thrust', 'TubeAndPod.num_thrust')
     prob.root.connect('des_vars.time_thrust', 'TubeAndPod.time_thrust')
     prob.root.connect('des_vars.pod_mach', 'TubeAndPod.pod_mach')
     prob.root.connect('des_vars.comp_inlet_area', 'TubeAndPod.comp_inlet_area')
@@ -224,7 +228,6 @@ if __name__ == '__main__':
     prob.root.connect('des_vars.h_lev', 'TubeAndPod.h_lev')
     prob.root.connect('des_vars.vel', 'TubeAndPod.vel')
     prob.root.connect('des_vars.pod_period', 'TubeAndPod.cost.pod_period')
-    prob.root.connect('des_vars.prop_period', 'TubeAndPod.cost.prop_period')
     prob.root.connect('des_vars.ib', 'TubeAndPod.cost.ib')
     prob.root.connect('des_vars.bm', 'TubeAndPod.cost.bm')
     prob.root.connect('des_vars.track_length', 'TubeAndPod.track_length')
@@ -240,52 +243,60 @@ if __name__ == '__main__':
     # prob.run()
 
     # prob.root.list_states()
-    prob.run()
+    # prob.run()
 
-    # p_tunnel = np.concatenate((np.linspace(100.0, 1000.0, num =50, endpoint = False), np.linspace(1000.0,4000.0, num = 50, endpoint = True)))
+    p_tunnel = np.concatenate((np.linspace(100.0, 1000.0, num =50, endpoint = False), np.linspace(1000.0,4000.0, num = 50, endpoint = True)))
     # p_tunnel = 5.0*np.logspace(2,3,num = 50)
-    # A_tube = np.zeros((1, len(p_tunnel)))
-    # Re = np.zeros((1, len(p_tunnel)))
-    # T_tunnel = np.zeros((1, len(p_tunnel)))
-    # L_pod = np.zeros((1, len(p_tunnel)))
-    # L_bat = np.zeros((1, len(p_tunnel)))
-    # power = np.zeros((1, len(p_tunnel)))
-    # steady_vac = np.zeros((1,len(p_tunnel)))
-    # total_energy = np.zeros((1, len(p_tunnel)))
+    A_tube = np.zeros((1, len(p_tunnel)))
+    Re = np.zeros((1, len(p_tunnel)))
+    T_tunnel = np.zeros((1, len(p_tunnel)))
+    L_pod = np.zeros((1, len(p_tunnel)))
+    Drag = np.zeros((1, len(p_tunnel)))
+    power = np.zeros((1, len(p_tunnel)))
+    steady_vac = np.zeros((1,len(p_tunnel)))
+    total_energy = np.zeros((1, len(p_tunnel)))
+    thrust = np.zeros((1, len(p_tunnel)))
 
-    # with open('/Users/kennethdecker/Desktop/Paper figures/pressure_trade.txt', 'w') as f:
+    import csv
+    import sys
+
     # f = open('/Users/kennethdecker/Desktop/Paper figures/pressure_trade.txt', 'w')
+    f = open('/Users/kennethdecker/Desktop/Paper figures/pressure_trade.csv', 'wt')
+    writer = csv.writer(f)
+    writer.writerow(('pressure', 'A_tube', 'Re', 'pod power', 'Vac Power', 'Total Energy', 'Net Thrust', 'Drag'))
     # f.write('%10s \t %10s \t %10s \t %10s \t %10s \t %12s \r\n' % ('pressure', 'A_tube', 'Re', 'pod power', 'Vac Power', 'Total Energy'))
 
     # for i in range(len(p_tunnel)):
-    #     prob['des_vars.tube_pressure'] = p_tunnel[i]
+    for i in range(10):
+        prob['des_vars.tube_pressure'] = p_tunnel[i]
 
-    #     prob.run()
+        prob.run()
 
-    #     A_tube[0,i] = prob['TubeAndPod.pod.A_tube']
-    #     Re[0,i] = prob['TubeAndPod.pod.pod_mach.Re']
-    #     T_tunnel[0,i] = prob['TubeAndPod.tube.temp_boundary']
-    #     L_pod[0,i] = prob['TubeAndPod.L_pod']
-    #     L_bat[0,i] = prob['TubeAndPod.pod.drivetrain.battery_length']
-    #     power[0,i] = -1.0*prob['TubeAndPod.pod.cycle.comp.power']
-    #     steady_vac[0,i] = -1.0*prob['TubeAndPod.tube.comp.power']
-    #     total_energy[0,i] = prob['TubeAndPod.cost.total_energy_cost']
+        A_tube[0,i] = prob['TubeAndPod.pod.A_tube']
+        Re[0,i] = prob['TubeAndPod.pod.pod_mach.Re']
+        T_tunnel[0,i] = prob['TubeAndPod.tube.temp_boundary']
+        L_pod[0,i] = prob['TubeAndPod.L_pod']
+        power[0,i] = -1.0*prob['TubeAndPod.pod.cycle.comp.power']
+        steady_vac[0,i] = -1.0*prob['TubeAndPod.tube.comp.power']
+        total_energy[0,i] = prob['TubeAndPod.cost.total_energy_cost']
 
-        # f.write('%10.2f \t %10.4f \t %10.0f \t %10.4f \t %10.4f \t %10.4f \r\n' % (p_tunnel[i], A_tube[0,i], Re[0,i], power[0,i], steady_vac[0,i], total_energy[0,i]))
+        writer.writerow((p_tunnel[i], A_tube[0,i], Re[0,i], power[0,i], steady_vac[0,i], total_energy[0,i]))
+        print(i)
     
-    # f.close()
-    # plt.plot(p_tunnel, A_tube[0,:], 'b-', linewidth = 2.0)
-    # plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
-    # plt.ylabel('Tube Area (m^2)', fontsize = 16, fontweight = 'bold')
-    # plt.show()
-    # plt.plot(p_tunnel, steady_vac[0,:], 'r-', linewidth = 2.0)
-    # plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
-    # plt.ylabel('Vacuum Power (hp)', fontsize = 16, fontweight = 'bold')
-    # plt.show()
-    # plt.plot(p_tunnel, total_energy[0,:]/(1.0e6), 'r-', linewidth = 2.0)
-    # plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
-    # plt.ylabel('Total Energy Cost per Year (Million USD)', fontsize = 16, fontweight = 'bold')
-    # plt.show()
+    f.close()
+
+    plt.plot(p_tunnel, A_tube[0,:], 'b-', linewidth = 2.0)
+    plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
+    plt.ylabel('Tube Area (m^2)', fontsize = 16, fontweight = 'bold')
+    plt.show()
+    plt.plot(p_tunnel, steady_vac[0,:], 'r-', linewidth = 2.0)
+    plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
+    plt.ylabel('Vacuum Power (hp)', fontsize = 16, fontweight = 'bold')
+    plt.show()
+    plt.plot(p_tunnel, total_energy[0,:]/(1.0e6), 'r-', linewidth = 2.0)
+    plt.xlabel('Tube Pressure (Pa)', fontsize = 16, fontweight = 'bold')
+    plt.ylabel('Total Energy Cost per Year (Million USD)', fontsize = 16, fontweight = 'bold')
+    plt.show()
 
     # plt.plot(p_tunnel, Re[0,:])
     # plt.show()
@@ -298,63 +309,63 @@ if __name__ == '__main__':
     # plt.plot(p_tunnel, power[0,:])
     # plt.show()
 
-    print('\n')
-    print('------ Freestream and Pod Inputs ------')
-    print('tube pressure                      %f Pa' % prob['des_vars.tube_pressure'])
-    print('pod mach number                    %f' % prob['des_vars.pod_mach'])
-    print('compressor area inlet              %f m**2' % prob['des_vars.comp_inlet_area'])
-    print('passenger cross sectional area     %f m**2' % prob['des_vars.A_payload'])
-    print('Pod drag coefficient               %f' % prob['des_vars.Cd'])
-    print('Passengers per pod                 %.0f passengers' % prob['des_vars.n_passengers'])
-    print('Time between departures            %f s' % prob['des_vars.pod_period'])
+    # print('\n')
+    # print('------ Freestream and Pod Inputs ------')
+    # print('tube pressure                      %f Pa' % prob['des_vars.tube_pressure'])
+    # print('pod mach number                    %f' % prob['des_vars.pod_mach'])
+    # print('compressor area inlet              %f m**2' % prob['des_vars.comp_inlet_area'])
+    # print('passenger cross sectional area     %f m**2' % prob['des_vars.A_payload'])
+    # print('Pod drag coefficient               %f' % prob['des_vars.Cd'])
+    # print('Passengers per pod                 %.0f passengers' % prob['des_vars.n_passengers'])
+    # print('Time between departures            %f s' % prob['des_vars.pod_period'])
 
-    print('\n')
-    print('------ Cycle Outputs ------')
-    print('Mass Flow                          %f kg/s' % prob['TubeAndPod.pod.cycle.FlowPathInputs.m_dot'])
-    print('compressor mass                    %f kg' % prob['TubeAndPod.pod.cycle.comp_mass'])
-    print('compressor power                   %f hp' % prob['TubeAndPod.pod.cycle.comp.power'])
-    print('compressor trq                     %f ft-lbs' % prob['TubeAndPod.pod.cycle.comp.trq'])
-    print('duct area                          %f in**2' % prob['TubeAndPod.pod.cycle.comp.Fl_O:stat:area'])
-    print('nozzle exit temp                   %f degR' % prob['TubeAndPod.pod.nozzle.Fl_O:tot:T'])
-    print('nozzle mass flow                   %f kg/s' % prob['TubeAndPod.pod.nozzle.Fl_O:stat:W'])
-    print('nozzle thrust                      %f lbs' % prob['TubeAndPod.pod.nozzle.Fg'])
-    print('ram drag                           %f lbs' % prob['TubeAndPod.pod.inlet.F_ram'])
-    print('net thrust                         %f lbs' % (prob['TubeAndPod.pod.nozzle.Fg']-prob['TubeAndPod.pod.inlet.F_ram']))
+    # print('\n')
+    # print('------ Cycle Outputs ------')
+    # print('Mass Flow                          %f kg/s' % prob['TubeAndPod.pod.cycle.FlowPathInputs.m_dot'])
+    # print('compressor mass                    %f kg' % prob['TubeAndPod.pod.cycle.comp_mass'])
+    # print('compressor power                   %f hp' % prob['TubeAndPod.pod.cycle.comp.power'])
+    # print('compressor trq                     %f ft-lbs' % prob['TubeAndPod.pod.cycle.comp.trq'])
+    # print('duct area                          %f in**2' % prob['TubeAndPod.pod.cycle.comp.Fl_O:stat:area'])
+    # print('nozzle exit temp                   %f degR' % prob['TubeAndPod.pod.nozzle.Fl_O:tot:T'])
+    # print('nozzle mass flow                   %f kg/s' % prob['TubeAndPod.pod.nozzle.Fl_O:stat:W'])
+    # print('nozzle thrust                      %f lbs' % prob['TubeAndPod.pod.nozzle.Fg'])
+    # print('ram drag                           %f lbs' % prob['TubeAndPod.pod.inlet.F_ram'])
+    # print('net thrust                         %f lbs' % (prob['TubeAndPod.pod.nozzle.Fg']-prob['TubeAndPod.pod.inlet.F_ram']))
 
-    print('\n')
-    print('------ Drivetrain Outputs ------')
-    print('battery length                     %f cm' % prob['TubeAndPod.pod.drivetrain.battery_length'])
-    print('battery volume                     %f cm**3' % prob['TubeAndPod.pod.drivetrain.battery_volume'])
-    print('motor length                       %f m' % prob['TubeAndPod.pod.drivetrain.motor_length'])
-    print('battery mass                       %f kg' % prob['TubeAndPod.pod.drivetrain.battery_mass'])
-    print('motor mass                         %f kg' % prob['TubeAndPod.pod.drivetrain.motor_mass'])
+    # print('\n')
+    # print('------ Drivetrain Outputs ------')
+    # print('battery length                     %f cm' % prob['TubeAndPod.pod.drivetrain.battery_length'])
+    # print('battery volume                     %f cm**3' % prob['TubeAndPod.pod.drivetrain.battery_volume'])
+    # print('motor length                       %f m' % prob['TubeAndPod.pod.drivetrain.motor_length'])
+    # print('battery mass                       %f kg' % prob['TubeAndPod.pod.drivetrain.battery_mass'])
+    # print('motor mass                         %f kg' % prob['TubeAndPod.pod.drivetrain.motor_mass'])
 
-    print('\n')
-    print('------ Pod Mass and Geometry Outputs ------')
-    print('pod length                         %f m' % prob['TubeAndPod.L_pod'])
-    print('pod cross section                  %f m**2' % prob['TubeAndPod.pod.pod_geometry.A_pod'])
-    print('pod diameter                       %f m' % prob['TubeAndPod.pod.pod_geometry.D_pod'])
-    print('planform area                      %f m**2' % prob['TubeAndPod.S']) 
-    print('inlet area                         %f m**2' % prob['TubeAndPod.pod.pod_mach.A_inlet'])
-    print('pod mass w/o magnets               %f kg' % prob['TubeAndPod.pod.pod_mass.pod_mass'])
-    print('mag mass                           %f kg' % prob['TubeAndPod.pod.levitation_group.Mass.m_mag'])
-    print('total pod mass                     %f kg' % prob['TubeAndPod.total_pod_mass'])
+    # print('\n')
+    # print('------ Pod Mass and Geometry Outputs ------')
+    # print('pod length                         %f m' % prob['TubeAndPod.L_pod'])
+    # print('pod cross section                  %f m**2' % prob['TubeAndPod.pod.pod_geometry.A_pod'])
+    # print('pod diameter                       %f m' % prob['TubeAndPod.pod.pod_geometry.D_pod'])
+    # print('planform area                      %f m**2' % prob['TubeAndPod.S']) 
+    # print('inlet area                         %f m**2' % prob['TubeAndPod.pod.pod_mach.A_inlet'])
+    # print('pod mass w/o magnets               %f kg' % prob['TubeAndPod.pod.pod_mass.pod_mass'])
+    # print('mag mass                           %f kg' % prob['TubeAndPod.pod.levitation_group.Mass.m_mag'])
+    # print('total pod mass                     %f kg' % prob['TubeAndPod.total_pod_mass'])
 
-    print('\n')
-    print('------ Tube Outputs ------')
-    print('tube cross sectional area          %f m**2' % prob['TubeAndPod.pod.A_tube'])
-    print('tube temperature                   %f K' % prob['TubeAndPod.tube.temp_boundary'])
-    print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
-    print('number of vacuum pumps             %.0f pumps' % np.ceil(prob['TubeAndPod.tube.Vacuum.number_pumps']))
-    print('steady sate vacuum power           %f hp' % prob['TubeAndPod.tube.comp.power'])
-    print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
-    print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
+    # print('\n')
+    # print('------ Tube Outputs ------')
+    # print('tube cross sectional area          %f m**2' % prob['TubeAndPod.pod.A_tube'])
+    # print('tube temperature                   %f K' % prob['TubeAndPod.tube.temp_boundary'])
+    # print('power per booster section          %f W' % prob['TubeAndPod.tube.PropMech.pwr_req'])
+    # print('number of vacuum pumps             %.0f pumps' % np.ceil(prob['TubeAndPod.tube.Vacuum.number_pumps']))
+    # print('steady sate vacuum power           %f hp' % prob['TubeAndPod.tube.comp.power'])
+    # print('tube mass per unit length          %f kg/m' % prob['TubeAndPod.tube.Struct.m_prime'])
+    # print('distance between pylons            %f m' % prob['TubeAndPod.tube.Struct.dx'])
 
-    print('\n')
-    print('------ Cost Results ------')
-    print('number of pods                     %.0f pods' % prob['TubeAndPod.cost.num_pods'])
-    print('structural cost per unit length    %f USD/m' % prob['TubeAndPod.tube.Struct.total_material_cost'])
-    print('populsion enrgy cost per year      %f USD' % prob['TubeAndPod.cost.prop_energy_cost'])
-    print('estimated ticket cost              %f USD' % prob['TubeAndPod.cost.ticket_cost'])
+    # print('\n')
+    # print('------ Cost Results ------')
+    # print('number of pods                     %.0f pods' % prob['TubeAndPod.cost.num_pods'])
+    # print('structural cost per unit length    %f USD/m' % prob['TubeAndPod.tube.Struct.total_material_cost'])
+    # print('populsion enrgy cost per year      %f USD' % prob['TubeAndPod.cost.prop_energy_cost'])
+    # print('estimated ticket cost              %f USD' % prob['TubeAndPod.cost.ticket_cost'])
 
-    print('\n')
+    # print('\n')
