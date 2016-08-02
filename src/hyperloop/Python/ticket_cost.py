@@ -116,6 +116,8 @@ class TicketCost(Component):
 		self.add_output('num_pods', val = 0.0, desc = 'Number of Pods', units = 'unitless')
 		self.add_output('ticket_cost', val = 0.0, desc = 'Ticket cost', units = 'USD')
 		self.add_output('prop_energy_cost', val = 0.0, desc = 'Cost of propulsion energy', units = 'USD')
+		self.add_output('tube_energy_cost', val = 0.0, desc = 'Cost of tube energy', units = 'USD')
+		self.add_output('total_energy_cost', val = 0.0, desc = 'Cost of energy consumpition per year', units = 'USD')
 
 	def solve_nonlinear(self, p, u,r):
 
@@ -168,6 +170,8 @@ class TicketCost(Component):
 
 		u['num_pods'] = num_pods
 		u['prop_energy_cost'] = prop_energy*energy_cost*365
+		u['tube_energy_cost'] = tube_energy*energy_cost*365
+		u['total_energy_cost'] = (prop_energy+tube_energy)*energy_cost*365
 		u['ticket_cost'] = cost_ticket = (length_cost*(track_length/1000.0) + pod_cost*num_pods + capital_cost*(1.0+ib) + \
 			energy_cost*(tube_energy + pod_energy)*365.0)/(n_passengers*pod_frequency*bm*365.0*24.0*3600.0)
 
