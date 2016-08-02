@@ -60,7 +60,7 @@ class SampleMission(Component):
 
 		self.add_param('p_tunnel', 850.0, desc = 'Tunnel pressure', units = 'Pa')
 		self.add_param('T_tunnel', 320.0, desc = 'T_tunnel', units = 'K')
-		self.add_param('Cd', .25, desc = 'Pod drag coefficient', units = 'unitless')
+		self.add_param('Cd', .2, desc = 'Pod drag coefficient', units = 'unitless')
 		self.add_param('S', 40.0, desc = 'Pod planform area', units = 'm**2')
 		self.add_param('m_pod', 10000.0, desc = 'Pod mass', units = 'kg')
 		self.add_param('D_mag', (10000.0*9.81)/200.0, desc = 'Magnetic Drag', units = 'N')
@@ -75,7 +75,7 @@ class SampleMission(Component):
 
 		self.add_output('dx_start', 1.0, desc = 'Start up distance', units = 'm')
 		self.add_output('dx_boost', 1.0, desc = 'Booster length', units = 'm')
-		self.add_output('boost_time', 1.0, desc = 'Time on booster', units = 's')
+		self.add_output('thrust_time', 1.0, desc = 'Time on booster', units = 's')
 		self.add_output('prop_period', 1.0, desc = 'Distance between boosters', units = 'm')
 		self.add_output('num_thrust', 1.0, desc = 'Start up distance', units = 'unitless')
 		self.add_output('coast_time', 1.0, desc = 'Start up distance', units = 's')
@@ -101,7 +101,7 @@ class SampleMission(Component):
 		
 		dx_start = (vf**2)/(2*g)
 		dx_boost = ((vf**2) - (v0**2))/(2*g)
-		boost_time = (vf - v0)/g
+		thrust_time = (vf - v0)/g
 
 		rho = p_tunnel/(R*T_tunnel)
 		
@@ -110,6 +110,8 @@ class SampleMission(Component):
 		v = vf
 		dt = .01
 		net_thrust = nozzle_thrust - ram_drag
+
+		print(net_thrust - (.5*Cd*rho*S*(v**2.0)) - (m_pod*g*np.sin(theta)) - D_mag)
 		
 		while v > v0:
 			#Integrate numerically using predictor-corrector method for velocity
@@ -120,6 +122,9 @@ class SampleMission(Component):
 			x = x + ((v_old+v)/2.0)*dt
 			if v > v_old:
 				print('thrust greater than drag')
+				u['num_thrust'] = 0.0
+				u['prop_period'] = track_length
+				u['coast_time'] = track_length/vf
 				break
 
 			i = i + 1.0
@@ -129,10 +134,11 @@ class SampleMission(Component):
 
 		u['dx_start'] = dx_start
 		u['dx_boost'] = dx_boost
-		u['boost_time'] = boost_time
-		u['prop_period'] = x
-		u['num_thrust'] = np.ceil(track_length/x)
-		u['coast_time'] = i*dt
+		u['thrust_time'] = thrust_time
+		if u['prop_period'] == 1.0 and u['num_thrust'] == 1.0 and u['coast_time'] ==1.0:
+			u['prop_period'] = x
+			u['num_thrust'] = np.ceil(track_length/x)
+			u['coast_time'] = i*dt
 
 if __name__ == '__main__':
 	top = Problem()
@@ -145,7 +151,7 @@ if __name__ == '__main__':
 
 	print('Start up disance  			%f' % top['p.dx_start'])
 	print('Booster length 				%f' % top['p.dx_boost'])
-	print('Booster time 				%f' % top['p.boost_time'])
+	print('Booster time 				%f' % top['p.thrust_time'])
 	print('Distance between boosters		%f' % top['p.prop_period'])
 	print('Number of boosters 			%.0f' % top['p.num_thrust'])
 	print('Coasting time 				%f' % top['p.coast_time'])
