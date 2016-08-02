@@ -127,6 +127,7 @@ class TubeAndPod(Group):
         self.connect('pod_mach', 'mission.M_pod')
         self.connect('track_length', 'mission.track_length')
         self.connect('n_passengers', 'cost.n_passengers')
+        self.connect('mission.boost_time', 'cost.thrust_time')
 
         self.nl_solver = NLGaussSeidel()
         self.nl_solver.options['maxiter'] = 20
