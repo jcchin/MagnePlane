@@ -3,6 +3,7 @@ Group for Pod components containing the following components:
 Cycle Group, Pod Mach (Aero), DriveTrain group, Geometry, Levitation group, and Pod Mass
 """
 from openmdao.api import Component, Group, Problem, IndepVarComp
+from hyperloop.Python.pod.drag import Drag
 from hyperloop.Python.pod.pod_mass import PodMass
 from hyperloop.Python.pod.drivetrain.drivetrain import Drivetrain
 from hyperloop.Python.pod.pod_mach import PodMach
@@ -84,9 +85,10 @@ class PodGroup(Group):
     def __init__(self):
         super(PodGroup, self).__init__()
 
+        self.add('drag', Drag(), promotes = ['pod_mach', 'Cd'])
         self.add('cycle', Cycle(), promotes=['comp.map.PRdes', 'nozzle.Ps_exhaust', 'comp_inlet_area',
                                              'nozzle.Fg', 'inlet.F_ram', 'nozzle.Fl_O:tot:T', 'nozzle.Fl_O:stat:W',
-                                             'pod_mach', 'tube_pressure', 'tube_temp'])
+                                             'tube_pressure', 'tube_temp'])
         self.add('pod_mach', PodMach(), promotes=['A_tube'])
         self.add('drivetrain', Drivetrain(), promotes=['des_time', 'time_of_flight', 'motor_max_current', 'motor_LD_ratio',
                                                        'inverter_efficiency', 'motor_oversize_factor', 'battery_cross_section_area'])
@@ -95,7 +97,7 @@ class PodGroup(Group):
         self.add('pod_mass', PodMass())
 
         # Connects pod group level variables to downstream components
-        self.connect('pod_mach', 'pod_mach.M_pod')
+        self.connect('pod_mach', ['pod_mach.M_pod', 'cycle.pod_mach'])
         self.connect('tube_pressure', 'pod_mach.p_tube')
         self.connect('tube_temp', 'pod_mach.T_ambient')
         self.connect('n_passengers', 'pod_mass.n_passengers')

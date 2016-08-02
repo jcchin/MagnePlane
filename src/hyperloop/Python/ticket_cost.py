@@ -112,6 +112,7 @@ class TicketCost(Component):
 		self.add_param('D_mag', val = (9.81*3100.0)/200.0, desc = 'Magnetic Drag', units = 'N')
 		self.add_param('thrust_time', val = 1.5, desc = 'Time that pod is over propulsive section', units = 's')
 		self.add_param('prop_period', val = 25.0e3, desc = 'distance between propulsive sections', units = 'm')
+		self.add_param('num_thrust', val = 10.0, desc = 'Number of booster sections along track', units = 'unitless')
 
 		self.add_output('num_pods', val = 0.0, desc = 'Number of Pods', units = 'unitless')
 		self.add_output('ticket_cost', val = 0.0, desc = 'Ticket cost', units = 'USD')
@@ -137,7 +138,7 @@ class TicketCost(Component):
 		track_length = p['track_length']
 		land_length = p['land_length']
 		water_length = p['water_length']
-		pod_power = p['pod_power']
+		pod_power = -1.0*p['pod_power']
 		prop_power = p['prop_power']
 		vac_power = p['vac_power']
 		steady_vac_power = -1.0*p['steady_vac_power']
@@ -152,6 +153,7 @@ class TicketCost(Component):
 		D_mag = p['D_mag']
 		thrust_time = p['thrust_time']
 		prop_period = p['prop_period']
+		num_thrust = p['num_thrust']
 
 		length_cost = ((water_length/track_length)*water_cost) + ((land_length/track_length)*land_cost)
 		pod_frequency = 1.0/pod_period
@@ -164,14 +166,14 @@ class TicketCost(Component):
 		rho = p_tunnel/(R*T_tunnel)
 		start_distance = (vf**2)/(2*g)
 		start_energy = ((m_pod*g+D_mag)*start_distance + (.5*Cd*rho*g*S*(start_distance**2)))/eta
-		num_thrusts = track_length/prop_period
-		prop_energy = (num_thrusts*thrust_time*prop_power + start_energy)*flights_per_pod*num_pods*JtokWh
+
+		prop_energy = (num_thrust*thrust_time*prop_power + start_energy)*flights_per_pod*num_pods*JtokWh
 		tube_energy = prop_energy + vac_energy
 
 		u['num_pods'] = num_pods
 		u['prop_energy_cost'] = prop_energy*energy_cost*365
 		u['tube_energy_cost'] = tube_energy*energy_cost*365
-		u['total_energy_cost'] = (prop_energy+tube_energy)*energy_cost*365
+		u['total_energy_cost'] = (pod_energy+tube_energy)*energy_cost*365
 		u['ticket_cost'] = cost_ticket = (length_cost*(track_length/1000.0) + pod_cost*num_pods + capital_cost*(1.0+ib) + \
 			energy_cost*(tube_energy + pod_energy)*365.0)/(n_passengers*pod_frequency*bm*365.0*24.0*3600.0)
 
