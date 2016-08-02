@@ -14,13 +14,44 @@
 
 import sys
 import os
+from sphinx.apidoc import main
+import subprocess
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
+def run_apidoc(_):
+    modules = ['a_list_of',
+               'python_module_directories',
+               'in_your_project']
+    for module in modules:
+        cur_dir = os.path.abspath(os.path.dirname(__file__))
+        proj_dir = os.path.join(cur_dir, '../src/hyperloop')
+        cmd_path = 'sphinx-apidoc'
+        if hasattr(sys, 'real_prefix'):  # Check to see if we are in a virtualenv
+            # If we are, assemble the path manually
+            cmd_path = os.path.abspath(os.path.join(sys.prefix, 'bin', 'sphinx-apidoc'))
+        subprocess.check_call([cmd_path, '-o', cur_dir, proj_dir])
 
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
+
+
+
+# cur_dir = os.path.abspath(os.path.dirname(__file__))
+# proj_dir = os.path.join(cur_dir, '../src/hyperloop')
+# main(['-o', cur_dir, proj_dir])
+#
+#
+# def run_apidoc(_):
+#     cur_dir = os.path.abspath(os.path.dirname(__file__))
+#     proj_dir = os.path.join(cur_dir, '../src/hyperloop')
+#     main(['-o', cur_dir, proj_dir])
+#
+# def setup(app):
+#     app.connect('builder-inited', run_apidoc)
 
 #------------------------begin monkeypatch-----------------------
 #monkeypatch to make our docs say "Args" instead of "Parameters"
