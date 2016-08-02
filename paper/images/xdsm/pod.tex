@@ -16,12 +16,21 @@
   \matrix[MatrixSetup]
   {
     %Row 1
+    \node [Function] (Drag) {\Large Drag}; &
+    &
+    &
+    &
+    &
+    &
+    \\
+    &
     \node [Analysis] (Cycle) {\Large Cycle}; &
     \node [DataInter] (Drivetrain-Cycle) {$\tau_\text{comp}, Pwr_\text{comp}$}; &
     \node [DataInter] (Geometry-Cycle) {$L_\text{comp}, A_\text{pod duct}$}; &
     &
     \node [DataInter] (Mass-Cycle) {$m_\text{comp}$}; &
     \\
+    &
     &
     \node [Analysis] (Drivetrain) {\Large Drivetrain}; &
     \node [DataInter] (Geometry-Drivetrain) {$L_\text{battery}, L_\text{motor}$}; &
@@ -30,11 +39,13 @@
     \\
     &
     &
+    &
     \node [Function] (Geometry) {\Large Geometry}; &
     \node [DataInter] (Pod Mach-Geometry) {$A_\text{pod}, L_\text{pod}$}; &
     \node [DataInter] (Mass-Geometry) {$L_\text{pod}, D_\text{pod}, BF$}; &
     \node [DataInter] (Levitation-Geometry) {$L_\text{pod}, D_\text{pod}$}; \\
-    %Row 4
+    %Row 5
+    &
     &
     &
     &
@@ -45,16 +56,18 @@
     &
     &
     &
+    &
     \node [Function] (Mass) {\Large Mass}; &
     \node [DataInter] (Levitation-Mass) {$m_\text{pod}$}; \\
-    %Row 6
+    %Row 7
+    &
     &
     &
     &
     &
     &
     \node [Function] (Levitation) {\Large Levitation}; \\
-    %Row 7
+    %Row 8
   };
 
   \begin{pgfonlayer}{data}
