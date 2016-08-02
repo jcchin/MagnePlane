@@ -6,6 +6,28 @@ from openmdao.api import IndepVarComp, Component, Group, Problem
 import matplotlib.pylab as plt
 
 class Drag(Component):
+	'''
+	Notes
+	-------
+	Interpolates the drag coefficient of the pod using data mach vs. drag coefficient data from CFD. Component interpolates drag coefficient 
+	based on pod mach number. 
+
+	Params
+	-------
+	M_pod : float
+		Pod mach number. Default value is .8
+	mach_array : array
+		Array of mach numbers corresponding to CFD data. Default value is np.zeros((1,7))
+	cd array : array
+		Array of drag coefficient values at correponding mach numbers from CFD.  Default value is np.zeros((1,7))
+
+	Returns
+	-------
+	Cd : float
+		Interpolated drag coefficient based on pod mach number. 
+
+	'''
+
 	def __init__(self):
 		super(Drag, self).__init__()
 
