@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python.pod.cycle import comp_len
+from hyperloop.Python.pod.cycle import comp_len
 import numpy as np
 from openmdao.api import Group, Problem
 

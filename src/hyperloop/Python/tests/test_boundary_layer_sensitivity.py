@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import boundary_layer_sensitivity
+from hyperloop.Python import boundary_layer_sensitivity
 import numpy as np
 from openmdao.api import Group, Problem
 

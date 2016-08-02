@@ -1,5 +1,5 @@
 import pytest
-from src.hyperloop.Python import angular_velocity321
+from hyperloop.Python import angular_velocity321
 import numpy as np
 from openmdao.api import Group, Problem
 

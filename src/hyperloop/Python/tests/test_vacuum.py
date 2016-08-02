@@ -1,7 +1,7 @@
 import numpy as np
 from openmdao.api import Group, Problem
 
-from src.hyperloop.Python.tube import tube_vacuum
+from hyperloop.Python.tube import tube_vacuum
 
 def create_problem(vac):
     root = Group()

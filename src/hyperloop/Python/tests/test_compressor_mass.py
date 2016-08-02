@@ -1,6 +1,6 @@
 import numpy as np
 from openmdao.api import Group, Problem
-from src.hyperloop.Python.pod.cycle import compressor_mass
+from hyperloop.Python.pod.cycle import compressor_mass
 
 def create_problem(compressor):
     root = Group()
