@@ -8,7 +8,7 @@ Large="\Large "
 def build_cycle(xdsm):
 
     x.addComp('FlowpathInp', 'Function', Large + r'\TwolineComponent{6em}{Flowpath}{Inputs}')
-    x.addComp('Flowpath', 'Analysis', Large + r'Flowpath')
+    x.addComp('Flowpath', 'AnalysisGroup', Large + r'Flowpath')
     x.addComp('CompLen', 'Function', Large + r'\TwolineComponent{6em}{Compressor}{Length}')
     x.addComp('CompMass', 'Function', Large + r'\TwolineComponent{6em}{Compressor}{Mass}')
 

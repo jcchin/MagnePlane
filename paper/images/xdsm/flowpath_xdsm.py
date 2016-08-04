@@ -7,12 +7,12 @@ Large="\Large "
 
 def build_flowpath(xdsm):
 
-    x.addComp('Fl_Start', 'Function', Large + r'\TwolineComponent{6em}{Flow}{Start}')
-    x.addComp('Inlet', 'Function', Large + r'Inlet')
-    x.addComp('Compressor', 'Analysis', Large + r'Compressor')
-    x.addComp('Duct', 'Function', Large + r'Duct')
-    x.addComp('Nozzle', 'Function', Large + r'Nozzle')
-    x.addComp('Shaft', 'Function', Large + r'Shaft')
+    x.addComp('Fl_Start', 'FunctionGroup', Large + r'Flow Start')
+    x.addComp('Inlet', 'FunctionGroup', Large + r'Inlet')
+    x.addComp('Compressor', 'AnalysisGroup', Large + r'Compressor')
+    x.addComp('Duct', 'FunctionGroup', Large + r'Duct')
+    x.addComp('Nozzle', 'FunctionGroup', Large + r'Nozzle')
+    x.addComp('Shaft', 'FunctionGroup', Large + r'Shaft')
 
     x.addDep('Inlet', 'Fl_Start', dat, r"$Fl_\text{total}, Fl_\text{static}$")
     x.addDep('Compressor', 'Inlet', dat, r"$Fl_\text{total}, Fl_\text{static}$")

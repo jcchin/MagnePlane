@@ -8,9 +8,9 @@ Large="\Large "
 def build_tube(xdsm):
 
     x.addComp('SubTube', 'Function', Large + r'\TwolineComponent{6em}{Submerged}{Tube}')
-    x.addComp('Temp', 'Analysis', Large + r'\TwolineComponent{6em}{Tube}{Temperature}')
+    x.addComp('Temp', 'AnalysisGroup', Large + r'\TwolineComponent{6em}{Tube}{Temperature}')
     x.addComp('PropMech', 'Function', Large + r'\TwolineComponent{6em}{Propulsion}{Mechanics}')
-    x.addComp('SSVacuum', 'Analysis', Large + r'\TwolineComponent{6em}{Steady State}{Vacuum}')
+    x.addComp('SSVacuum', 'FunctionGroup', Large + r'\TwolineComponent{6em}{Steady State}{Vacuum}')
     x.addComp('Vacuum', 'Function', Large + r'Vacuum')
     x.addComp('Power', 'Function', Large + r'Tube Power')
     x.addComp('TubePylon', 'Function', Large + r'\TwolineComponent{6em}{Tube}{and Pylon}')
