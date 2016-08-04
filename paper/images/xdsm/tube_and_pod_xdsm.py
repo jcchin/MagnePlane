@@ -9,8 +9,8 @@ def build_tubepod(xdsm):
 
     x.addComp('Solver', 'MDA', Large + 'Solver')
 
-    x.addComp('Pod', 'Analysis', Large + r'Pod')
-    x.addComp('Tube', 'Analysis', Large + r'Tube')
+    x.addComp('Pod', 'FunctionGroup', Large + r'Pod')
+    x.addComp('Tube', 'FunctionGroup', Large + r'Tube')
     x.addComp('Mission', 'Function', Large + r'Mission')
     x.addComp('Cost', 'Function', Large + r'Ticket Cost')
 
