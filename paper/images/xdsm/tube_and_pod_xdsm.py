@@ -18,7 +18,7 @@ def build_tubepod(xdsm):
 
     x.addDep('Cost', 'Tube', dat, r"\TwolineComponent{11em}{$P_\text{tube}, Cost_\text{land}, Cost_\text{water}$}{$Pwr_\text{prop}, Pwr_\text{vac}$}")
     x.addDep('Cost', 'Pod', dat, r"$Pwr_\text{pod}, D_\text{mag}, S_\text{ref}, C_\text{D}$")
-    x.addDep('Cost', 'Mission', dat, r"$t_\text{thrust}, \Delta(x_\text{coast}), n_\text{thrust}$")
+    x.addDep('Cost', 'Mission', dat, r"$t_\text{thrust}, \Delta x_\text{coast}, n_\text{thrust}$")
 
     x.addDep('Tube', 'Pod', dat, r"\TwolineComponent{14em}{$A_\text{tube}, m_\text{pod}, F_\text{gross}, D_\text{ram}$}{$S_\text{ref}, D_\text{mag}, T_\text{nozzle}, \dot{m}, C_\text{D}$}")
 
