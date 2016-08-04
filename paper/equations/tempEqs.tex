@@ -1,0 +1,76 @@
+\documentclass[12]{article}
+\usepackage{amsmath} %math equations
+
+\begin{document}
+
+\centering
+Relevant Equations Used in TubeTemp and Area Relations
+
+\begin{equation}
+\frac{A_{bypass}}{A_{tube}} = \frac{M_{pod}}{M_{bypass}}
+\left(\frac{1+ \frac{\gamma-1}{2} M_{bypass}^2}
+{1+ \frac{\gamma-1}{2} M_{pod}^2}\right)^{\frac{\gamma+1}{2\left(\gamma-1\right)}}
+\label{e:a-over-astar}
+\end{equation}
+
+\begin{equation}
+T_{t,inlet} = T_{tube} [1 + \frac{\gamma -1}{2} M^2]
+\end{equation}
+
+\begin{equation}
+T_{t,exit} = T_{t,inlet} \Bigg[ 1 + \frac{1}{\eta_{c}} \Big[ \pi_{c}^{\frac{\gamma-1}{\gamma}}- 1 \Big] \Bigg]
+\end{equation}
+
+\begin{equation}
+{Q}_{pods}= \dot{m} C_{p,air} (T_{t,exit} - T_{t,inlet}) n
+\end{equation}
+
+\begin{equation}
+Q_{solar} = \underbrace{ (1- \rho_{r})  c_{solar}G}_\text{Solar Heat per unit Area} \underbrace{L_{tube}  D_{o,tube}}_\text{Effective Area}
+\end{equation}
+
+\begin{equation}
+Q_{rad} = \underbrace{\epsilon \sigma (T_{tube}^4 - T_{amb}^4)}_\text{Radiated Power per unit Area}\underbrace{\pi L_{tube} D_{o,tube}}_\text{Surface Area}
+\end{equation}
+
+\begin{equation}
+Nu = \Bigg(0.6 + \frac{0.387Ra^{\frac{1}{6}}}{[1+(\frac{0.559}{Pr})^{\frac{9}{16}}]^{\frac{8}{27}}}\Bigg)^2
+\end{equation}
+
+\begin{equation}
+Q_{conv} = \underbrace{ \frac{k\cdot Nu}{ {D}_{o,tube}} }_\text{$h$}
+ \underbrace{ \pi {L}_{tube} {D}_{o,tube} }_\text{Area}
+ \underbrace{ (T_{tube}-T_{amb})  }_\text{$\Delta T$}
+\end{equation}
+
+\nomenclature{\gamma}{Heat Capacity Ratio}
+\nomenclature{MN}{Mach Number}
+\nomenclature{c1MN}{Mach number at the front face of the first compressor}
+\nomenclature{BF}{Blockage Factor, diffused area over pod area}
+\nomenclature{Q}{Heat flow rate (W)}
+\nomenclature{\dot{m}}{Mass flow rate}
+\nomenclature{T}{Temperature (K)}
+\nomenclature{C_{p}}{Heat capacity at constant pressure ($\frac{J}{kg-K}$) }
+\nomenclature{P}{Pressure ($\frac{N}{m^{2}}$)}
+\nomenclature{PR}{Pressure Ratio}
+\nomenclature{PR}{Pressure Ratio}
+\nomenclature{{\eta}_{ad}}{Adiabatic Efficiency}
+\nomenclature{\rho}{Total, Hemispherical Reflectivity}
+\nomenclature{G}{Solar Irradiance}
+\nomenclature{c_{solar}}{Gross Irradiance Adjustment}
+\nomenclature{L}{Length (m)}
+\nomenclature{\epsilon}{Emissivity Factor}
+\nomenclature{\sigma}{Stefan-Boltzmann constant ($\frac{W}{m-K}$)}
+\nomenclature{P_{rad}}{Radiated Power (W)}
+\nomenclature{g}{Acceleration of gravity, 9.81 ($\frac{m}{s^{2}}$)}
+\nomenclature{\beta}{Volume coefficient of expansion (K)}
+\nomenclature{\upsilon}{Kinematic Viscosity ($\frac{m^{2}}{s}$)}
+\nomenclature{Pr}{Prandtl Number, $\frac{\upsilon}{\alpha}$}
+\nomenclature{Gr}{Grashof Number, $\frac{ g \beta \delta TL^{3}}{v^{2}}$}
+\nomenclature{Ra}{Rayleigh Number, $\frac{\rho U_{\infty} L}{\mu}$}
+\nomenclature{Nu}{Nusselt Number, $\frac{hL}{k}$}
+\nomenclature{h}{Heat transfer coefficient ($\frac{W}{m^{2}-K}$)}
+\nomenclature{k}{Thermal Conductivity ($\frac{W}{m-K}$) }
+
+
+\end{document}
