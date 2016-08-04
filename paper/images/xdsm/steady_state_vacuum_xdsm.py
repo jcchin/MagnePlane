@@ -7,8 +7,8 @@ Large="\Large "
 
 def build_steady_state_vacuum(xdsm):
 
-    x.addComp('Fl_Start', 'Function', Large + r'\TwolineComponent{6em}{Flow}{Start}')
-    x.addComp('Compressor', 'Analysis', Large + r'Compressor')
+    x.addComp('Fl_Start', 'FunctionGroup', Large + r'\TwolineComponent{6em}{Flow}{Start}')
+    x.addComp('Compressor', 'AnalysisGroup', Large + r'Compressor')
 
     x.addDep('Compressor', 'Fl_Start', dat, r"$Fl_\text{total}, Fl_\text{static}$")
 

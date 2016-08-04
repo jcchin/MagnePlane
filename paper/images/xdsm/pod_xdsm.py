@@ -8,12 +8,12 @@ Large="\Large "
 def build_pod(xdsm):
 
     x.addComp('Drag', 'Function', Large + r'Drag')
-    x.addComp('Cycle', 'Analysis', Large + r'Cycle')
-    x.addComp('Drivetrain', 'Analysis', Large + r'Drivetrain')
+    x.addComp('Cycle', 'FunctionGroup', Large + r'Cycle')
+    x.addComp('Drivetrain', 'FunctionGroup', Large + r'Drivetrain')
     x.addComp('Geometry', 'Function', Large + r'Geometry')
     x.addComp('Pod Mach', 'Function', Large + r'Pod Mach')
     x.addComp('Mass', 'Function', Large + r'Mass')
-    x.addComp('Levitation', 'Function', Large + r'Levitation')
+    x.addComp('Levitation', 'FunctionGroup', Large + r'Levitation')
 
     x.addDep('Geometry', 'Cycle', dat, r"$L_\text{comp}, A_\text{pod duct}$")
     x.addDep('Mass', 'Cycle', dat, r"$m_\text{comp}$")
