@@ -3,24 +3,58 @@
 \documentclass[]             % options: RDPonly, coveronly, nocover
 {aiaa-tc}                       %   plus standard article class options
 
-%  Fill in the following catagories between the braces {}
-\title{Conceptual Sizing and Feasibility Study for a Magnetic Plane Concept}
 
-  
-  
+% ----------- start extension to sub-sub-sub section capability --------- %
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+\titleclass{\subsubsubsection}{straight}[\subsection]
+
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\renewcommand\theparagraph{\thesubsubsubsection.\arabic{paragraph}} % optional; useful if paragraphs are to be numbered
+
+\titleformat{\subsubsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{5}{\z@}%
+  {3.25ex \@plus1ex \@minus.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+  {3.25ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{4}
+\def\toclevel@paragraph{5}
+\def\toclevel@paragraph{6}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{5}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{6}{14em}{6em}}
+\makeatother
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+% ----------- ------------------------------------------------- --------- %
+
+\title{Hyperloop or Bust}
+
 \author{
-  Jeffrey Chin,\thanks{Aerospace Engineer, Propulsion Systems Analysis Branch, Mail Stop 5-10, AIAA Member}
-  \and Robert Falck,\thanks{Aerospace Engineer, MDAO Branch,Mail Stop 5-10, AIAA Member}
-  \and Justin Gray,\thanksibid{2}
-  \and Christopher Heath,\thanksibid{2}
-  \and Kenneth Moore,\thanksibid{2}
-  \and Kenneth Decker,\thanks{Aerospace Engineer, University of Arizona}
+  Kenneth Decker,\thanks{Aerospace Engineer, University of Arizona}
+  \and Andi Peng,\thanks{Computer Science, Politcal Science, Yale University}
+  \and Colin Summers\thanks{Chemical Engineer, Computer Engineer, University of Washington-Seattle}
   \and Golda Nguyen,\thanks{Mechanical Engineer, Georgia Institute of Technology}
   \and Andrew Oberlander,\thanks{Mechanical Engineer, Brown University}
-  \and Andi Peng,\thanks{Computer Science, Politcal Science, Yale University}
   \and Gazi Sakib,\thanks{Physics, Mechanical Engineer, Stony Brook University}
   \and Nathan Sharifrazi,\thanks{Aerospace Engineer, Mechanical Engineer, University of California-Irvine}
-  \and Colin Summers\thanks{Chemical Engineer, Computer Engineer, University of Washington-Seattle}
+  \and Jeffrey Chin,\thanks{Aerospace Engineer, Propulsion Systems Analysis Branch, Mail Stop 5-10, AIAA Member}
+  \and Justin Gray,\thanks{Aerospace Engineer, MDAO Branch,Mail Stop 5-10, AIAA Member}
+  \and Christopher Heath,\thanksibid{9}
+  \and Kenneth Moore,\thanksibid{9}
+  \and Robert Falck,\thanksibid{9}
   \\
   {\normalsize\itshape
   NASA Glenn Research Center, Cleveland, OH}
@@ -39,20 +73,19 @@
 \usepackage{minted} %syntax highlighting
 \usepackage{color} %syntax highlighting
 \usepackage{graphicx}
-\usepackage{changepage}
+% \usepackage{changepage}
 \usepackage{amsmath} %math equations
-\usepackage{subfiles} %break up document into subfiles
 \usepackage{hyperref} %hyperlinks
 \usepackage{courier} %courier font for variable names
-\usepackage{cleveref} %section references
+\usepackage{cleveref} %section references (must come after hyperref)
 \usepackage[all]{hypcap} %figure references point to top of figure (must come after hyperref)
 \usepackage{nomencl} %nomenclature
-\usepackage{subfiles} %split sections into separate docs
-
+% \usepackage{subfiles} %split sections into separate docs
+\usepackage{import}
 \usepackage{setspace} %Pro­vides sup­port for set­ting the spac­ing be­tween lines in a doc­u­ment
 \usepackage{wrapfig} %Al­lows fig­ures or ta­bles to have text wrapped around them.
 \usepackage{caption} %The cap­tion pack­age pro­vides many ways to cus­tomise the cap­tions in float­ing en­vi­ron­ments like fig­ure and ta­ble
-\usepackage{lscape} %Mod­i­fies the mar­gins and ro­tates the page con­tents but not the page num­ber.
+% \usepackage{lscape} %Mod­i­fies the mar­gins and ro­tates the page con­tents but not the page num­ber.
 \usepackage{appendix}
 \usepackage{listings} %Code
 \usepackage[section]{placeins} %De­fines a \FloatBar­rier com­mand, be­yond which floats may not pass;
@@ -62,6 +95,7 @@
 \usepackage{tabulary} %wider table
 \usepackage{gensymb} %degree symbol
 \usepackage{booktabs} % en­hances the qual­ity of ta­bles
+\usepackage{tikz} % used to generate XDSM key
 
 \lstset{frame=single}
 \newcommand{\txt}{\textrm}
@@ -69,20 +103,18 @@
 \newcommand{\cent}{{\mathrm{c}\mkern-6.5mu{\mid}}}
 
 \captionsetup[figure]{margin=5pt,font=small,labelfont=bf,textfont=bf,justification=justified,}
-%\captionsetup[wrapfigure]{margin=5pt,font=small,labelfont=bf,justification=justified,singlelinecheck=off}
+\captionsetup[wrapfigure]{margin=5pt,font=small,labelfont=bf,justification=justified,singlelinecheck=off}
 \captionsetup[table]{margin=5pt,font=small,labelfont=bf,textfont=bf,justification=justified,position=top}
-
-\bibliographystyle{aiaa}
 
 \usepackage{lettrine} %The let­trine pack­age sup­ports var­i­ous dropped cap­i­tals styles
 \usepackage{verbatim} %reimplements verbatim, block comments
-
+\usepackage{multicol}
 \usepackage{setspace} %double spacing for the manuscript
 %\doublespacing
 
 %nomenclature
 \makenomenclature
-\usepackage{multicol}
+
 \makeatletter
 \@ifundefined{chapter}
   {\def\wilh@nomsection{section}}
@@ -116,51 +148,24 @@
 %reference appendix
 \crefname{appsec}{Appendix}{Appendices}
 \begin{document}
-
 \maketitle
-
-\begin{abstract}
-MagnePlane is a Hyperloop-derivative concept proposed as a faster,
-cheaper alternative to high speed rail and traditional short-haul aircraft.
-It consists of a passenger pod traveling through a tube under light vacuum and
-propelled and levitated by a combination of permanent and electro-magnets.
-The concept is motivated by NASA's research thrusts driven by a growth in
-demand, sustainability, and technology convergence for high-speed transport.
-Magneplane is a radical departure from other advanced aviation concepts at
-first glance, however it remains an aeronautics concept tackling the exact
-same strategic golas of low-carbon propulsion and ultra-efficient vehicles.
-
-The feasibility of this novel concept is investigated through a technical
-and cost perspective, focusing on vehicle aero and thermodynamics, structures,
-electromagnetics, weight and mission.
-A high-level sizing study is performed to determine total system costs and
-power usage given a parametric design varying tube area,
-pressure, pod speed, and passenger capacity.
-A vehicle sizing method is developed, using open-source toolsets focusing on
-the strong coupling between the two largest systems: the tube and the pod.
-The airborne vehicle requires many of the same technologies and expertise
-under development for next-generation aircraft and its high public visibility
-and rapid development make it an ideal candidate as an aircraft
-technology driver and test bed.
-\\
-\\
-\\
-\\
-
-\end{abstract}
-
-\setcounter{secnumdepth}{1}
-\setcounter{tocdepth}{1}
-%\tableofcontents
+\subimport{sections/}{abstract}
+\newpage
+\tableofcontents
 %\listoffigures
 %\listoftables
 \printnomenclature
+\section{Introduction}
+  \subimport{sections/}{introduction}
+\section{Hyperloop System Model Overview}
 
-\subfile{hyperloop}
+	\subimport{sections/}{model_overview}
+\section{Conclusion}
+  \subimport{sections/}{conclusion}
 
-\bibliographystyle{unsrt} %sorted by appearence, consider using natbib?
-\bibliography{bibliography}
+	\bibliographystyle{unsrt} %sorted by appearence, consider using natbib?
+	\bibliography{heading}
 
-\subfile{appendix}
+	\subimport{appendix}
 
 \end{document}

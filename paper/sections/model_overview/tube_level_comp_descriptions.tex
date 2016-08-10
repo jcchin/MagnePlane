@@ -1,0 +1,31 @@
+Tube Level Component Description:
+
+\paragraph{Vacuum}
+
+The vacuum subsystem is a group which evaluates two phases of the vacuum use: pump down and steady-state use. The pump down vacuum module evaluates the number of vacuum pumps and the energy required to pump the vacuum tube down from ambient pressure to the desired tube pressure in the amount of time determined by the user. This information is critical because the vacuum will need to be pumped down once tube is constructed and in the event of an emergency pressurization. The vacuum pump down model is given in the equation
+
+$Insert Nate’s Vacuum Equation$
+
+$Insert Description of variables, user inputs, etc.$
+
+The pump down energy and weight of pumps will be critical for cost and structural analyses.
+The Vacuum group also considers the vacuum energy consumed during the steady state run time of the system. In theory, if the tube is perfectly air tight, there would be no need for the vacuum to run at all once the tube is pumped down. However, some amount of leakage is inevitable, which will necessitate some amount of energy consumption by the vacuum pumps to maintain the desired tube pressure over time. The effect of leakage rate on energy consumption is critical and will be discussed in more depth later. For the purpose of this analysis, the vacuum is modeled as a compressor using the same pycycle2 component seen in the pod compression cycle analysis, with the same internal implicit solver $cite pycelcy2 docs?$. The pressure ratio of the will be equal to the ratio of ambient pressure to desired tube pressure and the mass flow through the vacuum at steady state will be equal to the leakage rate.
+
+\paragraph{Thermal Management}
+
+$Insert Brief discussion of Tube Wall Temp$
+
+$Cite NASA Paper$
+
+\paragraph{Electromagnetic Propulsion}
+
+A series of linear synchronous motors (LSMs) is proposed to accelerate the pod from rest to top speed and maintain top speed with periodic boosts. While the specifications of the LSM system design are beyond the scope of this analysis, the amount of energy and power required of an LSM can be determined using the simple mechanics relationship
+
+$Insert sum of Forces Equation$
+
+In which $F_LSM$ is the force required of the LSM system. This equation is integrated to determine the power and energy requirements for both startup and coasting booster sections. For the purpose of this analysis, the efficiency of the LSM is assumed to be .8 $Cite LSM Paper$.
+
+\paragraph{Structure}
+
+The Structural analysis group determines the structural design of the tube for two phases of travel: travel over land and under water. When traveling overland, the tube is assumed to be supported by pylons above the terrain at a given height. For travel under water, the tube is assumed to be supported at a certain depth below sea level. The structural analysis in each phase is under constrained and allows for several free choices to be made by the user, which could have a significant impact on design configuration and material cost. To handle this challenge, the structural design of the tube at each phase will be optimized in order to determine the configuration that minimizes cost. The optimization methods will be discussed later in further detail.
+

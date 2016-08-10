@@ -1,0 +1,145 @@
+Wed Aug 10 18:21:30 2016
+latexindent version 2.1R, a script to indent .tex files
+latexindent lives here: /usr/local/texlive/2016/texmf-dist/scripts/latexindent/
+
+Directory for backup files and indent.log: sections
+Reading defaultSettings.yaml from /usr/local/texlive/2016/texmf-dist/scripts/latexindent/defaultSettings.yaml
+
+Home directory is /home/colinxs
+To specify user settings you would put indentconfig.yaml here: 
+	/home/colinxs/indentconfig.yaml
+
+Alternatively, you can use the hidden file .indentconfig.yaml as: 
+	/home/colinxs/.indentconfig.yaml
+
+
+Adding sections/localSettings.yaml to paths
+
+Reading USER settings from sections/localSettings.yaml
+---
+alwaysLookforSplitBraces: '1'
+alwaysLookforSplitBrackets: '1'
+backupExtension: .bak
+checkunmatched:
+  parbox: '1'
+  vbox: '1'
+checkunmatchedELSE:
+  DTLforeach: '1'
+  ifthenelse: '1'
+  pgfkeysifdefined: '1'
+checkunmatchedbracket:
+  mycommand: '1'
+  pgfplotstablecreatecol: '1'
+  pgfplotstablesave: '1'
+  pgfplotstabletypeset: '1'
+  psSolid: '1'
+constructIfElseFi:
+  if: '1'
+  ifcase: '1'
+  ifcat: '1'
+  ifdim: '1'
+  ifeof: '1'
+  ifhmode: '1'
+  ifinner: '1'
+  ifmmode: '1'
+  ifnum: '1'
+  ifodd: '1'
+  iftrue: '1'
+  ifvmode: '1'
+  ifvoid: '1'
+  ifx: '1'
+cycleThroughBackUps: '0'
+defaultIndent: "\t"
+indentAfterHeadings:
+  chapter:
+    indent: '2'
+    level: '2'
+  paragraph:
+    indent: '6'
+    level: '6'
+  part:
+    indent: '1'
+    level: '1'
+  section:
+    indent: '3'
+    level: '3'
+  subparagraph:
+    indent: '0'
+    level: '7'
+  subsection:
+    indent: '4'
+    level: '4'
+  subsection*:
+    indent: '4'
+    level: '4'
+  subsubsection:
+    indent: '5'
+    level: '5'
+indentAfterItems:
+  enumerate: '1'
+  itemize: '1'
+  list: '1'
+indentPreamble: '0'
+indentRules:
+  anotherenvironment: "\t\t\t\t"
+  chapter: ' '
+  item: '      '
+  myenvironment: "\t\t"
+  section: "\t"
+  subsection: "\t"
+  subsubsection: "\t"
+itemNames:
+  item: '1'
+  myitem: '1'
+lookForAlignDelims:
+  align: '1'
+  align*: '1'
+  alignat: '1'
+  alignat*: '1'
+  aligned: '1'
+  array: '1'
+  bmatrix: '1'
+  cases: '1'
+  dcases: '1'
+  listabla: '1'
+  longtable: '1'
+  matrix: '1'
+  pmatrix: '1'
+  tabular: '1'
+  tabularx: '1'
+maxNumberOfBackUps: '0'
+noAdditionalIndent:
+  \[: '0'
+  \]: '0'
+  comment: '1'
+  document: '1'
+  exercises: '1'
+  foreach: '0'
+  frame: '0'
+  mydefinition: '1'
+  myexample: '1'
+  mysolution: '1'
+  problem: '1'
+  widepage: '1'
+noIndentBlock:
+  cmhtest: '1'
+  noindent: '1'
+onlyOneBackUp: '0'
+removeTrailingWhitespace: '1'
+verbatimEnvironments:
+  lstlisting: '1'
+  verbatim: '1'
+
+
+Backup procedure:
+	 sections/HyperloopModelOverview.bak0 already exists, incrementing by 1...
+
+	 copying sections/HyperloopModelOverview.tex to sections/HyperloopModelOverview.bak1
+
+	 Backup file: sections/HyperloopModelOverview.bak1
+	 Overwriting file: sections/HyperloopModelOverview.tex
+
+Line Count of sections/HyperloopModelOverview.tex: 93
+Line Count of indented sections/HyperloopModelOverview.tex: 93
+
+Line counts of original file and indented file match

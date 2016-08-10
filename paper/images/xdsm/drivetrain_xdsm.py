@@ -7,7 +7,7 @@ Large="\Large "
 
 def build_drivetrain(xdsm):
 
-    x.addComp('Motor', 'Analysis', Large + r'Motor')
+    x.addComp('Motor', 'AnalysisGroup', Large + r'Motor')
     x.addComp('Inverter', 'Function', Large + r'Inverter')
     x.addComp('Battery', 'Function', Large + r'Battery')
 

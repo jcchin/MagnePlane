@@ -19,35 +19,35 @@
     \node [Function] (MotorSize) {\Large Motor Size}; &
     &
     &
-    \node [DataInter] (Motor-MotorSize) {\TwolineComponent{16em}{$\tau_\text{max}, Pwr_\text{mech}, \omega_\text{operating}$}{$Pwr_\text{iron loss}, R_\text{winding}, Pwr_\text{windage loss}$}}; \\
+    \node [DataInter] (MotorPower-MotorSize) {\TwolineComponent{16em}{$\tau_\text{max}, Pwr_\text{mech}, \omega_\text{operating}$}{$Pwr_\text{iron loss}, R_\text{winding}, Pwr_\text{windage loss}$}}; \\
     %Row 2
     &
     \node [MDA] (Solver) {\Large Solver}; &
     &
-    \node [DataInter] (Motor-Solver) {$I_\text{no load}$}; \\
+    \node [DataInter] (MotorPower-Solver) {$I_\text{no load}$}; \\
     %Row 3
     &
     \node [DataInter] (Solver-MotorBalance) {$\mathcal{R}(I_\text{no load})$}; &
-    \node [Analysis] (MotorBalance) {\Large Motor Balance}; &
+    \node [Function] (MotorBalance) {\Large Motor Balance}; &
     \\
     &
     &
-    \node [DataInter] (MotorBalance-Motor) {$I, V, Pwr_\text{motor input}$}; &
-    \node [Function] (Motor) {\Large Motor}; \\
+    \node [DataInter] (MotorBalance-MotorPower) {$I, V, Pwr_\text{motor input}$}; &
+    \node [Function] (MotorPower) {\Large Motor Power}; \\
     %Row 5
   };
 
   \begin{pgfonlayer}{data}
     \path
     % Horizontal edges
-    (MotorSize) edge [DataLine] (Motor-MotorSize)
-    (Solver) edge [DataLine] (Motor-Solver)
+    (MotorSize) edge [DataLine] (MotorPower-MotorSize)
+    (Solver) edge [DataLine] (MotorPower-Solver)
     (Solver-MotorBalance) edge [DataLine] (MotorBalance)
-    (MotorBalance-Motor) edge [DataLine] (Motor)
+    (MotorBalance-MotorPower) edge [DataLine] (MotorPower)
     % Vertical edges
     (Solver) edge [DataLine] (Solver-MotorBalance)
-    (MotorBalance) edge [DataLine] (MotorBalance-Motor)
-    (Motor-MotorSize) edge [DataLine] (Motor)
+    (MotorBalance) edge [DataLine] (MotorBalance-MotorPower)
+    (MotorPower-MotorSize) edge [DataLine] (MotorPower)
     ;
   \end{pgfonlayer}
 

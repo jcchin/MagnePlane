@@ -1,0 +1,47 @@
+\begin{thebibliography}{10}
+\newcommand{\enquote}[1]{``#1''}
+
+\bibitem{Goddard}
+Goddard, R.~H., \enquote{VACUUM TUBE TRANSPORTATION SYSTEM, PatentUS, 2511979
+  A, 1950-05-21,} .
+
+\bibitem{RAND}
+Salter, R.~M., \enquote{The Very High Speed Transit System,} {\em RAND
+  Corporation P-4874\/}, 1972.
+
+\bibitem{Musk}
+Musk, E., \enquote{Hyperloop Alpha,} Website, August 2013.
+
+\bibitem{Chin}
+Jeffrey~Chin, Justin~Gray, S. J. J.~B., \enquote{Open-Source Conceptual Sizing
+  Model of the Hyperloop Passenger Pod,} {\em AIAA Science and Technoloy
+  Exposition\/}, 2014.
+
+\bibitem{Schafer}
+Andreas~Schafer, D.~V., \enquote{Boeing & NASA Forecast Summary,} 2015.
+
+\bibitem{goodwin2009cantera}
+Goodwin, D., Malaya, N., Moffat, H., and Speth, R., \enquote{Cantera: An
+  object-oriented software toolkit for chemical kinetics, thermodynamics, and
+  transport processes,} {\em Caltech, Pasadena\/}, 2009.
+
+\bibitem{GrayBenchmarking2013}
+Gray, J., Moore, K.~T., Hearn, T.~A., and Naylor, B.~A., \enquote{Standard
+  Platform for Benchmarking Multidisciplinary Design Analysis and Optimization
+  Architectures,} {\em AIAA Journal\/}, Vol.~51, No.~10, Oct 2013,
+  pp.~2380--2394.
+
+\bibitem{Cengal}
+{Cengal}, Y., {Turner}, R., and {Cimbala}, J., {\em Fundamentals of
+  thermal-fluid sciences\/}, McGraw-Hill Companies, 2008.
+
+\bibitem{Turns}
+{Turns}, S., {\em Thermal-fluid sciences: An integrated approach\/}, Cambridge
+  University Press, 2006.
+
+\bibitem{Churchill}
+{Churchill}, S. and {Chu}, H., \enquote{Correlating Equations for Laminar and
+  Turbulent Free Convection from a Horizontal Cylinder,} {\em Int. J. Heat Mass
+  Transfer\/}, 1975.
+
+\end{thebibliography}

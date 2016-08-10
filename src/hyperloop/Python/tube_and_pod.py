@@ -13,8 +13,7 @@ import matplotlib.pylab as plt
 
 class TubeAndPod(Group):
     def __init__(self):
-        """TODOs
-
+        """
         Params
         ------
         tube_pressure : float

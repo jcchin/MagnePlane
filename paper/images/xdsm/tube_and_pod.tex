@@ -22,14 +22,14 @@
     \node [DataInter] (Mission-Solver) {$T_\text{tube}$}; &
     \\
     \node [DataInter] (Solver-Pod) {$\mathcal{R}(T_\text{tube})$}; &
-    \node [Analysis] (Pod) {\Large Pod}; &
+    \node [FunctionGroup] (Pod) {\Large Pod}; &
     \node [DataInter] (Tube-Pod) {\TwolineComponent{14em}{$A_\text{tube}, m_\text{pod}, F_\text{gross}, D_\text{ram}$}{$S_\text{ref}, D_\text{mag}, T_\text{nozzle}, \dot{m}, C_\text{D}$}}; &
     \node [DataInter] (Mission-Pod) {$m_\text{pod}, D_\text{mag}, S_\text{ref}, F_\text{gross}, D_\text{ram}, C_\text{D}$}; &
     \node [DataInter] (Cost-Pod) {$Pwr_\text{pod}, D_\text{mag}, S_\text{ref}, C_\text{D}$}; \\
     %Row 3
     &
     \node [DataInter] (Pod-Tube) {$T_\text{boundary}$}; &
-    \node [Analysis] (Tube) {\Large Tube}; &
+    \node [FunctionGroup] (Tube) {\Large Tube}; &
     &
     \node [DataInter] (Cost-Tube) {\TwolineComponent{11em}{$P_\text{tube}, Cost_\text{land}, Cost_\text{water}$}{$Pwr_\text{prop}, Pwr_\text{vac}$}}; \\
     %Row 4
@@ -37,7 +37,7 @@
     &
     &
     \node [Function] (Mission) {\Large Mission}; &
-    \node [DataInter] (Cost-Mission) {$t_\text{thrust}, \Delta(x_\text{coast}), n_\text{thrust}$}; \\
+    \node [DataInter] (Cost-Mission) {$t_\text{thrust}, \Delta x_\text{coast}, n_\text{thrust}$}; \\
     %Row 5
     &
     &
