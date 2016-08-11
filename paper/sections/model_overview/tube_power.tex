@@ -1,9 +1,18 @@
-$Pwr_{prop} = Pwr_{prop,once} * n_{thrust}$\\
-$E_{prop} = Pwr_{prop} * t_{thrust}$\\
-$Pwr_{tot} = Pwr_{vac} + Pwr_{prop}$\\
-$E_{tot} = E_{vac} + E_{prop}$\\
-$Cost_{E} = Pwr_{tot} * Price_{elec}$\\
-
+\begin{equation}
+	Pwr_{prop} = Pwr_{prop,once} * n_{thrust}
+\end{equation}
+\begin{equation}
+E_{prop} = Pwr_{prop} * t_{thrust}
+\end{equation}
+\begin{equation}
+Pwr_{tot} = Pwr_{vac} + Pwr_{prop}
+\end{equation}
+\begin{equation}
+E_{tot} = E_{vac} + E_{prop}
+\end{equation}
+\begin{equation}
+Cost_{E} = Pwr_{tot} * Price_{elec}
+\end{equation}
 \begin{table}[ht]
 \caption{Tube Power Variables} % title of Table
 \centering % used for centering table
@@ -13,22 +22,17 @@ Symbol & Variable & Units \\ [0.5ex] % inserts table
 %heading
 \hline % inserts single horizontal line
 $Cost_{E}$ & Energy cost & USD/h\\
-
 $E_{prop}$ & Energy required for pod propulsion for trip& kWh\\
 $E_{tot}$ & Total energy required from tube/grid & kWh\\
 $E_{vac}$&Energy required for vacuum system & kWh\\
-
 $n_{thrust}$ & Number of boosts required for trip & none\\
 $Price_{elec}$&US average for electricity price (2015)& USD/kWh\\
 $Pwr_{prop}$ & Power required for propulsion system for trip & kW\\
 $ Pwr_{prop,once}$ & Power required to accelerate pod once & kW\\
-
 $Pwr_{tot}$ & Total power required from tube/grid & kW\\
 $Pwr_{vac}$ & Power required for vacuum system & kW\\
-
 $t_{thrust}$ & Thrust time & s\\
-
 \hline %inserts single line
 \end{tabular}
-\label{table:nonlin} % is used to refer this table in the text
+\label{tbl:tube_power_vars} % is used to refer this table in the text
 \end{table}
