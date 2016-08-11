@@ -72,6 +72,7 @@
 
 \usepackage{minted} %syntax highlighting
 \usepackage{color} %syntax highlighting
+\usepackage{siunitx} % correct unit typesetting
 \usepackage{graphicx}
 % \usepackage{changepage}
 \usepackage{amsmath} %math equations
@@ -149,23 +150,27 @@
 \crefname{appsec}{Appendix}{Appendices}
 \begin{document}
 \maketitle
-\subimport{sections/}{abstract}
+% \subimport{sections/}{abstract}
 \newpage
 \tableofcontents
 %\listoffigures
 %\listoftables
 \printnomenclature
+\newpage
 \section{Introduction}
   \subimport{sections/}{introduction}
 \section{Hyperloop System Model Overview}
-
 	\subimport{sections/}{model_overview}
+\section{Subsystem Analyses and Optimizations}
+  \subimport{sections/}{subsystem_analyses_and_optimizations}
 \section{Conclusion}
   \subimport{sections/}{conclusion}
 
-	\bibliographystyle{unsrt} %sorted by appearence, consider using natbib?
-	\bibliography{heading}
 
-	\subimport{appendix}
+
+\bibliographystyle{unsrt} %sorted by appearence, consider using natbib?
+\bibliography{heading}
+
+\subimport{appendix}
 
 \end{document}
