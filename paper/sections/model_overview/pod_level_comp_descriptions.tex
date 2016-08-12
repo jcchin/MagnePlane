@@ -1,0 +1,46 @@
+\subsubsection{Drag}
+(Insert some description of CFD methods).
+CFD is performed on the pod to determine how the pod drag coefficient varies with Mach number. 
+\begin{figure}
+	\centering
+	\includegraphics{../../images/cd_vs_drag.png}
+	\caption{Drag Coefficient vs. Mach Number}
+	\label{fig:cd_vs_mach}
+\end{figure}
+\Cref{fig:cd_vs_mach} shows the CFD results for drag coefficient vs. Mach number. These results fit the trend expected for transonic flow given by the Prandtl-Glauert relationship. Drag Coefficient values will be interpolated from this data for each Mach number the system analyzes.
+\subsubsection{Cycle}
+\subsubsection{Drivetrain}
+\subsubsection{Geometry and Mass}
+The geometry and mass modules are simple in that they both primarily serve to add together mass and area values in previous modules. the geometry module adds the cross sectional area of the passenger section of the pod given by the user to the cross sectional area of the compressor exit duct, which is computed in the cycle analysis. The geometry module also estimates the thickness of the pod wall and the passenger compartment, then adds these areas together to compute the cross sectional area. The length of each component is also fed into the geometry model so it can compute the total pod length and planform area. The mass module takes the mass of each component and adds them with the total passenger mass in order to determine the mass of the pod without magnets for levitation. The Levitation component takes in this mass, computes the mass of the magnets, then outputs the total mass of the pods.
+\subsubsection{Pod Mach}
+The pod mach module uses the pod cross-sectional area, Mach number, and compressor inlet conditions to compute the tube area. As the pod travels, flow that is not entrained by the compressor must accelerate around the pod. Due to the pod’s transonic flight speed, it is possible that this bypass flow could accelerate to Mach 1 and cause the flow to choke, which would lead to an undesirable buildup of pressure in front of the pod and increased drag. To avoid this condition, this module sizes the tube area such that there is a large enough bypass area to prevent the bypass flow from accelerating to Mach 1. This is done using a simple quasi 1D area relationship for compressible flow given by the equation
+\begin{equation}
+	\label{eq:mach_to_area}
+	Insert Mach-to-Area Equation
+\end{equation}
+For this analysis, $M_1$ is the free stream Mach number, $M_2$ is the desired bypass Mach number, $A_1$ is the initial area of the bypass flow ($A_tube$ - $A_tinlet$), and $A_2$ is the bypass area ($A_tube$ - $A_pod$). For these analyses, $M_2$ is set to .95 in order to provide a slight factor of safety to prevent the flow from reaching the choking condition.
+In order to make this model higher fidelity, it is possible to modify the areas in the relationship to account for boundary layer development over the pod outer surface. As the boundary develops, the effective bypass area is reduced which increases the risk of bypass flow reaching Mach 1. However, it is possible to modify this by increasing the effective pod radius by the displacement thickness of the boundary layer. The sensitivity of structural design to boundary layer growth is important and will be discussed at length later.
+\subsubsection{Levitation}
+The Hyperloop concept operates using a levitation system to significantly reduce friction during high velocity areas of travel. In this analysis, a passive magnetic levitation system is used to suspend the pod above the track as it travels. The passive system is advantageous because it requires zero power input for levitation to occur, which is advantageous when traveling over long distances. The Inductrack passive levitation method developed at the Lawrence Livermore National Laboratory is chosen as the system for our Hyperloop model \cite{inductrack}. Some assumptions were taken to simplify the analysis adapted from this model. It is assumed that ferrite tiles were not used so that the added inductive loading is set to zero, leaving only the distributed inductance to computed in the model. Fringe fields from the magnetic array are also ignored in this analysis and the width of the magnetic array is set equal to the width of the track. These three simplifications and assumptions allow the overall scale factor for the total force, $levsf$, to set equal to unity.
+
+The levitation group makes two critical calculations: the inductance of the track required for the pod to levitate at a desired speed and the mass of the permanent magnets onboard. The breakpoint levitation module uses a desired minimum levitation speed and uses it to calculate important track parameters, including the ratio of inductance to resistance of the track $Insert MagLevTrain Tech Paper$. 
+
+Using a desired levitation speed, the total mass of magnets required and drag force produced is is then calculated. The lift and drag produced produced by the magnets are given in the equations
+\begin{equation}
+	\label{eq:fy_lev}
+	Insert Fy Lev Equation
+\end{equation}
+\begin{equation}
+	\label{eq:dmag}
+	Insert Dmag Equation
+\end{equation}
+In these equations, the drag and the magnet mass are both functions of the magnet area and thickness. To minimize drag and mass, a Pareto optimization is performed prior to running the system model. The following cost function is developed by normalizing drag and mass, then multiplying by a weighing factor $alpha$ and adding them together in the following equation
+\begin{equation}
+	\label{eq:pareto}
+	Insert Pareto Equation
+\end{equation}
+Where the bar signifies the normalized value. The weighing factor $alpha$ is chosen arbitrarily between zero and unity; high values of $alpha$ emphasize minimizing drag while low values of $alpha$ emphasize minimizing mass.
+
+
+
+
