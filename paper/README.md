@@ -2,24 +2,31 @@ Directory
 
 	(main files)
 	heading.tex- NASA header/footer, imports packages and subfiles
-	hyperloop.tex- Main Paper Body
-	appendix.tex- Appendix
-	bibliography.bib- References
+	sections/introduction.tex - Introduction
+	sections/model_overview.tex - Model Overview Section Body + Formatting Subsections
+	sections/model_overview/*.tex - Subsections for Model Overview Section
+	sections/subsystem_analyses_and_optimizations.tex - Subsystem Analyses and Optimizations Body + Formatting for Subsections
+	sections/subsystem_analyses_and_optimizations/*.tex - Subsections for Subsystem Analyses and Optimizations Section
+	sections/results.tex - Results Body and Formatting for Subsections
+	sections/results/*.tex - Subsections for Results Section
+	sections/appendix.tex - Appendix
+	sections/conclusion.tex - Conclusion
+	localSettings.yaml - settings for latexindent (code formatter/prettifier)
+	heading.bib- References
 	build.sh - build script
 
 	/images
 		-contains all graphics
 	/code
 		-contains all code snippets
-
-	(other files)
-	nasalogo.pdf- NASA meatball
+	/unneeded
+		-contains archived code
 	NASA.cls- NASA LaTeX style sheet
 	clean.sh- shell script to delete unnecessary files
 
 Build to PDF using this command:
 
-. build.sh
+bash ./build.sh -f
 
 
 -------------------------------------------
@@ -79,3 +86,10 @@ http://mirrors.ibiblio.org/CTAN/macros/latex/contrib/minted/minted.pdf
 
 if it's still not working check this:
 http://tex.stackexchange.com/questions/48018/minted-not-working-on-mac
+-------------------------------------------
+"siunitx" to format values/units 
+
+\SI{1.0}{\newton\meter}
+
+Help:
+http://mirrors.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf
