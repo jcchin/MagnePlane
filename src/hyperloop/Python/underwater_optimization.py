@@ -1,9 +1,10 @@
 from __future__ import print_function
 
 import numpy as np
+import matplotlib.pylab as plt
 from openmdao.api import IndepVarComp, Component, Group, Problem, ExecComp, ScipyOptimizer
 
-class TubeAndPylon(Component):
+class UnderwaterOptimization(Component):
     """
     Notes
     -----
@@ -85,7 +86,7 @@ class TubeAndPylon(Component):
     [1] USA. NASA. Buckling of Thin-Walled Circular Cylinders. N.p.: n.p., n.d. Web. 13 June 2016.
     """
     def __init__(self):
-        super(TubeAndPylon, self).__init__()
+        super(UnderwaterOptimization, self).__init__()
         #Define material properties of tube
         self.add_param('rho_tube',
                        val=7820.0,
@@ -110,7 +111,7 @@ class TubeAndPylon(Component):
                        val=100.0,
                        units='Pa',
                        desc='Tunnel Pressure')
-        self.add_param('p_ambient',
+        self.add_param('p_atm',
                        val=101300.0,
                        units='Pa',
                        desc='Ambient Pressure')
@@ -129,27 +130,29 @@ class TubeAndPylon(Component):
 
         #Define pylon material properties
         self.add_param('rho_pylon',
-                       val=2400.0,
+                       val=7820.0,
                        units='kg/m**3',
                        desc='density of pylon material')
         self.add_param('E_pylon',
-                       val=41.0 * (10**9),
+                       val=200 * (10**9),
                        units='Pa',
                        desc='Young\'s Modulus of pylon')
         self.add_param('v_pylon', val=.2, desc='Poisson\'s ratio of pylon')
         self.add_param('Su_pylon',
-                       val=40.0 * (10**6),
+                       val=152.0 * (10**6),
                        units='Pa',
                        desc='ultimate strength_pylon')
         self.add_param('unit_cost_pylon',
-                       val=.05,
+                       val=.3307,
                        units='USD/kg',
                        desc='cost of pylon materials per unit mass')
         self.add_param('h', val=10.0, units='m', desc='height of pylon')
 
-        self.add_param('r_pylon', val=1.1, units='m', desc='inner tube radius')
+        self.add_param('r_pylon', val=.1, units='m', desc='inner tube radius')
 
         self.add_param('vac_weight', val=1500.0, units='kg', desc='vacuum weight')
+        self.add_param('rho_water', val = 1025.0, units = 'kg/m**3', desc = 'Density of seawater')
+        self.add_param('depth', val = 10.0, units = 'm', desc = 'Depth of submerged tube')
 
         #Define outputs
         self.add_output('m_pylon',
@@ -203,7 +206,7 @@ class TubeAndPylon(Component):
         t = params['t']
         m_pod = params['m_pod']
         p_tunnel = params['p_tunnel']
-        p_ambient = params['p_ambient']
+        p_atm = params['p_atm']
         Su_pylon = params['Su_pylon']
         sf = params['sf']
         rho_pylon = params['rho_pylon']
@@ -212,22 +215,21 @@ class TubeAndPylon(Component):
         unit_cost_pylon = params['unit_cost_pylon']
         h = params['h']
         vac_weight = params['vac_weight']
+        rho_water = params['rho_water']
+        depth = params['depth']
 
         #Compute intermediate variable
         r = np.sqrt(tube_area/np.pi)
+        p_ambient = p_atm + rho_water*g*depth
         #print(r)
-        q = rho_tube * np.pi * ((
-            (r + t)**2) - (r**2)) * g  #Calculate distributed load
+        q = (rho_water*np.pi*((r+t)**2.0)*g) - (rho_tube * np.pi * (((r + t)**2) - (r**2)) * g)  #Calculate distributed load
         dp = p_ambient - p_tunnel  #Calculate delta pressure
         I_tube = (np.pi / 4.0) * ((
             (r + t)**4) - (r**4))  #Calculate moment of inertia of tube
 
-        m_prime = rho_tube * np.pi * ((
-            (r + t)**2) - (r**2))  #Calculate mass per unit length
-        dx = ((2 * (Su_pylon / sf) * np.pi *
-               (r_pylon**2)) - m_pod * g) / (m_prime * g)  #Calculate dx
-        M = (q * (
-            (dx**2) / 8.0)) + (m_pod * g * (dx / 2.0))  #Calculate max moment
+        m_prime = rho_tube * np.pi * (((r + t)**2) - (r**2))  #Calculate mass per unit length
+        dx = ((2 * (Su_pylon / sf) * np.pi *(r_pylon**2))) / q  #Calculate dx
+        M = (q * ((dx**2) / 8.0))  #Calculate max moment
         sig_theta = (dp * r) / t  #Calculate hoop stress
         sig_axial = ((dp * r) / (2 * t)) + (
             (M * r) / I_tube
@@ -238,10 +240,12 @@ class TubeAndPylon(Component):
         m_pylon = rho_pylon * np.pi * (r_pylon**
                                     2) * h  #Calculate mass of single pylon
 
+        # unknowns['total_material_cost'] = (unit_cost_tube * (rho_tube * np.pi * ((
+        #     (r + t)**2) - (r**2)))) + (unit_cost_pylon * m_pylon * (1 / (
+        #         ((2 * (Su_pylon / sf) * np.pi * (r_pylon**2)) - m_pod * g) /
+        #         (m_prime * g))))
         unknowns['total_material_cost'] = (unit_cost_tube * (rho_tube * np.pi * ((
-            (r + t)**2) - (r**2)))) + (unit_cost_pylon * m_pylon * (1 / (
-                ((2 * (Su_pylon / sf) * np.pi * (r_pylon**2)) - m_pod * g) /
-                (m_prime * g))))
+            (r + t)**2) - (r**2)))) + (unit_cost_pylon * m_pylon)/dx 
         unknowns['m_prime'] = m_prime
         unknowns['von_mises'] = von_mises
         unknowns['delta'] = (5.0 * q * (dx**4)) / (384.0 * E_tube * I_tube)
@@ -274,7 +278,7 @@ if __name__ == '__main__':
               ('m_pod', 3100.0, {'units': 'kg'})
               )
     root.add('input_vars', IndepVarComp(params))
-    root.add('p', TubeAndPylon())
+    root.add('p', UnderwaterOptimization())
 
     root.add('con1', ExecComp(
         'c1 = ((Su_tube/sf) - von_mises)'))  #Impose yield stress constraint for tube
@@ -301,28 +305,91 @@ if __name__ == '__main__':
     top.driver.options['optimizer'] = 'SLSQP'
 
     top.driver.add_desvar('input_vars.t', lower=.001, scaler=100.0)
-    top.driver.add_desvar('input_vars.r_pylon', lower=.1)
+    top.driver.add_desvar('input_vars.r_pylon', lower=.001, scaler = 1.0)
     top.driver.add_objective('p.total_material_cost', scaler = 1.0e-4)
     top.driver.add_constraint('con1.c1', lower=0.0, scaler=1000.0)
     top.driver.add_constraint('con2.c2', lower=0.0)
 
+
+
     top.setup()
-    top['p.m_pod'] = 15000.0
     top['p.p_tunnel'] = 850.0
-    top['input_vars.tube_area'] = 36.190520
+    # top['p.m_pod']= 10000.0
+    top['p.h'] = 10.0
+    top['p.depth'] = 10.0
 
-    top.run()
+    import csv
 
-    R_buckle = ((np.pi**3) * top['p.E_tube'] *
-                (top['p.r_pylon']**4)) / (16 * (top['p.h']**2))
-    if top['p.R'] < R_buckle:
-        print('Pylon buckling constraint is satisfied')
-    else:
-        r_pylon_new = ((R_buckle * 16 * (top['p.h']**2)) / (
-            (np.pi**3) * top['p.E_tube']))**.25
-        print(
-            'Optimizer value did not satisfy pylon buckling condition. Pylon radius set to minimum buckling value')
-        print('new pylon radius is %f m' % r_pylon_new)
+    f = open('/Users/kennethdecker/Desktop/Paper figures/water_structural_trades.csv', 'wt')
+    writer = csv.writer(f)
+    writer.writerow(('A_tube', 'dx', 'cost'))
+
+
+    A_tube = np.linspace(20.0, 50.0, num = 30)
+
+    dx = np.zeros((1, len(A_tube)))
+    t_tube = np.zeros((1, len(A_tube)))
+    r_pylon = np.zeros((1, len(A_tube)))
+    cost = np.zeros((1,len(A_tube)))
+
+    for i in range(len(A_tube)):
+        top['input_vars.tube_area'] = A_tube[i]
+
+        top.run()
+
+        dx[0,i] = top['p.dx']
+        t_tube[0,i] = top['p.t']
+        r_pylon[0,i] = top['p.r_pylon']
+        cost[0,i] = top['p.total_material_cost']
+
+        print(top['p.r_pylon'])
+        print(r_pylon[0,i])
+
+        writer.writerow((A_tube[i], dx[0,i], cost[0,i]))
+
+    f.close()
+    plt.hold(True)
+    # plt.subplot(211)
+    line1, = plt.plot(A_tube, dx[0,:], 'b-', linewidth = 2.0, label = 'm_pod = 10000 kg')
+    plt.xlabel('Tube Area (m^2)', fontsize = 12, fontweight = 'bold')
+    plt.ylabel('Pylon Spacing (m)', fontsize = 12, fontweight = 'bold')
+    plt.grid('on')
+    plt.show()
+    plt.subplot(211)
+    line1, = plt.plot(A_tube, t_tube[0,:], 'b-', linewidth = 2.0, label = 'm_pod = 10000 kg')
+    # plt.xlabel('Tube Area (m^2)', fontsize = 12, fontweight = 'bold')
+    plt.ylabel('tube thickness (m)', fontsize = 12, fontweight = 'bold')
+    plt.grid('on')
+    plt.subplot(212)
+    line1, = plt.plot(A_tube, r_pylon[0,:], 'b-', linewidth = 2.0, label = 'm_pod = 10000 kg')
+    plt.xlabel('Tube Area (m^2)', fontsize = 12, fontweight = 'bold')
+    plt.ylabel('Pylon Radius (m)', fontsize = 12, fontweight = 'bold')
+    plt.grid('on')
+    plt.show()
+
+    # plt.plot(A_tube, dx[0,:])
+    # plt.xlabel('Tube Area')
+    # plt.ylabel('pylon spacing')
+    # plt.show()
+
+    # plt.plot(A_tube, total_material_cost[0,:])
+    # plt.xlabel('Tube Area')
+    # plt.ylabel('Cost per unit length')
+    # plt.show()
+
+
+    # R_buckle = ((np.pi**3) * top['p.E_tube'] *
+    #             (top['p.r_pylon']**4)) / (16 * (top['p.h']**2))
+    # print('Optimizer pylon radius %f' % top['p.r_pylon'])
+    # if top['p.R'] < R_buckle:
+    #     print('Pylon buckling constraint is satisfied')
+    # else:
+    #     r_pylon_new = ((R_buckle * 16 * (top['p.h']**2)) / (
+    #         (np.pi**3) * top['p.E_tube']))**.25
+    #     print(
+    #         'Optimizer value did not satisfy pylon buckling condition. Pylon radius set to minimum buckling value')
+    #     print('new pylon radius is %f m' % r_pylon_new)
+
 
     print('\n')
     print('total material cost per m is $%6.2f/km' %
@@ -334,6 +401,7 @@ if __name__ == '__main__':
     print('Von Mises stress is %6.3f MPa' % (top['p.von_mises'] / (1.0e6)))
     print('distance between pylons is %6.2f m' % top['p.dx'])
     print('max deflection is %6.4f mm' % (top['p.delta'] * (1.0e3)))
+    print('critical thickness %6.4f' % top['p.t_crit'])
     print('\n')
     print('con1 = %f' % top['con1.c1'])
     print('con2 = %f' % top['con2.c2'])

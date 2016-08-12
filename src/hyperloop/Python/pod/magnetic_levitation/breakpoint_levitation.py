@@ -308,7 +308,6 @@ class MagMass(Component):
         unknowns['cost'] = cost
         unknowns['total_pod_mass'] = m_mag + m_pod
 
-        print ("barfoo", unknowns['total_pod_mass'])
 
 if __name__ == "__main__":
 
