@@ -1,3 +1,4 @@
 #!/bin/bash
 #delete spam
-rm -rf *.aux *.log *.pyg *.synctex.gz *.lof *.lot *.toc *.DS_Store *.out
+find . -regextype posix-extended -regex '.*\.(aux|log|pyg|synctex.gz|lof|lot|toc|DS_Store|out)$' -delete
+
