@@ -13,32 +13,32 @@
 
 \begin{tikzpicture}
 
-  \matrix[MatrixSetup]
-  {
-    %Row 1
-    \node [AnalysisGroup] (Motor) {\Large Motor}; &
-    \node [DataInter] (Inverter-Motor) {$I_\text{phase}, V_\text{phase}, f$}; &
-    \\
-    &
-    \node [Function] (Inverter) {\Large Inverter}; &
-    \node [DataInter] (Battery-Inverter) {$I_\text{input}, Pwr_\text{input}$}; \\
-    %Row 3
-    &
-    &
-    \node [Function] (Battery) {\Large Battery}; \\
-    %Row 4
-  };
+	\matrix[MatrixSetup]
+	{
+		%Row 1
+		\node [AnalysisGroup] (Motor) {\Large Motor}; &
+		\node [DataInter] (Inverter-Motor) {$I_\text{phase}, V_\text{phase}, f$}; &
+		\\
+		&
+		\node [Function] (Inverter) {\Large Inverter}; &
+		\node [DataInter] (Battery-Inverter) {$I_\text{input}, Pwr_\text{input}$}; \\
+		%Row 3
+		&
+		&
+		\node [Function] (Battery) {\Large Battery}; \\
+		%Row 4
+	};
 
-  \begin{pgfonlayer}{data}
-    \path
-    % Horizontal edges
-    (Motor) edge [DataLine] (Inverter-Motor)
-    (Inverter) edge [DataLine] (Battery-Inverter)
-    % Vertical edges
-    (Inverter-Motor) edge [DataLine] (Inverter)
-    (Battery-Inverter) edge [DataLine] (Battery)
-    ;
-  \end{pgfonlayer}
+	\begin{pgfonlayer}{data}
+		\path
+		% Horizontal edges
+		(Motor) edge [DataLine] (Inverter-Motor)
+		(Inverter) edge [DataLine] (Battery-Inverter)
+		% Vertical edges
+		(Inverter-Motor) edge [DataLine] (Inverter)
+		(Battery-Inverter) edge [DataLine] (Battery)
+		;
+	\end{pgfonlayer}
 
 \end{tikzpicture}
 

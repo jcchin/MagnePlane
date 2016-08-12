@@ -7,40 +7,40 @@
 Relevant Equations Used in TubeTemp and Area Relations
 
 \begin{equation}
-\frac{A_{bypass}}{A_{tube}} = \frac{M_{pod}}{M_{bypass}}
-\left(\frac{1+ \frac{\gamma-1}{2} M_{bypass}^2}
-{1+ \frac{\gamma-1}{2} M_{pod}^2}\right)^{\frac{\gamma+1}{2\left(\gamma-1\right)}}
-\label{e:a-over-astar}
+	\frac{A_{bypass}}{A_{tube}} = \frac{M_{pod}}{M_{bypass}}
+	\left(\frac{1+ \frac{\gamma-1}{2} M_{bypass}^2}
+	{1+ \frac{\gamma-1}{2} M_{pod}^2}\right)^{\frac{\gamma+1}{2\left(\gamma-1\right)}}
+	\label{e:a-over-astar}
 \end{equation}
 
 \begin{equation}
-T_{t,inlet} = T_{tube} [1 + \frac{\gamma -1}{2} M^2]
+	T_{t,inlet} = T_{tube} [1 + \frac{\gamma -1}{2} M^2]
 \end{equation}
 
 \begin{equation}
-T_{t,exit} = T_{t,inlet} \Bigg[ 1 + \frac{1}{\eta_{c}} \Big[ \pi_{c}^{\frac{\gamma-1}{\gamma}}- 1 \Big] \Bigg]
+	T_{t,exit} = T_{t,inlet} \Bigg[ 1 + \frac{1}{\eta_{c}} \Big[ \pi_{c}^{\frac{\gamma-1}{\gamma}}- 1 \Big] \Bigg]
 \end{equation}
 
 \begin{equation}
-{Q}_{pods}= \dot{m} C_{p,air} (T_{t,exit} - T_{t,inlet}) n
+	{Q}_{pods}= \dot{m} C_{p,air} (T_{t,exit} - T_{t,inlet}) n
 \end{equation}
 
 \begin{equation}
-Q_{solar} = \underbrace{ (1- \rho_{r})  c_{solar}G}_\text{Solar Heat per unit Area} \underbrace{L_{tube}  D_{o,tube}}_\text{Effective Area}
+	Q_{solar} = \underbrace{ (1- \rho_{r})  c_{solar}G}_\text{Solar Heat per unit Area} \underbrace{L_{tube}  D_{o,tube}}_\text{Effective Area}
 \end{equation}
 
 \begin{equation}
-Q_{rad} = \underbrace{\epsilon \sigma (T_{tube}^4 - T_{amb}^4)}_\text{Radiated Power per unit Area}\underbrace{\pi L_{tube} D_{o,tube}}_\text{Surface Area}
+	Q_{rad} = \underbrace{\epsilon \sigma (T_{tube}^4 - T_{amb}^4)}_\text{Radiated Power per unit Area}\underbrace{\pi L_{tube} D_{o,tube}}_\text{Surface Area}
 \end{equation}
 
 \begin{equation}
-Nu = \Bigg(0.6 + \frac{0.387Ra^{\frac{1}{6}}}{[1+(\frac{0.559}{Pr})^{\frac{9}{16}}]^{\frac{8}{27}}}\Bigg)^2
+	Nu = \Bigg(0.6 + \frac{0.387Ra^{\frac{1}{6}}}{[1+(\frac{0.559}{Pr})^{\frac{9}{16}}]^{\frac{8}{27}}}\Bigg)^2
 \end{equation}
 
 \begin{equation}
-Q_{conv} = \underbrace{ \frac{k\cdot Nu}{ {D}_{o,tube}} }_\text{$h$}
- \underbrace{ \pi {L}_{tube} {D}_{o,tube} }_\text{Area}
- \underbrace{ (T_{tube}-T_{amb})  }_\text{$\Delta T$}
+	Q_{conv} = \underbrace{ \frac{k\cdot Nu}{ {D}_{o,tube}} }_\text{$h$}
+	\underbrace{ \pi {L}_{tube} {D}_{o,tube} }_\text{Area}
+	\underbrace{ (T_{tube}-T_{amb})  }_\text{$\Delta T$}
 \end{equation}
 
 \nomenclature{\gamma}{Heat Capacity Ratio}

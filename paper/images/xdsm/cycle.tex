@@ -13,40 +13,40 @@
 
 \begin{tikzpicture}
 
-  \matrix[MatrixSetup]
-  {
-    %Row 1
-    \node [Function] (FlowpathInp) {\Large \TwolineComponent{6em}{Flowpath}{Inputs}}; &
-    \node [DataInter] (Flowpath-FlowpathInp) {$P_\text{total}, T_\text{total}, \dot{m}$}; &
-    &
-    \\
-    &
-    \node [AnalysisGroup] (Flowpath) {\Large Flowpath}; &
-    \node [DataInter] (CompLen-Flowpath) {$h_\text{in}, h_\text{out}$}; &
-    \node [DataInter] (CompMass-Flowpath) {$\dot{m}, h_\text{in}, h_\text{out}$}; \\
-    %Row 3
-    &
-    &
-    \node [Function] (CompLen) {\Large \TwolineComponent{6em}{Compressor}{Length}}; &
-    \\
-    &
-    &
-    &
-    \node [Function] (CompMass) {\Large \TwolineComponent{6em}{Compressor}{Mass}}; \\
-    %Row 5
-  };
+	\matrix[MatrixSetup]
+	{
+		%Row 1
+		\node [Function] (FlowpathInp) {\Large \TwolineComponent{6em}{Flowpath}{Inputs}}; &
+		\node [DataInter] (Flowpath-FlowpathInp) {$P_\text{total}, T_\text{total}, \dot{m}$}; &
+		&
+		\\
+		&
+		\node [AnalysisGroup] (Flowpath) {\Large Flowpath}; &
+		\node [DataInter] (CompLen-Flowpath) {$h_\text{in}, h_\text{out}$}; &
+		\node [DataInter] (CompMass-Flowpath) {$\dot{m}, h_\text{in}, h_\text{out}$}; \\
+		%Row 3
+		&
+		&
+		\node [Function] (CompLen) {\Large \TwolineComponent{6em}{Compressor}{Length}}; &
+		\\
+		&
+		&
+		&
+		\node [Function] (CompMass) {\Large \TwolineComponent{6em}{Compressor}{Mass}}; \\
+		%Row 5
+	};
 
-  \begin{pgfonlayer}{data}
-    \path
-    % Horizontal edges
-    (FlowpathInp) edge [DataLine] (Flowpath-FlowpathInp)
-    (Flowpath) edge [DataLine] (CompMass-Flowpath)
-    % Vertical edges
-    (Flowpath-FlowpathInp) edge [DataLine] (Flowpath)
-    (CompLen-Flowpath) edge [DataLine] (CompLen)
-    (CompMass-Flowpath) edge [DataLine] (CompMass)
-    ;
-  \end{pgfonlayer}
+	\begin{pgfonlayer}{data}
+		\path
+		% Horizontal edges
+		(FlowpathInp) edge [DataLine] (Flowpath-FlowpathInp)
+		(Flowpath) edge [DataLine] (CompMass-Flowpath)
+		% Vertical edges
+		(Flowpath-FlowpathInp) edge [DataLine] (Flowpath)
+		(CompLen-Flowpath) edge [DataLine] (CompLen)
+		(CompMass-Flowpath) edge [DataLine] (CompMass)
+		;
+	\end{pgfonlayer}
 
 \end{tikzpicture}
 

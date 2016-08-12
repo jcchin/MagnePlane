@@ -1,21 +1,17 @@
-Wed Aug 10 18:21:30 2016
+Fri Aug 12 15:10:56 2016
 latexindent version 2.1R, a script to indent .tex files
 latexindent lives here: /usr/local/texlive/2016/texmf-dist/scripts/latexindent/
 
-Directory for backup files and indent.log: sections
+Directory for backup files and indent.log: ./sections
 Reading defaultSettings.yaml from /usr/local/texlive/2016/texmf-dist/scripts/latexindent/defaultSettings.yaml
 
-Home directory is /home/colinxs
-To specify user settings you would put indentconfig.yaml here: 
-	/home/colinxs/indentconfig.yaml
+Reading path information from /home/colinxs/.indentconfig.yaml
+Alternatively, /home/colinxs/indentconfig.yaml can be used
+---
+paths:
+  - /home/colinxs/MagnePlane/paper/mysettings.yaml
 
-Alternatively, you can use the hidden file .indentconfig.yaml as: 
-	/home/colinxs/.indentconfig.yaml
-
-
-Adding sections/localSettings.yaml to paths
-
-Reading USER settings from sections/localSettings.yaml
+Reading USER settings from /home/colinxs/MagnePlane/paper/mysettings.yaml
 ---
 alwaysLookforSplitBraces: '1'
 alwaysLookforSplitBrackets: '1'
@@ -132,14 +128,13 @@ verbatimEnvironments:
 
 
 Backup procedure:
-	 sections/HyperloopModelOverview.bak0 already exists, incrementing by 1...
 
-	 copying sections/HyperloopModelOverview.tex to sections/HyperloopModelOverview.bak1
+	 copying ./sections/abstract.tex to ./sections/abstract.bak0
 
-	 Backup file: sections/HyperloopModelOverview.bak1
-	 Overwriting file: sections/HyperloopModelOverview.tex
+	 Backup file: ./sections/abstract.bak0
+	 Overwriting file: ./sections/abstract.tex
 
-Line Count of sections/HyperloopModelOverview.tex: 93
-Line Count of indented sections/HyperloopModelOverview.tex: 93
+Line Count of ./sections/abstract.tex: 24
+Line Count of indented ./sections/abstract.tex: 24
 
 Line counts of original file and indented file match

@@ -85,38 +85,38 @@
 % A new command to split the component text over multiple lines
 \newcommand{\TwolineComponent}[3]
 {
-    \begin{minipage}{#1}
-    \begin{center}
-        #2 \linebreak #3
-    \end{center}
-    \end{minipage}
+	\begin{minipage}{#1}
+		\begin{center}
+			#2 \linebreak #3
+		\end{center}
+	\end{minipage}
 }
 
 \newcommand{\ThreelineComponent}[4]
 {
-    \begin{minipage}{#1}
-    \begin{center}
-        #2 \linebreak #3 \linebreak #4
-    \end{center}
-    \end{minipage}
+	\begin{minipage}{#1}
+		\begin{center}
+			#2 \linebreak #3 \linebreak #4
+		\end{center}
+	\end{minipage}
 }
 
 % A new command to split the component text over multiple columns
 \newcommand{\MultiColumnComponent}[5]
 {
-    \begin{minipage}{#1}
-    \begin{center}
-    #2 \linebreak #3
-    \end{center}
-    \begin{minipage}{0.49\textwidth}
-    \begin{center}
-    #4
-    \end{center}
-    \end{minipage}
-    \begin{minipage}{0.49\textwidth}
-    \begin{center}
-    #5
-    \end{center}
-    \end{minipage}
-    \end{minipage}
+	\begin{minipage}{#1}
+		\begin{center}
+			#2 \linebreak #3
+		\end{center}
+		\begin{minipage}{0.49\textwidth}
+			\begin{center}
+				#4
+			\end{center}
+		\end{minipage}
+		\begin{minipage}{0.49\textwidth}
+			\begin{center}
+				#5
+			\end{center}
+		\end{minipage}
+	\end{minipage}
 }
