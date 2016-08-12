@@ -57,7 +57,7 @@ class SteadyStateVacuum(Group):
         super(SteadyStateVacuum, self).__init__()
 
         des_vars = (('ram_recovery', 0.99),
-                    ('effDes', 0.8),
+                    ('effDes', 0.2),
                     ('duct_MN', 0.0),
                     ('duct_dPqP', 0.),
                     ('nozzle_Cfg', 1.0),
@@ -74,7 +74,7 @@ class SteadyStateVacuum(Group):
         # internal flow
         self.add('comp', Compressor(thermo_data=janaf, elements=AIR_MIX))
         self.add('q', ExecComp('Prc = Pa/Ps'), promotes = ['Prc', 'Pa'])
-        self.add('q1', ExecComp('m_dot = 3*(A_tube*L_pod)*(1/pod_period)'), promotes = ['m_dot', 'pod_period', 'A_tube', 'L_pod'])
+        self.add('q1', ExecComp('m_dot = 3*(A_tube*L_pod)*(1/pod_period)*(850.0/(287.0*320.0))'), promotes = ['m_dot', 'pod_period', 'A_tube', 'L_pod'])
 
         # connect components
         connect_flow(self, 'fl_start.Fl_O', 'comp.Fl_I')
@@ -85,49 +85,52 @@ class SteadyStateVacuum(Group):
         self.connect('input_vars.vehicle_mach', 'fl_start.MN_target')
         self.connect('input_vars.Pa', 'Pa')
         self.connect('Prc', 'comp.map.PRdes')
-        self.connect('m_dot', 'fl_start.W')
+        # self.connect('m_dot', 'fl_start.W')
         self.connect('fl_start.P', 'q.Ps')
 
 if __name__ == '__main__':
-	prob = Problem()
-	root = prob.root = Group()
+    prob = Problem()
+    root = prob.root = Group()
 
-	root.add('p', SteadyStateVacuum())
+    root.add('p', SteadyStateVacuum())
 
-	# recorder = SqliteRecorder('pdb')
-	# recorder.options['record_params'] = True
-	# recorder.options['record_metadata'] = True
-	# prob.driver.add_recorder(recorder)
+    # recorder = SqliteRecorder('pdb')
+    # recorder.options['record_params'] = True
+    # recorder.options['record_metadata'] = True
+    # prob.driver.add_recorder(recorder)
 
-	params = (('Pt', 850.0, {'units': 'Pa'}),
-				('T', 320.0, {'units': 'K'}),
-				('L_pod', 22.0, {'units' : 'm'}),
-				('A_tube', 40.0, {'units' : 'm**2'}),
-				('pod_period', 120.0, {'units' : 's'}))
+    params = (('Pt', 850.0, {'units': 'Pa'}),
+                ('T', 320.0, {'units': 'K'}),
+                ('L_pod', 22.0, {'units' : 'm'}),
+                ('A_tube', 40.0, {'units' : 'm**2'}),
+                ('pod_period', 120.0, {'units' : 's'}),
+                ('W', .1, {'units' : 'kg/s'}))
 
-	prob.root.add('des_vars', IndepVarComp(params))
+    prob.root.add('des_vars', IndepVarComp(params))
 
-	prob.root.connect('des_vars.Pt', 'p.fl_start.P')
-	prob.root.connect('des_vars.T', 'p.fl_start.T')
-	prob.root.connect('des_vars.A_tube', 'p.A_tube')
-	prob.root.connect('des_vars.L_pod', 'p.L_pod')
-	prob.root.connect('des_vars.pod_period', 'p.pod_period')
+    prob.root.connect('des_vars.Pt', 'p.fl_start.P')
+    prob.root.connect('des_vars.T', 'p.fl_start.T')
+    prob.root.connect('des_vars.A_tube', 'p.A_tube')
+    prob.root.connect('des_vars.L_pod', 'p.L_pod')
+    prob.root.connect('des_vars.pod_period', 'p.pod_period')
+    prob.root.connect('des_vars.W', 'p.fl_start.W')
 
-	prob.setup()
-	prob.run()
+    prob.setup()
+    prob.run()
 
-	print('\n')
-	print("--- Freestream Static Conditions ---")
-	print("Pod Mach No.:  %.6f " % (prob['p.fl_start.Fl_O:stat:MN']))
-	print("Ambient Ps:    %.6f psi" % (prob['p.fl_start.Fl_O:stat:P']))
-	print("Ambient Ts:    %.6f R" % (prob['p.fl_start.Fl_O:stat:T']))
-	print("Ambient Pt:    %.6f psi" % (prob['p.fl_start.Fl_O:tot:P']))
-	print("Ambient Tt:    %.6f R" % (prob['p.fl_start.Fl_O:tot:T']))
+    print('\n')
+    print("--- Freestream Static Conditions ---")
+    print("Pod Mach No.:  %.6f " % (prob['p.fl_start.Fl_O:stat:MN']))
+    print("Ambient Ps:    %.6f psi" % (prob['p.fl_start.Fl_O:stat:P']))
+    print("Ambient Ts:    %.6f R" % (prob['p.fl_start.Fl_O:stat:T']))
+    print("Ambient Pt:    %.6f psi" % (prob['p.fl_start.Fl_O:tot:P']))
+    print("Ambient Tt:    %.6f R" % (prob['p.fl_start.Fl_O:tot:T']))
 
-	print('\n')
-	print("--- Compressor Exit Conditions ---")
-	print("Compressor Ps:         %.6f psi" % (prob['p.comp.Fl_O:stat:P']))
-	print("Compressor Ts:         %.6f degR" % (prob['p.comp.Fl_O:stat:T']))
-	print("Compressor Pt:         %.6f psi" % (prob['p.comp.Fl_O:tot:P']))
-	print("Compressor Tt:         %.6f degR" % (prob['p.comp.Fl_O:tot:T']))
-	print("Compressor Power Reqd: %.6f hp" % (prob['p.comp.power']))
+    print('\n')
+    print("--- Compressor Exit Conditions ---")
+    print("Compressor Ps:         %.6f psi" % (prob['p.comp.Fl_O:stat:P']))
+    print("Compressor Ts:         %.6f degR" % (prob['p.comp.Fl_O:stat:T']))
+    print("Compressor Pt:         %.6f psi" % (prob['p.comp.Fl_O:tot:P']))
+    print("Compressor Tt:         %.6f degR" % (prob['p.comp.Fl_O:tot:T']))
+    print('Mass flow              %.6f lbs/s' % prob['p.fl_start.W'])
+    print("Compressor Power Reqd: %.6f hp" % (prob['p.comp.power']))

@@ -197,7 +197,7 @@ if __name__ == '__main__':
 		('delta_star', .02, {'units' : 'm'}),
 		('A_pod', 2.0, {'units' : 'm**2'}),
 		('L_pod', 22.0, {'units' : 'm'}),
-		('length_calc', False))
+		('length_calc', True))
 
 	root.add('input_vars', IndepVarComp(params), promotes = ['delta_star', 'A_pod', 'L_pod', 'length_calc'])
 	root.add('p', BoundaryLayerSensitivity())
@@ -209,13 +209,18 @@ if __name__ == '__main__':
 
 	top.setup()
 
-	top.run()
+	# top.run()
 
-	print(top['p.A_tube'])
+	# print(top['p.A_tube'])
 
 	delta_star = np.linspace(.02, .12, num = 50)
 	A_pod = np.linspace(2, 3, num = 3)
 	L = np.linspace(20.0, 40.0, num = 50)
+
+	# import csv
+	# f = open('/Users/kennethdecker/Desktop/Paper figures/boundary_layer_trade.csv', 'wt')
+	# writer = csv.writer(f)
+	# writer.writerow(('Boundary Layer', 'A = 2.0', 'A = 2.5', 'A = 3.0'))
 
 	if top['length_calc']:
 		A_tube = np.zeros((1, len(L)))
@@ -226,7 +231,10 @@ if __name__ == '__main__':
 
 			A_tube[0, i] = top['p.A_tube']
 
-		plt.plot(L, A_tube[0,:])
+		plt.plot(L, A_tube[0,:], linewidth = 2.0)
+		plt.xlabel('Pod Length (m)', fontsize = 16, fontweight = 'bold')
+		plt.ylabel('Tube Cross Sectional Area (m^2)', fontsize = 16, fontweight = 'bold')
+		plt.grid('on')
 		plt.show()
 
 	else:
@@ -239,13 +247,16 @@ if __name__ == '__main__':
 				top.run()
 
 				A_tube[j,i] = top['p.A_tube']
+			# writer.writerow((delta_star[i], A_tube[0,i], A_tube[1,i], A_tube[2,i]))
 
-	plt.hold(True)
-	line1, = plt.plot(delta_star, A_tube[0,:], 'b-', linewidth = 2.0, label = 'A_pod = 2.0 m^2')
-	line2, = plt.plot(delta_star, A_tube[1,:], 'r-', linewidth = 2.0, label = 'A_pod = 2.5 m^2')
-	line3, = plt.plot(delta_star, A_tube[2,:], 'g-', linewidth = 2.0, label = 'A_pod = 3.0 m^2')
-	plt.xlabel('Displacement Boundary Layer (m)', fontsize = 16, fontweight = 'bold')
-	plt.ylabel('Tube Cross Sectional Area (m**2)', fontsize = 16, fontweight = 'bold')
-	plt.xlim(.02, .12)
-	plt.legend(handles = [line1, line2, line3], loc = 2)
-	plt.show()
+		# f.close()
+		plt.hold(True)
+		line1, = plt.plot(delta_star, A_tube[0,:], 'b-', linewidth = 2.0, label = 'A_pod = 2.0 m^2')
+		line2, = plt.plot(delta_star, A_tube[1,:], 'r-', linewidth = 2.0, label = 'A_pod = 2.5 m^2')
+		line3, = plt.plot(delta_star, A_tube[2,:], 'g-', linewidth = 2.0, label = 'A_pod = 3.0 m^2')
+		plt.xlabel('Displacement Boundary Layer (m)', fontsize = 16, fontweight = 'bold')
+		plt.ylabel('Tube Cross Sectional Area (m**2)', fontsize = 16, fontweight = 'bold')
+		plt.grid('on')
+		plt.xlim(.02, .12)
+		plt.legend(handles = [line1, line2, line3], loc = 2)
+		plt.show()
