@@ -132,14 +132,14 @@ class PodGeometry(Component):
         beta = (A_cross + np.pi*(((r_passenger+t_passenger)**2) - (r_passenger**2)))/p['A_payload']     #Calculate duct blockage factor
 
         dp_pod = p['p_passenger'] - p['p_tunnel']                       #Calculate pressure differntial assuming atomospheric internal pressure
-        t_pod = (dp_pod*r_pod)/(p['Su']/p['SF'])                        #Calculate pod thickness based on pressurized cylinder equations
+        t_pod = (dp_pod*r_pod)/(p['Su']/p['SF'])                        #Calculate pod thickness based on pressurized cylinder equationss
         r_pod = np.sqrt((p['A_duct']+(1.0+beta)*p['A_payload'])/np.pi)  #Calculate corrected value of pod radius to account for beta
 
         BF = (p['A_payload']*(1.0+beta) + p['A_duct'])/(np.pi*((r_pod+t_pod)**2.0))                     #Calculate pod blockage factor
         A_pod = (p['A_duct'] + (1+beta)*p['A_payload'])/BF              #Calculate cross sectional area of the pod
         D_pod = np.sqrt((4*A_pod)/np.pi)                                #Calculate pod diameter
 
-        L_pod = p['L_inlet'] + p['L_comp'] + p['L_bat'] + p['L_motor'] + p['L_inverter'] + p['L_trans'] + p['L_p'] + p['L_conv'] + p['L_div']  #Calculate pod length
+        L_pod = p['L_inlet'] + p['L_comp'] + p['L_bat'] + p['L_motor'] + p['L_inverter'] + p['L_trans'] + p['L_p'] + p['L_conv'] + p['L_div'] + L_passenger  #Calculate pod length
         S = D_pod*L_pod                                                 #Calculate pod planform area
 
         u['A_pod'] = A_pod
