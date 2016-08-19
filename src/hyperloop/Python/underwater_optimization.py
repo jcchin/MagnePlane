@@ -345,9 +345,9 @@ if __name__ == '__main__':
         print(top['p.r_pylon'])
         print(r_pylon[0,i])
 
-        writer.writerow((A_tube[i], dx[0,i], cost[0,i]))
+        # writer.writerow((A_tube[i], dx[0,i], cost[0,i]))
 
-    f.close()
+    # f.close()
     plt.hold(True)
     # plt.subplot(211)
     line1, = plt.plot(A_tube, dx[0,:], 'b-', linewidth = 2.0, label = 'm_pod = 10000 kg')

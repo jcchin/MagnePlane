@@ -371,7 +371,7 @@ if __name__ == '__main__':
     plt.show()
     plt.plot(A_tube, cost[0,:], 'r-', linewidth = 2.0)
     plt.xlabel('Tube Area (m^2)', fontsize = 12, fontweight = 'bold')
-    plt.ylabel('Materil Cost per Meter (USD/m)', fontsize = 12, fontweight = 'bold')
+    plt.ylabel('Material Cost per Meter (USD/m)', fontsize = 12, fontweight = 'bold')
     plt.show()
 
     # plt.plot(A_tube, dx[0,:])
