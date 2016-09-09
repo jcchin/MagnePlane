@@ -481,6 +481,7 @@ if __name__ == "__main__":
 
     print("temp_boundary: ", prob['tt.tm.temp_boundary'])
     print("temp_resid: ", prob['tt.tm.ss_temp_residual'])
+    print("tt.nozzle_air_Tt", prob['tt.'])
 
     # print "-----Completed Tube Heat Flux Model Calculations---"
     # print ""
