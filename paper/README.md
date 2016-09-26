@@ -93,3 +93,19 @@ http://tex.stackexchange.com/questions/48018/minted-not-working-on-mac
 
 Help:
 http://mirrors.ctan.org/macros/latex/contrib/siunitx/siunitx.pdf
+-------------------------------------------
+"trackchanges" to annotate document
+
+Add yourself as an editor in heading.tex using the command
+\addeditor{your_name}
+
+and then annotate the document using the following commands:
+
+\note[editor]{The note}
+\annote[editor]{Text to annotate}{The note}
+\add[editor]{Text to add}
+\remove[editor]{Text to remove}
+\change[editor]{Text to remove}{Text to add} 
+
+Help:
+http://trackchanges.sourceforge.net/help_stylefile.html
