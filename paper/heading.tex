@@ -97,6 +97,9 @@
 \usepackage{gensymb} %degree symbol
 \usepackage{booktabs} % en­hances the qual­ity of ta­bles
 \usepackage{tikz} % used to generate XDSM key
+\usepackage{trackchanges} % used to annotate and collaborate on document editing
+
+\addeditor{Colin} % adds editor to trackchanges
 
 \lstset{frame=single}
 \newcommand{\txt}{\textrm}
@@ -157,6 +160,8 @@
 %\listoftables
 \printnomenclature
 \newpage
+\section{Editing Notes}
+\note[Colin]{need to be consistent with presentations of nomenclature/symbols}
 \section{Introduction}
 	\subimport{sections/}{introduction}
 \section{Hyperloop System Model Overview}
@@ -173,7 +178,7 @@
 
 
 
-	\bibliographystyle{unsrt} %sorted by appearence, consider using natbib?
-	\bibliography{heading}
+\bibliographystyle{unsrt} %sorted by appearence, consider using natbib?
+\bibliography{heading}
 
 \end{document}
