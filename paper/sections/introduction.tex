@@ -1,20 +1,184 @@
-\note[Colin]{who is writing introduction?}
 \paragraph{Background of Hyperloop}
-	-DOT Takeaways and Key Research Questions\\
+
+	Several key research questions were identified in a study conducted by the
+	Department of Transportation to quantify the potential value of the
+	Hyperloop concept. \cite{Volpe} This paper works towards answering a few of
+	those key drivers from an engineering perspective:\\
+	\\
+	-Is the hyperloop transportation system sufficiently lightweight that there
+	would significant construction cost savings compared to building an
+	elevated HSR or maglev system?\\
+
+	Although true construction costs cannot be estimated from an engineering
+	model alone, this model seeks to minimize system size and material quantity
+	as a proxy to cost. As it is posed, the question also implies
+	that system weight is the most direct proxy to cost. This model provides a sensitivity
+	analysis of structural requirements as a function of pod mass to partially
+	answer this research question. Rather than focus on weight explicitly,
+	many of the trends discussed are explored in relation to tube internal
+	cross sectional area. Tube weight relates directly to this area term, and
+	area is the common design variable linking many of the other top-level
+	design variables. As depicted in previous work,
+	\cite{Chin} when abstracting the concept to three top level system level
+	sizing variables;(vehicle area, speed, and tube area) only two are needed
+	to find the third.
+
+	The potential ability to operate underwater is a key distinguishing feature
+	of Hyperloop over conventional HSR and maglev, and in this context, weight
+	isn't a principle factor. Given these considerations, the key research
+	question can be rephrased to: ``Is the hyperloop sufficiently compact that
+	there would be construction savings compared to conventional
+	HSR or maglev systems?'' Many of the following results are therefore posed
+	in relation to tube area.\\
+	\\
+	-Can the capacity of the hyperloop pod be expanded to seat more than the
+	originally proposed 28 passengers?\\
+
+	Given a cost, throughput efficiency must be evaluated to quantify the
+	Hyperloop's value as a transportation mode.
+	Capacity is addressed via analysis of pod frequency combined with design
+	sensitivity to pod length.\\
+
+	-How big would the tube need to be in order to
+	carry a standard size shipping container?\\
+
+	-What would be the [payload] weight limit for a freight capsule?\\
+
+	This work focuses on setting up the relationships between subsystems
+	necessary for a system level optimization problem. Adding these two research
+	drivers in the form of minimum constraints is beyond the scope of this paper
+	but could be addressed using the engineering methods outlined in this paper.
+	Answering these questions is recommended as next steps for future work.\\
+
+	- What are the technology hurdles to building a Hyperloop underwater and can
+	they be overcome?\\
+
+	- Can the system be designed so that in addition to carrying long distance
+	passengers, it can also provide local transit service?\\
+
+	This paper does not address land aquisition costs, or throughput
+	constraints in today's existing transportation infrastrucutre.
+	Capacity constrained water ports and airports are critical driver referenced
+	both in the DOT study, and a key focus of NASA Aeronautics Strategic
+	Implementation Plan. The prospect of high-speed underwater transportation
+	completely bypasses land aquisition challenges, and provides a novel solution
+	to eliminate bottlenecks in multimodal travel integration.
+	Although not addressed in the following engineering models,
+	stressing the importance of pursuing underwater
+	Hyperloop capabilities is further reiterated.\\
+
+
 	-Shortcomings of short-haul aviation\\
 	-Shortcomings of high speed rail project / driving\\
+
+
 \paragraph{History of Hyperloop}
-	Historical Precedents
-	-Musk’s Hyperloop Alpha - Current Players/Pursuants/Involvement\\
-	--Perhaps brief snippet about Hyperloop student competition\\
-	--Hyperloop One\\
-	-Jeff and Justin’s Conceptual Design Paper\\
+
+	Aerospace engineers have promoted tube transport over the course of a century;
+	the most prominent include Robert Goddard \cite{Goddard} (creator of the first liquid fueld
+	rocket) to Dr. Robert Salter (a forefather of the satellite). As early as 1972,
+	a study conducted by the RAND coperation concluded that high-speed `tubecraft'
+	was technologically feasible with political pressure being the greatest
+	obstacle.\cite{RAND} National interest was once again rekindled in 2013 with a refreshed
+	Hyperloop concept championed by Elon Musk, CEO of Space Exploration
+	Technologies (SpaceX) and Tesla Motors.\cite{Musk}
+	Unlike previous waves of interest, the currently
+	popularized design has spurred widespread international development efforts
+	amongst hundreds of leading universities, private companies with over \$100M
+	in venture capitalist backing, and smaller research efforts at NASA and the
+	US Department of Transportation. \cite{Chin}
+	The design has continously evolved, with the latest Hyperloop derivative
+	generating lift using magnetic levitation.
+	In the same way an airplane is differentiated from an airship,
+	or a hydroplane is differentiated from a boat,
+	Magneplane is a plane in the sense that it generates lift dynamically
+	by moving over a medium at high-speeds,
+	rather than depending on buoyancy or static phenomena.
+	It's transonic operation, air-breathing flow-path and aerodynamic
+	driven design give it qualities closer to a plane rather than a train.
+	The concept deviates from existing high-speed rail designs by eliminating
+	the rails, enclosing the passenger pod in a tube under a partial vacuum,
+	with propulsion handled by a set of linear electromagnetic accelerators
+	mounted to the tube. The entire system is held either above ground on concrete
+	columns or subterranian tunnels maintaining a relatively straight trajectory.
+
+	Hyperloop flies low enough that propulsion can be offloaded to
+	ground systems, intended to rival efficiencies previously limited to terrestrial
+	vehicles. By sacrificing an airplane’s traditional mission flexibility,
+	it’s aimed to optimize for passenger throughput, door-to-door travel time, and energy
+	efficiency.
+
+	As a first step, the concept is sized for distances between 250-500 nautical miles,
+	which comprised 57\% of commercial aircraft fleet operations in 2012.
+
+	As stressed in NASA's Strategic Implementation Plan, operations must keep pace
+	with both an overall growing transportation market and simultaneous growth in
+	market share dedicated to high-speed transport. By 2050, 41\% of world traffic
+	market share will be high-speed transport. \cite{Schafer}
+
+	Hyperloop offers a compelling opportunity to offset this congestion.
+	In terms of travel speed and door-to-door travel time,
+	it's designed to occupy a highly desired gap in travel distance, where it's
+	too long to conveniently travel by ground options,
+	but too short to make the upfront delays of air travel worthwhile.
+
+	Aeronautics market research \cite{H. Baik} also shows that demand for this
+	travel segment is the most sensitive to technology improvements and ticket
+	price. The departure from typical aircraft constraints
+	is intended to provide a compelling price point
+	considering automobile vehicle miles were
+	projected to increase by 7 billion simply due to airline
+	fare increases by 10\% in 2015.
+
 \paragraph{How Hyperloop solves problem}
 	-Cleaner, faster, cheaper, bitch!\\
 	-High level technological overview\\
+
+	More than half of today’s commercial flights are less than 500 nm
+	and today’s airplanes are not at all suited for this type of mission.
+	On these flights airplanes spend very little time in the cruise segment that they’re optimized for.
+	They spend a significant amount of time not even flying,
+	as they are slow to board, deboard, as well as taxi-ing and de-icing, nevermind airport security.
+	Even once they’re in the air they waste time and energy on: take-off, climb,
+	holding patterns, descent and landing, which are all sub-optimal conditions for the vehicle.
+
+	The entire system is also very susceptible to inclement weather.
+	The Hyperloop concept throws out all of these efficiencies by operating at
+	optimal conditions for the entire mission by bringing the entire trajectory down to ground level.
+	Drag is reduced by flying through a low-pressure tube,
+	and conventional wings are replaced by alternative types of lifting bodies
+	that are more compact with comparatively lower induced drag.
+	While a conventional plane wastes a lot of energy getting up,
+	and coming back down from 35,000ft,
+	flying close to the ground obviously bypasses these inefficiencies entirely
+	and also has numerous other subtle benefits.
+	It allows the propulsion system to be located off-board from the vehicle itself.
+	This allows the vehicle to be dramatically lighter and less complex than a
+	counterpart aircraft of the same passenger throughput.
+	Similarly the fully electric vehicle isn’t burdened by the need to carry it’s own fuel,
+	saving on both weight and again, complexity.
+	And no harmful emissions are released into the upper atmosphere.
+
+	The concept has serious potential to alleviate billions of commuter car passenger miles,
+	as well as free up airspace, reducing congestion and travel times
+	for flights that are well suited for the national airspace system.
+
 \paragraph{Layout about what this paper addresses}
 	-Full system model in OpenMDAO\\
 	--Technological feasibility\\
 	--Economic feasibility\\
 	-Trade Studies\\
 	-Conclusions\\
+
+	The model expands on previous works \cite{Chin} \textsuperscript{,}
+	\cite{goodwin2009cantera}\textsuperscript{,} \cite{GrayBenchmarking2013}
+	and is built using OpenMDAO, a python-based modeling and optimizaiton framework.
+	This work focuses on balancing the thermodynamic, aerodnymanic, structural,
+	weight, and power considerations, with additional calculations for cost
+	and mission design.
+
+	-discuss importance of simulatenous design of multi-discp subsystems
+	-emphasize broad connectivity of the model as it's strength
+	(as opposed to subsystem fidelity)
+
+
