@@ -106,6 +106,9 @@
 
 \newcommand{\cent}{{\mathrm{c}\mkern-6.5mu{\mid}}}
 
+% change default figure size
+\renewcommand{\includegraphics}[2][]{\OldIncludegraphics[width=3.25in,height=3.5in,keepaspectratio, #1]{#2}}
+
 \captionsetup[figure]{margin=5pt,font=small,labelfont=bf,textfont=bf,justification=justified,}
 \captionsetup[wrapfigure]{margin=5pt,font=small,labelfont=bf,justification=justified,singlelinecheck=off}
 \captionsetup[table]{margin=5pt,font=small,labelfont=bf,textfont=bf,justification=justified,position=top}
