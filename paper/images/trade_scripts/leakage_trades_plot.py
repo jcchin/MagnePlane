@@ -17,10 +17,14 @@ total_energy_cost = np.loadtxt('../data_files/leakage_trades/total_energy_cost.t
 # plt.show()
 
 # fig, ax1 = plt.subplots()
-fig = plt.figure(figsize = (3.25,3.5))
+fig = plt.figure(figsize = (3.25,3.5), tight_layout = True)
 ax1 = plt.axes()
-
 ax2 = ax1.twinx()
+plt.setp(ax1.get_xticklabels(), fontsize=8)
+plt.setp(ax1.get_yticklabels(), fontsize=8)
+plt.setp(ax2.get_xticklabels(), fontsize=8)
+plt.setp(ax2.get_yticklabels(), fontsize=8)
+
 ax1.plot(m_dot, p_tunnel, 'b-')
 ax2.plot(m_dot, total_energy_cost, 'r-')
 ax1.set_xlabel('Leakage Rate (kg/s)', fontsize = 12, fontweight = 'bold')
