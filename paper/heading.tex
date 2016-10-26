@@ -95,6 +95,7 @@
 \usepackage{bm} %The bm pack­age de­fines a com­mand \bm which makes its ar­gu­ment bold. (math)
 \usepackage{tabulary} %wider table
 \usepackage{gensymb} %degree symbol
+\usepackage{letltxmacro}
 \usepackage{booktabs} % en­hances the qual­ity of ta­bles
 \usepackage{tikz} % used to generate XDSM key
 \usepackage{trackchanges} % used to annotate and collaborate on document editing
@@ -105,6 +106,11 @@
 \newcommand{\txt}{\textrm}
 
 \newcommand{\cent}{{\mathrm{c}\mkern-6.5mu{\mid}}}
+
+% change default figure size
+
+\LetLtxMacro{\OldIncludegraphics}{\includegraphics}
+\renewcommand{\includegraphics}[2][]{\OldIncludegraphics[width=3.25in,height=3.5in,keepaspectratio, #1]{#2}}
 
 \captionsetup[figure]{margin=5pt,font=small,labelfont=bf,textfont=bf,justification=justified,}
 \captionsetup[wrapfigure]{margin=5pt,font=small,labelfont=bf,justification=justified,singlelinecheck=off}
