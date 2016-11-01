@@ -52,18 +52,18 @@
 	The pod mach module uses the pod cross-sectional area, Mach number, and compressor inlet conditions to compute the tube area. As the pod travels, flow that is not entrained by the compressor must accelerate around the pod. Due to the pod’s transonic flight speed, it is possible that this bypass flow could accelerate to Mach 1 and cause the flow to choke, which would lead to an undesirable buildup of pressure in front of the pod and increased drag. To avoid this condition, this module sizes the tube area such that there is a large enough bypass area to prevent the bypass flow from accelerating to Mach 1. This is done using a simple quasi 1D area relationship for compressible flow given by the equation
 	\begin{equation}
 		\label{eq:mach_to_area}
-		\frac{A_{1}}{A_{2}}=\frac{M_{2}}{M_{1}} ( \frac{1+\frac{\gamma -1}{2}M_{1}^{2}}{1+\frac{\gamma -1}{2}M_{2}^{2}} )^{\frac{( \gamma +1 )}{2 ( \gamma -1  )}}
+		\frac{A_{1}}{A_{2}}=\frac{M_{2}}{M_{1}} \left( \frac{1+\frac{\gamma -1}{2}M_{1}^{2}}{1+\frac{\gamma -1}{2}M_{2}^{2}} \right)^{\frac{( \gamma +1 )}{2 ( \gamma -1  )}}
 	\end{equation}
 	For this analysis, $M_1$ is the free stream Mach number, $M_2$ is the desired bypass Mach number, $A_1$ is the initial area of the bypass flow ($A_{tube}$ - $A_{inlet}$), and $A_2$ is the bypass area ($A_{tube}$ - $A_{pod}$). For these analyses, $M_2$ is set to .95 in order to provide a slight factor of safety to prevent the flow from reaching the choking condition \note[Colin]{We need to decide how to display symbols: nomenclature section at beginning or paper? Table at beginning of each section? Inline text descriptions following/preceding equation?}.
 	In order to make this model higher fidelity, it is possible to modify the areas in the relationship to account for boundary layer development over the pod outer surface. As the boundary develops, the effective bypass area is reduced which increases the risk of bypass flow reaching Mach 1. However, it is possible to modify this by increasing the effective pod radius by the displacement thickness of the boundary layer. The sensitivity of structural design to boundary layer growth is important and will be discussed at length later.
 \subsubsection{Levitation}
 	\begin{table}[ht]
-	\caption{Symbols Used in Levitation Equations} 
-	\centering 
-	\begin{tabular}{c c c} 
-	\hline\hline 
-	Symbol & Use & Units\\ [0.5ex] 
-	\hline 
+	\caption{Symbols Used in Levitation Equations}
+	\centering
+	\begin{tabular}{c c c}
+	\hline\hline
+	Symbol & Use & Units\\ [0.5ex]
+	\hline
 	$\lambda$ & Wavelength of Halbach Array & m\\
 	$w$ & Width of the Magnetic Array & m\\
 	$\beta _{0}$ & Halbach Peak Strength & Tesla\\
@@ -73,10 +73,10 @@
 	$h$ & Desired Levitation Height & m\\
 	$g$ & Gravity & $m/s^{2}$\\
 	$A$ & Area of Magnetic Array & $m^{2}$\\
-	$v$ & Velocity of the Pod & $m/s$\\ [1ex] 
-	\hline 
+	$v$ & Velocity of the Pod & $m/s$\\ [1ex]
+	\hline
 	\end{tabular}
-	\label{table:nonlin} 
+	\label{table:nonlin}
 	\end{table}
 	The Hyperloop concept operates using a levitation system to significantly reduce friction during high velocity areas of travel. In this analysis, a passive magnetic levitation system is used to suspend the pod above the track as it travels. The passive system is advantageous because it requires zero power input for levitation to occur, which is advantageous when traveling over long distances. The Inductrack passive levitation method developed at the Lawrence Livermore National Laboratory is chosen as the system for our Hyperloop model \cite{inductrack}. Some assumptions were taken to simplify the analysis adapted from this model. It is assumed that ferrite tiles were not used so that the added inductive loading is set to zero, leaving only the distributed inductance to computed in the model. Fringe fields from the magnetic array are also ignored in this analysis and the width of the magnetic array is set equal to the width of the track. These three simplifications and assumptions allow the overall scale factor for the total force, $levsf$ \note[Colin]{levsf referenced but not defined?}, to set equal to unity.
 
