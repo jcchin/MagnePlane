@@ -4,14 +4,14 @@ from openmdao.api import Component, Problem, Group
 
 class CompressorLen(Component):
     """
-    The CompressorMass class represents a compressor length component
+    The CompressorLen class represents a compressor length component
     in an OpenMDAO model.
 
-    A `CompressorMass` models length of a compressor that uses NPSS data
+    A `CompressorLen` models length of a compressor that uses NPSS data
     to obtain enthalpy data,and mass_flow for a particular pressure ratio.
     It also uses a correlation derived by Micheal Tong at NASA Glenn Center
     to obtain Compressor Length.
-    
+
     Params
     ------
     h_in : float
@@ -27,7 +27,7 @@ class CompressorLen(Component):
     -------
     comp_len : float
         Length of Compressor (m)
-        
+
     References
     -----
     .. [1] Michael Tong Correlation used.
@@ -67,8 +67,8 @@ class CompressorLen(Component):
         comp_r = np.sqrt(comp_inletArea/np.pi)
         hub_tip_ratio = (np.sqrt(comp_r**2 - (comp_inletArea / 3.1416))) / comp_r
         no_stages = ((h_out - h_in)/ h_stage) + 1
-       
-     
+
+
         unknowns['comp_len'] = 0.2 + (0.234 - 0.218*hub_tip_ratio)*(no_stages)*comp_r*2
 
 if __name__ == "__main__":

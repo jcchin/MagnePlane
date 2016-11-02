@@ -13,51 +13,51 @@
 
 \begin{tikzpicture}
 
-	\matrix[MatrixSetup]
-	{
-		%Row 1
-		\node [AnalysisGroup] (Temp) {\Large \TwolineComponent{6em}{Tube}{Temperature}}; &
-		\node [DataInter] (PropMech-Temp) {$T_\text{tube}$}; &
-		\node [DataInter] (Vacuum-Temp) {$T_\text{tube}$}; &
-		\node [DataInter] (Power-Temp) {$T_\text{tube}$}; &
-		\\
-		&
-		\node [Function] (PropMech) {\Large \TwolineComponent{6em}{Propulsion}{Mechanics}}; &
-		&
-		\node [DataInter] (Power-PropMech) {$Pwr_\text{required}$}; &
-		\\
-		&
-		&
-		\node [FunctionGroup] (Vacuum) {\Large Vacuum}; &
-		\node [DataInter] (Power-Vacuum) {$E_\text{total}, Pwr_\text{total}$}; &
-		\node [DataInter] (Structure-Vacuum) {$w_\text{total}$}; \\
-		%Row 4
-		&
-		&
-		&
-		\node [Function] (Power) {\Large Tube Power}; &
-		\\
-		&
-		&
-		&
-		&
-		\node [FunctionGroup] (Structure) {\Large Structure}; \\
-		%Row 6
-	};
+  \matrix[MatrixSetup]
+  {
+    %Row 1
+    \node [AnalysisGroup] (Temp) {\Large \TwolineComponent{6em}{Tube}{Temperature}}; &
+    \node [DataInter] (PropMech-Temp) {$T_\text{tube}$}; &
+    \node [DataInter] (Vacuum-Temp) {$T_\text{tube}$}; &
+    \node [DataInter] (Power-Temp) {$T_\text{tube}$}; &
+    \\
+    &
+    \node [Function] (PropMech) {\Large \TwolineComponent{6em}{Propulsion}{Mechanics}}; &
+    &
+    \node [DataInter] (Power-PropMech) {$Pwr_\text{required}$}; &
+    \\
+    &
+    &
+    \node [FunctionGroup] (Vacuum) {\Large Vacuum}; &
+    \node [DataInter] (Power-Vacuum) {$E_\text{total}, Pwr_\text{total}$}; &
+    \node [DataInter] (Structure-Vacuum) {$w_\text{total}$}; \\
+    %Row 4
+    &
+    &
+    &
+    \node [Function] (Power) {\Large Tube Power}; &
+    \\
+    &
+    &
+    &
+    &
+    \node [FunctionGroup] (Structure) {\Large Structure}; \\
+    %Row 6
+  };
 
-	\begin{pgfonlayer}{data}
-		\path
-		% Horizontal edges
-		(Temp) edge [DataLine] (Power-Temp)
-		(PropMech) edge [DataLine] (Power-PropMech)
-		(Vacuum) edge [DataLine] (Structure-Vacuum)
-		% Vertical edges
-		(PropMech-Temp) edge [DataLine] (PropMech)
-		(Vacuum-Temp) edge [DataLine] (Vacuum)
-		(Power-Temp) edge [DataLine] (Power)
-		(Structure-Vacuum) edge [DataLine] (Structure)
-		;
-	\end{pgfonlayer}
+  \begin{pgfonlayer}{data}
+    \path
+    % Horizontal edges
+    (Temp) edge [DataLine] (Power-Temp)
+    (PropMech) edge [DataLine] (Power-PropMech)
+    (Vacuum) edge [DataLine] (Structure-Vacuum)
+    % Vertical edges
+    (PropMech-Temp) edge [DataLine] (PropMech)
+    (Vacuum-Temp) edge [DataLine] (Vacuum)
+    (Power-Temp) edge [DataLine] (Power)
+    (Structure-Vacuum) edge [DataLine] (Structure)
+    ;
+  \end{pgfonlayer}
 
 \end{tikzpicture}
 
