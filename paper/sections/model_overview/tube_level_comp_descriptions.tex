@@ -1,5 +1,5 @@
 \paragraph{Vacuum}
-	The vacuum sub-system is a group that evaluates two phases of the vacuum use: pump down and steady-state usage. The pump down vacuum module evaluates the number of vacuum pumps and the energy required to pump the tube down from ambient pressure to the desired tube pressure. This information is critical because the vacuum will need to be pumped down once tube is constructed and in the event of an emergency pressurization. The vacuum pump down model is given in the equation \note[Colin]{where is the vacuum equation?}
+	The vacuum sub-system is a group that evaluates two phases of the vacuum use: pump down and steady-state usage. The pump down vacuum module evaluates the number of vacuum pumps and the energy required to pump the tube down from ambient pressure to the desired tube pressure. This information is critical because the vacuum will need to be pumped down once tube is constructed and in the event of an emergency pressurization. The vacuum pump down model is given in the equation
 	\begin{equation}
 		\label{eq:vacuum}
 		Insert Nate’s Vacuum Equation
@@ -8,9 +8,11 @@
 	The pump down energy and weight of pumps will be critical for cost and structural analyses.
 	The Vacuum group also considers the vacuum energy consumed during the steady state run time of the system. In theory, if the tube is perfectly air tight, there would be no need for the vacuum to run at all once the tube is pumped down. However, some amount of leakage is inevitable, which will necessitate some amount of energy consumption by the vacuum pumps to maintain the desired tube pressure over time. The effect of leakage rate on energy consumption is critical and will be discussed in more depth later. For the purpose of this analysis, the vacuum is modeled as a compressor using the same pycycle2 component seen in the pod compression cycle analysis, with the same internal implicit solver \cite{pycycle2}. The pressure ratio of the will be equal to the ratio of ambient pressure to desired tube pressure and the mass flow through the vacuum at steady state will be equal to the leakage rate.
 \paragraph{Thermal Management}
-	\add[Colin]{section for thermal management/tube wall temp. Jeff needs to do this?}  \cite{Chin}
+	A basic heat balance is performed to determine the approximate tube temperature. The quasi-steady analysis ignores heat transfer time lags and diurnal cycles. Heat is assumed to transfer and equilibrate rapidly between the pod compressor system, the rarified atmosphere inside the tube, the tube walls, and the outside environment. This is analysis is based off previous work by Chin\cite{Chin} and concludes
+	manageable heat loads for air-cabin cooling. A conservative equilibrium tube temperature at full sun on a hot day and maximum pod operation is on the order of 110 degrees Farenheit.
+	For an underground or underwater trajectory, these estimates would drop even lower.
 \paragraph{Electromagnetic Propulsion}
-	A series of linear synchronous motors (LSMs) is proposed to accelerate the pod from rest to top speed and maintain top speed with periodic boosts. While the specifications of the LSM system design are beyond the scope of this analysis, the amount of energy and power required of an LSM can be determined using the simple mechanics relationship \note[Colin]{sum of forces equation repeated when deriving acceleration of pod}]
+	A series of linear synchronous motors (LSMs) is proposed to accelerate the pod from rest to top speed and maintain top speed with periodic boosts. While the specifications of the LSM system design are beyond the scope of this analysis, the amount of energy and power required of an LSM can be determined using the simple mechanics relationship
 	\begin{equation}
 		\label{eq:sum_of_forces}
 		F_{net} = F_{LSM} + F_{thrust} - \frac{1}{2}C_{D}\rho V^{2}S - D_{mag}
