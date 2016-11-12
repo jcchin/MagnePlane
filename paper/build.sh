@@ -15,6 +15,6 @@ if [ "$1" == "-f" ]; then #add -f flag to do full build
 	"/usr/texbin/pdflatex" -synctex=1 -shell-escape -interaction=nonstopmode heading.tex
 	"/usr/texbin/pdflatex" -synctex=1 -shell-escape -interaction=nonstopmode heading.tex
 
-	mv heading.pdf magneplane.pdf
 fi
+mv heading.pdf magneplane.pdf
 #. clean.sh

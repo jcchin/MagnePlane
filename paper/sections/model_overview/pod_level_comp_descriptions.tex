@@ -52,39 +52,7 @@
 	the mass of the pod without magnets for levitation. The Levitation component
 	takes in this mass, computes the mass of the magnets, then outputs the total mass of the pods.
 \subsubsection{Pod Mach}
-	\begin{table}[ht]
-	\caption{Tube Power Variables} % title of Table
-	\centering % used for centering table
-	\begin{tabular}{c c c} % centered columns (4 columns)
-	\hline\hline %inserts double horizontal lines
-	Symbol & Variable & Units \\ [0.5ex] % inserts table
-	%heading
-	\hline % inserts single horizontal line
-	$A$ & Area& m^{2}\\
-	$A^{*}$ & Throat Area& m^{2}& none\\
-	$M$ & Mach number& none\\
-	$\gamma$ & Ratio of specific heats& none\\
-	$P_{crit}$ & Critical pressure at which bucking occurs & Pa\\
-	$E$ &Elastic modulus& Pa\\
-	$\nu$ & Poisson Ratio& none\\
-	$t$ & Thickness & m\\
-	$r$ & Radius & m\\
-	$\delta^{*}$ & Displacement boundary layer thickness & m\\
-	$x$ & Distance in x direction & m\\
-	$Re_{x}$ & Length based Reynolds number & none\\
-	$\varepsilon$ & expansion ratio & none\\
-	$L$ & Track Length & m\\\
-	$ib$ & Bond interest rate & none\\
-	$bm$ & Bond maturity & years\\
-	$g$ & Gravitational acceleration & m/s^{2}\\
-	$v$ & velocity & m/s
-	$F_{x}$ & Magnetic Drag & N\\
-	$m$ & Mass & kg\\
-	$\alpha$ & weighing factor\\
-	\hline %inserts single line
-	\end{tabular}
-	\label{table:nonlin} % is used to refer this table in the text
-	\end{table}
+
 	The pod mach module uses the pod cross-sectional area, Mach number, and
 	compressor inlet conditions to compute the tube area. As the pod travels,
 	flow that is not entrained by the compressor must accelerate around the pod.
@@ -127,7 +95,7 @@
 	$\omega$ & Frequency of the Induced Current & Hz\\
 	$h$ & Desired Levitation Height & m\\
 	$g$ & Gravity & $m/s^{2}$\\
-	$A$ & Area of Magnetic Array & $m^{2}$\\
+	$A_a$ & Area of Magnetic Array & $m^{2}$\\
 	$v$ & Velocity of the Pod & $m/s$\\ [1ex]
 	\hline
 	\end{tabular}
@@ -160,7 +128,7 @@
 	produced by the magnets are given in the equations
 	\begin{equation}
 		\label{eq:fy_lev}
-		F_{y}(\omega)=[\beta _{0}^{2}w/(4\pi Ldc\lambda )][( 1+R/\omega L)(1+R/\omega L)^{2})]Ae^{-4\pi h/\lambda }
+		F_{y}(\omega)=[\beta _{0}^{2}w/(4\pi Ldc\lambda )][( 1+R/\omega L)(1+R/\omega L)^{2})]A_ae^{-4\pi h/\lambda }
 	\end{equation}
 	\begin{equation}
 		\label{eq:dmag}
