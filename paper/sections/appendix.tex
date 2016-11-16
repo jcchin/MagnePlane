@@ -113,6 +113,21 @@
 \section{TicketCost}
 \section{SampleMission}
 
+%from model_overview.tex
+\input{../images/xdsm/diagram_styles}
+\usetikzlibrary{arrows,chains,positioning,scopes,shapes.geometric,shapes.misc,shadows}
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+		\matrix[MatrixSetup]
+		{
+			\node [Function] (ExplicitComponent) {component without implicit solver}; &  \node [Analysis] (ImplicitComponent) {component with implicit solver}; \\
+			\node [FunctionGroup] (ExplicitComponent) {group without implicit solver}; & \node [AnalysisGroup] (ImplicitGroup) {group with implicit solver}; \\
+		};
+	\end{tikzpicture}
+	\label{fig:key}
+\end{figure}
+
 % from flight_frequency.tex
 \begin{equation}
 	\label{eq:linear_acceleration}

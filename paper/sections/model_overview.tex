@@ -1,21 +1,9 @@
 The full-system model of the Hyperloop can be decomposed into two main
 sub-systems: the passenger pod and tube. At the top level, analyses were
 performed integrating the pod and tube systems with a ticket cost  and sample
-mission modules. Below is a tree view and XDSM diagram key which describes how to interpret following diagrams for the pod, tube, and mission subsystems.
-
-\input{../images/xdsm/diagram_styles}
-\usetikzlibrary{arrows,chains,positioning,scopes,shapes.geometric,shapes.misc,shadows}
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-		\matrix[MatrixSetup]
-		{
-			\node [Function] (ExplicitComponent) {component without implicit solver}; &  \node [Analysis] (ImplicitComponent) {component with implicit solver}; \\
-			\node [FunctionGroup] (ExplicitComponent) {group without implicit solver}; & \node [AnalysisGroup] (ImplicitGroup) {group with implicit solver}; \\
-		};
-	\end{tikzpicture}
-	\label{fig:key}
-\end{figure}
+mission modules. Below is a tree view of the system.
+The appendix includes an XDSM diagram key which describes how to interpret
+the following diagrams for the pod, tube, and mission subsystems.
 
 \begin{figure}
 	\centering
