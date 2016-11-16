@@ -2,28 +2,61 @@ The full-system model of the Hyperloop can be decomposed into two main
 sub-systems: the passenger pod and tube. At the top level, analyses were
 performed integrating the pod and tube systems with a ticket cost  and sample
 mission modules. Below is a tree view of the system.
-The appendix includes an XDSM diagram key which describes how to interpret
-the following diagrams for the pod, tube, and mission subsystems.
+The appendix includes an eXtended Design Structure Matrix (XDSM) diagram key
+which describes how to interpret the following diagrams for the pod, tube, and mission subsystems.
 
 \begin{figure}
-	\centering
-	\includegraphics{../images/tube_and_pod.png}
-	\caption{Hierarchial tree digram showing overall model structure}
-	\label{fig:tree:tube_and_pod}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../images/tube_and_pod.png}
+  \caption{Hierarchial tree}
+  \label{fig:tree:tube_and_pod}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../images/xdsm/tube_and_pod.pdf}
+  \caption{XDSM}
+  \label{fig:xdsm:toplevel}
+\end{subfigure}
+\caption{Top Level System Diagram}
+\label{fig:top}
 \end{figure}
 
 \begin{figure}
-	\centering
-	\includegraphics{../images/tube.png}
-	\caption{Hierarchial tree digram showing structure of TubeGroup}
-	\label{fig:tree:tube}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../images/tube.png}
+  \caption{Hierarchial tree}
+  \label{fig:tree:tube}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../images/xdsm/tube.pdf}
+  \caption{XDSM}
+  \label{fig:xdsm:tube}
+\end{subfigure}
+\caption{Tube Assembly Diagram}
+\label{fig:tube}
 \end{figure}
 
 \begin{figure}
-	\centering
-	\includegraphics{../images/pod.png}
-	\caption{Hierarchial tree digram showing structure of PodGroup}
-	\label{fig:tube}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../images/pod.png}
+  \caption{Hierarchial tree}
+  \label{fig:tree:pod}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../images/xdsm/pod.pdf}
+  \caption{XDSM}
+  \label{fig:xdsm:pod}
+\end{subfigure}
+\caption{Tube Assembly Diagram}
+\label{fig:pod}
 \end{figure}
 
 Further sub-systems were broken down within the pod and tube components and are detailed below.
@@ -35,7 +68,5 @@ Full documentation can be found in the following sections of the Appendix:
 	\subimport{model_overview/}{pod_level_comp_descriptions}
 \subsection{Tube Level Component Descriptions}
 	\subimport{model_overview/}{tube_level_comp_descriptions}
-\subsection{Flow of Information}
-	\subimport{model_overview/}{flow_of_information}
 
 
