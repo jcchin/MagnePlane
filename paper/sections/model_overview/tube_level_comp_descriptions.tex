@@ -16,7 +16,7 @@
 	The vacuum pump down model is given in the equation
 	\begin{equation}
 		\label{eq:vacuum}
-		Insert Nate’s Vacuum Equation
+		E_{tot} = pwr * \frac{vol_{tube}*speed_{pump}*log(P_{0}/P_{f})*2}{t_{pumpdown}}* \gamma * 86400
 	\end{equation}
 	The pump down energy and weight of pumps will be critical for cost and structural analyses.
 	The Vacuum group also considers the energy consumed during steady state operation.
@@ -26,8 +26,9 @@
 	vacuum pumps will need to used throughout operation to account for this.
 	The effect of leakage rate on energy consumption is critical and will be
 	discussed in more depth later. For the purpose of this analysis, the vacuum
-	is modeled as a compressor using the same pycycle2 components seen in the
-	pod cycle analysis, with the same internal implicit solver \cite{pycycle2}.
+	is modeled as a compressor using the same type of thermodynamic compressor
+	model employed in the pod cycle analysis,
+	with the same internal implicit solver \cite{pycycle2}.
 	The pressure ratio of the vacuum will be equal to the ratio of ambient
 	pressure to desired tube pressure and the mass flow through the vacuum at
 	steady state will be equal to the leakage rate.
@@ -56,7 +57,7 @@
 	startup and coasting booster sections. For the purpose of this analysis,
 	the efficiency of the LSM is assumed to be .8 \cite{LSM}.
 \paragraph{Structure}
-	The Structural analysis group determines the structural design of the tube
+	The structural analysis group determines the structural design of the tube
 	for two phases of travel: travel over land and under water. When traveling
 	overland, the tube is assumed to be supported by pylons above the terrain
 	at a given height. For travel under water, the tube is assumed to be
