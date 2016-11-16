@@ -1,6 +1,6 @@
 The full-system model of the Hyperloop can be decomposed into two main
-sub-systems: the passenger pod and tube. At the top level, analyses were
-performed integrating the pod and tube systems with a ticket cost  and sample
+sub-systems: the passenger pod and tube. At the top level, these systems are
+connected to basic cost estimation and notional
 mission modules. Below is a tree view of the system.
 The appendix includes an eXtended Design Structure Matrix (XDSM) diagram key
 which describes how to interpret the following diagrams for the pod, tube, and mission subsystems.
@@ -59,8 +59,12 @@ which describes how to interpret the following diagrams for the pod, tube, and m
 \label{fig:pod}
 \end{figure}
 
-Additional levels of sub-systems were broken down within the pod and tube components and are detailed below.
-Further documentation can be found in following sections, and the Appendix.
+Additional levels of sub-systems were broken down within the pod and tube assemblies.
+Solver loops exist at multiple levels within the model, ensuring all design
+constraints are satisfied across every sub-component.
+The XDSM diagrams indicates design variables that are passed from the output of
+upstream components to be used as inputs for downstream components.
+Further details can be found in following sections, and the Appendix.
 
 \subsection{Top Level Component Descriptions}
 	\subimport{model_overview/}{top_level_comp_descriptions}
