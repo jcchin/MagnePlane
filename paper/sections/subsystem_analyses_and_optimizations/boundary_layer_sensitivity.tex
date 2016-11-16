@@ -37,10 +37,10 @@ boundary layer is derived using a similarity solution to produce the equation \c
 	\label{eq:boundary_layer}
 	\frac{\delta^{*}}{x} \approx  \frac{.04775}{Re_{x}^{1/5}}
 \end{equation}
-The system model uses this to relate displacement boundary layer thickness,
-and therefore tube area, with pod length. It is understood that these equations
-do not perfectly represent real physical relationships as they are derived in the
-textbook by Fox and McDonald assuming 1D flow over a
+The system model uses \cref{eq:boundary_layer} to relate displacement boundary layer thickness,
+and therefore tube area, with pod length. These equations
+do not perfectly represent real physical relationships as they are derived from
+Fox and McDonald assuming 1D flow over a
 flat plate with zero pressure gradient. Characterizing the displacement
 thickness of the boundary layer in 3D conical flow is beyond the scope of this analysis.
 However, the approximation made in this analysis is useful for studying how
@@ -63,12 +63,12 @@ order of magnitude of accuracy.  The pod configurations tested in each analysis 
 displacement boundary layer has on the cross sectional area of the tube.
 It is shown that the cross sectional area of the tube increases rapidly as the
 thickness of the displacement boundary layer increases.
-For $A_{pod} = \SI{2d2}{\metre\squared}$, a 1 cm increase in $\delta^{*}$
+For $A_{pod} = \SI{2}{\metre\squared}$, a 1 cm increase in $\delta^{*}$
 results in an increase of approximately \SI{1.57}{\metre\squared} in $A_{tube}$.
 Thus, it can be concluded that the tube area, and therefore the tube material cost,
 are extremely sensitive to boundary layer thickness. Furthermore, the rate of
 increase of the tube cross sectional area also increases with pod cross sectional area.
-This relationship exists because more bypass is area is lost as pod radius
+This relationship exists because more bypass area is lost as pod radius
 increases for a given displacement boundary layer thickness. This means that
 the coupling between tube and pod cross sectional areas is even stronger than
 was indicated in previous research.
