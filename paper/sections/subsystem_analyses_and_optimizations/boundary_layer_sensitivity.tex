@@ -29,7 +29,7 @@ plate approximation to obtain a relationship between boundary layer and length.
 Since $Re > 500,000$, the boundary layer is assumed turbulent with a velocity profile \cite{FoxMcDonald}
 \begin{equation}
 	\label{eq:boundary_layer_profile}
-	NEED VELOCITY PROFILE EQ
+	\frac{u}{U} = (\frac{y}{\delta })^{1/7}
 \end{equation}
 Using this boundary layer velocity profile, the thickness of the displacement
 boundary layer is derived using a similarity solution to produce the equation \cite{FoxMcDonald}
@@ -37,10 +37,10 @@ boundary layer is derived using a similarity solution to produce the equation \c
 	\label{eq:boundary_layer}
 	\frac{\delta^{*}}{x} \approx  \frac{.04775}{Re_{x}^{1/5}}
 \end{equation}
-The system model uses there to relate displacement boundary layer thickness,
+The system model uses this to relate displacement boundary layer thickness,
 and therefore tube area, with pod length. It is understood that these equations
-do not accurately represent the physical relationships in our model because
-they are derived in the textbook by Fox and McDonald assuming 1D flow over a
+do not perfectly represent real physical relationships as they are derived in the 
+textbook by Fox and McDonald assuming 1D flow over a
 flat plate with zero pressure gradient. Characterizing the displacement
 thickness of the boundary layer in 3D conical flow is beyond the scope of this analysis.
 However, the approximation made in this analysis is useful for studying how
@@ -59,13 +59,13 @@ order of magnitude of accuracy.  The pod configurations tested in each analysis 
 	\label{fig:cross_sec_area_vs_disp_boundary_layer}
 	\includegraphics{../../images/graphs/boundary_layer_growth_trades/Tube_Area_vs_boundary_layer.png}
 \end{figure}
-\Cref{fig:cross_sec_area_vs_disp_boundary_layer} indicated the effects that
+\Cref{fig:cross_sec_area_vs_disp_boundary_layer} indicates the effects that
 displacement boundary layer has on the cross sectional area of the tube.
 It is shown that the cross sectional area of the tube increases rapidly as the
 thickness of the displacement boundary layer increases.
 For $A_{pod} = \SI{2d2}{\metre\squared}$, a 1 cm increase in $\delta^{*}$
 results in an increase of approximately \SI{1.57}{\metre\squared} in $A_{tube}$.
-Thus, it can be inferred that the tube area, and therefore the tube material cost,
+Thus, it can be concluded that the tube area, and therefore the tube material cost,
 are extremely sensitive to boundary layer thickness. Furthermore, the rate of
 increase of the tube cross sectional area also increases with pod cross sectional area.
 This relationship exists because more bypass is area is lost as pod radius
@@ -80,18 +80,25 @@ was indicated in previous research.
 \end{figure}
 \Cref{fig:tube_area_vs_length} shows the necessary cross sectional area of the
 tube as a function of pod length using the previously described relationship
-approximation. It is shown that increases in pod length due to higher passenger
+approximation. Increases in pod length due to higher passenger
 capacity, increased battery length, more compressor stages, etc. require the
 tube cross sectional area to increase in order to accommodate for larger
 boundary layer growth. This relationship reveals a coupling between tube cross
 sectional area and pod length that has not been accounted for in previous system models.
-The tube area is highly coupled with boundary layer thickness due to its effect on effective bypass area.
+The tube area is highly coupled with boundary layer thickness due to its effect on the effective bypass area.
 Due to the sensitivity of tube area with respect to boundary layer thickness,
 it is important to develop a model that can accurately determine the
 displacement boundary layer thickness over the pod surface in order to avoid
 undesired choking or development of shock waves in the tube. Moreover,
-this analysis suggests that active flow techniques, such as boundary layer suction,
+this analysis suggests that active flow control techniques, such as boundary layer suction,
 which reduce boundary layer thickness could be very beneficial.
-Since the lowest tube cross sectional area is desired for a given pod configuration,
-boundary layer suction could reduce the size of the tube necessary to prevent
-choking which will reduce the total material and construction costs of the system.
+
+The sensitivity of tube area with respect to pod length has interesting implications on how the material cost of the tube
+scales with passenger capacity. As pod capacity increases, the passenger compartment of the pod
+must increase to accommodate more people. The cross sectional area of the tube is too sensitive to the cross sectional
+area of the pod to allow for any undue increase, so the pod length must be extended to account for higher capacity.
+However, increasing pod length does have a non-negligible effect tube cross sectional area when boundary layer 
+development is considered. This makes it even more important for future iterations of this system model to include
+higher fidelity boundary layer modeling. This could also make the infusion of active flow control aboard
+the pod even more compelling. Boundary layer growth will be accounted for using these methods in a discussion of 
+passenger capacity trades later in this study. 

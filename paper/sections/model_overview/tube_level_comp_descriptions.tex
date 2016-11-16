@@ -11,15 +11,15 @@
 		Insert Nate’s Vacuum Equation
 	\end{equation}
 	The pump down energy and weight of pumps will be critical for cost and structural analyses.
-	The Vacuum group also considers the vacuum energy consumed during the steady state run time of the system.
+	The Vacuum group also considers the energy consumed during steady state operation.
 	In theory, if the tube is perfectly air tight, there would be no need for
-	the vacuum to run at all once the tube is pumped down. However, some amount
-	of leakage is inevitable, which will necessitate some amount of energy
-	consumption by the vacuum pumps to maintain the desired tube pressure over time.
+	the vacuum to run at all once the tube is pumped down. However, air is likely to be introduced
+	to the system throughout normal operation, particularly during boarding. Consequently, 
+	vacuum pumps will need to used throughout operation to account for this.
 	The effect of leakage rate on energy consumption is critical and will be
 	discussed in more depth later. For the purpose of this analysis, the vacuum
-	is modeled as a compressor using the same pycycle2 component seen in the
-	pod compression cycle analysis, with the same internal implicit solver \cite{pycycle2}.
+	is modeled as a compressor using the same pycycle2 components seen in the
+	pod cycle analysis, with the same internal implicit solver \cite{pycycle2}.
 	The pressure ratio of the vacuum will be equal to the ratio of ambient
 	pressure to desired tube pressure and the mass flow through the vacuum at
 	steady state will be equal to the leakage rate.
