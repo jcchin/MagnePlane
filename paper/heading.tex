@@ -46,11 +46,11 @@
   Kenneth Decker,\thanks{Aerospace Engineer, University of Arizona}
   \and Andi Peng,\thanks{Cognitive Science, Global Affairs, Yale University}
   \and Colin Summers\thanks{Chemical Engineer, Computer Engineer, University of Washington-Seattle}
+  \and Jeffrey Chin,\thanks{Aerospace Engineer, Propulsion Systems Analysis Branch, Mail Stop 5-11, AIAA Member}
   \and Golda Nguyen,\thanks{Mechanical Engineer, Georgia Institute of Technology}
   \and Andrew Oberlander,\thanks{Mechanical Engineer, Brown University}
   \and Gazi Sakib,\thanks{Physics, Mechanical Engineer, Stony Brook University}
   \and Nathan Sharifrazi,\thanks{Aerospace Engineer, Mechanical Engineer, University of California-Irvine}
-  \and Jeffrey Chin,\thanks{Aerospace Engineer, Propulsion Systems Analysis Branch, Mail Stop 5-11, AIAA Member}
   \and Justin Gray,\thanksibid{8}
   \and Christopher Heath,\thanksibid{8}
   \and Kenneth Moore,\thanksibid{8}
@@ -86,6 +86,7 @@
 \usepackage{setspace} %Pro­vides sup­port for set­ting the spac­ing be­tween lines in a doc­u­ment
 \usepackage{wrapfig} %Al­lows fig­ures or ta­bles to have text wrapped around them.
 \usepackage{caption} %The cap­tion pack­age pro­vides many ways to cus­tomise the cap­tions in float­ing en­vi­ron­ments like fig­ure and ta­ble
+\usepackage{subcaption} % Allows subfigures/captions
 % \usepackage{lscape} %Mod­i­fies the mar­gins and ro­tates the page con­tents but not the page num­ber.
 \usepackage{appendix}
 \usepackage{listings} %Code
@@ -159,7 +160,8 @@
 \crefname{appsec}{Appendix}{Appendices}
 \begin{document}
 \maketitle
-% \subimport{sections/}{abstract}
+\subimport{sections/}{abstract}
+\newpage
 %\tableofcontents
 %\listoffigures
 %\listoftables

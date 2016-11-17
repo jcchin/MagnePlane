@@ -1,9 +1,7 @@
-Prior to analyzing the system as a whole, several analyses are performed on
-various subsystems in order to examine important design trades at the subsystem
-level and determine reasonable values for top-level design inputs.
-Structural analysis is performed on the tube as the pod travels both over land and under water.
-In these analysis, material properties of steel area used for the tube and
-material properties of concrete are used for the tube in order to illustrate trends.
+Structural analysis is performed on the tube for multiple geographical scenarios,
+as the pod travels both over land and under water.
+In these analysis, material properties of steel and concrete are used for the
+tube in order to illustrate trends.
 Both phases are analyzed prior to running the full system using values of
 design variables suggested from previous research with safety factors where
 appropriate \cite{Chin}. Then, cost function optimizations are performed with
@@ -17,17 +15,17 @@ minimize the scalar cost function using the Sequential Least Squares Programming
 (SLSQP) algorithm for gradient based optimization \cite{GrayBenchmarking2013,Scipy}.
 First, travel of the pod over land is analyzed. In this case, the pod travels
 within a tube that is suspended on pylons of a given height above the ground.
-To perform this analysis, multiple simplifying assumptions must be made. The
+To perform this analysis, multiple simplifying assumptions were be made. The
 tube is assumed to have thin walls relative to the tube radius and thus will be
 modeled as a thin-walled pressure vessel. The tube is assumed to be horizontal
-and the height of the pylons is assumed to be constant. This allows a section
+and the height of the pylons is assumed to be constant for simplicity. This allows a section
 of the tube between two pylons to be modeled as a hollow cylindrical beam with
 simple supports at its ends. Each pylon is modeled as a beam fixed at the
 ground with axial and transverse loads applied to its end. The structure is
 designed according to beam bending equations with the sectional weight of the
 beam modeled as a distributed load and the mass of the pod as a point load at
-the beam’s center (the structure is analyzed with the pod at the center of the
-beam since this produces the highest bending stress in the tube).  With these
+the beam’s center. The structure is analyzed with the pod at the center of the
+beam since this produces the highest bending stress scenario.  With these
 assumptions, two extreme structural configurations can be imagined: one in
 which the tube is thick but is supported by pylons that are spaced very far apart,
 and another in which the tube is thin but must be supported by many closely spaced pylons.
@@ -86,7 +84,7 @@ increasing the pod mass from 10,000 kg to 20,000 kg results in a change in
 pylon spacing of less than 2\%, with the sensitivity of pylon spacing to pod
 mass decreasing for higher tube areas. This suggests that the mass of the tube
 is dominant when sizing the structure of the system and that the pod mass is
-negligible in this regime. This means that the capacity of each pod can be
+negligible at this design point. This means that the capacity of each pod can be
 increased with negligible ramifications on structural design. Pod capacity
 trades will be discussed in greater detail in the following sections. However,
 this analysis shows that pod capacity can be greatly scaled up with minimal

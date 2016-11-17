@@ -1,17 +1,4 @@
-\subsubsection{Pod}
-	 The design of the tube is driven by the configuration of the pod.
-	 Consequently, the system model is constructed such that the pod design is analyzed first.
-	 The pod group contains all sub-systems onboard the pod.
-	 The pod takes in design variables and feeds them into the drag, cycle,
-	 drivetrain, geometry, mass, and levitation sub-systems.
-\subsubsection{Tube}
-	Once the pod group determines the design configuration of the pod, the
-	dimensions are fed into the tube group. This group contains the sub-system
-	analyses for the vacuum pumps, electromagnetic propulsion system, thermal
-	management, and tube structure. Once the major aspects of the design of the
-	tube are evaluated, results for both pod and tube design can be fed into
-	mission and cost analyses to evaluate overall system performance
-	requirements and their resulting costs.
+
 \subsubsection{Mission}
 	It is necessary to obtain a reasonable estimation of the mission
 	performance requirements in order to carry out system level trade studies.
@@ -29,8 +16,8 @@
 		\caption{Notional Velocity Profile in Mission Analysis}
 		\label{fig:mission_profile}
 	\end{figure}
-	\Cref{fig:mission_profile} shows what a possible velocity profile would
-	look like using this mission analysis model. The initial acceleration is
+	\Cref{fig:mission_profile} shows a notional velocity profile using the
+	mission analysis model. The initial acceleration is
 	modeled as a constant linear acceleration of 1g from rest to top speed.
 	Previous analyses have modeled the start up as an incremental acceleration,
 	as is shown in \cref{fig:mission_profile}, to allow for more maneuverability
@@ -86,11 +73,9 @@
 	magnitude of uncertainty. However, the cost of materials and energy
 	consumption can be estimated with significantly greater certainty.
 	Thus, in this analysis, the cost estimations of materials and energy are of greater interest.
-	According to the Electricity Information Administration, the average price
-	of electricity in the United States is about .13 USD/kWh \cite{EIA}.
-	This is the electricity price that will be used for the model.
-	Different electricity prices can be used for future analyses if necessary,
-	but will not significantly change the trends in the trade studies this model produces.
+	The average price of electricity used in the model is .13 USD/kWh, based on
+	data from the Electricity Information Administration\cite{EIA}.
+	Using a different value will not significantly change the trends in the trade studies this model produces.
 	A rough estimation of the ticket cost is included, which projects ticket cost based on the equation
 	\begin{equation}
 		\label{eq:ticket_cost}

@@ -1,3 +1,11 @@
+	Once the pod group determines the design configuration of the pod, the
+	dimensions are fed into the tube group. This group contains the sub-system
+	analyses for the vacuum pumps, electromagnetic propulsion system, thermal
+	management, and tube structure. Once the major aspects of the design of the
+	tube are evaluated, results for both pod and tube design can be fed into
+	mission and cost analyses to evaluate overall system performance
+	requirements and their resulting costs.
+
 \paragraph{Vacuum}
 	The vacuum sub-system is a group that evaluates two phases of the vacuum
 	use: pump down and steady-state usage. The pump down vacuum module
@@ -8,18 +16,19 @@
 	The vacuum pump down model is given in the equation
 	\begin{equation}
 		\label{eq:vacuum}
-		Insert Nate’s Vacuum Equation
+		E_{tot} = pwr * \frac{vol_{tube}*speed_{pump}*log(P_{0}/P_{f})*2}{t_{pumpdown}}* \gamma * 86400
 	\end{equation}
 	The pump down energy and weight of pumps will be critical for cost and structural analyses.
 	The Vacuum group also considers the energy consumed during steady state operation.
 	In theory, if the tube is perfectly air tight, there would be no need for
 	the vacuum to run at all once the tube is pumped down. However, air is likely to be introduced
-	to the system throughout normal operation, particularly during boarding. Consequently, 
+	to the system throughout normal operation, particularly during boarding. Consequently,
 	vacuum pumps will need to used throughout operation to account for this.
 	The effect of leakage rate on energy consumption is critical and will be
 	discussed in more depth later. For the purpose of this analysis, the vacuum
-	is modeled as a compressor using the same pycycle2 components seen in the
-	pod cycle analysis, with the same internal implicit solver \cite{pycycle2}.
+	is modeled as a compressor using the same type of thermodynamic compressor
+	model employed in the pod cycle analysis,
+	with the same internal implicit solver \cite{pycycle2}.
 	The pressure ratio of the vacuum will be equal to the ratio of ambient
 	pressure to desired tube pressure and the mass flow through the vacuum at
 	steady state will be equal to the leakage rate.
@@ -48,7 +57,7 @@
 	startup and coasting booster sections. For the purpose of this analysis,
 	the efficiency of the LSM is assumed to be .8 \cite{LSM}.
 \paragraph{Structure}
-	The Structural analysis group determines the structural design of the tube
+	The structural analysis group determines the structural design of the tube
 	for two phases of travel: travel over land and under water. When traveling
 	overland, the tube is assumed to be supported by pylons above the terrain
 	at a given height. For travel under water, the tube is assumed to be
