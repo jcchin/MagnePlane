@@ -122,13 +122,13 @@
 	In these equations, the drag and the magnet mass are both functions of the
 	magnet area and thickness. To minimize drag and mass, a Pareto optimization
 	is performed prior to running the system model. The following cost function
-	is developed by normalizing drag and mass, then multiplying by a weighing
+	is developed by normalizing drag and mass, then multiplying by a weighting
 	factor $alpha$ and adding them together in the following equation
 	\begin{equation}
 		\label{eq:pareto}
 		f(\alpha ) = \alpha \bar{F_{x}} + (1-\alpha )\bar{m_{mag}}v
 	\end{equation}
-	Where the bar signifies the normalized value. The weighing factor $alpha$
+	Where the bar signifies the normalized value. The weighting factor $alpha$
 	is chosen arbitrarily between zero and unity; high values of $alpha$
 	emphasize minimizing drag while low values of $alpha$ emphasize minimizing mass.
 
