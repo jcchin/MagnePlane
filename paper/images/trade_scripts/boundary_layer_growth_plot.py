@@ -13,7 +13,7 @@ line1, = plt.plot(delta_star, A_tube[0,:], 'b-', linewidth = 2.0, label = 'A_pod
 line2, = plt.plot(delta_star, A_tube[1,:], 'r-', linewidth = 2.0, label = 'A_pod = 2.5 m^2')
 line3, = plt.plot(delta_star, A_tube[2,:], 'g-', linewidth = 2.0, label = 'A_pod = 3.0 m^2')
 plt.xlabel('Displacement Boundary Layer (m)', fontsize = 10, fontweight = 'bold')
-plt.ylabel('Tube Cross Sectional Area (m**2)', fontsize = 10, fontweight = 'bold')
+plt.ylabel('Tube Area (m^2)', fontsize = 10, fontweight = 'bold')
 plt.grid('on')
 plt.xlim(.02, .12)
 plt.legend(handles = [line1, line2, line3], loc = 2, fontsize = 8)
