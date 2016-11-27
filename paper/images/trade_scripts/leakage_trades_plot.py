@@ -17,7 +17,7 @@ total_energy_cost = np.loadtxt('../data_files/leakage_trades/total_energy_cost.t
 # plt.show()
 
 # fig, ax1 = plt.subplots()
-fig = plt.figure(figsize = (3.25,3.5), tight_layout = True)
+fig = plt.figure(figsize = (4.,3.5), tight_layout = True)
 ax1 = plt.axes()
 ax2 = ax1.twinx()
 plt.setp(ax1.get_xticklabels(), fontsize=8)
