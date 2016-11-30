@@ -20,7 +20,7 @@
 	reconnection (AFLR3)\cite{Marcum} algorithm. For computational efficiency, extruded
 	viscous prism layers were generated near the pod surfaces and transitioned
 	to isotropic tetrahedral cells outside the boundary layer region.
-	All viscous cells were resolved to a y+ < 1. Volume meshes for the core
+	All viscous cells were resolved to a $y^{+} < 1$. Volume meshes for the core
 	domain contained approximately (How many??) million cells.
 
 	The computational domain is depicted in \Cref{fig:CFDmodel},
@@ -41,6 +41,24 @@
 	were extracted from simulation results.
 	Drag forces included only viscous and pressure forces acting on external
 	pod surfaces and excluded ram drag effects.
+
+	% \begin{figure}
+	% 	\centering
+	% 	\begin{subfigure}{.6\textwidth}
+	% 	  \centering
+	% 	  \includegraphics{../../images/CFDmodel.png}
+	% 	  \caption{Computational boundary applied to vehicle flow domain.}
+	% 	  \label{fig:CFDmodel}
+	% 	\end{subfigure}%
+	% 	\begin{subfigure}{.4\textwidth}
+	% 	  \centering
+	% 	  \includegraphics{../../images/graphs/cd_vs_mach/cd_vs_mach.png}
+	% 	  \caption{Drag Coefficient vs. Mach Number}
+	% 	\label{fig:cd_vs_mach}
+	% 	\end{subfigure}
+	% 	\caption{CFD model and results}
+	% 	\label{fig:CFD}
+	% \end{figure}
 
 	\begin{figure}
 		\centering
