@@ -6,8 +6,49 @@
 	 drivetrain, geometry, mass, and levitation sub-systems.
 
 \subsubsection{Drag}
-	(Insert some description of CFD methods).
 	CFD was performed on the pod to determine how the pod drag coefficient varies with Mach number.
+	Pod aerodynamics were computed with the Fully Unstructured Navier-Stokes 3D
+	(FUN3D) flow solver \cite{Biedron}. FUN3D is a node-based computational fluid dynamics
+	code for mixed element types that uses a second-order accurate point-implicit
+	method for numerical convergence. The upwind inviscid flux difference
+	splitting scheme of Roe \cite{Roe} was used to compute cell interface fluxes,
+	with turbulence closure obtained using the one equation model of Spalart
+	and Allmaras \cite{Spalart}.
+	All computational boundaries were discretized using the Glyph scripting
+	language of the commercial mesh software Pointwise®. Volume discretizations
+	were generated from the surface domains using the advancing-front local
+	reconnection (AFLR3)\cite{Marcum} algorithm. For computational efficiency, extruded
+	viscous prism layers were generated near the pod surfaces and transitioned
+	to isotropic tetrahedral cells outside the boundary layer region.
+	All viscous cells were resolved to a y+ < 1. Volume meshes for the core
+	domain contained approximately (How many??) million cells.
+
+	The computational domain is depicted in \Cref{fig:CFDmodel},
+	and modelled assuming vehicle half-symmetry.
+	The tube was simulated (How many?) vehicle body lengths upstream of the pod
+	and extended (How many?) body lengths downstream. Boundary conditions were
+	applied on all computational domains. A freestream condition enforcing Mach
+	number and static air reference properties was specified at the tube inflow boundary.
+	A uniform static backpressure was specified on the tube downstream exit.
+	An inviscid boundary condition was prescribed on the tube walls to avoid
+	the formation of a viscous boundary layer. All surfaces of the pod were
+	assigned a viscous no-slip condition, except flow-through domains where
+	compressor and nozzle boundary conditions were applied. At the compressor
+	fan face, a uniform static back-pressure was prescribed. At the nozzle plenum,
+	total temperature and pressure ratios with respect to freestream were specified.
+
+	Drag coefficients, non-dimensionalized by (what reference area? Planform area? Pod diameter?),
+	were extracted from simulation results.
+	Drag forces included only viscous and pressure forces acting on external
+	pod surfaces and excluded ram drag effects.
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=.75\textwidth]{../../images/CFDmodel.png}
+		\caption{Computational boundary conditions applied to hyperloop flow domain.}
+		\label{fig:CFDmodel}
+	\end{figure}
+
 	\begin{figure}
 		\centering
 		\includegraphics{../../images/graphs/cd_vs_mach/cd_vs_mach.png}
