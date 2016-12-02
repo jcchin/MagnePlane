@@ -20,13 +20,13 @@
 	reconnection (AFLR3)\cite{Marcum} algorithm. For computational efficiency, extruded
 	viscous prism layers were generated near the pod surfaces and transitioned
 	to isotropic tetrahedral cells outside the boundary layer region.
-	All viscous cells were resolved to a $y^{+} < 1$. Volume meshes for the core
-	domain contained approximately (How many??) million cells.
+	All viscous cells were resolved to a $y^{+} < 1$. %Volume meshes for the core
+	%domain contained approximately (How many??) million cells.
 
 	The computational domain is depicted in \Cref{fig:CFDmodel},
-	and modelled assuming vehicle half-symmetry.
-	The tube was simulated (How many?) vehicle body lengths upstream of the pod
-	and extended (How many?) body lengths downstream. Boundary conditions were
+	and modeled assuming vehicle half-symmetry.
+	The tube was simulated thirty vehicle body lengths upstream of the pod
+	and extended one hundred body lengths downstream. Boundary conditions were
 	applied on all computational domains. A freestream condition enforcing Mach
 	number and static air reference properties was specified at the tube inflow boundary.
 	A uniform static backpressure was specified on the tube downstream exit.
@@ -37,10 +37,10 @@
 	fan face, a uniform static back-pressure was prescribed. At the nozzle plenum,
 	total temperature and pressure ratios with respect to freestream were specified.
 
-	Drag coefficients, non-dimensionalized by (what reference area? Planform area? Pod diameter?),
+	Drag coefficients, non-dimensionalized by pod planform area,
 	were extracted from simulation results.
 	Drag forces included only viscous and pressure forces acting on external
-	pod surfaces and excluded ram drag effects.
+	pod surfaces and excluded ram and internal nozzle drag effects.
 
 	% \begin{figure}
 	% 	\centering
@@ -83,7 +83,7 @@
 	A thermodynamic analysis of the compressor system is necessary to estimate
 	on- board power requirements and overall heat rise of each pod.
 	The compression cycle is comprised of an inlet, compressor, duct, nozzle,
-	and shaft that's connected to the electric motor drivetrain. The design
+	and shaft that is connected to the electric motor drivetrain. The design
 	deviates from the original Hyperloop proposal by removing two heat
 	exchangers as well as the air-bearings. The system is modeled as a
 	one-dimensional cycle, representing components as thermodynamic processes
@@ -94,7 +94,7 @@
 	The Drivetrain module models an electric motor, inverter, and battery system.
 	Building off of previous work done at Georgia Tech and NASA, the module
 	will compute the size and mass of both the motor and battery system
-	neccesery to sustain the mission based on required torque and power demands
+	necessary to sustain the mission based on required torque and power demands
 	over a mission profile \cite{GeorgiaTechMotor, NASASugar}. The model
 	utilizes a modified algorithm for sizing the battery from the algorithm
 	developed at NASA by MK Bradley et. al. With the modification that the
@@ -118,7 +118,7 @@
 	the mass of the pod without magnets for levitation. The Levitation component
 	takes in this mass, computes the mass of the magnets, then outputs the total mass of the pods.
 \subsubsection{Pod Mach}
-	The pod mach module uses the pod cross-sectional area, Mach number, and
+	The pod Mach module uses the pod cross-sectional area, Mach number, and
 	compressor inlet conditions to compute the tube area. As the pod travels,
 	flow that is not entrained by the compressor must accelerate around the pod.
 	Due to the pod’s transonic flight speed, it is possible that this bypass
@@ -151,7 +151,7 @@
 	passive magnetic levitation system is used to suspend the pod above the
 	track. A passive system is advantageous because it requires
 	zero power input for levitation to occur, which is advantageous when
-	traveling over long distances. The halbach array passive levitation method
+	traveling over long distances. The Halbach array passive levitation method
 	developed at the Lawrence Livermore National Laboratory is chosen as the
 	system for our Hyperloop model \cite{inductrack}. It is assumed that
 	ferrite tiles were not used so that the added inductive loading is set to
@@ -169,7 +169,7 @@
 
 	Using a desired levitation speed, the total mass of magnets required and
 	drag force produced is is then calculated. The lift and drag produced
-	produced by the magnets are given in the equations
+	by the magnets are given in the equations
 	\begin{equation}
 		\label{eq:fy_lev}
 		L_{mag} = F_{y}(\omega)=\frac{\beta _{0}^{2}w_{mag}\lambda}{4\pi Ld_{c}}\frac{1}{(1+R/\omega L)^{2}}A_ae^{-4\pi h/\lambda }
