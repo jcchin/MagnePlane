@@ -26,14 +26,19 @@ if __name__ == '__main__':
 	top.setup()
 
 	L_pod = np.linspace(20.0, 40.0, num = 50)
-	A_tube = np.zeros((1, len(L_pod)))
+	A_pod = np.linspace(2.0, 3.0, num = 3)
+
+	A_tube = np.zeros((len(A_pod), len(L_pod)))
 	
 	for i in range(len(L_pod)):
-		top['L_pod'] = L_pod[i]
+		for j in range(len(A_pod)):
+			top['L_pod'] = L_pod[i]
+			top['A_pod'] = A_pod[j]
 
-		top.run()
+			top.run()
 
-		A_tube[0, i] = top['p.A_tube']
+			A_tube[j, i] = top['p.A_tube']
 
 	np.savetxt('../../../paper/images/data_files/boundary_layer_length_trades/L_pod.txt', L_pod, fmt = '%f', delimiter = '\t', newline = '\r\n')
 	np.savetxt('../../../paper/images/data_files/boundary_layer_length_trades/A_tube.txt', A_tube, fmt = '%f', delimiter = '\t', newline = '\r\n')
+	
