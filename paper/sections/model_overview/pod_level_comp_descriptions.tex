@@ -20,13 +20,13 @@
 	reconnection (AFLR3)\cite{Marcum} algorithm. For computational efficiency, extruded
 	viscous prism layers were generated near the pod surfaces and transitioned
 	to isotropic tetrahedral cells outside the boundary layer region.
-	All viscous cells were resolved to a $y^{+} < 1$. Volume meshes for the core
-	domain contained approximately (How many??) million cells.
+	All viscous cells were resolved to a $y^{+} < 1$. %Volume meshes for the core
+	%domain contained approximately (How many??) million cells.
 
 	The computational domain is depicted in \Cref{fig:CFDmodel},
 	and modelled assuming vehicle half-symmetry.
-	The tube was simulated (How many?) vehicle body lengths upstream of the pod
-	and extended (How many?) body lengths downstream. Boundary conditions were
+	The tube was simulated thirty vehicle body lengths upstream of the pod
+	and extended one hundred body lengths downstream. Boundary conditions were
 	applied on all computational domains. A freestream condition enforcing Mach
 	number and static air reference properties was specified at the tube inflow boundary.
 	A uniform static backpressure was specified on the tube downstream exit.
@@ -37,10 +37,10 @@
 	fan face, a uniform static back-pressure was prescribed. At the nozzle plenum,
 	total temperature and pressure ratios with respect to freestream were specified.
 
-	Drag coefficients, non-dimensionalized by (what reference area? Planform area? Pod diameter?),
+	Drag coefficients, non-dimensionalized by pod planform area,
 	were extracted from simulation results.
 	Drag forces included only viscous and pressure forces acting on external
-	pod surfaces and excluded ram drag effects.
+	pod surfaces and excluded ram and internal nozzle drag effects.
 
 	% \begin{figure}
 	% 	\centering
