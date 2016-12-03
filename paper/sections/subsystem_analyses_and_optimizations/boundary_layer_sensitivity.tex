@@ -45,8 +45,12 @@ flat plate with zero pressure gradient. Characterizing the displacement
 thickness of the boundary layer in 3D conical flow is beyond the scope of this analysis.
 However, the approximation made in this analysis is useful for studying how
 tube area and material costs may change with increasing pod length within an
-order of magnitude of accuracy.  The pod configurations tested in each analysis is given in
-% \begin{table}
+order of magnitude of accuracy.  The pod configurations tested in each analysis are given in
+\Cref{fig:topTubeArea}. These two charts show the same data presented in
+slightly different ways. \Cref{fig:cross_sec_area_vs_disp_boundary_layer}
+shows how the required tube area varies the maximum $\delta^*$. $\delta^*$
+grows as the pod gets longer, so \Cref{fig:tube_area_vs_length} presents the
+same data as a function of pod length. % \begin{table}
 % 	\centering
 % 	\caption{Configurations in boundary layer sensitivity study}
 % 	\label{tbl:boundary_layer_sensitivty_configs}
@@ -78,17 +82,12 @@ order of magnitude of accuracy.  The pod configurations tested in each analysis 
 \label{fig:topTubeArea}
 \end{figure}
 
-
-\Cref{fig:cross_sec_area_vs_disp_boundary_layer} indicates the effects that
-displacement boundary layer has on the cross sectional area of the tube.
-It is shown that the cross sectional area of the tube increases rapidly as the
-thickness of the displacement boundary layer increases.
 For $A_{pod} = \SI{2}{\metre\squared}$, a 1 cm increase in $\delta^{*}$
 results in an increase of approximately \SI{1.57}{\metre\squared} in $A_{tube}$.
 Thus, it can be concluded that the tube area, and therefore the tube material cost,
 are extremely sensitive to boundary layer thickness. Furthermore, the rate of
 increase of the tube cross sectional area also increases with pod cross sectional area.
-This relationship exists because more bypass area is lost as pod radius
+This relationship exists because more bypass area is lost as the pod radius
 increases for a given displacement boundary layer thickness. This means that
 the coupling between tube and pod cross sectional areas is even stronger than
 was indicated in previous research.
@@ -101,7 +100,7 @@ was indicated in previous research.
 \Cref{fig:tube_area_vs_length} shows the necessary cross sectional area of the
 tube as a function of pod length using the previously described relationship
 approximation. Increases in pod length due to higher passenger
-capacity, increased battery length, more compressor stages, etc. require the
+capacity, increased battery length, more compressor stages, etc., require the
 tube cross sectional area to increase in order to accommodate for larger
 boundary layer growth. This relationship reveals a coupling between tube cross
 sectional area and pod length that has not been accounted for in previous system models.
@@ -109,16 +108,16 @@ The tube area is highly coupled with boundary layer thickness due to its effect 
 Due to the sensitivity of tube area with respect to boundary layer thickness,
 it is important to develop a model that can accurately determine the
 displacement boundary layer thickness over the pod surface in order to avoid
-undesired choking or development of shock waves in the tube. Moreover,
+undesired choking or the development of shock waves in the tube. Moreover,
 this analysis suggests that active flow control techniques, such as boundary layer suction,
-which reduce boundary layer thickness could be very beneficial.
+which reduce boundary layer thickness, could be very beneficial.
 
 The sensitivity of tube area with respect to pod length has interesting implications on how the material cost of the tube
 scales with passenger capacity. As pod capacity increases, the passenger compartment of the pod
 must increase to accommodate more people. The cross sectional area of the tube is too sensitive to the cross sectional
 area of the pod to allow for any undue increase, so the pod length must be extended to account for higher capacity.
-However, increasing pod length does have a non-negligible effect tube cross sectional area when boundary layer
-development is considered. This makes it even more important for future iterations of this system model to include
+However, increasing pod length does have a non-negligible effect on the tube cross sectional area when boundary layer
+development is considered. Therefor it is even more important for future iterations of this system model to include
 higher fidelity boundary layer modeling. This could also make the infusion of active flow control aboard
 the pod even more compelling. Boundary layer growth will be accounted for using these methods in a discussion of
 passenger capacity trades later in this study.
