@@ -81,7 +81,7 @@
 	The on-board compression system provides a means of increasing the maximum
 	pod speed over a closed pod,  and provides a small amount of thrust.
 	A thermodynamic analysis of the compressor system is necessary to estimate
-	on- board power requirements and overall heat rise of each pod.
+	on-board power requirements and overall heat rise of each pod.
 	The compression cycle is comprised of an inlet, compressor, duct, nozzle,
 	and shaft that is connected to the electric motor drivetrain. The design
 	deviates from the original Hyperloop proposal by removing two heat
@@ -96,26 +96,26 @@
 	will compute the size and mass of both the motor and battery system
 	necessary to sustain the mission based on required torque and power demands
 	over a mission profile \cite{GeorgiaTechMotor, NASASugar}. The model
-	utilizes a modified algorithm for sizing the battery from the algorithm
-	developed at NASA by MK Bradley et. al. With the modification that the
-	voltage of the battery as a function discharge is modeled using a
-	polynomial fit to discharge curves provided by cell manufacturers \cite{NASASugar}.
+	utilizes an algorithm for battery sizing from the algorithm
+	developed at NASA by MK Bradley et al.\cite{NASASugar}, with the modification that the
+	voltage of the battery as a function of discharge is modeled using a
+	polynomial fit to discharge curves provided by cell manufacturers.
 	This change provides results that are more flexible and specific to the
 	leading commercial battery cells.
 \subsubsection{Geometry and Mass}
 	In order to analyze the design of the tube structure, the final mass and
 	geometric configuration of the pod must be obtained. The geometry model
-	assumes the pod to have a cylindrical fuselage with conical frustrums at
+	assumes the pod to have a cylindrical fuselage with conical frustums at
 	the inlet and exit. The cross sectional area of the passenger section
 	given by the user is added to the cross sectional area of the compressor
 	exit duct, which is computed in the cycle analysis. The geometry module
 	also estimates the thickness of the pod wall and the passenger compartment
-	based on simple pressurized cylinder relationships, then adds these areas
+	based on simple pressurized cylinder relationships. It then adds these areas
 	together to compute the total cross sectional area. The length of each
 	component is also fed into the geometry model so it can compute the total
 	pod length and planform area. The mass module takes the mass of each
 	component and adds them with the total passenger mass in order to determine
-	the mass of the pod without magnets for levitation. The Levitation component
+	the mass of the pod, without magnets, for levitation. The Levitation component
 	takes in this mass, computes the mass of the magnets, then outputs the total mass of the pods.
 \subsubsection{Pod Mach}
 	The pod Mach module uses the pod cross-sectional area, Mach number, and
@@ -139,7 +139,7 @@
 	of safety to prevent the flow from reaching the choking condition.
 	In order to make this model higher fidelity, it is possible to modify the
 	areas in the relationship to account for boundary layer development over
-	the pod outer surface. As the boundary develops, the effective bypass area
+	the pod's outer surface. As the boundary develops, the effective bypass area
 	is reduced which increases the risk of bypass flow reaching Mach 1. However,
 	it is possible to modify this by increasing the effective pod radius by the
 	displacement thickness of the boundary layer. The sensitivity of structural
@@ -150,34 +150,33 @@
 	reduce friction during high velocity travel. In this analysis, a
 	passive magnetic levitation system is used to suspend the pod above the
 	track. A passive system is advantageous because it requires
-	zero power input for levitation to occur, which is advantageous when
-	traveling over long distances. The Halbach array passive levitation method
+	zero power input for levitation to occur. The Halbach array passive levitation method
 	developed at the Lawrence Livermore National Laboratory is chosen as the
 	system for our Hyperloop model \cite{inductrack}. It is assumed that
 	ferrite tiles were not used so that the added inductive loading is set to
-	zero, leaving only the distributed inductance to computed in the model.
+	zero, leaving only the distributed inductance to compute in the model.
 	Fringe fields from the magnetic array are also ignored in this analysis and
 	the width of the magnetic array is set equal to the width of the track.
 	These three simplifications and assumptions allow the overall scale factor
-	for the total force, $levsf$, to set equal to unity.
+	for the total force, $levsf$, to be set equal to unity.
 
 	The levitation group makes two critical calculations: the inductance of the
 	track required for the pod to levitate at a desired speed and the mass of
-	the permanent magnets onboard. The breakpoint levitation module uses a
+	the permanent magnets located onboard. The breakpoint levitation module employs a
 	desired minimum levitation speed and uses it to calculate important track
 	parameters, including the ratio of inductance to resistance of the track.
 
-	Using a desired levitation speed, the total mass of magnets required and
-	drag force produced is is then calculated. The lift and drag produced
-	by the magnets are given in the equations
+	Using the desired levitation speed, the total mass of magnets required and
+	drag force produced is then calculated. The lift and drag produced
+	by the magnets are given by the equations
 	\begin{equation}
 		\label{eq:fy_lev}
-		L_{mag} = F_{y}(\omega)=\frac{\beta _{0}^{2}w_{mag}\lambda}{4\pi Ld_{c}}\frac{1}{(1+R/\omega L)^{2}}A_ae^{-4\pi h/\lambda }
+		L_{mag} = F_{y}(\omega)=\frac{\beta _{0}^{2}w_{mag}\lambda}{4\pi Ld_{c}}\frac{1}{(1+R/\omega L)^{2}}A_ae^{-4\pi h/\lambda } \ ,
 	\end{equation}
 	%Fyuf equations from http://cegt201.bradley.edu/projects/proj2004/maglevt1/Inductrack1.m
 	\begin{equation}
 		\label{eq:dmag}
-		D_{mag}=( m_{pod}g)R/\omega L
+		D_{mag}=( m_{pod}g)R/\omega L \ .
 	\end{equation}
 	In these equations, the drag and the magnet mass are both functions of the
 	magnet area and thickness. To minimize drag and mass, a Pareto optimization
