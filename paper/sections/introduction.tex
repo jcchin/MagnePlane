@@ -94,7 +94,7 @@
 	reduction in carbon emissions. Planes produce large quantities of carbon
 	emissions, exhausted into the upper atmosphere resulting in
 	environmentally damaging travel. The fully-electric Hyperloop is designed
-	for highly trafficked corridors, where it's high upfront cost can be
+	for highly trafficked corridors, where its high upfront cost can be
 	offset by cheaper, faster, and cleaner commercial travel on large scales
 	and the long travel tubes could be covered with solar panels to generate
 	the needed power which lowers the net carbon footprint. The Hyperloop is
@@ -105,12 +105,12 @@
 \paragraph{History}
 
 	Aerospace engineers have promoted tube transport for over a century.
-	As early as 1972, a study conducted by the RAND corporation concluded that high-
-	speed `tubecraft' was technologically feasible, with political pressure being the greatest
+	As early as 1972, a study conducted by the RAND corporation concluded that high-speed 
+	`tubecraft' was technologically feasible, with political pressure being the greatest
 	obstacle to creation.\cite{RAND} Many concepts later developed by
 	the government, industry, and academia incorporated technologies from which
 	Hyperloop can draw technical precedents.
-	These include but are not limited to the Magneplane, Maglifter, and numerous
+	These include, but are not limited, to the Magneplane, Maglifter, and numerous
 	other magnetic propulsion concepts. In 2013, Elon Musk, CEO of Space Exploration
 	Technologies (SpaceX) and Tesla Motors revived the concept with the publication
 	of his open-source paper, Hyperloop Alpha.\cite{Musk}
@@ -128,8 +128,8 @@
 	those key drivers from both an engineering and business perspective.
 
 	As highlighted by the DOT, the Hyperloop must be sufficiently lightweight
-	that fixed capital costs of construction when compared to conventional
-	elevated HSR or Maglev systems would be greatly decreased.
+	that fixed capital costs of construction, when compared to conventional
+	elevated HSR or Maglev systems, would be greatly decreased.
 	Although true construction costs cannot be estimated through an engineering
 	model alone, this paper seeks to minimize system size, energy, and material
 	quantity as a proxy to cost. This model provides a sensitivity
@@ -137,25 +137,25 @@
 	answer this research question. Rather than focus on weight of the system explicitly,
 	many of the trends discussed are explored in relation to tube internal
 	cross sectional area. Tube weight relates directly to this area term, and
-	area is the common design variable linking many of the other top-level
-	design variables. As depicted in previous work,
-	\cite{Chin} when abstracting the concept to three top level system level
-	sizing variables;(vehicle area, speed, and tube area) only two are needed
+	area is the common design variable linking many of the top-level
+	analyses. As depicted in previous work,
+	\cite{Chin} when abstracting the concept to three top level
+	sizing variables (vehicle frontal area, speed, and tube cross-sectional area) only two are needed
 	to find the third.
 
-	Moreover, the potential ability to operate underwater is a key distinguishing feature
-	of the Hyperloop over conventional HSR and Maglev trains. It is possible for the buoyant force
-	of the submerged tube to counter the systems weight, meaning weight is not
-	a principle factor in this context.
-	Given these considerations, the key research
-	question can be restated as: ``Is the Hyperloop sufficiently compact that
-	there would be construction savings compared to conventional
-	HSR or Maglev systems?'' Although you could put a conventional train in an
-	underwater tube, these systems would not be capable of traveling nearly as
-	fast as the Hyperloop in a volume constrained environment.
-	Therefore subsequent results are presented in relation to the tube area.
+	Moreover, the potential ability to operate underwater is a key
+	distinguishing feature of the Hyperloop versus conventional HSR and Maglev
+	trains. It is possible for the buoyant force of the submerged tube to
+	counter the systems weight, meaning weight is not a principle factor in
+	this context. Given these considerations, the key research question can be
+	restated as: ``Is the Hyperloop sufficiently compact so that there would
+	be construction savings compared to conventional HSR or Maglev systems?''
+	Although you could put a conventional train in an underwater tube, these
+	systems would not be capable of traveling nearly as fast as the Hyperloop
+	in a volume constrained environment. Therefore subsequent results are
+	presented in relation to the tube area.
 
-	Another research question highlighted by the DOT questions the ability to
+	Another research query, highlighted by the DOT questions, the ability to
 	expand the throughput of the system beyond the 28 passengers per pod
 	originally proposed. This scaling capacity is addressed
 	via analysis of pod frequency combined with design sensitivity to pod length.
@@ -165,7 +165,7 @@
 	The DOT also highlights the need to determine maximum payload capacities
 	of the pods. Adding minimum required weights as model constraints is beyond the scope of
 	this paper, but could be addressed using the engineering methods outlined.
-	Answering this question, and better defining component weight breakdowns
+	Answering this question and better defining component weight breakdowns
 	is recommended as a next step for future work.
 	This paper also does not address land acquisition costs or throughput
 	constraints in today's existing transportation infrastructures.
@@ -183,9 +183,9 @@
 
 \paragraph{Paper Scope}
 	This paper introduces the first open-source system model to examine the
-	full energy consumption and converged vehicle model for the Hyperloop concept.
+	complete energy consumption and converged vehicle model for the Hyperloop concept.
 	The full-system engineering model is built in Python to analyze the couplings
-	between various sub-systems in the model, namely between the tube, passenger pod, and
+	between various subsystems in the model, namely between the tube, passenger pod, and
 	levitation systems. Using this model, trade studies were conducted to analyze the technological
 	and economic feasibilities of the system.
 	At the end, findings are presented regarding design aspects that simultaneously
@@ -199,7 +199,7 @@
 	weight, and power considerations of the system, with additional calculations for cost
 	and mission design incorporated in the final system. Because each sub-system
 	is designed independently of the whole, this model operates in a modular fashion, allowing
-	for each sub-system the flexibility of being replaced with higher fidelity modules in the future.
+	for each subsystem the flexibility of being replaced with higher fidelity modules in the future.
 	The model is not an attempt to obtain detail design conclusions for the Hyperloop
 	-- rather, it is intended to perform sensitivity analyses
 	and trade studies appropriate for evaluating the merit of the concept.
