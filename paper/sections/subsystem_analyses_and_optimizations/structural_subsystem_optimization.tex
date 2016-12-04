@@ -1,4 +1,4 @@
-Structural analysis is performed on the tube for multiple geographical scenarios,
+A structural analysis is performed on the tube for multiple geographical scenarios,
 as the pod travels both over land and under water.
 In these analyses, material properties of steel and concrete are used for the
 tube in order to illustrate trends.
@@ -15,7 +15,7 @@ minimize the scalar cost function using the Sequential Least Squares Programming
 (SLSQP) algorithm for gradient-based optimization \cite{GrayBenchmarking2013,Scipy}.
 First, travel of the pod over land is analyzed. In this case, the pod travels
 within a tube that is suspended on pylons of a given height above the ground.
-To perform this analysis, multiple simplifying assumptions were be made. The
+To perform this analysis, multiple simplifying assumptions were made. The
 tube is assumed to have thin walls relative to the tube radius and thus will be
 modeled as a thin-walled pressure vessel. The tube is assumed to be horizontal
 and the height of the pylons is assumed to be constant for simplicity. This allows a section
@@ -27,21 +27,20 @@ beam modeled as a distributed load and the mass of the pod as a point load at
 the beam’s center. The structure is analyzed with the pod at the center of the
 beam since this produces the highest bending stress scenario.  With these
 assumptions, two extreme structural configurations can be imagined: one in
-which the tube is thick but is supported by pylons that are spaced very far apart,
-and another in which the tube is thin but must be supported by many closely spaced pylons.
+which the tube is thick, but is supported by pylons that are spaced very far apart,
+and another in which the tube is thin, but must be supported by many closely spaced pylons.
 A cost function is developed by adding the cost of the tube material and the
 cost of the supporting pylons per unit length, with the thickness of the tube
-and the distance between pylons as design variables as shown in the equation
+and the distance between pylons as design variables as shown in the equation below,
 
 \begin{equation}
 	\label{eq:tube_pylon_cost}
-	Cost/Length = \frac{Tube Cost}{kg}*m'_{pod} + \frac{Pylon Cost}{kg}\frac{m_{pylon}}{\Delta x_{pylon}}
+	\frac{\text{Cost}}{\text{Length}} = \frac{Tube Cost}{kg}*m'_\text{pod} + \frac{\text{Pylon Cost}}{kg}\frac{m_\text{pylon}}{\Delta x_\text{pylon}}
 \end{equation}
-
-Where $m’$ is the mass per unit length of the tube. This model, however, is
-incomplete because the pylons can be any arbitrary size. To fix this problem,
+where $m’$ is the mass per unit length of the tube. This model, however, is
+incomplete because the pylons can be any arbitrary size. To fix this issue,
 the pylons are sized according to the buckling condition for a fixed column.
-Imposing the condition allows for the spacing of the pylons to be computed in
+Imposing this condition allows for the spacing of the pylons to be computed in
 terms of pylon radius and tube thickness using the equation
 
 \begin{equation}
@@ -68,13 +67,13 @@ condition for vacuum cylinders given by the equation \cite{Buckling}
 \end{figure}
 
 For this analysis, the area of the tube is varied and the pylon spacing is
-recorded for different of pod masses. \Cref{fig:pylon_spacing_vs_tube_area}
+recorded for different pod masses. \Cref{fig:pylon_spacing_vs_tube_area}
 shows that pylon spacing decreases significantly as tube area increases.
-This is reasonable because, as tube area increases and becomes heavier, larger
+This is reasonable result since, as tube area increases and becomes heavier, larger
 pylons are needed to support the heavier load and a thicker tube is needed to
 handle higher bending stress, both of which increase cost. This optimization
 shows that moving the pylons closer together mitigates this cost penalty.
-When performing analysis at the top level of the system, this plot along,
+When analyzing the top level of the system \Cref{fig:pylon_spacing_vs_tube_area}, along
 with the pylon buckling constraint, will be used to determine reasonable inputs
 for tube thickness and pylon spacing for any given tube area or pod mass in
 order to reflect optimal structural design conditions as closely as possible.
@@ -89,14 +88,14 @@ increased with negligible ramifications on structural design. Pod capacity
 trades will be discussed in greater detail in the following sections. However,
 this analysis shows that pod capacity can be greatly scaled up with minimal
 impact on structural design or the cost of materials and construction.
-Structural analysis is also performed for underwater travel.
+A structural analysis is also performed for underwater travel.
 The model will have to be altered slightly from the model of the pod over land
 in order to account for buoyancy. In this case, a section of the tube is
 modeled as a hollow cylindrical beam subjected to a distributed load equal to
 the difference between the sectional buoyancy and the sectional weight.
 Travel underwater could have an interesting effect on structural design because
 it is possible for the tube to be sized such that the entire weight of the
-structure is suspended by its own buoyancy. In this case, support structure
+structure is suspended by its own buoyancy. In this case, supporting structure
 would only be necessary to stabilize the structure against changing tides,
 currents, and seismic activity rather than support the structural load.
 \Cref{fig:tube_thick_vs_tube_area_underwater} shows the tube thickness at which the buoyant
@@ -133,12 +132,11 @@ floor and stabilized in the event of disturbances.
 The structural trade studies shown here suggest that there could be significant
 benefits to traveling underwater as opposed to over land. The depth could be
 chosen such that the tube could be thinner. Furthermore, it will likely be
-easier to make the a straighter path traveling underwater because there will be
-less buildings and features to contend with. Since the tube needs to be
-air-tight regardless of whether travel is underwater or overland, either phase
+easier to make a straighter path traveling underwater because there will be
+obstructions to contend with. Since the tube needs to be
+air-tight, regardless of whether travel is underwater or overland, either phase
 will likely require similar levels of manufacturing cost. Underwater tunneling
 may pose larger costs and challenges associated with installation and maintenance,
-but substantially reduce land acquisition costs. While evaluating the
-exact cost differential is beyond the scope of this paper due to the subjective
-and volatile nature of capital cost evaluation, this system model suggests that
-there could be real benefits from traveling underwater and should be the subject of further research.
+but will substantially reduce land acquisition costs. While evaluating the
+exact cost differential is beyond the scope of this paper, due to the very coarse cost analyses used, this system model suggests that
+there could be substantial benefits from traveling underwater and should be the subject of further research.

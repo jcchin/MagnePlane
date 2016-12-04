@@ -6,27 +6,26 @@ passengers per pod times the frequency at which pods depart. If a constant pod
 capacity is assumed, then the only way to accommodate for periods of high
 demand is to increase the frequency at which pods depart. It is important to
 understand the limitations of pod frequency in order to obtain a reasonable
-sense of maximum passenger throughput.
-There are three factors that must be considered when evaluating limitations on
-pod frequency: safety, the amount of time it takes to board, and the number of
-pods available. Pods must be spaced out such that each pod can slow down and
-stop before hitting the pod in front of it in the event of an emergency stop.
-Linear acceleration equations can be used to determine the minimum
-distance separating to allow for deceleration and are further explained in
-documentation found in the source code documentation.
-This analysis determined the maximum pod frequency to be roughly 2 pods per minute.
-This frequency should easily be satisfied, even with a safety margin,
-due to the time that must be allowed for passengers to board.
-It is likely that passengers will need
-considerably more than 30 seconds to board, meaning that safety is not likely
-to be the factor limiting maximum pod frequency. Finally, in this analysis,
-it is assumed that the operator must have enough pods to fill the entire tube
-when launching flights at a given frequency. Consequently, having less time in
-between pods reduces the distance in between pods, which increases the number
-of pods required to fill the tube and sustain the desired pod frequency.
-Due to these three limiting factors, lower pod frequencies are desirable
-because they increase the safety margin in the event of emergency braking,
-increase the time passengers have to board, and reduce the number of pods that
-the operator must have in order to sustain a given pod frequency. The impact of
-changes in pod capacity on system design and performance will be
-discussed in further detail later in this study.
+sense of maximum passenger throughput. There are three factors that must be
+considered when evaluating limitations on pod frequency: safety, the amount of
+time it takes to board, and the number of pods available. Pods must be spaced
+out such that each pod can slow down and stop before hitting the pod in front
+of it in the event of an emergency stop. Linear acceleration equations can be
+used to determine the minimum distance separating to allow for deceleration
+and are further explained in documentation found in the source code
+documentation. This analysis determined the maximum pod frequency to be
+roughly 2 pods per minute. This frequency should easily be satisfied, even
+with a safety margin, due to the time that must be allowed for passengers to
+board. It is likely that passengers will need considerably more than 30
+seconds to board, meaning that safety will not be the limiting factor on
+maximum pod frequency. Finally, in this analysis, it is assumed that the
+operator must have enough pods to fill the entire tube when launching flights
+at a given frequency. Consequently, having less time in between pods reduces
+the distance in between pods, which increases the number of pods required to
+fill the tube and sustain the desired pod frequency. Due to these three
+limiting factors, lower pod frequencies are desirable because they increase
+the safety margin in the event of emergency braking, increase the time
+passengers have to board, and reduce the number of pods that the operator must
+have in order to sustain a given pod frequency. The impact of changes in pod
+capacity on system design and performance will be discussed in further detail
+later in this study.
