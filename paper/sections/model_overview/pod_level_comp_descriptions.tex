@@ -1,12 +1,12 @@
 
-	 The design of the tube is driven by the configuration of the pod.
+	 The design of the Tube is driven by the configuration of the Pod.
 	 Consequently, the system model is constructed such that the pod design is analyzed first.
-	 The pod group contains all sub-systems onboard the pod.
-	 The pod takes in design variables and feeds them into the drag, cycle,
-	 drivetrain, geometry, mass, and levitation sub-systems.
+	 The Pod group contains all subsystems onboard the passenger pod.
+	 The Pod module takes in design variables and feeds them into the Drag, Cycle,
+	 Drivetrain, Geometry, Mass, and Levitation subsystems.
 
 \subsubsection{Drag}
-	CFD was performed on the pod to determine how the pod drag coefficient varies with Mach number.
+	CFD was performed on the Pod to determine how the pod drag coefficient varies with Mach number.
 	Pod aerodynamics were computed with the Fully Unstructured Navier-Stokes 3D
 	(FUN3D) flow solver \cite{Biedron}. FUN3D is a node-based computational fluid dynamics
 	code for mixed element types that uses a second-order accurate point-implicit
@@ -75,14 +75,14 @@
 	\end{figure}
 	\Cref{fig:cd_vs_mach} shows the CFD results for drag coefficient vs. Mach number.
 	These results fit the trend expected for transonic flow given by the
-	Prandtl-Glauert relationship. Drag Coefficient values will be interpolated
+	Prandtl-Glauert relationship. Drag coefficient values will be interpolated
 	from this data for each Mach number the system analyzes.
 \subsubsection{Cycle}
 	The on-board compression system provides a means of increasing the maximum
 	pod speed over a closed pod,  and provides a small amount of thrust.
 	A thermodynamic analysis of the compressor system is necessary to estimate
-	on- board power requirements and overall heat rise of each pod.
-	The compression cycle is comprised of an inlet, compressor, duct, nozzle,
+	on-board power requirements and overall heat rise of each pod.
+	The compression Cycle is comprised of an inlet, compressor, duct, nozzle,
 	and shaft that is connected to the electric motor drivetrain. The design
 	deviates from the original Hyperloop proposal by removing two heat
 	exchangers as well as the air-bearings. The system is modeled as a
@@ -104,21 +104,21 @@
 	leading commercial battery cells.
 \subsubsection{Geometry and Mass}
 	In order to analyze the design of the tube structure, the final mass and
-	geometric configuration of the pod must be obtained. The geometry model
+	geometric configuration of the pod must be obtained. The Geometry model
 	assumes the pod to have a cylindrical fuselage with conical frustrums at
 	the inlet and exit. The cross sectional area of the passenger section
 	given by the user is added to the cross sectional area of the compressor
-	exit duct, which is computed in the cycle analysis. The geometry module
+	exit duct, which is computed in the cycle analysis. The Geometry module
 	also estimates the thickness of the pod wall and the passenger compartment
 	based on simple pressurized cylinder relationships, then adds these areas
 	together to compute the total cross sectional area. The length of each
-	component is also fed into the geometry model so it can compute the total
-	pod length and planform area. The mass module takes the mass of each
+	component is also fed into the Geometry model so it can compute the total
+	pod length and planform area. The Mass module takes the mass of each
 	component and adds them with the total passenger mass in order to determine
 	the mass of the pod without magnets for levitation. The Levitation component
 	takes in this mass, computes the mass of the magnets, then outputs the total mass of the pods.
 \subsubsection{Pod Mach}
-	The pod Mach module uses the pod cross-sectional area, Mach number, and
+	The Pod Mach module uses the pod cross-sectional area, Mach number, and
 	compressor inlet conditions to compute the tube area. As the pod travels,
 	flow that is not entrained by the compressor must accelerate around the pod.
 	Due to the pod’s transonic flight speed, it is possible that this bypass
@@ -161,9 +161,9 @@
 	These three simplifications and assumptions allow the overall scale factor
 	for the total force, $levsf$, to set equal to unity.
 
-	The levitation group makes two critical calculations: the inductance of the
+	The Levitation group makes two critical calculations: the inductance of the
 	track required for the pod to levitate at a desired speed and the mass of
-	the permanent magnets onboard. The breakpoint levitation module uses a
+	the permanent magnets onboard. The Breakpoint Levitation module uses a
 	desired minimum levitation speed and uses it to calculate important track
 	parameters, including the ratio of inductance to resistance of the track.
 
