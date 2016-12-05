@@ -25,18 +25,24 @@ the ScipyOptimizer. The minimum value of total energy cost and the
 corresponding tube pressure will be recorded and plotted to evaluate the
 effects that leakage rate has on the system design variables.
 
-% \begin{figure}
-% 	\centering
-% 	\includegraphics{../../images/graphs/leakage_trades/leakage_vs_pressure.png}
-% 	\caption{Pressure at Minimum Energy Consumption vs. Leakage Rate}
-% 	\label{fig:pres_vs_leakage_rate}
-% \end{figure}
 \begin{figure}
-	\centering
-	\includegraphics{../../images/graphs/leakage_trades/leakage_rate.png}
-	\caption{Minimum Energy Cost vs. Leakage Rate}
-	\label{fig:pres_vs_leakage_rate}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../../images/graphs/leakage_trades/leakage_vs_pressure.png}
+  \caption{Pressure at Minimum Energy vs. Leakage Rate}
+  \label{fig:leak_v_p}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics{../../images/graphs/leakage_trades/leakage_vs_cost.png}
+  \caption{Cost vs. Leakage Rate}
+  \label{fig:leak_v_c}
+\end{subfigure}
+\caption{Sensitivity to Leakage Rate}
+\label{fig:pres_vs_leakage_rate}
 \end{figure}
+
 \Cref{fig:pres_vs_leakage_rate} shows the pressure at minimum energy
 consumption vs. the leakage rate of the tube. The tube pressure that optimizes
 cost increases as the leakage rate increases. This trend is reasonable because the

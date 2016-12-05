@@ -24,7 +24,7 @@ plt.setp(ax1.get_yticklabels(), fontsize=8)
 plt.plot(m_dot, total_energy_cost/(1.0e6), 'r-', linewidth = 2.0)
 plt.xlabel(r'Leakage Rate $\left(\frac{kg}{s}\right)$', fontsize = 10, fontweight = 'bold')
 plt.ylabel('Minimum Energy Cost (Million USD)', fontsize = 10, fontweight = 'bold')
-plt.savefig('../graphs/leakage_trades/leakage_vs_energy.png', format = 'png', dpi = 300)
+plt.savefig('../graphs/leakage_trades/leakage_vs_cost.png', format = 'png', dpi = 300)
 plt.show()
 
 # # fig, ax1 = plt.subplots()
