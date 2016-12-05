@@ -119,8 +119,7 @@
     commercial travel on large scales.
     The Hyperloop is intended to alleviate billions of commuter car passenger miles,
     as well as free up airspace, reducing congestion and travel times for
-    flights that are well suited for the national airspace system.\\
-
+    flights that are well suited for the national airspace system.
 
 \paragraph{History}
 
@@ -199,17 +198,9 @@
     are intended to optimize performance based on throughput and cruise conditions.
     Local transit presents different challenges and objectives than those seen in the longer distances
     considered in this study. This system model, however, could be easily adapted to perform
-    analysis and optimization of local transit operation in the future.\\
+    analysis and optimization of local transit operation in the future.
 
 \paragraph{Paper Scope}
-    This paper introduces the first open-source system model to examine the
-    complete energy consumption and converged vehicle model for the Hyperloop concept.
-    The full-system engineering model is built in Python to analyze the couplings
-    between various subsystems in the model, namely between the tube, passenger pod, and
-    mission systems. Using this model, trade studies were conducted to analyze the technological
-    and economic feasibilities of the Hyperloop.
-    At the end, findings are presented regarding design aspects that simultaneously
-    met all system constraints across each sub-discipline.
 
     The paper expands on previous works \cite{Chin} and the model is built
     using OpenMDAO, an open-source multidisciplinary analysis and optimization
@@ -219,7 +210,9 @@
     and mission design incorporated in the final system. Because each subsystem
     is designed independently of the whole, this model operates in a modular fashion,
     providing the flexibility for each subsystem to be replaced with higher
-    fidelity modules in the future.
+    fidelity modules in the future. The full model is driven by nested solvers
+    within each subsystem group until all design constraints are met across the
+    entire system.
     The model is not an attempt to obtain detail design conclusions for the
     Hyperloop-- rather, it is intended to perform sensitivity analyses
     and trade studies appropriate for evaluating the merit of the concept.
