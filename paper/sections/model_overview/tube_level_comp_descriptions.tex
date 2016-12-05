@@ -7,13 +7,13 @@
 	requirements and their resulting costs.
 
 \subsubsection{Vacuum}
-	The vacuum sub-system is a group that evaluates two different 
+	The vacuum sub-system is a group that evaluates two different
 	operations: pump down and steady-state usage. The pump down module
 	evaluates the number of vacuum pumps and the energy required to drop the pressure
 	from ambient to the operating condition. This
 	information is critical because the vacuum will need to be pumped down
 	once tube is constructed and in the event of an emergency pressurization.
-	The vacuum pump down model is given in the equation
+	The energy required to draw down the tube pressure is given in the equation
 	\begin{equation}
 		\label{eq:vacuum}
 		E_{tot} = pwr * \frac{vol_{tube}*speed_{pump}*log(P_{0}/P_{f})*2}{t_{pumpdown}}* x_{P} * 86400 \frac{sec}{day}
@@ -42,9 +42,9 @@
 	tube, the tube walls, and the outside environment. This is analysis is
 	based off previous work by Chin et al.\cite{Chin} and concludes manageable heat
 	loads for air-cabin cooling. A conservative equilibrium tube temperature,
-	with the tube in direct sunlight, on a hot day and during maximum pod
-	operation, is on the order of 110 degrees Fahrenheit. For an underground
-	or underwater trajectory, these estimates would drop even lower.
+	with the tube in direct sunlight, on a 90 degree Fahrenheit hot day and
+	during maximum pod operation, is on the order of 110 degrees Fahrenheit.
+	For an underground or underwater trajectory, these estimates would drop even lower.
 \subsubsection{Electromagnetic Propulsion}
 	A series of linear synchronous motors (LSMs) is proposed to accelerate the
 	pod from rest to top speed and maintain top speed with periodic boosts.
