@@ -1,9 +1,9 @@
 
 	 The design of the tube is driven by the configuration of the pod.
 	 Consequently, the system model is constructed such that the pod design is analyzed first.
-	 The pod group contains all subsystems onboard the pod.
-	 The pod takes in design variables and feeds them into the drag, cycle,
-	 drivetrain, geometry, mass, and levitation subsystems.
+	 The Pod group contains all subsystems onboard the passenger pod.
+	 The Pod module takes in design variables and feeds them into the Drag, Cycle,
+	 Drivetrain, Geometry, Mass, and Levitation subsystems.
 
 \subsubsection{Drag}
 	Computational Fluid Dynamics (CFD) was performed on the pod to determine
@@ -76,7 +76,7 @@
 	\end{figure}
 	\Cref{fig:cd_vs_mach} shows the CFD results for drag coefficient vs. Mach number.
 	These results fit the trend expected for transonic flow given by the
-	Prandtl-Glauert relationship. Drag Coefficient values will be interpolated
+	Prandtl-Glauert relationship. Drag coefficient values will be interpolated
 	from this data for each Mach number the system analyzes.
 \subsubsection{Cycle}
 	The on-board compression system provides a means of increasing the maximum
@@ -108,21 +108,21 @@
 	leading commercial battery cells.
 \subsubsection{Geometry and Mass}
 	In order to analyze the design of the tube structure, the final mass and
-	geometric configuration of the pod must be obtained. The geometry model
+	geometric configuration of the pod must be obtained. The Geometry model
 	assumes the pod to have a cylindrical fuselage with conical frustums at
 	the inlet and exit. The cross sectional area of the passenger section
 	given by the user is added to the cross sectional area of the compressor
-	exit duct, which is computed in the cycle analysis. The geometry module
+	exit duct, which is computed in the cycle analysis. The Geometry module
 	also estimates the thickness of the pod wall and the passenger compartment
 	based on simple pressurized cylinder relationships. It then adds these areas
 	together to compute the total cross sectional area. The length of each
-	component is also fed into the geometry model so it can compute the total
-	pod length and planform area. The mass module takes the mass of each
+	component is also fed into the Geometry model so it can compute the total
+	pod length and planform area. The Mass module takes the mass of each
 	component and adds them with the total passenger mass in order to determine
 	the mass of the pod, without magnets, for levitation. The Levitation component
 	takes in this mass, computes the mass of the magnets, then outputs the total mass of the pods.
 \subsubsection{Pod Mach}
-	The pod Mach module uses the pod cross-sectional area, Mach number, and
+	The Pod Mach module uses the pod cross-sectional area, Mach number, and
 	compressor inlet conditions to compute the tube area. As the pod travels,
 	flow that is not entrained by the compressor must accelerate around the pod.
 	Due to the pod’s transonic flight speed, it is possible that this bypass
@@ -164,15 +164,15 @@
 	These three simplifications and assumptions allow the overall scale factor
 	for the total force, $levsf$, to be set equal to unity.
 
-	The levitation group makes two critical calculations: the inductance of the
+	The Levitation group makes two critical calculations: the inductance of the
 	track required for the pod to levitate at a desired speed and the mass of
-	the permanent magnets located onboard. The breakpoint levitation module employs a
+	the permanent magnets located onboard. The Breakpoint Levitation module employs a
 	desired minimum levitation speed and uses it to calculate important track
 	parameters, including the ratio of inductance to resistance of the track.
 
 	Using the desired levitation speed, the total mass of magnets required and
 	drag force produced is then calculated. The lift and drag produced
-	by the magnets are given by the equations
+	by the magnets are given by \cref{eq:fy_lev} and \cref{eq:dmag}
 	\begin{equation}
 		\label{eq:fy_lev}
 		L_{mag} = F_{y}(\omega)=\frac{\beta _{0}^{2}w_{mag}\lambda}{4\pi Ld_{c}}\frac{1}{(1+R/\omega L)^{2}}A_ae^{-4\pi h/\lambda } \ ,
@@ -180,7 +180,7 @@
 	%Fyuf equations from http://cegt201.bradley.edu/projects/proj2004/maglevt1/Inductrack1.m
 	\begin{equation}
 		\label{eq:dmag}
-		D_{mag}=( m_{pod}g)R/\omega L \ .
+		D_{mag}=( m_{pod}g)R/\omega L
 	\end{equation}
 	In these equations, the drag and the magnet mass are both functions of the
 	magnet area and thickness. To minimize drag and mass, a Pareto optimization
