@@ -1,205 +1,225 @@
 \paragraph{Motivation}
 
-	Currently, flying is the fastest and cheapest way for commercial
-	passengers to travel long distances. However, for shorter routes of less
-	than 500 miles the efficiency of air transport erodes quickly. The
-	inherent inefficiency of air travel (e.g. arriving at the airport early,
-	and taxi time) can take up more time than the actual flight. Additionally,
-	many commercial aircraft designed to accommodate much longer missions of
-	over 3000 miles and hence are burn more fuel on shorter missions than a
-	more specialized design would. To Hyperloop is a new commercial
-	transportation concept designed to offer both a shorter travel time and
-	lower ticket cost for short-haul routes. In order to achieve a
-	simultaneous travel time and cost reductions, Hyperloop merges a
-	combination of aerospace and ground transportation technologies to achieve
-	fundamentally new capability.
+    Currently, flying is the fastest and cheapest way for commercial
+    passengers to travel long distances. However, for shorter routes the
+    efficiency of air transport erodes quickly.
+    The inherent upfront inefficiencies of air travel (e.g. arriving at the
+    airport early, taxi time, climbing, descent, holding patterns)
+    can take up more time than the actual flight.
+    Additionally, many commercial aircraft are designed to accommodate much longer
+    missions, and therefore, are not optimized for shorter trips.
+    The Hyperloop is a new commercial transportation concept designed to offer
+    both shorter travel times and lower ticket costs for short-haul routes.
+    In order to achieve these reductions, Hyperloop merges a
+    combination of aerospace and ground transportation technologies to achieve
+    fundamentally new capability. The result is a mode of travel that is
+    maximized both efficiency-wise and environmentally for short missions.
 
-	The most important feature of Hyperloop is that it has a sealed passenger
-	pod traveling through a partially evacuated tube on a low-friction
-	levitation system, at ground level. Staying at ground level means the
-	passenger pod will not expend energy climbing and descending thus saving
-	significant energy. The partial vacuum in the travel tube lowers the pod
-	drag and enables it to travel at speeds around Mach .8, which is how it
-	keeps travel times so short. Traveling in a sealed tube also enables
-	Hyperloop to operate independent of weather conditions, which is another
-	advantage over air transport. There are a number of proposed methods for
-	handling vehicle levitation and propulsion. The original Hyperloop Alpha
-	proposal suggested the use of linear air-bearings. Subsequent
-	efforts have focused more on magnetic levitation, or mag-lev, systems
-	similar to those developed for high-speed-rail (HSR) applications. Passive
-	mag-lev systems offer only levitation and rely an externally mounted
-	linear accelerators for propulsion. Active mag-lev systems can provide
-	both levitation and propulsion, though some designs still incorporate
-	external linear accelerators.
+    The concept alters the traditional aviation mission profile by bringing
+    the entire trajectory down to the ground level.
+    As a result, a Hyperloop vehicle will not expend extra energy climbing
+    and descending from a cruising altitude and can instead spend more time
+    operating at cruise conditions.
+    Drag is reduced by flying through a low-pressure tube
+    and conventional wings are replaced by alternative types of lifting bodies
+    (e.g. magnetic and ground effect technologies) that are more compact and
+    have lower induced drag than conventional aerodynamic surfaces.
+    Traveling in a tube also allows the Hyperloop to operate independent of
+    weather conditions and leverage newer, cleaner propulsion technologies.
 
-	Since Hyperloop travels in a partial vacuum it must still contend with
-	aerodynamic drag, though the magnitude of that drag is dramatically
-	reduced. The challenge is that as the passenger pod travels down the tube
-	at a high rate of speed it has a tendency to drag some of the air along
-	with it which causes a pressure imbalance to build up around the pod an
-	increase drag over time. It is possible to design the Hyperloop tube to
-	avoid this drag build up, but the required tube diameter to avoid it will
-	grow as a the pod travel speed increases. At speeds around Mach .8, the
-	design cruising speed, the required tube size would be on the order of 4
-	meters in diameter. Travel tubes of this size will contribute
-	substantially to the capital costs for constructing a Hyperloop system.
-	In order to reduce the tube size somewhat, Hyperloop uses an electrically
-	driven compressor in the front of the vehicle to preventing the build up
-	of pressure in front of the vehicle. Existing aerospace research for
-	electric aircraft propulsion can be leveraged to provide the necessary
-	technology for this compressor.
+    Since Hyperloop travels in a partial vacuum it must still contend with
+    aerodynamic drag, though the magnitude of that drag is dramatically
+    reduced. The challenge is the pressure accumulation as the passenger pod
+    travels through the tube at transonic speed, causing increasing drag over time.
+    To avoid the drag build up, the required tube diameter grows as the pod
+    travel speed increases. At a design speed around Mach 0.8, the required tube
+    size would be on the order of 4 meters in diameter. \cite{Chin}
+    Travel tubes of this size will contribute
+    substantially to the capital costs for constructing a Hyperloop system.
+    In order to minimize the tube size, Hyperloop can employ an electrically
+    driven compressor in the front of the vehicle to prevent the build up
+    of pressure in front of the vehicle. Existing aerospace research for
+    electric aircraft propulsion can be leveraged to provide the necessary
+    technology for this compressor along with recent technological developments
+    in high-density electrical electronics and power storage. Aerospace modeling
+    techniques also provide better tools for designing propulsions systems
+    requiring boundary layer ingestion and management.
 
-	The Hyperloop requires a fusion of technologies from the aerospace and HSR
-	applications, though its transonic operation, air-breathing flow-path, and
-	aerodynamic driven design give it qualities more similar to a plane rather
-	than a train. The concept deviates from existing high-speed rail by using
-	the partially evacuated travel tube to enable high speed operation. This
-	change, fundamentally alters the design considerations necessary for
-	Hyperloop and requires the consideration of many aerodynamic problems that
-	are common to aircraft, but not ever seen in train design. Another key
-	effect of the travel tube is that Hyperloop does not need to run on rails
-	mounted on the ground. The travel tube can be either above ground on
-	concrete columns, underground in subterranean tunnels, or in underwater
-	tunnels while maintaining a relatively straight trajectory. While it would
-	be possible for trains to also run in similar situations, Hyperloop
-	passenger pods will be significantly lighter than train cars and hence it
-	is much more feasible to have the tube mounted away from the ground. 
+    Staying at ground-level allows the Hyperloop's electromagnetic propulsion
+    system and much of the energy storage system to be located outside of the vehicle.
+    This substantially reduces the weight and mechanical complexity of the
+    individual pods compared to a traditional aircraft that must carry their
+    own propulsion system and 100\% of the required mission fuel.
+    There are a number of proposed methods for handling vehicle levitation and
+    propulsion. The original Hyperloop Alpha proposal suggested the use of
+    air-bearings for levitation.\cite{Musk}
+    Subsequent efforts have focused more on magnetic levitation (MagLev) that
+    can be more tightly coupled to the electromagnetic propulsion system for
+    even higher efficiencies.
+    The concept can be compatible with traditional MagLev systems developed for
+    more conventional high-speed-rail (HSR) applications, but the partially
+    evacuated tube provides an opportunity for even more efficient levitation.
+    The substantially lower drag enables pulse and glide mission profiles,
+    making passive MagLev more viable. This may result in a lighter, more affordable track
+    system, avoiding active levitation components spanning the entire tube length.
+    This unique combinations of potential levitation and propulsion technologies,
+    differentiate it from previous tube trains and MagLev systems.
+    In the same way an airplane is differentiated from an airship or a hydroplane
+    is differentiated from a boat, the Hyperloop is a plane that generates lift
+    dynamically by moving over a medium at high-speeds
+    rather than depending on buoyancy or static phenomena.
+    The Hyperloop requires a fusion of technologies from both aerospace and HSR
+    applications, though its transonic operation, air-breathing flow-path, and
+    aerodynamic driven design give it qualities more akin to a plane than a train.
+    The constrained, rarefied fluid flow around the vehicle
+    fundamentally alters the design considerations necessary for Hyperloop and
+    requires the consideration of many aerodynamic complexities that
+    are common to aircraft, but not ever seen in train design.
 
-	The design mission for Hyperloop is between 250 and 500 nautical miles,
-	which accounts for 57\% of commercial aircraft fleet operations in 2012.
-	NASA's Strategic Implementation Plan stresses that global operations must
-	keep pace with both an overall growing transportation market and
-	simultaneous growth in market share dedicated to air transport transport.
-	By 2050, 41\% of world traffic (and 71\% of North America) market share is
-	projected to be air transport transport.\cite{Schafer} This growth will be
-	limited the existing air-transportation infrastructure and will require
-	dramatic improvements to air-traffic control capabilities to support
-	increased numbers of flights in increasingly more congested air-space.
+    The entire system is held either above ground on concrete
+    columns, underground in subterranean tunnels, or in underwater tunnels
+    while maintaining a relatively straight trajectory.
+    By sacrificing an airplane's traditional mission flexibility,
+    Hyperloop can be optimized for passenger throughput, door-to-door travel time,
+    and energy efficiency for open and level travel corridors spanning highly
+    populous cities. The combination of these technologies allows the
+    vehicle to spends more time operating under optimal conditions and avoids
+    releasing carbon emissions into the upper atmosphere.
 
-	The Hyperloop offers a compelling opportunity to offset this congestion by
-	offering a faster and lower cost transportation option for a large portion
-	of short-haul aviation routes. While Hyperloop does require new
-	infrastructure to be built, there are numerous high-population adjacent
-	cities exist that have sufficient commercial travel volume to warrant the
-	construction costs. Aeronautics market research shows that demand for this
-	travel segment is the most sensitive to technology improvements and ticket
-	price.\cite{Baik} Hyperloop offers a significantly lower travel times and
-	reduced cost, highlighting the high potential for its impact in the short-
-	haul market. It has the potential to offer a compelling price point that
-	would even be competitive considering automobile vehicle miles are
-	projected to increase by 7 billion simply due to airline fare increases by
-	10\% in 2015.
+    The design mission is sized for distances between 250-500 nautical miles,
+    which accounts for 57\% of commercial aircraft fleet operations in 2012.
+    NASA's Strategic Implementation Plan stresses that global operations must
+    keep pace with both an overall growing transportation market and
+    simultaneous growth in market share dedicated to air transport.
+    By 2050, 41\% of world traffic (and 71\% of North America) market share is
+    projected to be high-speed transport. \cite{Schafer} This growth will be
+    limited by the existing air-transportation infrastructure and will require
+    dramatic improvements to air-traffic control capabilities to support
+    increased numbers of flights in increasingly more congested air-space.
 
-	Beyond the economic benefits of Hyperloop, it also offers a significant
-	reduction in carbon emissions. Planes produce large quantities of carbon
-	emissions, exhausted into the upper atmosphere resulting in
-	environmentally damaging travel. The fully-electric Hyperloop is designed
-	for highly trafficked corridors, where its high upfront cost can be
-	offset by cheaper, faster, and cleaner commercial travel on large scales
-	and the long travel tubes could be covered with solar panels to generate
-	the needed power which lowers the net carbon footprint. The Hyperloop is
-	intended to alleviate billions of commuter car passenger miles, as well as
-	free up airspace, reducing congestion and travel times for flights that
-	are well suited for the national airspace system.\\
+    The Hyperloop offers a compelling opportunity to offset this congestion by
+    offering a faster and lower cost transportation option for a large portion
+    of short-haul aviation routes. Although it requires substantial
+    new infrastructure to be built, numerous high-population adjacent
+    cities exist that have sufficient commercial travel volume to warrant the
+    construction costs. These city pairs are often too far to conveniently
+    travel by car and too short to efficiently travel by plane.
+    Aeronautics market research shows that demand for this travel segment is
+    the most sensitive to technology improvements and ticket price.\cite{Baik}
+    The departure from typical aircraft constraints is intended to provide a
+    compelling price point considering automobile vehicle miles are
+    projected to increase by 7 billion simply due to airline
+    fare increases by 10\% in 2015.
+
+    Beyond the economic benefits of Hyperloop, it offers a significant
+    reduction in carbon emissions. Planes produce large quantities of carbon emissions,
+    exhausted into the upper atmosphere resulting in environmentally damaging travel.
+    The fully-electric Hyperloop is designed for highly trafficked corridors,
+    where it's high upfront cost can be offset by cheaper, faster, and cleaner
+    commercial travel on large scales.
+    The Hyperloop is intended to alleviate billions of commuter car passenger miles,
+    as well as free up airspace, reducing congestion and travel times for
+    flights that are well suited for the national airspace system.\\
+
 
 \paragraph{History}
 
-	Aerospace engineers have promoted tube transport for over a century.
-	As early as 1972, a study conducted by the RAND corporation concluded that high-speed 
-	`tubecraft' was technologically feasible, with political pressure being the greatest
-	obstacle to creation.\cite{RAND} Many concepts later developed by
-	the government, industry, and academia incorporated technologies from which
-	Hyperloop can draw technical precedents.
-	These include, but are not limited, to the Magneplane, Maglifter, and numerous
-	other magnetic propulsion concepts. In 2013, Elon Musk, CEO of Space Exploration
-	Technologies (SpaceX) and Tesla Motors revived the concept with the publication
-	of his open-source paper, Hyperloop Alpha.\cite{Musk}
-	Unlike previous waves of interest, this popularized design has spurred widespread international
-	development efforts amongst leading universities, private companies with over
-	\$100M in venture capitalist backing, and smaller research efforts at NASA and the
-	United States Department of Transportation. \cite{Chin}
+    Aerospace engineers have promoted tube transport for over a century.
+    As early as 1972, a study conducted by the RAND corporation concluded that
+    high-speed `tubecraft' was technologically feasible, with political pressure being the greatest
+    obstacle to creation.\cite{RAND} Many concepts later developed by
+    the government, industry, and academia incorporated technologies from which
+    Hyperloop can draw technical precedents.
+    These include, but are not limited to, the Magneplane, Maglifter, and numerous
+    other magnetic propulsion concepts. In 2013, Elon Musk, CEO of Space Exploration
+    Technologies (SpaceX) and Tesla Motors revived the concept with the publication
+    of his open-source paper, Hyperloop Alpha.\cite{Musk}
+    Unlike previous waves of interest, this popularized design has spurred widespread international
+    development efforts amongst leading universities, private companies with over
+    \$100M in venture capitalist backing, and smaller research efforts at NASA and the
+    United States Department of Transportation. \cite{Chin}
 
 \paragraph{Focused Research Questions}
 
-	The Hyperloop has largely evolved as an achievable concept over the past several years.
-	In addition to Musk's paper, several key research questions were identified in a study conducted
-	by the Department of Transportation (DOT) to quantify the potential value of the
-	Hyperloop vehicle. \cite{Volpe} This paper works towards answering a few of
-	those key drivers from both an engineering and business perspective.
+    The Hyperloop has largely evolved as an achievable concept over the past several years.
+    In addition to Musk's paper, several key research questions were identified in a study conducted
+    by the Department of Transportation (DOT) to quantify the potential value of the
+    Hyperloop vehicle. \cite{Volpe} This paper works towards answering a few of
+    those key drivers from both an engineering and business perspective.
 
-	As highlighted by the DOT, the Hyperloop must be sufficiently lightweight
-	that fixed capital costs of construction, when compared to conventional
-	elevated HSR or Maglev systems, would be greatly decreased.
-	Although true construction costs cannot be estimated through an engineering
-	model alone, this paper seeks to minimize system size, energy, and material
-	quantity as a proxy to cost. This model provides a sensitivity
-	analysis of structural requirements as a function of pod mass to partially
-	answer this research question. Rather than focus on weight of the system explicitly,
-	many of the trends discussed are explored in relation to tube internal
-	cross sectional area. Tube weight relates directly to this area term, and
-	area is the common design variable linking many of the top-level
-	analyses. As depicted in previous work,
-	\cite{Chin} when abstracting the concept to three top level
-	sizing variables (vehicle frontal area, speed, and tube cross-sectional area) only two are needed
-	to find the third.
+    As highlighted by the DOT, the Hyperloop must be sufficiently lightweight
+    that fixed capital costs of construction, when compared to conventional
+    elevated HSR or Maglev systems, would be greatly decreased.
+    Although true construction costs cannot be estimated through an engineering
+    model alone, this paper seeks to minimize system size, energy, and material
+    quantity as a proxy to cost. This model provides a sensitivity
+    analysis of structural requirements as a function of pod mass to partially
+    answer this research question. Rather than focus on weight of the system explicitly,
+    many of the trends discussed are explored in relation to tube internal
+    cross sectional area. Tube weight relates directly to this area term, and
+    area is the common design variable linking many of the top-level
+    analyses. As depicted in previous work,
+    \cite{Chin} when abstracting the concept to three top level system level
+    sizing variables (vehicle frontal area, speed, and tube cross-sectional area)
+    only two are needed to find the third.
 
-	Moreover, the potential ability to operate underwater is a key
-	distinguishing feature of the Hyperloop versus conventional HSR and Maglev
-	trains. It is possible for the buoyant force of the submerged tube to
-	counter the systems weight, meaning weight is not a principle factor in
-	this context. Given these considerations, the key research question can be
-	restated as: ``Is the Hyperloop sufficiently compact so that there would
-	be construction savings compared to conventional HSR or Maglev systems?''
-	Although you could put a conventional train in an underwater tube, these
-	systems would not be capable of traveling nearly as fast as the Hyperloop
-	in a volume constrained environment. Therefore subsequent results are
-	presented in relation to the tube area.
+    Moreover, the potential ability to operate underwater is a key distinguishing feature
+    of the Hyperloop versus conventional HSR and Maglev trains. It is possible for the buoyant force
+    of the submerged tube to counter the systems weight, meaning weight is not
+    a principle factor in this context.
+    Given these considerations, the key research
+    question can be restated as: ``Is the Hyperloop sufficiently compact that
+    there would be construction savings compared to conventional
+    HSR or Maglev systems?'' Although you could put a conventional train in an
+    underwater tube, these systems would not be capable of traveling nearly as
+    fast as the Hyperloop in a volume constrained environment.
+    Therefore subsequent results are presented in relation to the tube area.
 
-	Another research query, highlighted by the DOT questions, the ability to
-	expand the throughput of the system beyond the 28 passengers per pod
-	originally proposed. This scaling capacity is addressed
-	via analysis of pod frequency combined with design sensitivity to pod length.
-	The relationship between pod mass and number of passengers per pod is also
-	considered in subsequent structural analyses.
+    Another research query, highlighted by the DOT, questions the ability to
+    expand the throughput of the system beyond the 28 passengers per pod
+    originally proposed. This scaling capacity is addressed
+    via analysis of pod frequency combined with design sensitivity to pod length.
+    The relationship between pod mass and number of passengers per pod is also
+    considered in subsequent structural analyses.
 
-	The DOT also highlights the need to determine maximum payload capacities
-	of the pods. Adding minimum required weights as model constraints is beyond the scope of
-	this paper, but could be addressed using the engineering methods outlined.
-	Answering this question and better defining component weight breakdowns
-	is recommended as a next step for future work.
-	This paper also does not address land acquisition costs or throughput
-	constraints in today's existing transportation infrastructures.
-	However, the cost modules in this model could consider these constraints if
-	reliable data becomes available in the future.
-	Capacity constrained water ports and airports are critical drivers referenced
-	both in the DOT study and the NASA Aeronautics Strategic
-	Implementation Plan. The prospect of high-speed underwater transportation
-	completely bypasses certain land acquisition challenges and provides a novel solution
-	to eliminating bottlenecks in multimodal travel integration. The analyses performed in this paper
-	are intended to optimize performance based on throughput and cruise conditions.
-	Local transit presents different challenges and objectives than those seen in the longer distances
-	considered in this study. This system model, however, could be easily adapted to perform
-	analysis and optimization of local transit operation in the future.\\
+    The DOT also highlights the need to determine maximum payload capacities
+    of the pods. Adding minimum required weights as model constraints is beyond the scope of
+    this paper, but could be addressed using the engineering methods outlined.
+    Answering this question and better defining component weight breakdowns
+    is recommended as a next step for future work.
+    This paper also does not address land acquisition costs or throughput
+    constraints in today's existing transportation infrastructures.
+    However, the cost modules in this model could consider these constraints if
+    reliable data becomes available in the future.
+    Capacity constrained water ports and airports are critical drivers referenced
+    both in the DOT study and the NASA Aeronautics Strategic
+    Implementation Plan. The prospect of high-speed underwater transportation
+    completely bypasses certain land acquisition challenges and provides a novel solution
+    to eliminating bottlenecks in multimodal travel integration. The analyses performed in this paper
+    are intended to optimize performance based on throughput and cruise conditions.
+    Local transit presents different challenges and objectives than those seen in the longer distances
+    considered in this study. This system model, however, could be easily adapted to perform
+    analysis and optimization of local transit operation in the future.\\
 
 \paragraph{Paper Scope}
-	This paper introduces the first open-source system model to examine the
-	complete energy consumption and converged vehicle model for the Hyperloop concept.
-	The full-system engineering model is built in Python to analyze the couplings
-	between various subsystems in the model, namely between the tube, passenger pod, and
-	levitation systems. Using this model, trade studies were conducted to analyze the technological
-	and economic feasibilities of the system.
-	At the end, findings are presented regarding design aspects that simultaneously
-	met all system constraints across each sub-discipline.
+    This paper introduces the first open-source system model to examine the
+    complete energy consumption and converged vehicle model for the Hyperloop concept.
+    The full-system engineering model is built in Python to analyze the couplings
+    between various subsystems in the model, namely between the tube, passenger pod, and
+    levitation systems. Using this model, trade studies were conducted to analyze the technological
+    and economic feasibilities of the system.
+    At the end, findings are presented regarding design aspects that simultaneously
+    met all system constraints across each sub-discipline.
 
-	The paper expands on previous works \cite{Chin}
-	and is built using OpenMDAO, an open-source multidisciplinary analysis and
-	optimization framework developed at the NASA Glenn Research Center.
-	This work focuses on balancing the thermodynamic, aerodynamic, structural,
-	weight, and power considerations of the system, with additional calculations for cost
-	and mission design incorporated in the final system. Because each sub-system
-	is designed independently of the whole, this model operates in a modular fashion, allowing
-	for each subsystem the flexibility of being replaced with higher fidelity modules in the future.
-	The model is not an attempt to obtain detail design conclusions for the Hyperloop
-	-- rather, it is intended to perform sensitivity analyses
-	and trade studies appropriate for evaluating the merit of the concept.
+    The paper expands on previous works \cite{Chin}
+    and is built using OpenMDAO, an open-source multidisciplinary analysis and
+    optimization framework developed at the NASA Glenn Research Center.
+    This work focuses on balancing the thermodynamic, aerodynamic, structural,
+    weight, and power considerations of the system, with additional calculations for cost
+    and mission design incorporated in the final system. Because each subsystem
+    is designed independently of the whole, this model operates in a modular fashion, allowing
+    for each subsystem the flexibility of being replaced with higher fidelity modules in the future.
+    The model is not an attempt to obtain detail design conclusions for the Hyperloop
+    -- rather, it is intended to perform sensitivity analyses
+    and trade studies appropriate for evaluating the merit of the concept.
 
