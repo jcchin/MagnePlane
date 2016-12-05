@@ -13,6 +13,7 @@ when the whole system is analyzed; however, these values are useful for
 illustrating physical trends and system trades. The ScipyOptimizer is used to
 minimize the scalar cost function using the Sequential Least Squares Programming
 (SLSQP) algorithm for gradient-based optimization \cite{GrayBenchmarking2013,Scipy}.
+
 First, travel of the pod over land is analyzed. In this case, the pod travels
 within a tube that is suspended on pylons of a given height above the ground.
 To perform this analysis, multiple simplifying assumptions were made. The
@@ -31,8 +32,7 @@ which the tube is thick, but is supported by pylons that are spaced very far apa
 and another in which the tube is thin, but must be supported by many closely spaced pylons.
 A cost function is developed by adding the cost of the tube material and the
 cost of the supporting pylons per unit length, with the thickness of the tube
-and the distance between pylons as design variables as shown in the equation below,
-
+and the distance between pylons as design variables as shown in \cref{eq:tube_pylon_cost} below,
 \begin{equation}
 	\label{eq:tube_pylon_cost}
 	\frac{\text{Cost}}{\text{Length}} = \frac{Tube Cost}{kg}*m'_\text{pod} + \frac{\text{Pylon Cost}}{kg}\frac{m_\text{pylon}}{\Delta x_\text{pylon}}
@@ -41,7 +41,7 @@ where $m’$ is the mass per unit length of the tube. This model, however, is
 incomplete because the pylons can be any arbitrary size. To fix this issue,
 the pylons are sized according to the buckling condition for a fixed column.
 Imposing this condition allows for the spacing of the pylons to be computed in
-terms of pylon radius and tube thickness using the equation
+terms of pylon radius and tube thickness using \cref{eq:pylon_spacing}
 
 \begin{equation}
 	\label{eq:pylon_spacing}
@@ -52,7 +52,7 @@ Using this relationship, the cost function is defined with the tube thickness
 and pylon radius as design variables. The final step is to appropriately constrain the optimization.
 The minimum radius of the pylon is computed based on the yield strength of the pylon material.
 Likewise, the minimum thickness of the tube is calculated using the buckling
-condition for vacuum cylinders given by the equation \cite{Buckling}
+condition for vacuum cylinders given by \cref{eq:pres_buckling} \cite{Buckling}
 
 \begin{equation}
 	\label{eq:pres_buckling}
@@ -127,7 +127,7 @@ values calculated in this analysis are significantly below the values necessary
 for self-suspension given in \cref{fig:tube_thick_vs_tube_area_underwater}. Thus, for
 underwater phases, it can be concluded that the Hyperloop structure would
 likely be subjected to a buoyant force greater than the weight of the system
-and would need to be designed in such a way that the pod is anchored to the sea
+and would need to be designed in such a way that the tube is anchored to the sea
 floor and stabilized in the event of disturbances.
 The structural trade studies shown here suggest that there could be significant
 benefits to traveling underwater as opposed to over land. The depth could be
