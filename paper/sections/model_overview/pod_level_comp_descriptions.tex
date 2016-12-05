@@ -6,7 +6,8 @@
 	 drivetrain, geometry, mass, and levitation subsystems.
 
 \subsubsection{Drag}
-	CFD was performed on the pod to determine how the pod drag coefficient varies with Mach number.
+	Computational Fluid Dynamics (CFD) was performed on the pod to determine
+	how the pod drag coefficient varies with Mach number.
 	Pod aerodynamics were computed with the Fully Unstructured Navier-Stokes 3D
 	(FUN3D) flow solver \cite{Biedron}. FUN3D is a node-based computational fluid dynamics
 	code for mixed element types that uses a second-order accurate point-implicit
@@ -89,7 +90,10 @@
 	one-dimensional cycle, representing components as thermodynamic processes
 	that are subsequently chained together. Each component is responsible for
 	calculating gas properties across its boundaries and appropriately enforcing
-	conservation equations across the entire system.
+	conservation equations across the entire system. This model builds off the
+	NASA Glenn developed PyCycle framework, which is a thermodynamic modeling
+	framework developed in Python with the capability for optimization
+	employing analytic gradients. \cite{PyCycle}
 \subsubsection{Drivetrain}
 	The Drivetrain module models an electric motor, inverter, and battery system.
 	Building off of previous work done at Georgia Tech and NASA, the module
