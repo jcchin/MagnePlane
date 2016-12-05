@@ -6,58 +6,63 @@
 	Mission and Cost analyses to evaluate overall system performance
 	requirements and their resulting costs.
 
-\paragraph{Vacuum}
-	The Vacuum subsystem is a group that evaluates two phases of the vacuum
-	use: pump down and steady-state usage. The pump down vacuum module
-	evaluates the number of vacuum pumps and the energy required to pump the
-	tube down from ambient pressure to the desired tube pressure.
-	This information is critical because the vacuum will need to be pumped down
-	once tube is constructed and in the event of an emergency pressurization.
-	The vacuum pump down model is given in the equation
+
+\subsubsection{Vacuum}
+	The vacuum subsystem is a group that evaluates two different
+	operations: pump down and steady-state usage. The pump down module
+	evaluates the number of vacuum pumps and the energy required to drop the pressure
+	from ambient to the operating condition. This
+	information is critical because the vacuum will need to be pumped down
+	once the tube is constructed and in the event of an emergency pressurization.
+	The energy required to draw down the tube pressure is given in the equation
+
 	\begin{equation}
 		\label{eq:vacuum}
 		E_{tot} = pwr * \frac{vol_{tube}*speed_{pump}*log(P_{0}/P_{f})*2}{t_{pumpdown}}* x_{P} * 86400 \frac{sec}{day}
 	\end{equation}
-	The pump down energy and weight of pumps will be critical for cost and structural analyses.
-	The Vacuum group also considers the energy consumed during steady state operation.
-	In theory, if the tube is perfectly air tight, there would be no need for
-	the vacuum to run at all once the tube is pumped down. However, air is likely to be introduced
-	to the system throughout normal operation, particularly during boarding. Consequently,
-	vacuum pumps will need to used throughout operation to account for this.
-	The effect of leakage rate on energy consumption is critical and will be
-	discussed in more depth later. For the purpose of this analysis, the vacuum
-	is modeled as a compressor using the same type of thermodynamic compressor
-	model employed in the pod cycle analysis,
-	with the same internal implicit solver.
-	The pressure ratio of the vacuum will be equal to the ratio of ambient
-	pressure to desired tube pressure and the mass flow through the vacuum at
-	steady state will be equal to the leakage rate.
-\paragraph{Thermal Management}
-	A basic heat balance is performed to determine the approximate tube temperature.
-	The quasi-steady analysis ignores heat transfer time lags and diurnal cycles.
-	Heat is assumed to transfer and equilibrate rapidly between the pod compressor system,
-	the rarified atmosphere inside the tube, the tube walls, and the outside environment.
-	This is analysis is based off previous work by Chin\cite{Chin} and concludes
-	manageable heat loads for air-cabin cooling. A conservative equilibrium
-	tube temperature at full sun on a hot day and maximum pod operation is on
-	the order of 110 degrees Fahrenheit.
+	The energy usage for this operation will be a critical element of
+	operating cost. The pump down operation is only the first step in getting
+	the travel tube down to operational pressure. Once that is done, we enter
+	a steady-state phase. In theory, if the tube is perfectly air tight, there
+	would be no need for the vacuum to run at all once the tube is pumped
+	down. However, air is likely to leak into the system throughout normal
+	operation, particularly during loading of pods into the tube.
+	Consequently, vacuum pumps will need to be used throughout operation to
+	maintain operating pressure. The effect of leakage rate on energy
+	consumption is critical and will be discussed in more depth later. For the
+	purpose of this analysis, the steady-state vacuum pump is modeled as a
+	compressor using the same type of thermodynamic model employed in the pod
+	cycle analysis. The pressure ratio
+	of the vacuum will be equal to the ratio of ambient pressure to desired
+	tube pressure and the mass flow through the vacuum at steady state will be
+	equal to the leakage rate.
+\subsubsection{Thermal Management}
+	A basic heat balance is performed to determine the approximate tube
+	temperature. The quasi-steady analysis ignores heat transfer time lags and
+	diurnal cycles. Heat is assumed to transfer and equilibrate rapidly
+	between the pod compressor system, the rarified atmosphere inside the
+	tube, the tube walls, and the outside environment. This analysis is
+	based off previous work by Chin et al.\cite{Chin} and concludes manageable heat
+	loads for air-cabin cooling. A conservative equilibrium tube temperature,
+	with the tube in direct sunlight, on a 90 degree Fahrenheit hot day and
+	during maximum pod operation, is on the order of 110 degrees Fahrenheit.
 	For an underground or underwater trajectory, these estimates would drop even lower.
-\paragraph{Electromagnetic Propulsion}
+\subsubsection{Electromagnetic Propulsion}
 	A series of linear synchronous motors (LSMs) is proposed to accelerate the
 	pod from rest to top speed and maintain top speed with periodic boosts.
 	While the specifications of the LSM system design are beyond the scope of
 	this analysis, the amount of energy and power required of an LSM can be
-	determined using the simple mechanics relationship
+	determined using the simple mechanics relationship,
 	\begin{equation}
 		\label{eq:sum_of_forces}
 		F_{net} = F_{LSM} + F_{thrust} - \frac{1}{2}C_{D}\rho V^{2}S - D_{mag}
 	\end{equation}
-	In which $F_{LSM}$ is the force required of the LSM system. This equation
+	in which $F_{LSM}$ is the force required of the LSM system. This equation
 	is integrated to determine the power and energy requirements for both
 	startup and coasting booster sections. For the purpose of this analysis,
 	the efficiency of the LSM is assumed to be .8 based on rough approximations \cite{LSM}.
-\paragraph{Structure}
-	The Structure group determines the structural design of the tube
+\subsubsection{Structure}
+	The Structural group determines the structural design of the tube
 	for two phases of travel: travel over land and under water. When traveling
 	overland, the tube is assumed to be supported by pylons above the terrain
 	at a given height. For travel under water, the tube is notionally

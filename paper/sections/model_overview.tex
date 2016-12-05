@@ -27,6 +27,24 @@ which describes how to interpret the following diagrams for the Pod, Tube, and M
 \centering
 \begin{subfigure}[t]{.5\textwidth}
   \centering
+  \includegraphics{../images/pod.png}
+  \caption{Hierarchical tree}
+  \label{fig:tree:pod}
+\end{subfigure}%
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
+  \includegraphics{../images/xdsm/pod.pdf}
+  \caption{XDSM}
+  \label{fig:xdsm:pod}
+\end{subfigure}
+\caption{Pod Assembly Diagram}
+\label{fig:pod}
+\end{figure}
+
+\begin{figure}
+\centering
+\begin{subfigure}[t]{.5\textwidth}
+  \centering
   \includegraphics{../images/tube.png}
   \caption{Hierarchical tree}
   \label{fig:tree:tube}
@@ -41,30 +59,13 @@ which describes how to interpret the following diagrams for the Pod, Tube, and M
 \label{fig:tube}
 \end{figure}
 
-\begin{figure}
-\centering
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics{../images/pod.png}
-  \caption{Hierarchical tree}
-  \label{fig:tree:pod}
-\end{subfigure}%
-\begin{subfigure}[t]{.5\textwidth}
-  \centering
-  \includegraphics{../images/xdsm/pod.pdf}
-  \caption{XDSM}
-  \label{fig:xdsm:pod}
-\end{subfigure}
-\caption{Tube Assembly Diagram}
-\label{fig:pod}
-\end{figure}
 
 Additional levels of subsystems were broken down within the Pod and Tube assemblies.
 Solver loops exist at multiple levels within the model, ensuring all design
 constraints are satisfied across every subcomponent.
 The XDSM diagrams indicates design variables that are passed from the output of
 upstream components to be used as inputs for downstream components.
-Further details can be found in following sections and within source code
+Further details can be found in following sections and in the source code
 documentation, which is referenced in the Appendix.
 
 \subsection{Top Level Component Descriptions}
