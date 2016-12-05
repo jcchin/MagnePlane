@@ -7,9 +7,10 @@
 	beyond the scope of the model to account for the effect that varying
 	topology will have on the pod’s trajectory. For simplicity, the model
 	assumes that the pod travels in a straight, flat line between the departure
-	and arrival locations, in this case between LAX and SFO airports.
+	and arrival locations, in this case between Los Angeles (LAX) and San
+	Francisco (SFO) International airports.
 	The mission velocity profile contains three phases: acceleration, coasting
-	with periodic boosting sections, and deceleration.
+	with periodic boosting, and deceleration.
 	\begin{figure}
 		\centering
 		\includegraphics{../images/mission_profile.png}
@@ -41,13 +42,13 @@
 	by the magnetic levitation system. The acceleration equation is integrated
 	to find the time and distance it takes for the pod to decelerate to the
 	minimum allowable speed using a predictor-corrector integration method.
-	
+
   The coast distance is used to determine the number of propulsive sections
 	needed along the track to complete the mission. The energy consumed in a
 	single propulsive section is then multiplied by the number of propulsive
 	sections along the track to determine the electromagnetic propulsive energy
 	consumed per flight during the coasting phase of the mission. The final
-	phase of the mission is a constant linear deceleration of .5g from top
+	phase of the mission is a constant linear deceleration of 0.5g from top
 	speed to rest. Many systems driven by electromagnetic propulsion conserve
 	energy through regenerative braking \cite{inductrack}. For the sake of
 	conservatism, it is assumed that there is no regenerative braking in this
@@ -62,7 +63,7 @@
 	magnitude of uncertainty. However, the cost of materials and energy
 	consumption can be estimated with significantly greater certainty.
 	Thus, in this analysis, the cost estimations of materials and energy are of greater interest.
-	The average price of electricity used in the model is .13 USD/kWh, based on
+	The average price of electricity used in the model is 0.13 USD/kWh, based on
 	data from the Electricity Information Administration\cite{EIA}.
 	Using a different value will not significantly change the trends in the trade studies this model produces.
 	A rough estimation of the ticket cost is included, which projects ticket cost based on the equation
