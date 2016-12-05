@@ -41,19 +41,8 @@
 	by the magnetic levitation system. The acceleration equation is integrated
 	to find the time and distance it takes for the pod to decelerate to the
 	minimum allowable speed using a predictor-corrector integration method.
-	\begin{equation}
-		\label{eq:predictor_corrector}
-		v_{i+1}^{0} = v_{i}+f(v)\Delta t
-	\end{equation}
-	\begin{equation}
-		\label{eq:predictor_corrector_2}
-		v_{i+1} = v_{i}+\frac{f(v_{i+1}^{0})+f(v_{i})}{2}\Delta t
-	\end{equation}
-	\begin{equation}
-		\label{eq:predictor_corrector_3}
-		x_{i+1} = x_{i}+\frac{v_{i+1}+v_{i}}{2}\Delta t
-	\end{equation}
-	The coast distance is used to determine the number of propulsive sections
+	
+  The coast distance is used to determine the number of propulsive sections
 	needed along the track to complete the mission. The energy consumed in a
 	single propulsive section is then multiplied by the number of propulsive
 	sections along the track to determine the electromagnetic propulsive energy
@@ -79,7 +68,7 @@
 	A rough estimation of the ticket cost is included, which projects ticket cost based on the equation
 	\begin{equation}
 		\label{eq:ticket_cost}
-		Cost_{ticket} = \frac{ (\frac{\partial Cost}{\partial D}D+\frac{\partial Cost }{\partial pod}n_{pods}+Cost_{capital} ( 1+ib ) + \frac{\partial Cost}{\partial Energy} (Energy_{tube} + Energy_{pod}  ))  )}{n_{passengers}*\frac{pods}{s}*3600\frac{s}{hr}*24\frac{hrs}{day}*365\frac{days}{year}*bm}
+    \text{Cost}_\text{ticket} = \frac{ (\frac{\partial \text{Cost}}{\partial D}D+\frac{\partial \text{Cost} }{\partial \text{pod}}n_{\text{pods}}+\text{Cost}_\text{capital} ( 1+ib ) + \frac{\partial \text{Cost}}{\partial \mathcal{E}} (\mathcal{E}_\text{tube} + \mathcal{E}_\text{pod}  ))  )}{n_\text{passengers}*\frac{\text{pods}}{s}*3600\frac{s}{\text{\text{year}}}*24\frac{\text{\text{year}}}{\text{day}}*365\frac{\text{day}}{\text{year}}*bm}
 	\end{equation}
 	Where $ib$ is the bond interest rate, $bm$ is the number of years for bond
 	maturity, and $D$ is the total length of the track. Previous research
