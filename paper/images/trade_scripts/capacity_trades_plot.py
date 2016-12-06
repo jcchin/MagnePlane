@@ -17,7 +17,7 @@ plt.setp(ax.get_xticklabels(), fontsize=8)
 plt.setp(ax.get_yticklabels(), fontsize=8)
 plt.plot(n_passengers, A_tube, linewidth = 2.0)
 plt.xlabel('Passengers per Pod', fontsize = 10, fontweight = 'bold')
-plt.ylabel('Tube Area (m^2)', fontsize = 10, fontweight = 'bold')
+plt.ylabel('Tube Area ($m^2$)', fontsize = 10, fontweight = 'bold')
 plt.savefig('../graphs/capacity_trades/passengers_vs_area.png', format = 'png', dpi = 300)
 plt.show()
 
