@@ -6,6 +6,11 @@ A_tube = np.loadtxt('../data_files/capacity_trades/A_tube.txt', delimiter = '\t'
 ticket_cost = np.loadtxt('../data_files/capacity_trades/ticket_cost.txt', delimiter = '\t')
 total_energy_cost = np.loadtxt('../data_files/capacity_trades/total_energy_cost.txt', delimiter = '\t')
 
+for i in range(10,110,10):
+    n = np.interp(i,n_passengers,total_energy_cost/(1e6))
+    c = np.interp(i,n_passengers,ticket_cost)
+    print(i,n,c)
+
 fig = plt.figure(figsize = (3.25,3.5), tight_layout = True)
 ax = plt.axes()
 plt.setp(ax.get_xticklabels(), fontsize=8)
