@@ -121,12 +121,14 @@ if __name__ == '__main__':
 	steady_vac = np.zeros((1,len(p_tunnel)))
 	total_energy = np.zeros((1, len(p_tunnel)))
 	thrust = np.zeros((1, len(p_tunnel)))
+	prop_energy = np.zeros((1, len(p_tunnel)))
+	tube_energy = np.zeros((1, len(p_tunnel)))
 
 	for i in range(len(p_tunnel)):
 
 		prob['des_vars.tube_pressure'] = p_tunnel[i]
-		print(prob['des_vars.W'])
-		quit()
+		#print(prob['des_vars.W'])
+
 		prob['des_vars.W'] = 3
 
 		prob.run()
@@ -138,10 +140,13 @@ if __name__ == '__main__':
 		power[0,i] = -1.0*prob['TubeAndPod.pod.cycle.comp.power']
 		steady_vac[0,i] = -1.0*prob['TubeAndPod.tube.comp.power']
 		total_energy[0,i] = prob['TubeAndPod.cost.total_energy_cost']
+		prop_energy[0,i] = prob['TubeAndPod.cost.prop_energy_cost']
+		tube_energy[0,i] = prob['TubeAndPod.cost.tube_energy_cost']
 
 		print(i)
 
-
+	np.savetxt('../../../paper/images/data_files/pressure_zoom/prop_energy.txt', prop_energy, fmt = '%f', delimiter = '\t', newline = '\r\n')
+	np.savetxt('../../../paper/images/data_files/pressure_zoom/tube_energy.txt', tube_energy, fmt = '%f', delimiter = '\t', newline = '\r\n')
 	np.savetxt('../../../paper/images/data_files/pressure_zoom/p_tunnel.txt', p_tunnel, fmt = '%f', delimiter = '\t', newline = '\r\n')
 	np.savetxt('../../../paper/images/data_files/pressure_zoom/Re.txt', Re, fmt = '%f', delimiter = '\t', newline = '\r\n')
 	np.savetxt('../../../paper/images/data_files/pressure_zoom/A_tube.txt', A_tube, fmt = '%f', delimiter = '\t', newline = '\r\n')

@@ -1,0 +1,85 @@
+\begin{thenomenclature} 
+
+ \nomgroup{A}
+
+  \item [{$\alpha$}]\begingroup Weighting factor\nomeqref {14}
+		\nompageref{22}
+  \item [{$\beta$}]\begingroup Magnetic Field Strength ($T$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$\delta^{*}$}]\begingroup Boundary layer thickness ($m$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$\frac{u}{U}$}]\begingroup Boundary Velocity Profile\nomeqref {14}
+		\nompageref{22}
+  \item [{$\gamma$}]\begingroup Heat Capacity Ratio\nomeqref {14}
+		\nompageref{22}
+  \item [{$\lambda$}]\begingroup Wavelength ($m$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$\mathcal{E}$}]\begingroup Energy ($J$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$\nu$}]\begingroup Kinematic Viscosity ($\frac{m^{2}}{s}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$\nu_{Poi}$}]\begingroup Poisson Ratio\nomeqref {14}
+		\nompageref{22}
+  \item [{$\omega$}]\begingroup Frequency ($Hz$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$\Pi$}]\begingroup Pressure Ratio\nomeqref {14}
+		\nompageref{22}
+  \item [{$\rho$}]\begingroup Density ($\frac{kg}{m^3}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$\varepsilon$}]\begingroup Expansion ratio\nomeqref {14}
+		\nompageref{22}
+  \item [{$A$}]\begingroup Area ($m^{2}$)\nomeqref {14}\nompageref{22}
+  \item [{$A^{*}$}]\begingroup Throat Area ($m^{2}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$bm$}]\begingroup Bond maturity (years)\nomeqref {14}
+		\nompageref{22}
+  \item [{$C$}]\begingroup Cost (USD)\nomeqref {14}\nompageref{22}
+  \item [{$C_{D}$}]\begingroup Coefficient of drag\nomeqref {14}
+		\nompageref{22}
+  \item [{$C_{p}$}]\begingroup Heat capacity at constant pressure ($\frac{J}{kgK}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$D$}]\begingroup Length (m)\nomeqref {14}\nompageref{22}
+  \item [{$d$}]\begingroup Thickness ($m$)\nomeqref {14}\nompageref{22}
+  \item [{$d_{c}$}]\begingroup Track strip spacing ($m$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$E$}]\begingroup Elastic modulus ($Pa$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$F$}]\begingroup Force ($N$)\nomeqref {14}\nompageref{22}
+  \item [{$g$}]\begingroup Gravitational acceleration ($\frac{m}{s^2}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$h$}]\begingroup Height ($m$)\nomeqref {14}\nompageref{22}
+  \item [{$ib$}]\begingroup Bond interest rate\nomeqref {14}
+		\nompageref{22}
+  \item [{$k$}]\begingroup Thermal Conductivity ($\frac{W}{mK}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$L$}]\begingroup Inductance ($H$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$M$}]\begingroup Mach Number\nomeqref {14}\nompageref{22}
+  \item [{$m$}]\begingroup Mass ($kg$)\nomeqref {14}\nompageref{22}
+  \item [{$m'$}]\begingroup Mass per length ($\frac{kg}{m}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$P$}]\begingroup Power (W)\nomeqref {14}\nompageref{22}
+  \item [{$p$}]\begingroup Pressure ($Pa$)\nomeqref {14}\nompageref{22}
+  \item [{$Pr$}]\begingroup Prandtl Number\nomeqref {14}\nompageref{22}
+  \item [{$Q$}]\begingroup Heat energy ($J$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$R$}]\begingroup Resistance ($\Omega$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$r$}]\begingroup Radius ($m$)\nomeqref {14}\nompageref{22}
+  \item [{$Re$}]\begingroup Reynold's number\nomeqref {14}
+		\nompageref{22}
+  \item [{$T$}]\begingroup Temperature ($K$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$t$}]\begingroup Time (variable)\nomeqref {14}\nompageref{22}
+  \item [{$u_{P}$}]\begingroup Pump uptime per day\nomeqref {14}
+		\nompageref{22}
+  \item [{$v$}]\begingroup Velocity ($\frac{m}{s}$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$w_{mag}$}]\begingroup Magnet Width ($m$)\nomeqref {14}
+		\nompageref{22}
+  \item [{$x$}]\begingroup Distance along tube axis (m)\nomeqref {14}
+		\nompageref{22}
+  \item [{$y$}]\begingroup Distance normal to flow (m)\nomeqref {14}
+		\nompageref{22}
+
+\end{thenomenclature}
