@@ -1,6 +1,6 @@
 The original Hyperloop proposal suggested
 that the pod would likely be able to carry about 28 passengers \cite{Musk}.
-To meet the market demand, the frequency at which pods departed could be
+To meet the market demand, the frequency at which pods depart could be
 increased or decreased as necessary. A high pod frequency could be
 problematic as it would require a large number of pods to be maintained at
 the end points and may not provide enough time for passengers to board comfortably.
@@ -11,14 +11,24 @@ the market demanded passenger throughput. The overall benefits of
 changes in pod capacity can be more accurately determined by analyzing the
 sensitivity of energy consumption and operating cost to pod capacity.
 In this analysis, the number of passengers per pod is varied from 10 to 100.
-At each quantity, the energy cost and estimated ticket cost are recorded.
-\begin{figure}
-	\centering
-	\includegraphics[width=.45\textwidth]{../../images/graphs/capacity_trades/passengers_vs_energy.png}
-	\caption{Yearly Energy Cost vs. Passengers per Pod}
-	\label{fig:energy_cost_vs_passengers}
-\end{figure}
-\Cref{fig:energy_cost_vs_passengers} shows the relationship between yearly
+At each quantity, the estimated recurring energy cost and cost per capita are recorded.
+% \begin{figure}
+% 	\centering
+% 	\includegraphics[width=.45\textwidth]{../../images/graphs/capacity_trades/passengers_vs_energy.png}
+% 	\caption{Yearly Energy Cost vs. Passengers per Pod}
+% 	\label{fig:energy_cost_vs_passengers}
+% \end{figure}
+\begin{center}
+    \begin{tabular}{| l | l | l | l | l | l | l | l | l | l | l |}
+    \hline
+    Passengers Per Pod & 10 & 20 & 30 & 40 & 50 & 60 & 70 & 80 & 90 & 100 \\ \hline
+    Energy Cost (\$M) & 28.2 & 28.6 & 29.0 & 29.5 & 29.9 & 30.3 & 30.7 & 31.1 & 31.6 & 32.0 \\ \hline
+    Total \$/Passenger & 226 & 113 & 76 & 57 & 45 & 38 & 33 & 29 & 25 & 23 \\ \hline
+    \label{tab:energy_cost_vs_passengers}
+    \end{tabular}
+\end{center}
+
+\Cref{tab:energy_cost_vs_passengers} shows the relationship between yearly
 energy consumption and the number of passengers per pod produced by the system model.
 It is shown that, for the given operating condition, an order of magnitude
 increase in pod capacity only results in a 15\% increase in yearly energy consumption.
@@ -36,6 +46,5 @@ This would allow the Hyperloop to handle high densities of passengers during
 peak travel times without having to increase pod frequency to prohibitive levels.
 Then, during lighter travel times, the operator could link fewer pods together
 to reduce the gross weight of each flight in order to reduce unnecessary energy consumption.
-The performance of the Hyperloop system scales favorably with pod capacity,
-which could allow the system to be optimized to meet the demands
-of the market with little cost to operator.
+The cost per passenger also rapidly declines, before tapering off at capacities
+not suited for the tube pressure chosen for this study.

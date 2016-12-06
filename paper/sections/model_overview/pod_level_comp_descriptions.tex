@@ -24,6 +24,24 @@
     All viscous cells were resolved to a $y^{+} < 1$. Volume meshes for the core
     domain contained approximately 19 million cells.
 
+    \begin{figure}[h!]
+      \centering
+      \begin{subfigure}[t]{.5\textwidth}
+        \centering
+        \includegraphics[width=1.2\textwidth]{../../images/CFDmodel.png}
+        \caption{Computational boundary applied to vehicle flow domain.}
+        \label{fig:CFDmodel}
+      \end{subfigure}%
+      \begin{subfigure}[t]{.5\textwidth}
+        \centering
+        \includegraphics[width=.75\textwidth]{../../images/hyperloopIsoView.png}
+        \caption{Resulting Flow Contour}
+      \label{fig:CFDresults}
+      \end{subfigure}
+      \caption{CFD model}
+      \label{fig:CFD}
+    \end{figure}
+
     The computational domain is depicted in \Cref{fig:CFDmodel},
     and modeled assuming vehicle half-symmetry.
     The tube was simulated thirty vehicle body lengths upstream of the pod
@@ -43,32 +61,7 @@
     Drag forces included only viscous and pressure forces acting on external
     pod surfaces and excluded ram and internal nozzle drag effects.
 
-    \begin{figure}
-      \centering
-      \begin{subfigure}[t]{.5\textwidth}
-        \centering
-        \includegraphics{../../images/CFDmodel.png}
-        \caption{Computational boundary applied to vehicle flow domain.}
-        \label{fig:CFDmodel}
-      \end{subfigure}%
-      \begin{subfigure}[t]{.5\textwidth}
-        \centering
-        \includegraphics[width=.75\textwidth]{../../images/hyperloopIsoView.png}
-        \caption{Resulting Flow Contour}
-      \label{fig:CFDresults}
-      \end{subfigure}
-      \caption{CFD model}
-      \label{fig:CFD}
-    \end{figure}
-
-    % \begin{figure}
-    % 	\centering
-    % 	\includegraphics[width=.75\textwidth]{../../images/CFDmodel.png}
-    % 	\caption{Computational boundary conditions applied to hyperloop flow domain.}
-    % 	\label{fig:CFDmodel}
-    % \end{figure}
-
-    \begin{figure}
+    \begin{figure}[!]
       \centering
       \includegraphics{../../images/graphs/cd_vs_mach/cd_vs_mach.png}
       \caption{Drag Coefficient vs. Mach Number}
@@ -76,8 +69,8 @@
     \end{figure}
     \Cref{fig:cd_vs_mach} shows the CFD results for drag coefficient vs. Mach number.
     These results fit the trend expected for transonic flow given by the
-    Prandtl-Glauert relationship. Drag coefficient values will be interpolated
-    from this data for each Mach number the system analyzes.
+    Prandtl-Glauert relationship. Drag coefficient values were then interpolated
+    from this data for each Mach number the system analyzed.
   \subsubsection{Cycle}
     The on-board compression system provides a means of increasing the maximum
     pod speed over a closed pod,  and provides a small amount of thrust.
@@ -149,41 +142,48 @@
 	design to boundary layer growth is important and will be discussed at length later.
 \subsubsection{Levitation}
 
-	The Hyperloop concept operates using a levitation system to significantly
+  The Levitation group makes two critical calculations: the inductance of the
+  track required for the pod to levitate at a desired speed and the mass of
+  the permanent magnets located onboard. The Breakpoint Levitation module employs a
+  desired minimum levitation speed and uses it to calculate important track
+  parameters, including the ratio of inductance to resistance of the track.
+
+	The pod levitation system is designed to significantly
 	reduce friction during high velocity travel. In this analysis, a
 	passive magnetic levitation system is used to suspend the pod above the
 	track. A passive system is advantageous because it requires
-	zero power input for levitation to occur. The Halbach array passive levitation method
+	zero power input for levitation to occur at a given speed.
+  Magnetic drag is still present, however pod speed is replenished during each
+  boost phase shown in the mission discussion.
+  Track cost accounting is not included in the model, but this configuration
+  was chosen to reduce overall track requirements to essentially metal strips
+  configured to maximize conductivity and minimize eddy current generation.
+  The Halbach array passive levitation method
 	developed at the Lawrence Livermore National Laboratory is chosen as the
-	system for our Hyperloop model \cite{inductrack}. It is assumed that
+	baseline system for modeling MagLev performance \cite{inductrack}. It is assumed that
 	ferrite tiles were not used so that the added inductive loading is set to
 	zero, leaving only the distributed inductance to compute in the model.
 	Fringe fields from the magnetic array are also ignored in this analysis and
 	the width of the magnetic array is set equal to the width of the track.
-	These three simplifications and assumptions allow the overall scale factor
-	for the total force, $levsf$, to be set equal to unity.
-
-	The Levitation group makes two critical calculations: the inductance of the
-	track required for the pod to levitate at a desired speed and the mass of
-	the permanent magnets located onboard. The Breakpoint Levitation module employs a
-	desired minimum levitation speed and uses it to calculate important track
-	parameters, including the ratio of inductance to resistance of the track.
-
+	These three simplifications reduce the parameters needed to determine
+  magnetic lift force to $\beta, \w_{mag}, \lambda, R, L, A$, which are
+  magnetic strength, width, wavelength, equivalent circuit resistance, inductance, and area
+  as shown in \cref{eq:fy_lev}.
+  \begin{equation}
+    \label{eq:fy_lev}
+    L_{mag} = F_{y}(\omega)=\frac{\beta _{0}^{2}w_{mag}\lambda}{4\pi Ld_{c}}\frac{1}{(1+R/\omega L)^{2}}A_ae^{-4\pi h/\lambda } \ ,
+  \end{equation}
+  %Fyuf equations from http://cegt201.bradley.edu/projects/proj2004/maglevt1/Inductrack1.m
 	Using the desired levitation speed, the total mass of magnets required and
-	drag force produced is then calculated. The lift and drag produced
-	by the magnets are given by \cref{eq:fy_lev} and \cref{eq:dmag}
-	\begin{equation}
-		\label{eq:fy_lev}
-		L_{mag} = F_{y}(\omega)=\frac{\beta _{0}^{2}w_{mag}\lambda}{4\pi Ld_{c}}\frac{1}{(1+R/\omega L)^{2}}A_ae^{-4\pi h/\lambda } \ ,
-	\end{equation}
-	%Fyuf equations from http://cegt201.bradley.edu/projects/proj2004/maglevt1/Inductrack1.m
+	drag force produced is then calculated. The drag produced
+	by the magnets are given in \cref{eq:dmag}
 	\begin{equation}
 		\label{eq:dmag}
 		D_{mag}=( m_{pod}g)R/\omega L
 	\end{equation}
 	In these equations, the drag and the magnet mass are both functions of the
-	magnet area and thickness. To minimize drag and mass, a Pareto optimization
-	is performed prior to running the system model. The following cost function
+	magnet area and thickness. To minimize drag and mass, a Pareto front is
+	quantified prior to running the system model. The following cost function
 	is developed by normalizing drag and mass, then multiplying by a weighting
 	factor $alpha$ and adding them together in the following equation
 	\begin{equation}
