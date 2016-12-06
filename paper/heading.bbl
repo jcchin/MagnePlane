@@ -1,0 +1,115 @@
+\begin{thebibliography}{10}
+
+\bibitem{Chin}
+Jeffrey Chin, Justin Gray, Scott Jones, and Jeffrey Berton.
+\newblock Open-source conceptual sizing model of the hyperloop passenger pod.
+\newblock {\em AIAA Science and Technoloy Exposition}, 2014.
+
+\bibitem{Musk}
+Elon Musk.
+\newblock Hyperloop alpha.
+\newblock Website, August 2013.
+
+\bibitem{Schafer}
+Andreas {Schafer} and David {Victor}.
+\newblock The future of mobility of the world population.
+\newblock {\em Transportation Research}, Part A 34:171--205, 2000.
+
+\bibitem{Baik}
+Hojong Baik, Antonio Trani, Nicolas Hinze, Howard Swingle, Senanu Ashiabor, and
+  Anand Seshadri.
+\newblock Forecasting model for air taxi, commercial airline, and automobile
+  demand in the united states.
+\newblock {\em Transportation Research Record: Journal of the Transportation
+  Research Board}, (2052):9--20, 2008.
+
+\bibitem{RAND}
+Robert~M. Salter.
+\newblock The very high speed transit system.
+\newblock {\em RAND Corporation P-4874}, 1972.
+
+\bibitem{Volpe}
+Catherine {Taylor}, David {Hyde}, and Lawrence {Barr}.
+\newblock Hyperloop commericial feasability analysis.
+\newblock Technical report, U.S. Department of Transportation, 2016.
+
+\bibitem{inductrack}
+Paul Friend.
+\newblock Magnetic levitation train technology 1.
+\newblock {\em progress report, Bradley university}, 2004.
+
+\bibitem{EIA}
+US~EIA.
+\newblock Annual energy outlook 2013.
+\newblock {\em US Energy Information Administration, Washington, DC}, pages
+  60--62, 2013.
+
+\bibitem{Biedron}
+R.~T. {Biedron}, J.~M. {Derlaga}, P.~A. {Gnoffo}, D.~P. {Hammond},
+  W.~T.{Jones}, B.{Kleb}, E.~M. {Lee-Rausch}, E.~J. {Nielsen}, M.~A. {Park},
+  C.L. {Rumsey}, J.~L. {Thomas}, and W.~A. {Wood}.
+\newblock {FUN3D} manual: 12.4.
+\newblock {\em NASA TM-2014-218179}, 2014.
+
+\bibitem{Roe}
+P.~L. {Roe}.
+\newblock Approximate riemann solvers, parameter vectors, and difference
+  schemes.
+\newblock {\em Journal of Computational Physics}, 43(2):357--372, October 1981.
+
+\bibitem{Spalart}
+P.~R. {Spalart} and S.~R. {Allmaras}.
+\newblock A one-equation turbulence model for aerodynamic flows.
+\newblock {\em La Techerche Aerospatiale}, 1:5--21, 1994.
+
+\bibitem{Marcum}
+D.~Marcum.
+\newblock Generation of unstructured grids for viscous flow applications.
+\newblock {\em AIAA Paper No. 95-0212}, 1995.
+
+\bibitem{PyCycle}
+Justin {Gray}, Jeffrey {Chin}, Tristan {Hearn}, Eric {Hendricks}, Thomas
+  {Lavelle}, and Joaquim R. R.~A. {Martins}.
+\newblock Thermodynamics of gas turbine cycles with analytic derivatives in
+  openmdao.
+\newblock {\em AIAA SciTech}, Jan 2016.
+
+\bibitem{GeorgiaTechMotor}
+Collins Gladin, Ali.
+\newblock Conceptual modeling of electric and hybrid-electric propulsion for
+  {UAS} applications.
+\newblock Sep 2015.
+
+\bibitem{NASASugar}
+Marty~K Bradley and Christopher~K Droney.
+\newblock Subsonic ultra green aircraft research.
+\newblock 2011.
+
+\bibitem{LSM}
+Jacek~F Gieras, Zbigniew~J Piech, and Bronislaw Tomczuk.
+\newblock {\em Linear synchronous motors: transportation and automation
+  systems}.
+\newblock CRC press, 2016.
+
+\bibitem{GrayBenchmarking2013}
+Justin Gray, Kenneth~T. Moore, Tristan~A. Hearn, and Bret~A. Naylor.
+\newblock Standard platform for benchmarking multidisciplinary design analysis
+  and optimization architectures.
+\newblock {\em AIAA Journal}, 51(10):2380--2394, Oct 2013.
+
+\bibitem{Scipy}
+Eric Jones, Travis Oliphant, Pearu Peterson, et~al.
+\newblock Scipy: Open source scientific tools for {Python}, 2001.
+\newblock [Online; accessed 2016-09-26].
+
+\bibitem{Buckling}
+JP~{Peterson}.
+\newblock Buckling of thin-walled circular cylinders.
+\newblock (NASA Technical Report Server, SP-8005), 1968.
+
+\bibitem{FoxMcDonald}
+Robert~W. Fox, Philip~J. Pritchard, Alan~T. McDonald, and Robert~W. Fox.
+\newblock {\em Fox and McDonald's introduction to fluid mechanics}.
+\newblock John Wiley & Sons, Inc., 2011.
+
+\end{thebibliography}

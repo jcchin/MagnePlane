@@ -125,6 +125,9 @@ if __name__ == '__main__':
 	for i in range(len(p_tunnel)):
 
 		prob['des_vars.tube_pressure'] = p_tunnel[i]
+		print(prob['des_vars.W'])
+		quit()
+		prob['des_vars.W'] = 3
 
 		prob.run()
 
